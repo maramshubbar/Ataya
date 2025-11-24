@@ -23,10 +23,130 @@
             </objects>
             <point key="canvasLocation" x="-1505" y="-2"/>
         </scene>
+        <!--Admin Profile View Controller-->
+        <scene sceneID="HOP-52-vx0">
+            <objects>
+                <viewController storyboardIdentifier="AdminPC" id="bQJ-w6-rbR" customClass="AdminProfileViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="24j-1M-WDe">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Admin Profile" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="abl-zB-6xm">
+                                <rect key="frame" x="133" y="158" width="127" height="24"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fjq-AX-hg4" userLabel="Image View">
+                                <rect key="frame" x="136" y="198" width="120" height="120"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="120" id="4jc-21-uuo"/>
+                                    <constraint firstAttribute="height" constant="120" id="x53-HR-KLc"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number">
+                                        <string key="keyPath">layer.cornerRadius
+</string>
+                                        <integer key="value" value="60"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7G9-Ka-yIM">
+                                <rect key="frame" x="196.66666666666666" y="338" width="0.0" height="0.0"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Admin " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bj1-iA-PId">
+                                <rect key="frame" x="175.66666666666666" y="350" width="42" height="15"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
+                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="checkmark.seal.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="auM-Ib-ElR">
+                                <rect key="frame" x="233" y="325.33333333333326" width="22.333333333333343" height="34"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="tintColor" red="0.094117647058823528" green="0.21568627450980393" blue="0.34509803921568627" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Personal Information" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TaV-x9-ZrQ">
+                                <rect key="frame" x="58" y="404" width="157" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view clipsSubviews="YES" contentMode="scaleAspectFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Iwu-3R-AcM" customClass="RoundedCardView" customModule="Ataya" customModuleProvider="target">
+                                <rect key="frame" x="20" y="458" width="353" height="60"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="15"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.borderWidth">
+                                        <integer key="value" value="1"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="layer.borderColor">
+                                        <color key="value" systemColor="systemGreenColor"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="15"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                        <real key="value" value="5"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                        <color key="value" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                            <view clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ieV-a6-gEs">
+                                <rect key="frame" x="20" y="557" width="353" height="60"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="15"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.borderWidth">
+                                        <integer key="value" value="1"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="layer.borderColor">
+                                        <color key="value" systemColor="systemGreenColor"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="sMo-Jx-CjH"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="bj1-iA-PId" firstAttribute="centerX" secondItem="24j-1M-WDe" secondAttribute="centerX" id="5py-DU-9ee"/>
+                            <constraint firstItem="7G9-Ka-yIM" firstAttribute="centerX" secondItem="24j-1M-WDe" secondAttribute="centerX" id="6ul-oC-kUc"/>
+                            <constraint firstItem="sMo-Jx-CjH" firstAttribute="bottom" secondItem="Iwu-3R-AcM" secondAttribute="bottom" constant="60" id="784-gH-R0U"/>
+                            <constraint firstItem="fjq-AX-hg4" firstAttribute="top" secondItem="abl-zB-6xm" secondAttribute="bottom" constant="20" id="CcU-MJ-6Vs"/>
+                            <constraint firstItem="fjq-AX-hg4" firstAttribute="centerX" secondItem="24j-1M-WDe" secondAttribute="centerX" id="UE3-uW-9TQ"/>
+                            <constraint firstItem="Iwu-3R-AcM" firstAttribute="top" secondItem="TaV-x9-ZrQ" secondAttribute="bottom" constant="10" id="Wty-2c-ppk"/>
+                            <constraint firstItem="abl-zB-6xm" firstAttribute="centerX" secondItem="24j-1M-WDe" secondAttribute="centerX" id="Xcu-WY-5pw"/>
+                            <constraint firstItem="sMo-Jx-CjH" firstAttribute="trailing" secondItem="Iwu-3R-AcM" secondAttribute="trailing" constant="20" id="b72-kb-jjX"/>
+                            <constraint firstItem="7G9-Ka-yIM" firstAttribute="top" secondItem="fjq-AX-hg4" secondAttribute="bottom" constant="16" id="c21-LB-WtF"/>
+                            <constraint firstItem="abl-zB-6xm" firstAttribute="top" secondItem="sMo-Jx-CjH" secondAttribute="top" constant="40" id="eWU-i6-5Bs"/>
+                            <constraint firstItem="bj1-iA-PId" firstAttribute="top" secondItem="7G9-Ka-yIM" secondAttribute="bottom" constant="12" id="fWM-gh-50x"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="nameLabel" destination="7G9-Ka-yIM" id="H3p-de-yJx"/>
+                        <outlet property="profileImageView" destination="fjq-AX-hg4" id="WbO-0H-Y7x"/>
+                        <outlet property="roleLabel" destination="7G9-Ka-yIM" id="K7V-xd-rAQ"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="5em-xW-uhf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1900" y="684.50704225352115"/>
+        </scene>
     </scenes>
     <resources>
+        <image name="checkmark.seal.fill" catalog="system" width="128" height="124"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGreenColor">
+            <color red="0.20392156862745098" green="0.7803921568627451" blue="0.34901960784313724" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

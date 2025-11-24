@@ -31,7 +31,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let storyboard = UIStoryboard(name: "Admin", bundle: nil)
 
         // Load your admin VC using storyboard ID
-        let adminVC = storyboard.instantiateViewController(withIdentifier: "AdminVC")
+        let adminVC = storyboard.instantiateViewController(withIdentifier: "AdminPC")
 
         // Make admin VC the root screen
         window.rootViewController = adminVC

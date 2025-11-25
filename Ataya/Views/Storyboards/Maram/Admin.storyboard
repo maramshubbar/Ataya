@@ -68,60 +68,28 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" red="0.094117647058823528" green="0.21568627450980393" blue="0.34509803921568627" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Personal Information" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TaV-x9-ZrQ">
-                                <rect key="frame" x="58" y="404" width="157" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Personal Information" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TaV-x9-ZrQ">
+                                <rect key="frame" x="58" y="407" width="157" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <view clipsSubviews="YES" contentMode="scaleAspectFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Iwu-3R-AcM" customClass="RoundedCardView" customModule="Ataya" customModuleProvider="target">
-                                <rect key="frame" x="20" y="458" width="353" height="60"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="15"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.borderWidth">
-                                        <integer key="value" value="1"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="color" keyPath="layer.borderColor">
-                                        <color key="value" systemColor="systemGreenColor"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                        <real key="value" value="15"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                        <real key="value" value="5"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                        <color key="value" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                            </view>
-                            <view clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ieV-a6-gEs">
-                                <rect key="frame" x="20" y="597" width="353" height="60"/>
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Eeo-Ij-Y6p">
+                                <rect key="frame" x="58" y="436" width="269" height="34"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="15"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.borderWidth">
-                                        <integer key="value" value="1"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.cornerRadius" value="YES"/>
-                                </userDefinedRuntimeAttributes>
-                            </view>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="sMo-Jx-CjH"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="bj1-iA-PId" firstAttribute="centerX" secondItem="24j-1M-WDe" secondAttribute="centerX" id="5py-DU-9ee"/>
                             <constraint firstItem="7G9-Ka-yIM" firstAttribute="centerX" secondItem="24j-1M-WDe" secondAttribute="centerX" id="6ul-oC-kUc"/>
-                            <constraint firstItem="sMo-Jx-CjH" firstAttribute="bottom" secondItem="Iwu-3R-AcM" secondAttribute="bottom" constant="60" id="784-gH-R0U"/>
                             <constraint firstItem="fjq-AX-hg4" firstAttribute="top" secondItem="abl-zB-6xm" secondAttribute="bottom" constant="20" id="CcU-MJ-6Vs"/>
                             <constraint firstItem="fjq-AX-hg4" firstAttribute="centerX" secondItem="24j-1M-WDe" secondAttribute="centerX" id="UE3-uW-9TQ"/>
-                            <constraint firstItem="Iwu-3R-AcM" firstAttribute="top" secondItem="TaV-x9-ZrQ" secondAttribute="bottom" constant="10" id="Wty-2c-ppk"/>
                             <constraint firstItem="abl-zB-6xm" firstAttribute="centerX" secondItem="24j-1M-WDe" secondAttribute="centerX" id="Xcu-WY-5pw"/>
-                            <constraint firstItem="sMo-Jx-CjH" firstAttribute="trailing" secondItem="Iwu-3R-AcM" secondAttribute="trailing" constant="20" id="b72-kb-jjX"/>
                             <constraint firstItem="7G9-Ka-yIM" firstAttribute="top" secondItem="fjq-AX-hg4" secondAttribute="bottom" constant="16" id="c21-LB-WtF"/>
                             <constraint firstItem="abl-zB-6xm" firstAttribute="top" secondItem="sMo-Jx-CjH" secondAttribute="top" constant="40" id="eWU-i6-5Bs"/>
                             <constraint firstItem="bj1-iA-PId" firstAttribute="top" secondItem="7G9-Ka-yIM" secondAttribute="bottom" constant="12" id="fWM-gh-50x"/>
@@ -142,9 +110,6 @@
         <image name="checkmark.seal.fill" catalog="system" width="128" height="124"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemGreenColor">
-            <color red="0.20392156859999999" green="0.78039215689999997" blue="0.34901960780000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

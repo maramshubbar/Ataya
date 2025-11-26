@@ -1,13 +1,13 @@
 //
-//  MainViewController.swift
+//  AdvocacyDetailViewController.swift
 //  Ataya
 //
-//  Created by Maram on 24/11/2025.
+//  Created by Fatema Maitham on 26/11/2025.
 //
 
 import UIKit
 
-class MainViewController: UIViewController {
+class AdvocacyDetailViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

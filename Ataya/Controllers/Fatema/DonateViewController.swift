@@ -30,9 +30,9 @@ class DonateViewController: UIViewController {
         
     // MARK: - Style Function (shadow + corner radius)
         func styleCard(_ card: UIView) {
-            card.layer.cornerRadius = 20
+            card.layer.cornerRadius = 10
             card.layer.shadowColor = UIColor.black.cgColor
-            card.layer.shadowOpacity = 0.18
+            card.layer.shadowOpacity = 0.08
             card.layer.shadowOffset = CGSize(width: 0, height: 4)
             card.layer.shadowRadius = 14
             card.layer.masksToBounds = false

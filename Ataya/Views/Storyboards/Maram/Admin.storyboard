@@ -21,7 +21,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1505" y="-2"/>
+            <point key="canvasLocation" x="-451" y="-70"/>
         </scene>
         <!--Admin Profile View Controller-->
         <scene sceneID="HOP-52-vx0">
@@ -238,7 +238,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5em-xW-uhf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-973.28244274809151" y="684.50704225352115"/>
+            <point key="canvasLocation" x="-1642" y="718"/>
         </scene>
         <!--About Me View Controller-->
         <scene sceneID="fS6-vJ-mOa">
@@ -257,6 +257,9 @@
                                 <color key="tintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="chevron.backward" catalog="system"/>
+                                <connections>
+                                    <action selector="backButtonTapped:" destination="8Ck-4u-gva" eventType="touchUpInside" id="0jH-be-e6X"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="About me" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="seq-dg-mxm">
                                 <rect key="frame" x="150.66666666666666" y="158" width="92" height="24"/>
@@ -286,27 +289,98 @@
                                         <integer key="value" value="0"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="styleTextField:" destination="8Ck-4u-gva" eventType="editingDidEnd" id="80b-fh-Vnj"/>
+                                </connections>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="abdullaYusuf@gmail.com" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Q8d-J3-7MQ">
+                                <rect key="frame" x="50" y="412" width="293" height="60"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="5Pq-D6-UeX"/>
+                                </constraints>
+                                <color key="textColor" red="0.3921568627" green="0.3921568627" blue="0.3921568627" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="layer.borderColor">
+                                        <color key="value" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.borderWidth">
+                                        <integer key="value" value="0"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="emailTextField:" destination="8Ck-4u-gva" eventType="editingDidEnd" id="4ja-9n-8XF"/>
+                                    <action selector="styleTextField:" destination="8Ck-4u-gva" eventType="editingDidEnd" id="zte-02-bjs"/>
+                                </connections>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Email" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0hP-Xd-lh4">
+                                <rect key="frame" x="60" y="378" width="41" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Phone Number" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SYU-Or-ISO">
+                                <rect key="frame" x="60" y="508" width="115" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="+973 88901338" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="phb-Fs-Tpc">
+                                <rect key="frame" x="50" y="542" width="293" height="60"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="z7Q-8M-Cyx"/>
+                                </constraints>
+                                <color key="textColor" red="0.3921568627" green="0.3921568627" blue="0.3921568627" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="layer.borderColor">
+                                        <color key="value" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.borderWidth">
+                                        <integer key="value" value="0"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="styleTextField:" destination="8Ck-4u-gva" eventType="editingDidEnd" id="tGF-rr-FNt"/>
+                                </connections>
                             </textField>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="pab-ZL-21l"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="Q8d-J3-7MQ" firstAttribute="leading" secondItem="pab-ZL-21l" secondAttribute="leading" constant="50" id="0Fy-gC-B4u"/>
+                            <constraint firstItem="SYU-Or-ISO" firstAttribute="top" secondItem="Q8d-J3-7MQ" secondAttribute="bottom" constant="36" id="1z0-2i-CB3"/>
+                            <constraint firstItem="phb-Fs-Tpc" firstAttribute="top" secondItem="SYU-Or-ISO" secondAttribute="bottom" constant="13" id="3WK-Br-wsf"/>
                             <constraint firstItem="FAw-kx-Xxq" firstAttribute="leading" secondItem="G8B-Gv-cjd" secondAttribute="leading" constant="35" id="4a8-Ny-k9d"/>
                             <constraint firstItem="UEl-Lm-fjj" firstAttribute="leading" secondItem="pab-ZL-21l" secondAttribute="leading" constant="50" id="9ig-i0-m9n"/>
                             <constraint firstItem="seq-dg-mxm" firstAttribute="centerX" secondItem="G8B-Gv-cjd" secondAttribute="centerX" id="DDK-zH-JpW"/>
                             <constraint firstItem="LQ6-w0-4Vz" firstAttribute="top" secondItem="seq-dg-mxm" secondAttribute="bottom" constant="66" id="Kws-1J-gSV"/>
+                            <constraint firstItem="SYU-Or-ISO" firstAttribute="leading" secondItem="pab-ZL-21l" secondAttribute="leading" constant="60" id="Ykb-cP-Krv"/>
                             <constraint firstItem="LQ6-w0-4Vz" firstAttribute="leading" secondItem="pab-ZL-21l" secondAttribute="leading" constant="60" id="Zn7-zY-WIZ"/>
+                            <constraint firstItem="pab-ZL-21l" firstAttribute="trailing" secondItem="phb-Fs-Tpc" secondAttribute="trailing" constant="50" id="aJq-Qh-GK9"/>
+                            <constraint firstItem="0hP-Xd-lh4" firstAttribute="top" secondItem="UEl-Lm-fjj" secondAttribute="bottom" constant="36" id="cKX-KB-eKd"/>
+                            <constraint firstItem="pab-ZL-21l" firstAttribute="trailing" secondItem="Q8d-J3-7MQ" secondAttribute="trailing" constant="50" id="cap-cw-Kc6"/>
                             <constraint firstItem="seq-dg-mxm" firstAttribute="top" secondItem="pab-ZL-21l" secondAttribute="top" constant="40" id="dpY-FK-Onf"/>
+                            <constraint firstItem="phb-Fs-Tpc" firstAttribute="leading" secondItem="pab-ZL-21l" secondAttribute="leading" constant="50" id="hqx-Qx-Fkr"/>
                             <constraint firstItem="FAw-kx-Xxq" firstAttribute="top" secondItem="pab-ZL-21l" secondAttribute="top" constant="40" id="hvl-UC-SDb"/>
+                            <constraint firstItem="Q8d-J3-7MQ" firstAttribute="top" secondItem="0hP-Xd-lh4" secondAttribute="bottom" constant="13" id="jwi-g5-gUb"/>
+                            <constraint firstItem="0hP-Xd-lh4" firstAttribute="leading" secondItem="pab-ZL-21l" secondAttribute="leading" constant="60" id="rFI-Ja-Il1"/>
                             <constraint firstItem="UEl-Lm-fjj" firstAttribute="top" secondItem="LQ6-w0-4Vz" secondAttribute="bottom" constant="13" id="tHE-oG-D0U"/>
                             <constraint firstItem="pab-ZL-21l" firstAttribute="trailing" secondItem="UEl-Lm-fjj" secondAttribute="trailing" constant="50" id="vB9-z6-m55"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="X1p-3h-Z9D"/>
+                    <connections>
+                        <outlet property="emailTextField" destination="Q8d-J3-7MQ" id="ROr-zt-Pt6"/>
+                        <outlet property="fullNameTextField" destination="UEl-Lm-fjj" id="S0p-F3-4xw"/>
+                        <outlet property="phoneTextField" destination="phb-Fs-Tpc" id="bac-TL-6Dm"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9AV-UM-1TY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-211.4503816793893" y="684.50704225352115"/>
+            <point key="canvasLocation" x="-911" y="718"/>
         </scene>
     </scenes>
     <resources>

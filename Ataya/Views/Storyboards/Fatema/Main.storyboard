@@ -82,7 +82,7 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="nL2-aT-E1C">
                                         <rect key="frame" x="16" y="20" width="408" height="514"/>
                                         <subviews>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="O3H-65-VpY" customClass="DonateViewController">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="O3H-65-VpY" userLabel="card1" customClass="DonateViewController">
                                                 <rect key="frame" x="0.0" y="0.0" width="408" height="90"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="fork.knife" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="tTs-zW-bos">
@@ -137,7 +137,7 @@
                                                     </userDefinedRuntimeAttribute>
                                                 </userDefinedRuntimeAttributes>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Aa0-zF-NBf">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Aa0-zF-NBf" userLabel="card2">
                                                 <rect key="frame" x="0.0" y="106" width="408" height="90"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="basket.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="gbA-95-lhu">
@@ -181,7 +181,7 @@
                                                     <userDefinedRuntimeAttribute type="boolean" keyPath="keyPath" value="YES"/>
                                                 </userDefinedRuntimeAttributes>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nDl-ec-WbR">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nDl-ec-WbR" userLabel="card3">
                                                 <rect key="frame" x="0.0" y="212" width="408" height="90"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dollarsign.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="Qze-9g-pZh">
@@ -225,7 +225,7 @@
                                                     <userDefinedRuntimeAttribute type="boolean" keyPath="keyPath" value="YES"/>
                                                 </userDefinedRuntimeAttributes>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Egr-Ia-Vdp">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Egr-Ia-Vdp" userLabel="card4">
                                                 <rect key="frame" x="0.0" y="318" width="408" height="90"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="flag.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="6Sw-UT-hJS">
@@ -269,7 +269,7 @@
                                                     <userDefinedRuntimeAttribute type="boolean" keyPath="keyPath" value="YES"/>
                                                 </userDefinedRuntimeAttributes>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="113-3e-i3w">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="113-3e-i3w" userLabel="card5">
                                                 <rect key="frame" x="0.0" y="424" width="408" height="90"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="hand.raised.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="I5Q-M7-diP">
@@ -339,7 +339,11 @@
                     </view>
                     <navigationItem key="navigationItem" id="07B-WC-7ek"/>
                     <connections>
-                        <outlet property="cardView" destination="O3H-65-VpY" id="ZeV-ab-I2o"/>
+                        <outlet property="card1" destination="O3H-65-VpY" id="gtj-P3-y5n"/>
+                        <outlet property="card2" destination="Aa0-zF-NBf" id="LXp-O7-7yB"/>
+                        <outlet property="card3" destination="nDl-ec-WbR" id="ddu-7F-e3N"/>
+                        <outlet property="card4" destination="Egr-Ia-Vdp" id="Pkr-AN-dYw"/>
+                        <outlet property="card5" destination="113-3e-i3w" id="Jd7-XH-OPK"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ukZ-A3-Iam" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

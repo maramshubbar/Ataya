@@ -9,23 +9,48 @@ import UIKit
 
 class DonateViewController: UIViewController {
 
-    @IBOutlet weak var cardView: UIView!
+    @IBOutlet weak var card1: UIView!
+    @IBOutlet weak var card2: UIView!
+    @IBOutlet weak var card3: UIView!
+    @IBOutlet weak var card4: UIView!
+    @IBOutlet weak var card5: UIView!
+    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-            
-            // Rounded corners
-            cardView.layer.cornerRadius = 20
-            
-            // Shadow
-            cardView.layer.shadowColor = UIColor.black.cgColor
-            cardView.layer.shadowOpacity = 0.15
-            cardView.layer.shadowOffset = CGSize(width: 0, height: 6)
-            cardView.layer.shadowRadius = 12
-            
-            // Required to show shadow
-            cardView.layer.masksToBounds = false
+        
+        // Apply the style to all cards
+        styleCard(card1)
+        styleCard(card2)
+        styleCard(card3)
+        styleCard(card4)
+        styleCard(card5)
+   
     }
         
+    // MARK: - Style Function (shadow + corner radius)
+        func styleCard(_ card: UIView) {
+            card.layer.cornerRadius = 20
+            card.layer.shadowColor = UIColor.black.cgColor
+            card.layer.shadowOpacity = 0.18
+            card.layer.shadowOffset = CGSize(width: 0, height: 4)
+            card.layer.shadowRadius = 14
+            card.layer.masksToBounds = false
+        }
+
+        // MARK: - Perfect shadow path rendering
+        override func viewDidLayoutSubviews() {
+            super.viewDidLayoutSubviews()
+
+            let cards = [card1, card2, card3, card4, card5]
+
+            for card in cards {
+                card?.layer.shadowPath = UIBezierPath(
+                    roundedRect: card!.bounds,
+                    cornerRadius: 24
+                ).cgPath
+            }
+        }
     /*
     // MARK: - Navigation
 

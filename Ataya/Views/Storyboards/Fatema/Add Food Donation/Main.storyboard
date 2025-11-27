@@ -79,17 +79,29 @@
                                                     <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vTl-Kb-Pbc" userLabel="Hero Horizontal Content">
                                                         <rect key="frame" x="42" y="0.0" width="240" height="260"/>
                                                         <subviews>
-                                                            <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FT9-n3-oxX" userLabel="Card">
-                                                                <rect key="frame" x="0.0" y="0.0" width="240" height="260"/>
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FT9-n3-oxX" userLabel="Card">
+                                                                <rect key="frame" x="15" y="0.0" width="340" height="380"/>
+                                                                <subviews>
+                                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="homeCamp" translatesAutoresizingMaskIntoConstraints="NO" id="xZw-M9-NA6">
+                                                                        <rect key="frame" x="0.0" y="0.0" width="340" height="260"/>
+                                                                        <constraints>
+                                                                            <constraint firstAttribute="height" constant="260" id="YrV-cF-kCS"/>
+                                                                        </constraints>
+                                                                    </imageView>
+                                                                </subviews>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                                 <constraints>
-                                                                    <constraint firstAttribute="height" constant="300" id="an6-7a-ooo"/>
+                                                                    <constraint firstAttribute="trailing" secondItem="xZw-M9-NA6" secondAttribute="trailing" id="II6-kf-8eR"/>
+                                                                    <constraint firstItem="xZw-M9-NA6" firstAttribute="leading" secondItem="FT9-n3-oxX" secondAttribute="leading" id="KTY-Cr-5wO"/>
+                                                                    <constraint firstAttribute="height" constant="380" id="nPv-Rw-6Xy"/>
+                                                                    <constraint firstItem="xZw-M9-NA6" firstAttribute="top" secondItem="FT9-n3-oxX" secondAttribute="top" id="oAr-SK-w6x"/>
+                                                                    <constraint firstAttribute="width" constant="340" id="vog-28-BFJ"/>
                                                                 </constraints>
                                                             </view>
                                                         </subviews>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                         <constraints>
-                                                            <constraint firstItem="FT9-n3-oxX" firstAttribute="leading" secondItem="vTl-Kb-Pbc" secondAttribute="leading" constant="20" id="cYB-gI-foC"/>
+                                                            <constraint firstItem="FT9-n3-oxX" firstAttribute="leading" secondItem="vTl-Kb-Pbc" secondAttribute="leading" constant="15" id="cYB-gI-foC"/>
                                                             <constraint firstItem="FT9-n3-oxX" firstAttribute="top" secondItem="vTl-Kb-Pbc" secondAttribute="top" id="dfA-uJ-6ri"/>
                                                             <constraint firstAttribute="bottom" secondItem="FT9-n3-oxX" secondAttribute="bottom" id="fBF-1j-kqN"/>
                                                             <constraint firstAttribute="height" constant="260" id="zKe-zc-pOl"/>
@@ -152,6 +164,7 @@
     <resources>
         <image name="Icon2" width="60" height="60"/>
         <image name="bell.fill" catalog="system" width="123" height="128"/>
+        <image name="homeCamp" width="242" height="178"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

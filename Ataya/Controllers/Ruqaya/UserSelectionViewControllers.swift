@@ -29,11 +29,11 @@ class UserSelectionViewController: UIViewController {
     private func styleButtons() {
         let buttons = [donorButton, ngoButton, adminButton]
 
-        for b in buttons {
-            b?.layer.cornerRadius = 16
-            b?.layer.borderWidth = 1
-            b?.layer.borderColor = UIColor.black.cgColor
-            b?.backgroundColor = .white
+        for button in buttons {
+            button?.layer.cornerRadius = 16
+            button?.layer.borderWidth = 2
+            button?.layer.borderColor = UIColor.black.cgColor
+            button?.backgroundColor = .white
         }
 
         nextButton.layer.cornerRadius = 16

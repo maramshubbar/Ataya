@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Wsr-Aw-mYc">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
@@ -254,10 +254,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mCM-7k-srt">
-                                <rect key="frame" x="0.0" y="309" width="393" height="128"/>
+                                <rect key="frame" x="0.0" y="59" width="393" height="752"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kMZ-7V-rmw" userLabel="Content View">
-                                        <rect key="frame" x="0.0" y="0.0" width="393" height="128"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="752"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4UG-fB-gcN" userLabel="Header View">
                                                 <rect key="frame" x="0.0" y="0.0" width="393" height="60"/>
@@ -296,9 +296,8 @@
                                                     <constraint firstAttribute="width" constant="250" id="gd9-dT-yhy"/>
                                                 </constraints>
                                             </imageView>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Upload clear photos of your food donation to help us verify quality and safety." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9eA-2r-ppb">
-                                                <rect key="frame" x="175" y="53" width="561" height="20"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Upload clear photos of your food donation to help us verify quality and safety." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9eA-2r-ppb">
+                                                <rect key="frame" x="32" y="382" width="321" height="52"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -306,10 +305,14 @@
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
+                                            <constraint firstItem="9eA-2r-ppb" firstAttribute="leading" secondItem="kMZ-7V-rmw" secondAttribute="leading" constant="32" id="539-Rx-R2c"/>
+                                            <constraint firstItem="9eA-2r-ppb" firstAttribute="top" secondItem="YVd-Ck-Zxe" secondAttribute="bottom" constant="32" id="EkJ-Hc-FWD"/>
+                                            <constraint firstAttribute="trailing" secondItem="9eA-2r-ppb" secondAttribute="trailing" constant="32" id="JID-cl-yDD"/>
                                             <constraint firstAttribute="trailing" secondItem="4UG-fB-gcN" secondAttribute="trailing" id="Jm9-Rd-1Zg"/>
                                             <constraint firstItem="4UG-fB-gcN" firstAttribute="top" secondItem="kMZ-7V-rmw" secondAttribute="top" id="Ofr-d1-xMp"/>
                                             <constraint firstItem="YVd-Ck-Zxe" firstAttribute="top" secondItem="4UG-fB-gcN" secondAttribute="bottom" constant="40" id="SXH-8T-VyH"/>
                                             <constraint firstItem="YVd-Ck-Zxe" firstAttribute="centerX" secondItem="kMZ-7V-rmw" secondAttribute="centerX" id="VDi-du-9tu"/>
+                                            <constraint firstItem="9eA-2r-ppb" firstAttribute="centerX" secondItem="kMZ-7V-rmw" secondAttribute="centerX" id="jh5-nN-lxq"/>
                                             <constraint firstItem="4UG-fB-gcN" firstAttribute="leading" secondItem="kMZ-7V-rmw" secondAttribute="leading" id="z2C-TY-Uib"/>
                                         </constraints>
                                     </view>

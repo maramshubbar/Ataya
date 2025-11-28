@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AIAnalyzingViewController: UIViewController {
+class AIAnalyzingVC: UIViewController {
     
     // MARK: - UI State
     
@@ -273,8 +273,8 @@ class AIAnalyzingViewController: UIViewController {
     
     /// Handles tap on the Next button.
     @objc private func nextButtonTapped() {
-        // TODO: Navigate to the next screen in your flow.
-        print("Next button tapped - navigate to review screen here.")
+        let vc = ReviewPredictionVC()
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 }
 

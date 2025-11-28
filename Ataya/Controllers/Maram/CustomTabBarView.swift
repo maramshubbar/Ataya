@@ -34,6 +34,7 @@ import UIKit
 
 class CustomTabBarView: UIView {
     // MARK: - Outlets
+    weak var delegate: CustomTabBarDelegate?
 
        @IBOutlet weak var homeIcon: UIImageView!
        @IBOutlet weak var homeLabel: UILabel!
@@ -52,6 +53,11 @@ class CustomTabBarView: UIView {
        @IBOutlet weak var profileLabel: UILabel!
     
     
+    protocol CustomTabBarDelegate: AnyObject {
+        func didSelectTab(_ tab: CustomTabBarView.TabType)
+    }
+
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -63,12 +69,87 @@ class CustomTabBarView: UIView {
         self.backgroundColor = .white
             //self.backgroundColor = .red
 
-            // Optional: small shadow on top so you can see it clearly
-//            layer.shadowColor = UIColor.black.cgColor
-//            layer.shadowOpacity = 0.08
-//            layer.shadowOffset = CGSize(width: 0, height: -2)
-//            layer.shadowRadius = 6
+            // STEP 1: Enable user interaction on all icons & labels
+
+            homeIcon.isUserInteractionEnabled = true
+            homeLabel.isUserInteractionEnabled = true
+
+            verifyIcon.isUserInteractionEnabled = true
+            verifyLabel.isUserInteractionEnabled = true
+
+            reportHexagon.isUserInteractionEnabled = true
+            reportIcon.isUserInteractionEnabled = true
+            reportLabel.isUserInteractionEnabled = true
+
+            analyticsIcon.isUserInteractionEnabled = true
+            analyticsLabel.isUserInteractionEnabled = true
+
+            profileIcon.isUserInteractionEnabled = true
+            profileLabel.isUserInteractionEnabled = true
+            
+            
+            
+            homeIcon.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(homeTapped)))
+                homeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(homeTapped)))
+
+                verifyIcon.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(verifyTapped)))
+                verifyLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(verifyTapped)))
+
+                reportHexagon.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(reportTapped)))
+                reportIcon.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(reportTapped)))
+                reportLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(reportTapped)))
+
+                analyticsIcon.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(analyticsTapped)))
+                analyticsLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(analyticsTapped)))
+
+                profileIcon.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileTapped)))
+                profileLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileTapped)))
+        
+
     }
+    
+    enum TabType {
+        case home, verification, report, analytics, profile
+    }
+
+    func setSelected(tab: TabType) {
+        let yellow = UIColor(red: 0xFE/255, green: 0xC4/255, blue: 0x00/255, alpha: 1)
+        let gray = UIColor.gray
+        
+        homeIcon.tintColor = gray
+        homeLabel.textColor = gray
+
+        verifyIcon.tintColor = gray
+        verifyLabel.textColor = gray
+
+        reportIcon.tintColor = gray
+        reportLabel.textColor = gray
+
+        analyticsIcon.tintColor = gray
+        analyticsLabel.textColor = gray
+
+        profileIcon.tintColor = gray
+        profileLabel.textColor = gray
+
+        switch tab {
+        case .home:
+            homeIcon.tintColor = yellow
+            homeLabel.textColor = yellow
+        case .verification:
+            verifyIcon.tintColor = yellow
+            verifyLabel.textColor = yellow
+        case .report:
+            reportIcon.tintColor = .white
+            reportLabel.textColor = yellow
+        case .analytics:
+            analyticsIcon.tintColor = yellow
+            analyticsLabel.textColor = yellow
+        case .profile:
+            profileIcon.tintColor = yellow
+            profileLabel.textColor = yellow
+        }
+    }
+
 
     static func loadFromNib() -> CustomTabBarView {
         let nib = UINib(nibName: "CustomTabBarView", bundle: nil)
@@ -77,6 +158,28 @@ class CustomTabBarView: UIView {
         }
         return view
     }
+    
+    
+    @objc func homeTapped() {
+        delegate?.didSelectTab(.home)
+    }
+
+    @objc func verifyTapped() {
+        delegate?.didSelectTab(.verification)
+    }
+
+    @objc func reportTapped() {
+        delegate?.didSelectTab(.report)
+    }
+
+    @objc func analyticsTapped() {
+        delegate?.didSelectTab(.analytics)
+    }
+
+    @objc func profileTapped() {
+        delegate?.didSelectTab(.profile)
+    }
+
 }
 
 

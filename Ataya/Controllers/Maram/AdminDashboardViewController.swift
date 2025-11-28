@@ -14,7 +14,8 @@ class AdminDashboardViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
+       // customTabBar.setSelected(tab: .home)
+
         
 
         // Do any additional setup after loading the view.
@@ -56,6 +57,9 @@ class AdminDashboardViewController: UIViewController {
             tabBar.heightAnchor.constraint(equalToConstant: 110)
         ])
     }
+    
+    
+    
     
 
     /*

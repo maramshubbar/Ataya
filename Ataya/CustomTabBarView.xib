@@ -31,8 +31,9 @@
                             <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Verification" translatesAutoresizingMaskIntoConstraints="NO" id="EBP-ks-cDP">
-                            <rect key="frame" x="110" y="144" width="30" height="30"/>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="checkmark.seal.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="EBP-ks-cDP">
+                            <rect key="frame" x="110" y="143.33333333333334" width="30" height="31.333333333333343"/>
+                            <color key="tintColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="30" id="0jf-3F-hTb"/>
                                 <constraint firstAttribute="width" constant="30" id="X0B-Qy-0LQ"/>
@@ -51,8 +52,9 @@
                                 <constraint firstAttribute="width" constant="100" id="YZJ-Vn-Wrn"/>
                             </constraints>
                         </imageView>
-                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Graph Report" translatesAutoresizingMaskIntoConstraints="NO" id="9cx-m0-Iic">
-                            <rect key="frame" x="284" y="144" width="30" height="30"/>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="document.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="9cx-m0-Iic">
+                            <rect key="frame" x="284" y="144.33333333333334" width="30" height="29.666666666666657"/>
+                            <color key="tintColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="30" id="5Mk-uj-SEZ"/>
                                 <constraint firstAttribute="width" constant="30" id="jzO-uQ-6zt"/>
@@ -129,17 +131,25 @@
                 <constraint firstAttribute="bottom" secondItem="lXg-nQ-zNC" secondAttribute="bottom" id="zlA-5g-a5l"/>
             </constraints>
             <connections>
+                <outlet property="analyticsIcon" destination="9cx-m0-Iic" id="prz-51-qLM"/>
+                <outlet property="analyticsLabel" destination="rBt-cm-yTD" id="Vf5-DE-OOG"/>
                 <outlet property="homeIcon" destination="aTz-2H-1QI" id="O3K-Rl-fsB"/>
                 <outlet property="homeLabel" destination="Zzn-t2-NoI" id="pTc-Qz-HQu"/>
+                <outlet property="profileIcon" destination="dH2-57-XMb" id="R3a-TC-DLw"/>
+                <outlet property="profileLabel" destination="FsC-5n-bDh" id="8rK-Ha-G37"/>
+                <outlet property="reportHexagon" destination="2gS-m7-cfB" id="d6j-Cg-dsV"/>
+                <outlet property="reportIcon" destination="Ocx-XS-cbE" id="Fj6-dP-hKl"/>
+                <outlet property="reportLabel" destination="CZT-t1-pC3" id="UAw-t8-kmu"/>
                 <outlet property="verifyIcon" destination="EBP-ks-cDP" id="qG7-HQ-Dti"/>
+                <outlet property="verifyLabel" destination="zEI-Dx-WFT" id="HrG-MD-5jS"/>
             </connections>
             <point key="canvasLocation" x="-456.81818181818187" y="-51.464435146443513"/>
         </view>
     </objects>
     <resources>
-        <image name="Graph Report" width="40" height="40"/>
         <image name="Vector-2" width="158" height="175.33332824707031"/>
-        <image name="Verification" width="40" height="40"/>
+        <image name="checkmark.seal.fill" catalog="system" width="128" height="124"/>
+        <image name="document.fill" catalog="system" width="115" height="128"/>
         <image name="exclamationmark.shield.fill" catalog="system" width="121" height="128"/>
         <image name="house.fill" catalog="system" width="128" height="104"/>
         <image name="person.fill" catalog="system" width="128" height="120"/>

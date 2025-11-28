@@ -22,6 +22,7 @@
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="donor" translatesAutoresizingMaskIntoConstraints="NO" id="PxZ-wb-lZa">
                                         <rect key="frame" x="40" y="25" width="50" height="50"/>
+                                        <gestureRecognizers/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="50" id="Ofq-Sk-9An"/>
                                             <constraint firstAttribute="height" constant="50" id="WdN-Tz-Z5N"/>
@@ -35,6 +36,7 @@
                                     </label>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="130" id="0XW-NR-rsk"/>
                                     <constraint firstItem="UhS-DP-2jh" firstAttribute="centerX" secondItem="Dzu-So-3qd" secondAttribute="centerX" id="4f8-H9-IhP"/>
@@ -115,10 +117,14 @@
                                     <fontDescription key="titleFontDescription" type="system" pointSize="18"/>
                                     <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </buttonConfiguration>
+                                <connections>
+                                    <action selector="nextPressed:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="oXe-cc-Fda"/>
+                                </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="Dzu-So-3qd" firstAttribute="centerX" secondItem="5EZ-qb-Rvc" secondAttribute="centerX" id="74E-6p-7HS"/>
                             <constraint firstItem="Dzu-So-3qd" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="108" id="F3r-d8-83M"/>
@@ -131,6 +137,12 @@
                             <constraint firstItem="YD1-lF-exH" firstAttribute="leading" secondItem="5EZ-qb-Rvc" secondAttribute="leadingMargin" id="vut-Pg-GT2"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="adminView" destination="0mm-bP-qrz" id="mM0-3k-B0O"/>
+                        <outlet property="donorView" destination="Dzu-So-3qd" id="R3J-ze-oBf"/>
+                        <outlet property="nextButton" destination="YD1-lF-exH" id="65l-Qm-ehe"/>
+                        <outlet property="ngoView" destination="bnf-q6-nzu" id="GiN-4h-KG4"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -151,7 +163,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Quickly create your account as a donor" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="z7l-Vb-Ftu">
-                                <rect key="frame" x="24" y="206" width="345" height="54"/>
+                                <rect key="frame" x="24" y="206" width="345" height="60.333333333333314"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <color key="textColor" red="0.2627450980392157" green="0.2627450980392157" blue="0.2627450980392157" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
@@ -256,7 +268,7 @@ and Privacy policy.</string>
                                 <color key="textColor" red="0.2627450980392157" green="0.2627450980392157" blue="0.2627450980392157" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hPY-Gh-R0Z">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hPY-Gh-R0Z">
                                 <rect key="frame" x="16" y="132" width="24" height="24"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="24" id="WcZ-Ck-Fvq"/>
@@ -280,7 +292,6 @@ and Privacy policy.</string>
                             <constraint firstItem="fLx-cJ-9Qz" firstAttribute="leading" secondItem="DHT-iH-htf" secondAttribute="leading" constant="20" id="3uC-FZ-h4o"/>
                             <constraint firstItem="aAz-4S-bh7" firstAttribute="trailing" secondItem="Fas-Lg-WnM" secondAttribute="trailing" id="4fU-so-6qF"/>
                             <constraint firstItem="Fas-Lg-WnM" firstAttribute="top" secondItem="hbE-Xu-hmb" secondAttribute="top" constant="350" id="6FX-Bm-MdF"/>
-                            <constraint firstItem="hPY-Gh-R0Z" firstAttribute="top" secondItem="DHT-iH-htf" secondAttribute="top" constant="16" id="8ft-dW-VVK"/>
                             <constraint firstItem="487-C1-7xX" firstAttribute="top" secondItem="Fas-Lg-WnM" secondAttribute="bottom" constant="82" id="9LM-hc-Fh4"/>
                             <constraint firstItem="DHT-iH-htf" firstAttribute="trailing" secondItem="wPz-In-OEV" secondAttribute="trailing" constant="20" id="A0m-6y-U2D"/>
                             <constraint firstItem="DHT-iH-htf" firstAttribute="trailing" secondItem="Cx6-kP-Ov6" secondAttribute="trailing" constant="20" id="DVs-U6-2uc"/>
@@ -296,7 +307,6 @@ and Privacy policy.</string>
                             <constraint firstItem="Fas-Lg-WnM" firstAttribute="leading" secondItem="487-C1-7xX" secondAttribute="leading" id="Yge-rB-wcO"/>
                             <constraint firstItem="Cx6-kP-Ov6" firstAttribute="leading" secondItem="DHT-iH-htf" secondAttribute="leading" constant="20" id="bxZ-7W-GL2"/>
                             <constraint firstItem="wPz-In-OEV" firstAttribute="leading" secondItem="fLx-cJ-9Qz" secondAttribute="trailing" constant="8" id="ctB-C3-8xe"/>
-                            <constraint firstItem="Xyi-Gp-LoH" firstAttribute="top" secondItem="z7l-Vb-Ftu" secondAttribute="bottom" constant="24" id="cvF-yE-zex"/>
                             <constraint firstItem="aAz-4S-bh7" firstAttribute="leading" secondItem="Fas-Lg-WnM" secondAttribute="leading" id="egL-by-B0u"/>
                             <constraint firstItem="fLx-cJ-9Qz" firstAttribute="top" secondItem="487-C1-7xX" secondAttribute="bottom" constant="20" id="im5-gK-t8J"/>
                             <constraint firstItem="DHT-iH-htf" firstAttribute="trailing" secondItem="hPY-Gh-R0Z" secondAttribute="trailing" constant="353" id="izY-Na-Da0"/>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Y6W-OH-hqX">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
@@ -59,11 +59,11 @@
                                     <constraint firstItem="o6e-FV-lGi" firstAttribute="centerX" secondItem="OgP-21-6H8" secondAttribute="centerX" id="zJT-o2-UlV"/>
                                 </constraints>
                             </view>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rNr-jg-f5q">
-                                <rect key="frame" x="0.0" y="178" width="393" height="800"/>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rNr-jg-f5q">
+                                <rect key="frame" x="0.0" y="178" width="393" height="606"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5Y2-D1-xOm" userLabel="Content View">
-                                        <rect key="frame" x="0.0" y="0.0" width="393" height="340"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="767.33333333333337"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Adv" translatesAutoresizingMaskIntoConstraints="NO" id="4K4-nA-xXB">
                                                 <rect key="frame" x="0.0" y="0.0" width="393" height="340"/>
@@ -72,20 +72,23 @@
                                                 </constraints>
                                             </imageView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="About" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZLx-ih-ho8">
-                                                <rect key="frame" x="20" y="360" width="353" height="24"/>
+                                                <rect key="frame" x="16" y="364" width="361" height="24"/>
                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hjY-cl-1ga">
-                                                <rect key="frame" x="20" y="403.99999999999994" width="353" height="229.33333333333331"/>
+                                                <rect key="frame" x="16" y="407.99999999999994" width="361" height="229.33333333333331"/>
                                                 <string key="text">Gaza needs more than temporary aid. It needs justice, protection, and a voice the world cannot ignore. Families endure hardship every day, and relief alone cannot heal the wounds of displacement and destruction. Your donation strengthens advocacy that demands accountability, opens humanitarian access, amplifies Palestinian voices, and supports legal and media efforts that challenge injustice. Together, we can rise beyond short-term aid and work toward a future built on dignity, peace, and human rights for every Palestinian.</string>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xii-nz-ExJ">
-                                                <rect key="frame" x="16" y="653.33333333333337" width="361" height="38.333333333333371"/>
+                                                <rect key="frame" x="16" y="677.33333333333337" width="361" height="50"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="50" id="E2m-Cn-3JY"/>
+                                                </constraints>
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="filled" title="Donate Now">
                                                     <color key="baseForegroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -95,25 +98,27 @@
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
+                                            <constraint firstItem="xii-nz-ExJ" firstAttribute="top" secondItem="hjY-cl-1ga" secondAttribute="bottom" constant="40" id="37A-Kf-Muy"/>
                                             <constraint firstItem="4K4-nA-xXB" firstAttribute="leading" secondItem="5Y2-D1-xOm" secondAttribute="leading" id="3Qq-CW-aPM"/>
-                                            <constraint firstItem="ZLx-ih-ho8" firstAttribute="top" secondItem="4K4-nA-xXB" secondAttribute="bottom" constant="20" id="58R-XP-25F"/>
-                                            <constraint firstItem="xii-nz-ExJ" firstAttribute="top" secondItem="hjY-cl-1ga" secondAttribute="bottom" constant="20" id="8Qa-0x-EG0"/>
-                                            <constraint firstItem="hjY-cl-1ga" firstAttribute="top" secondItem="ZLx-ih-ho8" secondAttribute="bottom" constant="20" id="HTJ-nR-6Bw"/>
-                                            <constraint firstAttribute="trailing" secondItem="ZLx-ih-ho8" secondAttribute="trailing" constant="20" id="Kpm-Wr-MPd"/>
+                                            <constraint firstItem="xii-nz-ExJ" firstAttribute="top" secondItem="5Y2-D1-xOm" secondAttribute="top" constant="250" id="50n-vj-wi0"/>
+                                            <constraint firstItem="ZLx-ih-ho8" firstAttribute="top" secondItem="4K4-nA-xXB" secondAttribute="bottom" constant="24" id="58R-XP-25F"/>
+                                            <constraint firstAttribute="trailing" secondItem="hjY-cl-1ga" secondAttribute="trailing" constant="16" id="605-he-cdH"/>
+                                            <constraint firstAttribute="bottom" secondItem="xii-nz-ExJ" secondAttribute="bottom" constant="40" id="7E2-bd-IGf"/>
+                                            <constraint firstItem="ZLx-ih-ho8" firstAttribute="leading" secondItem="5Y2-D1-xOm" secondAttribute="leading" constant="16" id="FEs-gS-eXK"/>
                                             <constraint firstAttribute="bottom" secondItem="4K4-nA-xXB" secondAttribute="bottom" id="MGU-Pu-BTG"/>
-                                            <constraint firstItem="ZLx-ih-ho8" firstAttribute="leading" secondItem="5Y2-D1-xOm" secondAttribute="leading" constant="20" id="MNB-cl-l07"/>
                                             <constraint firstAttribute="trailing" secondItem="xii-nz-ExJ" secondAttribute="trailing" constant="16" id="MlM-Tr-2ds"/>
                                             <constraint firstItem="4K4-nA-xXB" firstAttribute="top" secondItem="5Y2-D1-xOm" secondAttribute="top" id="OeF-jD-Cbu"/>
-                                            <constraint firstAttribute="trailing" secondItem="hjY-cl-1ga" secondAttribute="trailing" constant="20" id="QjY-x1-Luw"/>
+                                            <constraint firstItem="hjY-cl-1ga" firstAttribute="top" secondItem="ZLx-ih-ho8" secondAttribute="bottom" constant="20" id="Otx-Lc-Gp4"/>
+                                            <constraint firstAttribute="trailing" secondItem="ZLx-ih-ho8" secondAttribute="trailing" constant="16" id="RpR-e1-Mpj"/>
                                             <constraint firstAttribute="trailing" secondItem="4K4-nA-xXB" secondAttribute="trailing" id="Yon-iG-ulp"/>
                                             <constraint firstItem="xii-nz-ExJ" firstAttribute="leading" secondItem="5Y2-D1-xOm" secondAttribute="leading" constant="16" id="fbs-td-lUC"/>
-                                            <constraint firstItem="hjY-cl-1ga" firstAttribute="leading" secondItem="5Y2-D1-xOm" secondAttribute="leading" constant="20" id="xfM-gj-kCj"/>
+                                            <constraint firstItem="hjY-cl-1ga" firstAttribute="leading" secondItem="5Y2-D1-xOm" secondAttribute="leading" constant="16" id="ixA-tZ-XfX"/>
                                         </constraints>
                                     </view>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="5Y2-D1-xOm" firstAttribute="top" secondItem="rNr-jg-f5q" secondAttribute="top" id="2Uk-Gs-l7H"/>
-                                    <constraint firstAttribute="bottom" secondItem="5Y2-D1-xOm" secondAttribute="bottom" constant="40" id="2qV-yL-CgT"/>
+                                    <constraint firstAttribute="bottom" secondItem="5Y2-D1-xOm" secondAttribute="bottom" id="2qV-yL-CgT"/>
                                     <constraint firstItem="5Y2-D1-xOm" firstAttribute="leading" secondItem="rNr-jg-f5q" secondAttribute="leading" id="Qgi-Ot-iDo"/>
                                     <constraint firstItem="5Y2-D1-xOm" firstAttribute="width" secondItem="rNr-jg-f5q" secondAttribute="width" id="kiJ-f9-R1k"/>
                                     <constraint firstAttribute="trailing" secondItem="5Y2-D1-xOm" secondAttribute="trailing" id="tqH-yc-bNv"/>
@@ -137,7 +142,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-408" y="18"/>
+            <point key="canvasLocation" x="-1576" y="5"/>
         </scene>
     </scenes>
     <resources>

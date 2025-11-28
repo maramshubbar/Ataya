@@ -16,8 +16,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OgP-21-6H8" userLabel="Header View">
-                                <rect key="frame" x="16" y="118" width="361" height="60"/>
+                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OgP-21-6H8" userLabel="Header View">
+                                <rect key="frame" x="16" y="65" width="361" height="60"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GJb-mU-JH5">
                                         <rect key="frame" x="16" y="18" width="24" height="24"/>
@@ -59,33 +59,33 @@
                                     <constraint firstItem="o6e-FV-lGi" firstAttribute="centerX" secondItem="OgP-21-6H8" secondAttribute="centerX" id="zJT-o2-UlV"/>
                                 </constraints>
                             </view>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rNr-jg-f5q">
-                                <rect key="frame" x="0.0" y="178" width="393" height="606"/>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rNr-jg-f5q">
+                                <rect key="frame" x="0.0" y="125" width="393" height="684"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5Y2-D1-xOm" userLabel="Content View">
-                                        <rect key="frame" x="0.0" y="0.0" width="393" height="767.33333333333337"/>
+                                    <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5Y2-D1-xOm" userLabel="Content View">
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="719"/>
                                         <subviews>
-                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Adv" translatesAutoresizingMaskIntoConstraints="NO" id="4K4-nA-xXB">
-                                                <rect key="frame" x="0.0" y="0.0" width="393" height="340"/>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="Adv" translatesAutoresizingMaskIntoConstraints="NO" id="4K4-nA-xXB">
+                                                <rect key="frame" x="0.0" y="11" width="393" height="244"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="340" id="2Fn-MU-yUz"/>
                                                 </constraints>
                                             </imageView>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="About" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZLx-ih-ho8">
-                                                <rect key="frame" x="16" y="364" width="361" height="24"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="About" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZLx-ih-ho8">
+                                                <rect key="frame" x="16" y="270" width="361" height="27"/>
                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hjY-cl-1ga">
-                                                <rect key="frame" x="16" y="407.99999999999994" width="361" height="229.33333333333331"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" misplaced="YES" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hjY-cl-1ga">
+                                                <rect key="frame" x="16" y="305" width="361" height="248"/>
                                                 <string key="text">Gaza needs more than temporary aid. It needs justice, protection, and a voice the world cannot ignore. Families endure hardship every day, and relief alone cannot heal the wounds of displacement and destruction. Your donation strengthens advocacy that demands accountability, opens humanitarian access, amplifies Palestinian voices, and supports legal and media efforts that challenge injustice. Together, we can rise beyond short-term aid and work toward a future built on dignity, peace, and human rights for every Palestinian.</string>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xii-nz-ExJ">
-                                                <rect key="frame" x="16" y="677.33333333333337" width="361" height="50"/>
+                                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xii-nz-ExJ">
+                                                <rect key="frame" x="16" y="612.33333333333337" width="361" height="50"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="50" id="E2m-Cn-3JY"/>
                                                 </constraints>
@@ -98,21 +98,20 @@
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
-                                            <constraint firstItem="xii-nz-ExJ" firstAttribute="top" secondItem="hjY-cl-1ga" secondAttribute="bottom" constant="40" id="37A-Kf-Muy"/>
                                             <constraint firstItem="4K4-nA-xXB" firstAttribute="leading" secondItem="5Y2-D1-xOm" secondAttribute="leading" id="3Qq-CW-aPM"/>
-                                            <constraint firstItem="xii-nz-ExJ" firstAttribute="top" secondItem="5Y2-D1-xOm" secondAttribute="top" constant="250" id="50n-vj-wi0"/>
                                             <constraint firstItem="ZLx-ih-ho8" firstAttribute="top" secondItem="4K4-nA-xXB" secondAttribute="bottom" constant="24" id="58R-XP-25F"/>
-                                            <constraint firstAttribute="trailing" secondItem="hjY-cl-1ga" secondAttribute="trailing" constant="16" id="605-he-cdH"/>
-                                            <constraint firstAttribute="bottom" secondItem="xii-nz-ExJ" secondAttribute="bottom" constant="40" id="7E2-bd-IGf"/>
                                             <constraint firstItem="ZLx-ih-ho8" firstAttribute="leading" secondItem="5Y2-D1-xOm" secondAttribute="leading" constant="16" id="FEs-gS-eXK"/>
+                                            <constraint firstAttribute="trailing" secondItem="xii-nz-ExJ" secondAttribute="trailing" constant="16" id="Fd5-46-1qa"/>
                                             <constraint firstAttribute="bottom" secondItem="4K4-nA-xXB" secondAttribute="bottom" id="MGU-Pu-BTG"/>
-                                            <constraint firstAttribute="trailing" secondItem="xii-nz-ExJ" secondAttribute="trailing" constant="16" id="MlM-Tr-2ds"/>
+                                            <constraint firstItem="hjY-cl-1ga" firstAttribute="top" secondItem="ZLx-ih-ho8" secondAttribute="bottom" constant="20" id="Neo-dE-KaK"/>
                                             <constraint firstItem="4K4-nA-xXB" firstAttribute="top" secondItem="5Y2-D1-xOm" secondAttribute="top" id="OeF-jD-Cbu"/>
-                                            <constraint firstItem="hjY-cl-1ga" firstAttribute="top" secondItem="ZLx-ih-ho8" secondAttribute="bottom" constant="20" id="Otx-Lc-Gp4"/>
+                                            <constraint firstAttribute="bottom" secondItem="xii-nz-ExJ" secondAttribute="bottom" constant="24" id="Qb0-oA-V5b"/>
                                             <constraint firstAttribute="trailing" secondItem="ZLx-ih-ho8" secondAttribute="trailing" constant="16" id="RpR-e1-Mpj"/>
+                                            <constraint firstItem="xii-nz-ExJ" firstAttribute="top" secondItem="hjY-cl-1ga" secondAttribute="bottom" constant="16" id="WZ3-cV-HRU"/>
                                             <constraint firstAttribute="trailing" secondItem="4K4-nA-xXB" secondAttribute="trailing" id="Yon-iG-ulp"/>
-                                            <constraint firstItem="xii-nz-ExJ" firstAttribute="leading" secondItem="5Y2-D1-xOm" secondAttribute="leading" constant="16" id="fbs-td-lUC"/>
-                                            <constraint firstItem="hjY-cl-1ga" firstAttribute="leading" secondItem="5Y2-D1-xOm" secondAttribute="leading" constant="16" id="ixA-tZ-XfX"/>
+                                            <constraint firstItem="xii-nz-ExJ" firstAttribute="leading" secondItem="5Y2-D1-xOm" secondAttribute="leading" constant="16" id="ctj-UH-QvT"/>
+                                            <constraint firstAttribute="trailing" secondItem="hjY-cl-1ga" secondAttribute="trailing" constant="16" id="lmB-z8-y30"/>
+                                            <constraint firstItem="hjY-cl-1ga" firstAttribute="leading" secondItem="5Y2-D1-xOm" secondAttribute="leading" constant="16" id="tO1-SG-ecD"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -142,7 +141,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1576" y="5"/>
+            <point key="canvasLocation" x="-1576.3358778625955" y="4.9295774647887329"/>
         </scene>
     </scenes>
     <resources>

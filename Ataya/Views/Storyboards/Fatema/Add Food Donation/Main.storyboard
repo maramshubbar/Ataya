@@ -60,10 +60,10 @@
                                 </constraints>
                             </view>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rNr-jg-f5q">
-                                <rect key="frame" x="0.0" y="125" width="393" height="684"/>
+                                <rect key="frame" x="0.0" y="125" width="397" height="649"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5Y2-D1-xOm" userLabel="Content View">
-                                        <rect key="frame" x="0.0" y="0.0" width="393" height="719"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="670"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="Adv" translatesAutoresizingMaskIntoConstraints="NO" id="4K4-nA-xXB">
                                                 <rect key="frame" x="0.0" y="11" width="393" height="244"/>
@@ -78,20 +78,20 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" misplaced="YES" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hjY-cl-1ga">
-                                                <rect key="frame" x="16" y="305" width="361" height="248"/>
+                                                <rect key="frame" x="16" y="326" width="361" height="229.33333333333326"/>
                                                 <string key="text">Gaza needs more than temporary aid. It needs justice, protection, and a voice the world cannot ignore. Families endure hardship every day, and relief alone cannot heal the wounds of displacement and destruction. Your donation strengthens advocacy that demands accountability, opens humanitarian access, amplifies Palestinian voices, and supports legal and media efforts that challenge injustice. Together, we can rise beyond short-term aid and work toward a future built on dignity, peace, and human rights for every Palestinian.</string>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xii-nz-ExJ">
-                                                <rect key="frame" x="16" y="612.33333333333337" width="361" height="50"/>
+                                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2w2-DK-3aM">
+                                                <rect key="frame" x="17" y="599" width="361" height="50"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="50" id="E2m-Cn-3JY"/>
+                                                    <constraint firstAttribute="height" constant="50" id="cI5-Uu-uA1"/>
                                                 </constraints>
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="filled" title="Donate Now">
-                                                    <color key="baseForegroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <color key="baseBackgroundColor" red="0.96862745100000003" green="0.83137254900000002" blue="0.29803921570000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 </buttonConfiguration>
                                             </button>
@@ -101,16 +101,15 @@
                                             <constraint firstItem="4K4-nA-xXB" firstAttribute="leading" secondItem="5Y2-D1-xOm" secondAttribute="leading" id="3Qq-CW-aPM"/>
                                             <constraint firstItem="ZLx-ih-ho8" firstAttribute="top" secondItem="4K4-nA-xXB" secondAttribute="bottom" constant="24" id="58R-XP-25F"/>
                                             <constraint firstItem="ZLx-ih-ho8" firstAttribute="leading" secondItem="5Y2-D1-xOm" secondAttribute="leading" constant="16" id="FEs-gS-eXK"/>
-                                            <constraint firstAttribute="trailing" secondItem="xii-nz-ExJ" secondAttribute="trailing" constant="16" id="Fd5-46-1qa"/>
                                             <constraint firstAttribute="bottom" secondItem="4K4-nA-xXB" secondAttribute="bottom" id="MGU-Pu-BTG"/>
                                             <constraint firstItem="hjY-cl-1ga" firstAttribute="top" secondItem="ZLx-ih-ho8" secondAttribute="bottom" constant="20" id="Neo-dE-KaK"/>
                                             <constraint firstItem="4K4-nA-xXB" firstAttribute="top" secondItem="5Y2-D1-xOm" secondAttribute="top" id="OeF-jD-Cbu"/>
-                                            <constraint firstAttribute="bottom" secondItem="xii-nz-ExJ" secondAttribute="bottom" constant="24" id="Qb0-oA-V5b"/>
                                             <constraint firstAttribute="trailing" secondItem="ZLx-ih-ho8" secondAttribute="trailing" constant="16" id="RpR-e1-Mpj"/>
-                                            <constraint firstItem="xii-nz-ExJ" firstAttribute="top" secondItem="hjY-cl-1ga" secondAttribute="bottom" constant="16" id="WZ3-cV-HRU"/>
                                             <constraint firstAttribute="trailing" secondItem="4K4-nA-xXB" secondAttribute="trailing" id="Yon-iG-ulp"/>
-                                            <constraint firstItem="xii-nz-ExJ" firstAttribute="leading" secondItem="5Y2-D1-xOm" secondAttribute="leading" constant="16" id="ctj-UH-QvT"/>
+                                            <constraint firstItem="2w2-DK-3aM" firstAttribute="leading" secondItem="5Y2-D1-xOm" secondAttribute="leading" constant="16" id="can-EH-Leb"/>
+                                            <constraint firstAttribute="bottom" secondItem="2w2-DK-3aM" secondAttribute="bottom" constant="-310" id="fjo-d6-5gh"/>
                                             <constraint firstAttribute="trailing" secondItem="hjY-cl-1ga" secondAttribute="trailing" constant="16" id="lmB-z8-y30"/>
+                                            <constraint firstAttribute="trailing" secondItem="2w2-DK-3aM" secondAttribute="trailing" constant="16" id="rnp-Ej-4QM"/>
                                             <constraint firstItem="hjY-cl-1ga" firstAttribute="leading" secondItem="5Y2-D1-xOm" secondAttribute="leading" constant="16" id="tO1-SG-ecD"/>
                                         </constraints>
                                     </view>

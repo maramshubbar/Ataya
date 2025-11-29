@@ -293,8 +293,74 @@
             </objects>
             <point key="canvasLocation" x="900.00000000000011" y="-5.02092050209205"/>
         </scene>
+        <!--Success-->
+        <scene sceneID="4iv-0F-64l">
+            <objects>
+                <viewController title="Success" id="VPH-yO-3PP" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="G7s-Ht-jLX">
+                        <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CKK-fh-X0J">
+                                <rect key="frame" x="35" y="306" width="370" height="400"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Group 6478" translatesAutoresizingMaskIntoConstraints="NO" id="SGU-zS-I3X">
+                                        <rect key="frame" x="125" y="50" width="120" height="120"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="120" id="iSa-TR-rlf"/>
+                                            <constraint firstAttribute="width" constant="120" id="yTy-oq-IM5"/>
+                                        </constraints>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your Donation has been scheduled successfully!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HC1-TO-KZP">
+                                        <rect key="frame" x="32" y="220" width="306" height="40.666666666666686"/>
+                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uF0-CN-djC">
+                                        <rect key="frame" x="32" y="316" width="306" height="44"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="44" id="AKf-Sv-WBq"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Back to Home">
+                                            <backgroundConfiguration key="background">
+                                                <color key="backgroundColor" name="AccentColor"/>
+                                            </backgroundConfiguration>
+                                            <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </buttonConfiguration>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="SGU-zS-I3X" firstAttribute="top" secondItem="CKK-fh-X0J" secondAttribute="top" constant="50" id="E4o-Ik-XbN"/>
+                                    <constraint firstAttribute="trailing" secondItem="HC1-TO-KZP" secondAttribute="trailing" constant="32" id="IMd-jj-Q32"/>
+                                    <constraint firstAttribute="trailing" secondItem="uF0-CN-djC" secondAttribute="trailing" constant="32" id="Jn7-hz-VCU"/>
+                                    <constraint firstItem="HC1-TO-KZP" firstAttribute="top" secondItem="CKK-fh-X0J" secondAttribute="top" constant="220" id="OTl-1m-LP0"/>
+                                    <constraint firstAttribute="width" constant="370" id="QSE-pP-GR3"/>
+                                    <constraint firstAttribute="bottom" secondItem="uF0-CN-djC" secondAttribute="bottom" constant="40" id="Sdd-mW-BiM"/>
+                                    <constraint firstItem="HC1-TO-KZP" firstAttribute="leading" secondItem="CKK-fh-X0J" secondAttribute="leading" constant="32" id="aDc-or-5Zw"/>
+                                    <constraint firstItem="SGU-zS-I3X" firstAttribute="centerX" secondItem="CKK-fh-X0J" secondAttribute="centerX" id="cRb-yx-c1J"/>
+                                    <constraint firstItem="uF0-CN-djC" firstAttribute="leading" secondItem="CKK-fh-X0J" secondAttribute="leading" constant="32" id="clK-Pc-WeA"/>
+                                    <constraint firstAttribute="height" constant="400" id="hGN-tN-LTa"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="CH3-gr-AAU"/>
+                        <color key="backgroundColor" white="0.66666666666666663" alpha="0.51063368055555558" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="CKK-fh-X0J" firstAttribute="centerY" secondItem="CH3-gr-AAU" secondAttribute="centerY" id="LcV-OR-3BY"/>
+                            <constraint firstItem="CKK-fh-X0J" firstAttribute="centerX" secondItem="CH3-gr-AAU" secondAttribute="centerX" id="pT4-bM-lwK"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Usp-Yr-ppF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1597" y="-5"/>
+        </scene>
     </scenes>
     <resources>
+        <image name="Group 6478" width="124" height="124"/>
         <image name="chevron.backward" catalog="system" width="97" height="128"/>
         <image name="chevron.down" catalog="system" width="128" height="70"/>
         <namedColor name="AccentColor">

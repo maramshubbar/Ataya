@@ -824,41 +824,72 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9AV-UM-1TY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-911" y="718"/>
+            <point key="canvasLocation" x="-975" y="718"/>
         </scene>
         <!--Report Management View Controller-->
         <scene sceneID="d93-AW-d4T">
             <objects>
-                <viewController id="LDd-fC-Gdu" customClass="ReportManagementViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ReportVC" id="LDd-fC-Gdu" customClass="ReportManagementViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="hoq-Lq-zxG">
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Report Management" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a1V-FB-W13">
-                                <rect key="frame" x="139" y="164" width="193" height="24"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Report Management" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a1V-FB-W13">
+                                <rect key="frame" x="123.66666666666669" y="164" width="193" height="24"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <searchBar contentMode="redraw" fixedFrame="YES" placeholder="Search" translatesAutoresizingMaskIntoConstraints="NO" id="KW3-xT-o7E">
-                                <rect key="frame" x="0.0" y="219" width="440" height="44"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <searchBar contentMode="redraw" text="" placeholder="Search" translatesAutoresizingMaskIntoConstraints="NO" id="KW3-xT-o7E">
+                                <rect key="frame" x="18" y="198" width="410" height="56"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="410" id="7gD-lx-8lG"/>
+                                </constraints>
                                 <textInputTraits key="textInputTraits"/>
                                 <connections>
                                     <outlet property="delegate" destination="LDd-fC-Gdu" id="DCR-gd-hHD"/>
                                 </connections>
                             </searchBar>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="YML-Wx-nKl">
+                                <rect key="frame" x="20" y="264" width="400" height="32"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="400" id="8et-5K-fjd"/>
+                                </constraints>
+                                <segments>
+                                    <segment title="All"/>
+                                    <segment title="Donation"/>
+                                    <segment title="Accounts"/>
+                                    <segment title="Resolved"/>
+                                </segments>
+                            </segmentedControl>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="VLs-E3-eML">
+                                <rect key="frame" x="0.0" y="311" width="440" height="577"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="2dH-nE-DY7"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="YML-Wx-nKl" firstAttribute="leading" secondItem="2dH-nE-DY7" secondAttribute="leading" constant="20" id="1UH-Mu-S5D"/>
                             <constraint firstItem="a1V-FB-W13" firstAttribute="top" secondItem="2dH-nE-DY7" secondAttribute="top" constant="40" id="Iy5-wF-VDU"/>
+                            <constraint firstItem="KW3-xT-o7E" firstAttribute="top" secondItem="a1V-FB-W13" secondAttribute="bottom" constant="10" id="LVA-62-mFJ"/>
+                            <constraint firstItem="a1V-FB-W13" firstAttribute="centerX" secondItem="2dH-nE-DY7" secondAttribute="centerX" id="NuG-oX-AXQ"/>
+                            <constraint firstItem="YML-Wx-nKl" firstAttribute="top" secondItem="KW3-xT-o7E" secondAttribute="bottom" constant="10" id="VWq-RG-RVi"/>
+                            <constraint firstItem="VLs-E3-eML" firstAttribute="top" secondItem="YML-Wx-nKl" secondAttribute="bottom" constant="16" id="aSA-Y0-QDz"/>
+                            <constraint firstItem="VLs-E3-eML" firstAttribute="leading" secondItem="2dH-nE-DY7" secondAttribute="leading" id="alZ-FE-I7c"/>
+                            <constraint firstItem="2dH-nE-DY7" firstAttribute="bottom" secondItem="VLs-E3-eML" secondAttribute="bottom" id="bdh-jj-3r0"/>
+                            <constraint firstItem="KW3-xT-o7E" firstAttribute="leading" secondItem="2dH-nE-DY7" secondAttribute="leading" constant="18" id="h2t-uG-Xs5"/>
+                            <constraint firstItem="2dH-nE-DY7" firstAttribute="trailing" secondItem="VLs-E3-eML" secondAttribute="trailing" id="lzR-EK-OEg"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="filterSegment" destination="YML-Wx-nKl" id="f64-nC-z6K"/>
+                        <outlet property="searchBar" destination="KW3-xT-o7E" id="bJU-Cv-WdI"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7YQ-YL-AEX" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-241" y="718"/>
+            <point key="canvasLocation" x="-281" y="718"/>
         </scene>
     </scenes>
     <resources>

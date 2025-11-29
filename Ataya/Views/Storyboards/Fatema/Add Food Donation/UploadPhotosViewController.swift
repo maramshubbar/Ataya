@@ -8,31 +8,33 @@
 import UIKit
 
 class UploadPhotosViewController: UIViewController {
-
     @IBOutlet weak var uploadCardView: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Required so the card is visible
+                uploadCardView.backgroundColor = .white
+                uploadCardView.layer.cornerRadius = 12
+                uploadCardView.clipsToBounds = true
+        }
 
-        // Do any additional setup after loading the view.
-    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        uploadCardView.layoutIfNeeded()
-        
-        // Remove previous dashed layer so it doesn't duplicate
+        // Remove old dashed border
         uploadCardView.layer.sublayers?.removeAll(where: { $0.name == "dashedBorder" })
-        
+
         let dashed = CAShapeLayer()
         dashed.name = "dashedBorder"
-        dashed.path = UIBezierPath(roundedRect: uploadCardView.bounds, cornerRadius: 12).cgPath
+        dashed.path = UIBezierPath(
+            roundedRect: uploadCardView.bounds,
+            cornerRadius: 12
+        ).cgPath
         dashed.strokeColor = UIColor.systemGray3.cgColor
+        dashed.fillColor = UIColor.clear.cgColor   // <— IMPORTANT
         dashed.lineWidth = 1
         dashed.lineDashPattern = [6, 4]
-        dashed.fillColor = UIColor.clear.cgColor
-        
+
         uploadCardView.layer.addSublayer(dashed)
     }
 

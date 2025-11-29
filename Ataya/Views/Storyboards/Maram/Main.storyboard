@@ -826,10 +826,10 @@
             </objects>
             <point key="canvasLocation" x="-911" y="718"/>
         </scene>
-        <!--View Controller-->
+        <!--Report Management View Controller-->
         <scene sceneID="d93-AW-d4T">
             <objects>
-                <viewController id="LDd-fC-Gdu" sceneMemberID="viewController">
+                <viewController id="LDd-fC-Gdu" customClass="ReportManagementViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="hoq-Lq-zxG">
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -840,6 +840,14 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <searchBar contentMode="redraw" fixedFrame="YES" placeholder="Search" translatesAutoresizingMaskIntoConstraints="NO" id="KW3-xT-o7E">
+                                <rect key="frame" x="0.0" y="219" width="440" height="44"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="LDd-fC-Gdu" id="DCR-gd-hHD"/>
+                                </connections>
+                            </searchBar>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="2dH-nE-DY7"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -850,7 +858,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7YQ-YL-AEX" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-225.00000000000003" y="717.9916317991632"/>
+            <point key="canvasLocation" x="-241" y="718"/>
         </scene>
     </scenes>
     <resources>

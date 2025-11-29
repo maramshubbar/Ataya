@@ -8,13 +8,27 @@
 import UIKit
 
 class ReportManagementViewController: UIViewController {
+
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         customizeSearchBar()
         
         filterSegment.addTarget(self, action: #selector(filterChanged(_:)), for: .valueChanged)
+        
+        
+        // Register the ReportCell XIB
+            let nib = UINib(nibName: "ReportCell", bundle: nil)
+            tableView.register(nib, forCellReuseIdentifier: "ReportCell")
+            
+            // Set data source + delegate
+            tableView.dataSource = self
+            tableView.delegate = self
 
+            tableView.rowHeight = UITableView.automaticDimension
+            tableView.estimatedRowHeight = 180
+        
     
     }
     func customizeSearchBar() {
@@ -62,6 +76,9 @@ class ReportManagementViewController: UIViewController {
             break
         }
     }
+    
+    @IBOutlet weak var tableView: UITableView!
+
 
     
     @IBOutlet weak var searchBar: UISearchBar!
@@ -80,5 +97,33 @@ extension UIColor {
 
         self.init(red: r, green: g, blue: b, alpha: 1)
     }
+    
+    
 }
 
+
+
+extension ReportManagementViewController: UITableViewDataSource, UITableViewDelegate {
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 1 // temporary for testing
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "ReportCell", for: indexPath) as? ReportCell else {
+            return UITableViewCell()
+        }
+        
+        // TEMP TEST DATA
+        cell.titleLabel.text = "Damaged Food Donation"
+        cell.locationLabel.text = "Cairo, Egypt"
+        cell.personLabel.text = "Ahmed Saleh (ID: D-55)"
+        cell.ngoLabel.text = "KindWave (ID: N-06)"
+        cell.dateLabel.text = "Nov 5 2025"
+        cell.statusLabel.text = "Pending"
+        cell.statusBadgeView.backgroundColor = .systemYellow
+        
+        return cell
+    }
+}

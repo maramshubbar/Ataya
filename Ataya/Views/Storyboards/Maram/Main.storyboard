@@ -841,7 +841,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <searchBar contentMode="redraw" text="" placeholder="Search" translatesAutoresizingMaskIntoConstraints="NO" id="KW3-xT-o7E">
-                                <rect key="frame" x="18" y="198" width="410" height="56"/>
+                                <rect key="frame" x="10" y="198" width="410" height="56"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="410" id="7gD-lx-8lG"/>
                                 </constraints>
@@ -850,8 +850,12 @@
                                     <outlet property="delegate" destination="LDd-fC-Gdu" id="DCR-gd-hHD"/>
                                 </connections>
                             </searchBar>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="mXm-8O-dra">
+                                <rect key="frame" x="0.0" y="315" width="440" height="573"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="YML-Wx-nKl">
-                                <rect key="frame" x="20" y="264" width="400" height="32"/>
+                                <rect key="frame" x="15" y="264" width="400" height="32"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="400" id="8et-5K-fjd"/>
                                 </constraints>
@@ -862,24 +866,20 @@
                                     <segment title="Resolved"/>
                                 </segments>
                             </segmentedControl>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="VLs-E3-eML">
-                                <rect key="frame" x="0.0" y="311" width="440" height="577"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                            </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="2dH-nE-DY7"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="YML-Wx-nKl" firstAttribute="leading" secondItem="2dH-nE-DY7" secondAttribute="leading" constant="20" id="1UH-Mu-S5D"/>
-                            <constraint firstItem="a1V-FB-W13" firstAttribute="top" secondItem="2dH-nE-DY7" secondAttribute="top" constant="40" id="Iy5-wF-VDU"/>
-                            <constraint firstItem="KW3-xT-o7E" firstAttribute="top" secondItem="a1V-FB-W13" secondAttribute="bottom" constant="10" id="LVA-62-mFJ"/>
-                            <constraint firstItem="a1V-FB-W13" firstAttribute="centerX" secondItem="2dH-nE-DY7" secondAttribute="centerX" id="NuG-oX-AXQ"/>
-                            <constraint firstItem="YML-Wx-nKl" firstAttribute="top" secondItem="KW3-xT-o7E" secondAttribute="bottom" constant="10" id="VWq-RG-RVi"/>
-                            <constraint firstItem="VLs-E3-eML" firstAttribute="top" secondItem="YML-Wx-nKl" secondAttribute="bottom" constant="16" id="aSA-Y0-QDz"/>
-                            <constraint firstItem="VLs-E3-eML" firstAttribute="leading" secondItem="2dH-nE-DY7" secondAttribute="leading" id="alZ-FE-I7c"/>
-                            <constraint firstItem="2dH-nE-DY7" firstAttribute="bottom" secondItem="VLs-E3-eML" secondAttribute="bottom" id="bdh-jj-3r0"/>
-                            <constraint firstItem="KW3-xT-o7E" firstAttribute="leading" secondItem="2dH-nE-DY7" secondAttribute="leading" constant="18" id="h2t-uG-Xs5"/>
-                            <constraint firstItem="2dH-nE-DY7" firstAttribute="trailing" secondItem="VLs-E3-eML" secondAttribute="trailing" id="lzR-EK-OEg"/>
+                            <constraint firstItem="mXm-8O-dra" firstAttribute="leading" secondItem="2dH-nE-DY7" secondAttribute="leading" id="5Vt-nI-HPW"/>
+                            <constraint firstItem="KW3-xT-o7E" firstAttribute="top" secondItem="a1V-FB-W13" secondAttribute="bottom" constant="10" id="Cg4-Oz-M56"/>
+                            <constraint firstItem="YML-Wx-nKl" firstAttribute="leading" secondItem="2dH-nE-DY7" secondAttribute="leading" constant="15" id="Mmy-A0-PfQ"/>
+                            <constraint firstItem="2dH-nE-DY7" firstAttribute="bottom" secondItem="mXm-8O-dra" secondAttribute="bottom" id="Vf6-Qc-hXx"/>
+                            <constraint firstItem="a1V-FB-W13" firstAttribute="top" secondItem="2dH-nE-DY7" secondAttribute="top" constant="40" id="Y10-kl-AdO"/>
+                            <constraint firstItem="KW3-xT-o7E" firstAttribute="leading" secondItem="2dH-nE-DY7" secondAttribute="leading" constant="10" id="Zbv-rX-bxV"/>
+                            <constraint firstItem="mXm-8O-dra" firstAttribute="top" secondItem="YML-Wx-nKl" secondAttribute="bottom" constant="20" id="ezp-3t-vfs"/>
+                            <constraint firstItem="a1V-FB-W13" firstAttribute="centerX" secondItem="2dH-nE-DY7" secondAttribute="centerX" id="fxa-sB-P8W"/>
+                            <constraint firstItem="YML-Wx-nKl" firstAttribute="top" secondItem="KW3-xT-o7E" secondAttribute="bottom" constant="10" id="mHp-VD-QGM"/>
+                            <constraint firstItem="2dH-nE-DY7" firstAttribute="trailing" secondItem="mXm-8O-dra" secondAttribute="trailing" id="t0s-bm-ftx"/>
                         </constraints>
                     </view>
                     <connections>
@@ -889,7 +889,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7YQ-YL-AEX" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-281" y="718"/>
+            <point key="canvasLocation" x="-282.27272727272731" y="717.9916317991632"/>
         </scene>
     </scenes>
     <resources>

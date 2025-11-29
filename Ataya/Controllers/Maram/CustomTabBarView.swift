@@ -161,6 +161,7 @@ class CustomTabBarView: UIView {
     
     
     @objc func homeTapped() {
+        
         delegate?.didSelectTab(.home)
     }
 

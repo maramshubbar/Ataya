@@ -8,16 +8,15 @@
 import UIKit
 
 class AdminProfileViewController: UIViewController {
-    
+    var customTabBar: CustomTabBarView!
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
         
         nameLabel.text = "Abdulla Yusuf"
-        
-        
-        
+        setupTabBar()
+        customTabBar.setSelected(tab: .home)
         
     }
     
@@ -88,6 +87,40 @@ class AdminProfileViewController: UIViewController {
          */
         
     }
+    func setupTabBar() {
+        let tabBar = CustomTabBarView.loadFromNib()
+        view.addSubview(tabBar)
+        tabBar.translatesAutoresizingMaskIntoConstraints = false
+        tabBar.delegate = self
+
+        NSLayoutConstraint.activate([
+            tabBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tabBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tabBar.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            tabBar.heightAnchor.constraint(equalToConstant: 110)
+        ])
+
+        tabBar.setSelected(tab: .profile)
+    }
         
     
 }
+
+
+extension AdminProfileViewController: CustomTabBarView.CustomTabBarDelegate {
+    func didSelectTab(_ tab: CustomTabBarView.TabType) {
+        switch tab {
+        case .home:
+            if let homeVC = storyboard?.instantiateViewController(withIdentifier: "AdminDashboardViewController") as? AdminDashboardViewController {
+                
+                homeVC.modalPresentationStyle = .fullScreen
+                present(homeVC, animated: false)
+            }
+        case .profile:
+            print("Already on Profile")
+        default:
+            print("Screen not created yet")
+        }
+    }
+}
+

@@ -39,19 +39,38 @@ class UserSelectionViewController: UIViewController {
         let adminTap = UITapGestureRecognizer(target: self, action: #selector(adminTapped))
         adminView.addGestureRecognizer(adminTap)
 
-        
     }
+    
+    @IBAction func nextPressed(_ sender: UIButton) {
+        guard let selectedUser = selectedUser else {
+
+            let alert = UIAlertController(
+                title: "Select a User",
+                message: "Please choose Donor, NGO, or Admin",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+            return
+        }
+
+        print("Selected user: \(selectedUser)")
+    }
+    
     
     func resetCardBorders() {
         let cards = [donorView, ngoView, adminView]
         for card in cards {
             card?.layer.borderColor = UIColor.lightGray.cgColor
+            card?.backgroundColor = .white
         }
     }
 
     func highlight(card: UIView) {
-        card.layer.borderColor = UIColor.systemYellow.cgColor
+        card.layer.borderColor = UIColor(red: 1.0, green: 0.984, blue: 0.906, alpha: 1.0).cgColor
+        card.backgroundColor = UIColor(red: 1.0, green: 0.984, blue: 0.906, alpha: 1.0)
     }
+
     
     @objc func donorTapped() {
         selectedUser = "Donor"

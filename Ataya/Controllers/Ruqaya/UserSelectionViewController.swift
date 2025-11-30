@@ -15,6 +15,8 @@ class UserSelectionViewController: UIViewController {
     
     @IBOutlet weak var adminView: UIView!
     
+    @IBOutlet weak var nextButton: UIButton!
+    
     var selectedUser: String?
     
     override func viewDidLoad() {
@@ -28,7 +30,51 @@ class UserSelectionViewController: UIViewController {
             card?.layer.borderColor = UIColor.lightGray.cgColor
             card?.layer.masksToBounds = true
         }
+        let donorTap = UITapGestureRecognizer(target: self, action: #selector(donorTapped))
+        donorView.addGestureRecognizer(donorTap)
+
+        let ngoTap = UITapGestureRecognizer(target: self, action: #selector(ngoTapped))
+        ngoView.addGestureRecognizer(ngoTap)
+
+        let adminTap = UITapGestureRecognizer(target: self, action: #selector(adminTapped))
+        adminView.addGestureRecognizer(adminTap)
+
+        
     }
+    
+    func resetCardBorders() {
+        let cards = [donorView, ngoView, adminView]
+        for card in cards {
+            card?.layer.borderColor = UIColor.lightGray.cgColor
+        }
+    }
+
+    func highlight(card: UIView) {
+        card.layer.borderColor = UIColor.systemYellow.cgColor
+    }
+    
+    @objc func donorTapped() {
+        selectedUser = "Donor"
+        resetCardBorders()
+        highlight(card: donorView)
+    }
+    
+    @objc func ngoTapped() {
+        selectedUser = "NGO"
+        resetCardBorders()
+        highlight(card: ngoView)
+    }
+
+    @objc func adminTapped() {
+        selectedUser = "Admin"
+        resetCardBorders()
+        highlight(card: adminView)
+    }
+
+    
+
+
+
     
 
     /*

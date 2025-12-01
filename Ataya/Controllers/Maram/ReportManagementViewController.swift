@@ -7,12 +7,29 @@
 
 import UIKit
 
-class ReportManagementViewController: UIViewController {
+class ReportManagementViewController:
+    UIViewController, UITableViewDelegate, UITableViewDataSource {
 
+
+    @IBOutlet weak var searchBar: UISearchBar!
+    
+    @IBOutlet weak var filterSegment: UISegmentedControl!
+    
+    @IBOutlet weak var tableView: UITableView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        tableView.delegate = self
+        tableView.dataSource = self
+
+        // Register XIB
+                let nib = UINib(nibName: "ReportCellTableViewCell", bundle: nil)
+                tableView.register(nib, forCellReuseIdentifier: "ReportCellTableViewCell")
+
+                tableView.rowHeight = UITableView.automaticDimension
+                tableView.estimatedRowHeight = 200
+
     }
     
 
@@ -25,5 +42,27 @@ class ReportManagementViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
+    
+    @objc func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+            return 4
+        }
+
+    @objc(tableView:cellForRowAtIndexPath:) func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: "ReportCellTableViewCell",
+            for: indexPath
+        ) as! ReportCellTableViewCell
+
+        // TEMP DATA
+        cell.titleLabel.text = "Damaged Food Donation"
+        cell.locationLabel.text = "Cairo, Egypt"
+        cell.personLabel.text = "Ahmed (ID: D-55)"
+        cell.ngoLabel.text = "KindWave (ID: N-06)"
+        cell.dateLabel.text = "Nov 5 2025"
+        cell.statusLabel.text = "Pending"
+        cell.statusBadgeView.backgroundColor = .systemYellow
+
+        return cell
+    }
 
 }

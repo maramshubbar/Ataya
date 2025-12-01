@@ -90,7 +90,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
      self.window = window
      }
      }*/
-    
+    /*
     
     func scene(_ scene: UIScene,
                willConnectTo session: UISceneSession,
@@ -115,7 +115,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         self.window = window
     }
-}
+}*/
     /*
     func scene(_ scene: UIScene,
                willConnectTo session: UISceneSession,
@@ -161,7 +161,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
      
      
      
-     /*
+     
      func scene(_ scene: UIScene,
      willConnectTo session: UISceneSession,
      options connectionOptions: UIScene.ConnectionOptions) {
@@ -184,7 +184,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
      self.window = window
      }
      
-     }*/
+     }
       
 
 

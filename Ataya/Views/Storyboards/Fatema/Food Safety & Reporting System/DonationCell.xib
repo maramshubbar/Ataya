@@ -87,10 +87,10 @@
                                 </userDefinedRuntimeAttributes>
                             </button>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="T44-sg-jSr">
-                                <rect key="frame" x="258" y="57" width="90" height="100"/>
+                                <rect key="frame" x="248" y="57" width="100" height="100"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="100" id="Ka1-vV-wnp"/>
-                                    <constraint firstAttribute="width" constant="90" id="N1I-Jf-rpJ"/>
+                                    <constraint firstAttribute="width" constant="100" id="N1I-Jf-rpJ"/>
                                 </constraints>
                             </imageView>
                         </subviews>
@@ -138,6 +138,16 @@
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="dateLabel" destination="18o-dR-hJQ" id="p6f-Rq-1Ga"/>
+                <outlet property="detailsButton" destination="iKk-bJ-ydw" id="nji-Y1-8t7"/>
+                <outlet property="donorLabel" destination="nAB-4I-5z3" id="reu-qd-UsL"/>
+                <outlet property="locationLabel" destination="9eW-9o-B4S" id="5yf-RJ-0RV"/>
+                <outlet property="productImageView" destination="T44-sg-jSr" id="rdL-90-4j8"/>
+                <outlet property="statusContainerView" destination="cah-cj-UH6" id="QCS-ZM-pat"/>
+                <outlet property="statusLabel" destination="EIO-V4-vC6" id="qau-tH-er3"/>
+                <outlet property="titleLabel" destination="I3r-gR-AxU" id="iLv-rD-Ky4"/>
+            </connections>
             <point key="canvasLocation" x="42.748091603053432" y="5.9859154929577469"/>
         </tableViewCell>
     </objects>

@@ -5,20 +5,19 @@
 //  Created by Fatema Maitham on 01/12/2025.
 //
 
-import Foundation
 import UIKit
 
 class DonationCell: UITableViewCell {
 
-    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var donorLabel: UILabel!
-    @IBOutlet weak var locationLabel: UILabel!
-    @IBOutlet weak var dateLabel: UILabel!
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        // Initialization code
+    }
 
-    @IBOutlet weak var statusBadgeView: UIView!
-    @IBOutlet weak var statusLabel: UILabel!
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
 
-    @IBOutlet weak var productImageView: UIImageView!
-
-    @IBOutlet weak var detailsButton: UIButton!
+        // Configure the view for the selected state
+    }
+    
 }

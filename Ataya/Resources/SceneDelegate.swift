@@ -37,9 +37,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
      window.rootViewController = AdminDashboardViewController
      self.window = window
      window.makeKeyAndVisible()
-     }
-     
-     
+     }*/
+    
+    /*
      func sceneDidDisconnect(_ scene: UIScene) {
      // Called as the scene is being released by the system.
      // This occurs shortly after the scene enters the background, or when its session is discarded.
@@ -89,74 +89,105 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         self.window = window
     }
-
-    
-/*
-    
+}
+     
+     /*
+      
+      func scene(_ scene: UIScene,
+      willConnectTo session: UISceneSession,
+      options connectionOptions: UIScene.ConnectionOptions) {
+      
+      guard let windowScene = (scene as? UIWindowScene) else { return }
+      
+      let window = UIWindow(windowScene: windowScene)
+      
+      // Load Main.storyboard
+      let storyboard = UIStoryboard(name: "Main", bundle: nil)
+      
+      // Load YOUR VIEWCONTROLLER using Storyboard ID
+      let aboutVC = storyboard.instantiateViewController(withIdentifier: "ReportVC")
+      
+      // Put it inside Navigation Controller
+      let nav = UINavigationController(rootViewController: aboutVC)
+      
+      // Set root
+      window.rootViewController = nav
+      window.makeKeyAndVisible()
+      
+      self.window = window
+      }*?
+     
+    /*
     func scene(_ scene: UIScene,
                willConnectTo session: UISceneSession,
                options connectionOptions: UIScene.ConnectionOptions) {
         
-        guard let windowScene = (scene as? UIWindowScene) else { return }
+        guard let windowScene = scene as? UIWindowScene else { return }
         
         let window = UIWindow(windowScene: windowScene)
         
         // Load Main.storyboard
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
-        // Load YOUR VIEWCONTROLLER using Storyboard ID
-        let aboutVC = storyboard.instantiateViewController(withIdentifier: "ReportVC")
+        // Load your screen using Storyboard ID = "story"
+        let storyVC = storyboard.instantiateViewController(withIdentifier: "story")
         
-        // Put it inside Navigation Controller
-        let nav = UINavigationController(rootViewController: aboutVC)
+        // Put it inside a Navigation Controller
+        let nav = UINavigationController(rootViewController: storyVC)
         
-        // Set root
+        // Set as root
         window.rootViewController = nav
         window.makeKeyAndVisible()
         
         self.window = window
-    }
+    }*/
 
-    */
-    /*
-    func scene(_ scene: UIScene,
-               willConnectTo session: UISceneSession,
-               options connectionOptions: UIScene.ConnectionOptions) {
-        
-        guard let windowScene = (scene as? UIWindowScene) else { return }
-        
-        let window = UIWindow(windowScene: windowScene)
-        
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        
-        // Load ReportVC from storyboard ID
-        let reportVC = storyboard.instantiateViewController(withIdentifier: "ReportVC")
-        
-        // Embed inside navigation controller
-        let nav = UINavigationController(rootViewController: reportVC)
-        
-        window.rootViewController = nav
-        window.makeKeyAndVisible()
-        
-        self.window = window
-    }
-*/
-    
-    /* func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+     
+     /* func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+      
+      guard let windowScene = (scene as? UIWindowScene) else { return }
+      
+      let window = UIWindow(windowScene: windowScene)
+      
+      // Show the Campaign Management screen
+      let rootVC = CampaignManagementViewController()
+      let navController = UINavigationController(rootViewController: rootVC)
+      
+      window.rootViewController = navController
+      window.makeKeyAndVisible()
+      self.window = window
+      }
+      
+      }*/
+     
+     
+     
+     /*
+     func scene(_ scene: UIScene,
+     willConnectTo session: UISceneSession,
+     options connectionOptions: UIScene.ConnectionOptions) {
      
      guard let windowScene = (scene as? UIWindowScene) else { return }
      
      let window = UIWindow(windowScene: windowScene)
      
-     // Show the Campaign Management screen
-     let rootVC = CampaignManagementViewController()
-     let navController = UINavigationController(rootViewController: rootVC)
+     let storyboard = UIStoryboard(name: "Main", bundle: nil)
      
-     window.rootViewController = navController
+     // Load ReportVC from storyboard ID
+     let reportVC = storyboard.instantiateViewController(withIdentifier: "ReportVC")
+     
+     // Embed inside navigation controller
+     let nav = UINavigationController(rootViewController: reportVC)
+     
+     window.rootViewController = nav
      window.makeKeyAndVisible()
+     
      self.window = window
      }
      
      }*/
+      
 }
+}*/
+
 

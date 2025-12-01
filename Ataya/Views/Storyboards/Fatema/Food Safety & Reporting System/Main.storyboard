@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="teE-Uc-qWh">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Jtm-oL-Feq">
     <device id="retina6_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
@@ -72,6 +72,63 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="t0B-Xz-GTt" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-240.00000000000003" y="-23.221757322175733"/>
+        </scene>
+        <!--Report Management View Controller-->
+        <scene sceneID="huM-Q6-OmE">
+            <objects>
+                <viewController storyboardIdentifier="ReportVC" id="Jtm-oL-Feq" customClass="ReportManagementViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="EU9-tP-a4W">
+                        <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Report Management" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UQr-a0-xC1">
+                                <rect key="frame" x="123.66666666666669" y="124" width="193" height="24"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <searchBar contentMode="redraw" text="" placeholder="Search" translatesAutoresizingMaskIntoConstraints="NO" id="D1d-dW-BN6">
+                                <rect key="frame" x="10" y="164" width="410" height="56"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="410" id="1Yc-VH-De2"/>
+                                </constraints>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="Jtm-oL-Feq" id="uZR-gD-5aB"/>
+                                </connections>
+                            </searchBar>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Fs5-cP-USH">
+                                <rect key="frame" x="15" y="230" width="400" height="32"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="400" id="mJg-U7-6wS"/>
+                                </constraints>
+                                <segments>
+                                    <segment title="All"/>
+                                    <segment title="Donation"/>
+                                    <segment title="Accounts"/>
+                                    <segment title="Resolved"/>
+                                </segments>
+                            </segmentedControl>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="5Ig-Kh-3TZ"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="UQr-a0-xC1" firstAttribute="top" secondItem="5Ig-Kh-3TZ" secondAttribute="top" id="0MP-CA-Al2"/>
+                            <constraint firstItem="D1d-dW-BN6" firstAttribute="leading" secondItem="5Ig-Kh-3TZ" secondAttribute="leading" constant="10" id="EAo-Mf-MjP"/>
+                            <constraint firstItem="Fs5-cP-USH" firstAttribute="leading" secondItem="5Ig-Kh-3TZ" secondAttribute="leading" constant="15" id="GZL-Yf-o71"/>
+                            <constraint firstItem="D1d-dW-BN6" firstAttribute="top" secondItem="UQr-a0-xC1" secondAttribute="bottom" constant="16" id="N0w-1M-a0B"/>
+                            <constraint firstItem="Fs5-cP-USH" firstAttribute="top" secondItem="D1d-dW-BN6" secondAttribute="bottom" constant="10" id="Sxt-sz-3Ki"/>
+                            <constraint firstItem="UQr-a0-xC1" firstAttribute="centerX" secondItem="5Ig-Kh-3TZ" secondAttribute="centerX" id="uK8-yY-R2q"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="filterSegment" destination="Fs5-cP-USH" id="22g-0X-Zjo"/>
+                        <outlet property="searchBar" destination="D1d-dW-BN6" id="CZy-vr-50d"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="gj4-q2-Qj2" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-282.27272727272731" y="717.9916317991632"/>
         </scene>
     </scenes>
     <resources>

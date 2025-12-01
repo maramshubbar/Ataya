@@ -54,7 +54,17 @@ class UserSelectionViewController: UIViewController {
             return
         }
 
-        print("Selected user: \(selectedUser)")
+        switch selectedUser {
+        case "Donor":
+            performSegue(withIdentifier: "donorSignupSegue", sender: self)
+        case "NGO":
+            performSegue(withIdentifier: "ngoSignupSegue", sender: self)
+        case "Admin":
+            performSegue(withIdentifier: "adminLoginSegue", sender: self)
+        default:
+            break
+        }
+
     }
     
     

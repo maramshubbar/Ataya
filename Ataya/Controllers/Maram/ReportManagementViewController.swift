@@ -19,15 +19,14 @@ class ReportManagementViewController: UIViewController {
         
         
         // Register the ReportCell XIB
-            let nib = UINib(nibName: "ReportCell", bundle: nil)
-            tableView.register(nib, forCellReuseIdentifier: "ReportCell")
-            
-            // Set data source + delegate
-            tableView.dataSource = self
-            tableView.delegate = self
+           // let nib = UINib(nibName: "ReportCell", bundle: nil)
+            //tableView.register(nib, forCellReuseIdentifier: "ReportCell")
+       
 
-            tableView.rowHeight = UITableView.automaticDimension
-            tableView.estimatedRowHeight = 180
+            // Set data source + delegate
+
+        //tableView.rowHeight = UITableView.automaticDimension
+          //  tableView.estimatedRowHeight = 180
         
     
     }
@@ -101,29 +100,3 @@ extension UIColor {
     
 }
 
-
-
-extension ReportManagementViewController: UITableViewDataSource, UITableViewDelegate {
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1 // temporary for testing
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "ReportCell", for: indexPath) as? ReportCell else {
-            return UITableViewCell()
-        }
-        
-        // TEMP TEST DATA
-        cell.titleLabel.text = "Damaged Food Donation"
-        cell.locationLabel.text = "Cairo, Egypt"
-        cell.personLabel.text = "Ahmed Saleh (ID: D-55)"
-        cell.ngoLabel.text = "KindWave (ID: N-06)"
-        cell.dateLabel.text = "Nov 5 2025"
-        cell.statusLabel.text = "Pending"
-        cell.statusBadgeView.backgroundColor = .systemYellow
-        
-        return cell
-    }
-}

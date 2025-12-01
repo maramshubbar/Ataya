@@ -92,26 +92,26 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </view>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="Img-1" translatesAutoresizingMaskIntoConstraints="NO" id="T44-sg-jSr">
-                                <rect key="frame" x="241" y="64" width="90" height="100"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Img-1" translatesAutoresizingMaskIntoConstraints="NO" id="e1P-Hy-bxU">
+                                <rect key="frame" x="237" y="59" width="90" height="100"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="80" id="6oa-pi-KHM"/>
-                                    <constraint firstAttribute="width" constant="80" id="UcV-tW-mda"/>
+                                    <constraint firstAttribute="width" constant="90" id="8P4-3j-YAj"/>
+                                    <constraint firstAttribute="height" constant="100" id="chY-Mf-i6l"/>
                                 </constraints>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="T44-sg-jSr" secondAttribute="trailing" constant="20" id="0zY-eD-U1t"/>
-                            <constraint firstItem="T44-sg-jSr" firstAttribute="centerY" secondItem="rmM-fO-sWd" secondAttribute="centerY" id="2T3-yS-cn5"/>
-                            <constraint firstItem="T44-sg-jSr" firstAttribute="top" secondItem="cah-cj-UH6" secondAttribute="bottom" constant="16" id="8sy-CY-3qs"/>
                             <constraint firstItem="cah-cj-UH6" firstAttribute="top" secondItem="rmM-fO-sWd" secondAttribute="top" constant="16" id="98s-Pl-tXI"/>
                             <constraint firstItem="iKk-bJ-ydw" firstAttribute="top" secondItem="W4I-cb-Qaz" secondAttribute="bottom" constant="20" id="BA3-at-939"/>
                             <constraint firstItem="cah-cj-UH6" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="W4I-cb-Qaz" secondAttribute="trailing" constant="8" id="Mhh-Gs-YfD"/>
+                            <constraint firstAttribute="bottom" secondItem="e1P-Hy-bxU" secondAttribute="bottom" constant="16" id="Vua-HF-NQk"/>
                             <constraint firstItem="iKk-bJ-ydw" firstAttribute="leading" secondItem="rmM-fO-sWd" secondAttribute="leading" constant="12" id="ZtK-Oe-B0I"/>
                             <constraint firstAttribute="trailing" secondItem="cah-cj-UH6" secondAttribute="trailing" constant="16" id="eo4-ux-gRR"/>
+                            <constraint firstAttribute="trailing" secondItem="e1P-Hy-bxU" secondAttribute="trailing" constant="25" id="qIo-nZ-WPL"/>
                             <constraint firstItem="W4I-cb-Qaz" firstAttribute="leading" secondItem="rmM-fO-sWd" secondAttribute="leading" constant="16" id="qZe-9h-bP8"/>
                             <constraint firstItem="W4I-cb-Qaz" firstAttribute="top" secondItem="rmM-fO-sWd" secondAttribute="top" constant="16" id="rS5-eG-jxG"/>
+                            <constraint firstItem="e1P-Hy-bxU" firstAttribute="top" secondItem="cah-cj-UH6" secondAttribute="bottom" constant="10" id="vLk-Z5-rTf"/>
                         </constraints>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -139,7 +139,7 @@
                 <outlet property="detailsButton" destination="iKk-bJ-ydw" id="nji-Y1-8t7"/>
                 <outlet property="donorLabel" destination="nAB-4I-5z3" id="reu-qd-UsL"/>
                 <outlet property="locationLabel" destination="9eW-9o-B4S" id="5yf-RJ-0RV"/>
-                <outlet property="productImageView" destination="T44-sg-jSr" id="rdL-90-4j8"/>
+                <outlet property="productImageView" destination="e1P-Hy-bxU" id="Owe-oT-PR9"/>
                 <outlet property="statusContainerView" destination="cah-cj-UH6" id="QCS-ZM-pat"/>
                 <outlet property="statusLabel" destination="EIO-V4-vC6" id="qau-tH-er3"/>
                 <outlet property="titleLabel" destination="I3r-gR-AxU" id="iLv-rD-Ky4"/>

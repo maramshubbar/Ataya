@@ -20,16 +20,16 @@
                                 <rect key="frame" x="0.0" y="124" width="440" height="60"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Donation Overview" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MBr-RS-VGl" userLabel="titleLabel">
-                                        <rect key="frame" x="144.66666666666663" y="19.666666666666657" width="151" height="21"/>
-                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
+                                        <rect key="frame" x="131" y="18" width="178.33333333333337" height="24"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ltd-dJ-B9N" userLabel="backButton">
                                         <rect key="frame" x="16" y="18" width="24" height="24"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="24" id="ZT6-rL-yFP"/>
-                                            <constraint firstAttribute="height" constant="24" id="tdN-7L-R9E"/>
+                                            <constraint firstAttribute="height" constant="24" id="jl0-BJ-n4q"/>
+                                            <constraint firstAttribute="width" constant="24" id="nAA-Rm-lvJ"/>
                                         </constraints>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="chevron.left" catalog="system">
@@ -39,20 +39,33 @@
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
-                                    <constraint firstItem="Ltd-dJ-B9N" firstAttribute="centerY" secondItem="w6J-P7-Wzg" secondAttribute="centerY" id="XJT-f0-7Mh"/>
-                                    <constraint firstItem="MBr-RS-VGl" firstAttribute="centerY" secondItem="w6J-P7-Wzg" secondAttribute="centerY" id="r5W-ak-gMJ"/>
+                                    <constraint firstItem="Ltd-dJ-B9N" firstAttribute="leading" secondItem="w6J-P7-Wzg" secondAttribute="leading" constant="16" id="B0U-aN-Qcv"/>
+                                    <constraint firstItem="MBr-RS-VGl" firstAttribute="centerX" secondItem="w6J-P7-Wzg" secondAttribute="centerX" id="dXc-3Z-wUd"/>
+                                    <constraint firstItem="Ltd-dJ-B9N" firstAttribute="centerY" secondItem="w6J-P7-Wzg" secondAttribute="centerY" id="m2V-7n-BrS"/>
                                     <constraint firstAttribute="height" constant="60" id="rCP-cx-x9c"/>
-                                    <constraint firstItem="MBr-RS-VGl" firstAttribute="centerX" secondItem="w6J-P7-Wzg" secondAttribute="centerX" id="rsl-mk-Qlk"/>
+                                    <constraint firstItem="MBr-RS-VGl" firstAttribute="centerY" secondItem="w6J-P7-Wzg" secondAttribute="centerY" id="vOA-e1-svJ"/>
                                 </constraints>
                             </view>
+                            <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="YKN-B4-mdP">
+                                <rect key="frame" x="16" y="200" width="440" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="JfP-zU-b3x"/>
+                                </constraints>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="teE-Uc-qWh" id="NQ4-sl-AvY"/>
+                                </connections>
+                            </searchBar>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="ybW-e0-vob"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="w6J-P7-Wzg" firstAttribute="top" secondItem="ybW-e0-vob" secondAttribute="top" id="23P-1H-NCB"/>
-                            <constraint firstItem="Ltd-dJ-B9N" firstAttribute="leading" secondItem="ybW-e0-vob" secondAttribute="leading" constant="16" id="OhM-sA-lCt"/>
+                            <constraint firstAttribute="trailing" secondItem="YKN-B4-mdP" secondAttribute="trailing" constant="-16" id="7rp-LV-4aQ"/>
+                            <constraint firstItem="YKN-B4-mdP" firstAttribute="top" secondItem="w6J-P7-Wzg" secondAttribute="bottom" constant="16" id="OGQ-th-9x0"/>
+                            <constraint firstItem="YKN-B4-mdP" firstAttribute="leading" secondItem="ybW-e0-vob" secondAttribute="leading" constant="16" id="OY3-Cv-s1z"/>
                             <constraint firstItem="w6J-P7-Wzg" firstAttribute="trailing" secondItem="ybW-e0-vob" secondAttribute="trailing" id="PxA-2V-q4w"/>
                             <constraint firstItem="w6J-P7-Wzg" firstAttribute="leading" secondItem="ybW-e0-vob" secondAttribute="leading" id="Qmo-7T-xLu"/>
+                            <constraint firstItem="w6J-P7-Wzg" firstAttribute="top" secondItem="ybW-e0-vob" secondAttribute="top" id="S4H-mg-h8c"/>
                         </constraints>
                     </view>
                 </viewController>

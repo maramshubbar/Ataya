@@ -11,13 +11,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
     
-     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+    /* func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
      // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
      // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
      // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
      guard let _ = (scene as? UIWindowScene) else { return }
      }
-     }
+     }*/
     
     /*
      
@@ -68,27 +68,79 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
      // to restore the scene back to its current state.
      }*/
     
-    /*func scene(_ scene: UIScene,
+    func scene(_ scene: UIScene,
                willConnectTo session: UISceneSession,
                options connectionOptions: UIScene.ConnectionOptions) {
-
+        
         guard let windowScene = (scene as? UIWindowScene) else { return }
-
+        
         let window = UIWindow(windowScene: windowScene)
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
+        // Load AboutMe screen
+        let aboutVC = storyboard.instantiateViewController(withIdentifier: "AboutMeViewController")
+        
+        // Navigation Controller
+        let nav = UINavigationController(rootViewController: aboutVC)
+        
+        window.rootViewController = nav
+        window.makeKeyAndVisible()
+        
+        self.window = window
+    }
 
+    
+/*
+    
+    func scene(_ scene: UIScene,
+               willConnectTo session: UISceneSession,
+               options connectionOptions: UIScene.ConnectionOptions) {
+        
+        guard let windowScene = (scene as? UIWindowScene) else { return }
+        
+        let window = UIWindow(windowScene: windowScene)
+        
         // Load Main.storyboard
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-
-        // Load Report Management screen
-        let reportVC = storyboard.instantiateViewController(withIdentifier: "ReportVC")
-
-        // Set as root controller
-        window.rootViewController = UINavigationController(rootViewController: reportVC)
+        
+        // Load YOUR VIEWCONTROLLER using Storyboard ID
+        let aboutVC = storyboard.instantiateViewController(withIdentifier: "ReportVC")
+        
+        // Put it inside Navigation Controller
+        let nav = UINavigationController(rootViewController: aboutVC)
+        
+        // Set root
+        window.rootViewController = nav
         window.makeKeyAndVisible()
-
+        
         self.window = window
-    }*/
+    }
 
+    */
+    /*
+    func scene(_ scene: UIScene,
+               willConnectTo session: UISceneSession,
+               options connectionOptions: UIScene.ConnectionOptions) {
+        
+        guard let windowScene = (scene as? UIWindowScene) else { return }
+        
+        let window = UIWindow(windowScene: windowScene)
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
+        // Load ReportVC from storyboard ID
+        let reportVC = storyboard.instantiateViewController(withIdentifier: "ReportVC")
+        
+        // Embed inside navigation controller
+        let nav = UINavigationController(rootViewController: reportVC)
+        
+        window.rootViewController = nav
+        window.makeKeyAndVisible()
+        
+        self.window = window
+    }
+*/
     
     /* func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
      
@@ -106,5 +158,5 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
      }
      
      }*/
-    
+}
 

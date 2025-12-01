@@ -10,6 +10,7 @@ import UIKit
 class NGODonationOverviewViewController: UIViewController {
 
     @IBOutlet weak var filterSegment: UISegmentedControl!
+    @IBOutlet weak var searchBar: UISearchBar!
     override func viewDidLoad() {
         super.viewDidLoad()
 

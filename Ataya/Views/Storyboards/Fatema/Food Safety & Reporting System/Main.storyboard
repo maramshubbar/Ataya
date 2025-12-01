@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Jtm-oL-Feq">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="teE-Uc-qWh">
     <device id="retina6_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
@@ -17,10 +17,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="w6J-P7-Wzg" userLabel="TopBarContainer">
-                                <rect key="frame" x="0.0" y="149" width="440" height="56"/>
+                                <rect key="frame" x="0.0" y="149" width="430" height="56"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Donation Overview" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MBr-RS-VGl" userLabel="titleLabel">
-                                        <rect key="frame" x="131" y="16" width="178.33333333333337" height="24"/>
+                                        <rect key="frame" x="126.00000000000001" y="16" width="178.33333333333337" height="24"/>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -46,61 +46,10 @@
                                     <constraint firstItem="MBr-RS-VGl" firstAttribute="centerY" secondItem="w6J-P7-Wzg" secondAttribute="centerY" id="vOA-e1-svJ"/>
                                 </constraints>
                             </view>
-                            <searchBar contentMode="redraw" placeholder="Search" translatesAutoresizingMaskIntoConstraints="NO" id="YKN-B4-mdP">
-                                <rect key="frame" x="16" y="221" width="408" height="44"/>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="6rN-zj-hNe" userLabel="Filter Segment">
+                                <rect key="frame" x="15" y="287" width="400" height="32"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="JfP-zU-b3x"/>
-                                </constraints>
-                                <textInputTraits key="textInputTraits"/>
-                                <connections>
-                                    <outlet property="delegate" destination="teE-Uc-qWh" id="NQ4-sl-AvY"/>
-                                </connections>
-                            </searchBar>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="ybW-e0-vob"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstAttribute="trailing" secondItem="YKN-B4-mdP" secondAttribute="trailing" constant="16" id="7rp-LV-4aQ"/>
-                            <constraint firstItem="YKN-B4-mdP" firstAttribute="top" secondItem="w6J-P7-Wzg" secondAttribute="bottom" constant="16" id="OGQ-th-9x0"/>
-                            <constraint firstItem="YKN-B4-mdP" firstAttribute="leading" secondItem="ybW-e0-vob" secondAttribute="leading" constant="16" id="OY3-Cv-s1z"/>
-                            <constraint firstItem="w6J-P7-Wzg" firstAttribute="trailing" secondItem="ybW-e0-vob" secondAttribute="trailing" id="PxA-2V-q4w"/>
-                            <constraint firstItem="w6J-P7-Wzg" firstAttribute="leading" secondItem="ybW-e0-vob" secondAttribute="leading" id="Qmo-7T-xLu"/>
-                            <constraint firstItem="w6J-P7-Wzg" firstAttribute="top" secondItem="ybW-e0-vob" secondAttribute="top" constant="25" id="S4H-mg-h8c"/>
-                        </constraints>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="t0B-Xz-GTt" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-240.00000000000003" y="-23.221757322175733"/>
-        </scene>
-        <!--Donation Overview View Controller-->
-        <scene sceneID="huM-Q6-OmE">
-            <objects>
-                <viewController storyboardIdentifier="ReportVC" id="Jtm-oL-Feq" customClass="NGODonationOverviewViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="EU9-tP-a4W">
-                        <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Donation Overview" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UQr-a0-xC1">
-                                <rect key="frame" x="130.66666666666666" y="124" width="178.99999999999997" height="24"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <searchBar contentMode="redraw" text="" placeholder="Search" translatesAutoresizingMaskIntoConstraints="NO" id="D1d-dW-BN6">
-                                <rect key="frame" x="10" y="164" width="410" height="56"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="410" id="1Yc-VH-De2"/>
-                                </constraints>
-                                <textInputTraits key="textInputTraits"/>
-                                <connections>
-                                    <outlet property="delegate" destination="Jtm-oL-Feq" id="uZR-gD-5aB"/>
-                                </connections>
-                            </searchBar>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Fs5-cP-USH">
-                                <rect key="frame" x="15" y="230" width="400" height="32"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="400" id="mJg-U7-6wS"/>
+                                    <constraint firstAttribute="width" constant="400" id="s6y-Te-eqd"/>
                                 </constraints>
                                 <segments>
                                     <segment title="All"/>
@@ -109,26 +58,32 @@
                                     <segment title="Approved"/>
                                 </segments>
                             </segmentedControl>
+                            <searchBar contentMode="redraw" text="" placeholder="Search" translatesAutoresizingMaskIntoConstraints="NO" id="Xay-fE-eqA">
+                                <rect key="frame" x="10" y="221" width="410" height="56"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="410" id="ugU-jD-PqT"/>
+                                </constraints>
+                                <textInputTraits key="textInputTraits"/>
+                            </searchBar>
                         </subviews>
-                        <viewLayoutGuide key="safeArea" id="5Ig-Kh-3TZ"/>
+                        <viewLayoutGuide key="safeArea" id="ybW-e0-vob"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="UQr-a0-xC1" firstAttribute="top" secondItem="5Ig-Kh-3TZ" secondAttribute="top" id="0MP-CA-Al2"/>
-                            <constraint firstItem="D1d-dW-BN6" firstAttribute="leading" secondItem="5Ig-Kh-3TZ" secondAttribute="leading" constant="10" id="EAo-Mf-MjP"/>
-                            <constraint firstItem="Fs5-cP-USH" firstAttribute="leading" secondItem="5Ig-Kh-3TZ" secondAttribute="leading" constant="15" id="GZL-Yf-o71"/>
-                            <constraint firstItem="D1d-dW-BN6" firstAttribute="top" secondItem="UQr-a0-xC1" secondAttribute="bottom" constant="16" id="N0w-1M-a0B"/>
-                            <constraint firstItem="Fs5-cP-USH" firstAttribute="top" secondItem="D1d-dW-BN6" secondAttribute="bottom" constant="10" id="Sxt-sz-3Ki"/>
-                            <constraint firstItem="UQr-a0-xC1" firstAttribute="centerX" secondItem="5Ig-Kh-3TZ" secondAttribute="centerX" id="uK8-yY-R2q"/>
+                            <constraint firstItem="Xay-fE-eqA" firstAttribute="top" secondItem="w6J-P7-Wzg" secondAttribute="bottom" constant="16" id="AG2-Cz-UAl"/>
+                            <constraint firstItem="6rN-zj-hNe" firstAttribute="top" secondItem="Xay-fE-eqA" secondAttribute="bottom" constant="10" id="ETD-cB-dze"/>
+                            <constraint firstItem="Xay-fE-eqA" firstAttribute="leading" secondItem="ybW-e0-vob" secondAttribute="leading" constant="10" id="MGj-AP-2G1"/>
+                            <constraint firstItem="w6J-P7-Wzg" firstAttribute="trailing" secondItem="ybW-e0-vob" secondAttribute="trailing" id="PxA-2V-q4w"/>
+                            <constraint firstItem="w6J-P7-Wzg" firstAttribute="leading" secondItem="ybW-e0-vob" secondAttribute="leading" id="Qmo-7T-xLu"/>
+                            <constraint firstItem="w6J-P7-Wzg" firstAttribute="top" secondItem="ybW-e0-vob" secondAttribute="top" constant="25" id="S4H-mg-h8c"/>
+                            <constraint firstItem="6rN-zj-hNe" firstAttribute="centerX" secondItem="ybW-e0-vob" secondAttribute="centerX" id="bRB-Ec-K0g"/>
+                            <constraint firstItem="6rN-zj-hNe" firstAttribute="leading" secondItem="ybW-e0-vob" secondAttribute="leading" constant="15" id="dFb-rt-S8Z"/>
+                            <constraint firstItem="Xay-fE-eqA" firstAttribute="centerX" secondItem="ybW-e0-vob" secondAttribute="centerX" id="zFB-Sd-Vwd"/>
                         </constraints>
                     </view>
-                    <connections>
-                        <outlet property="filterSegment" destination="Fs5-cP-USH" id="08V-N8-1TT"/>
-                        <outlet property="searchBar" destination="D1d-dW-BN6" id="CZy-vr-50d"/>
-                    </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="gj4-q2-Qj2" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="t0B-Xz-GTt" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-282.27272727272731" y="717.9916317991632"/>
+            <point key="canvasLocation" x="-240.00000000000003" y="-23.221757322175733"/>
         </scene>
     </scenes>
     <resources>

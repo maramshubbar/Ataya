@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ReportManagementViewController: UIViewController {
+class ReportManagementViewController: UIViewController{
 
 
     
@@ -18,17 +18,15 @@ class ReportManagementViewController: UIViewController {
         filterSegment.addTarget(self, action: #selector(filterChanged(_:)), for: .valueChanged)
         
         
-        // Register the ReportCell XIB
-           // let nib = UINib(nibName: "ReportCell", bundle: nil)
-            //tableView.register(nib, forCellReuseIdentifier: "ReportCell")
-       
-
-            // Set data source + delegate
-
-        //tableView.rowHeight = UITableView.automaticDimension
-          //  tableView.estimatedRowHeight = 180
         
-    
+        
+        
+        tableView.delegate = self
+        tableView.dataSource = self
+
+        let nib = UINib(nibName: "ReportCell", bundle: nil)
+        tableView.register(nib, forCellReuseIdentifier: "ReportCell")
+
     }
     func customizeSearchBar() {
         
@@ -100,3 +98,32 @@ extension UIColor {
     
 }
 
+extension ReportManagementViewController: UITableViewDataSource, UITableViewDelegate {
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 5   // testing
+    }
+
+    func tableView(_ tableView: UITableView,
+                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: "ReportCell",
+            for: indexPath
+        ) as? ReportCell else {
+            return UITableViewCell()
+        }
+
+        // TEST DATA
+        cell.titleLabel.text = "Damaged Food Donation"
+        cell.locationLabel.text = "Cairo, Egypt"
+        cell.personLabel.text = "Ahmed Saleh (ID: D-55)"
+        cell.ngoLabel.text = "KindWave (ID: N-06)"
+        cell.dateLabel.text = "Nov 5 2025"
+        cell.statusLabel.text = "Pending"
+        cell.statusBadgeView.backgroundColor = .systemYellow
+
+        return cell
+    }
+
+}

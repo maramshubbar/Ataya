@@ -94,11 +94,213 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="t0B-Xz-GTt" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-240.00000000000003" y="-23.221757322175733"/>
+            <point key="canvasLocation" x="-460" y="-21"/>
+        </scene>
+        <!--NGO Donation-->
+        <scene sceneID="SCq-5e-bqi">
+            <objects>
+                <viewController title="NGO Donation" id="Y1U-c3-MxI" customClass="NGODonationOverviewViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="6S9-c2-BBL">
+                        <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VHR-TM-X1a" userLabel="TopBarContainer">
+                                <rect key="frame" x="0.0" y="149" width="440" height="56"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Advocacy for Gaza" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lhw-Ad-7RW" userLabel="titleLabel">
+                                        <rect key="frame" x="132" y="16" width="176" height="24"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Wu-nC-XIc" userLabel="backButton">
+                                        <rect key="frame" x="35" y="16" width="24" height="24"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="24" id="CAl-7x-lsJ"/>
+                                            <constraint firstAttribute="height" constant="24" id="EfR-89-ssy"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="chevron.left" catalog="system">
+                                            <color key="baseForegroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        </buttonConfiguration>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Unc-b9-XoD">
+                                        <rect key="frame" x="400" y="16" width="24" height="24"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="24" id="2g5-aT-Yxq"/>
+                                            <constraint firstAttribute="width" constant="24" id="LuI-r6-s1r"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="square.and.arrow.up" catalog="system">
+                                            <color key="baseForegroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        </buttonConfiguration>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="lhw-Ad-7RW" firstAttribute="centerY" secondItem="VHR-TM-X1a" secondAttribute="centerY" id="8Jl-CS-qXF"/>
+                                    <constraint firstItem="lhw-Ad-7RW" firstAttribute="centerX" secondItem="VHR-TM-X1a" secondAttribute="centerX" id="Mph-1B-WIJ"/>
+                                    <constraint firstAttribute="height" constant="56" id="eo5-QZ-Oxt"/>
+                                    <constraint firstItem="Unc-b9-XoD" firstAttribute="centerY" secondItem="VHR-TM-X1a" secondAttribute="centerY" id="f7f-Xo-FWC"/>
+                                    <constraint firstItem="0Wu-nC-XIc" firstAttribute="centerY" secondItem="VHR-TM-X1a" secondAttribute="centerY" id="iPx-P4-8s7"/>
+                                    <constraint firstItem="0Wu-nC-XIc" firstAttribute="leading" secondItem="VHR-TM-X1a" secondAttribute="leading" constant="35" id="k4K-eO-aW6"/>
+                                    <constraint firstAttribute="trailing" secondItem="Unc-b9-XoD" secondAttribute="trailing" constant="16" id="sFa-KD-YeT"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="gtj-2u-Rb3"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="VHR-TM-X1a" firstAttribute="trailing" secondItem="gtj-2u-Rb3" secondAttribute="trailing" id="6RO-dp-vRQ"/>
+                            <constraint firstItem="VHR-TM-X1a" firstAttribute="leading" secondItem="gtj-2u-Rb3" secondAttribute="leading" id="ZWr-MT-drx"/>
+                            <constraint firstItem="VHR-TM-X1a" firstAttribute="top" secondItem="gtj-2u-Rb3" secondAttribute="top" constant="25" id="eth-3O-xGY"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="FTH-ac-6kh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="431" y="-21"/>
+        </scene>
+        <!--Advocacy for Gaza-->
+        <scene sceneID="ONn-Kc-t8C">
+            <objects>
+                <viewController title="Advocacy for Gaza" id="4oJ-Pb-WFq" customClass="AdvocacyDetailViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="tZM-dN-Aqe">
+                        <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="btN-nm-10H" userLabel="Header View">
+                                <rect key="frame" x="20" y="57" width="400" height="127"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fIr-2o-D2f">
+                                        <rect key="frame" x="16" y="18" width="24" height="24"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="24" id="E8v-bD-I4R"/>
+                                            <constraint firstAttribute="height" constant="24" id="did-ef-Q9j"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="chevron.backward" catalog="system">
+                                            <color key="baseForegroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        </buttonConfiguration>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Advocacy for Gaza" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OI2-cc-DIo">
+                                        <rect key="frame" x="125.66666666666667" y="19.666666666666657" width="148.66666666666663" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pDg-Bn-DD6">
+                                        <rect key="frame" x="360" y="18" width="24" height="24"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="24" id="Kfz-qC-Jyv"/>
+                                            <constraint firstAttribute="width" constant="24" id="ROz-Hq-g8T"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="square.and.arrow.up" catalog="system">
+                                            <color key="baseForegroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        </buttonConfiguration>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="OI2-cc-DIo" firstAttribute="centerY" secondItem="btN-nm-10H" secondAttribute="centerY" id="DLd-ta-UXb"/>
+                                    <constraint firstItem="fIr-2o-D2f" firstAttribute="centerY" secondItem="btN-nm-10H" secondAttribute="centerY" id="K7V-bL-CLb"/>
+                                    <constraint firstItem="fIr-2o-D2f" firstAttribute="leading" secondItem="btN-nm-10H" secondAttribute="leading" constant="16" id="U6s-on-qYl"/>
+                                    <constraint firstItem="OI2-cc-DIo" firstAttribute="centerX" secondItem="btN-nm-10H" secondAttribute="centerX" id="Vsq-BO-i1A"/>
+                                    <constraint firstAttribute="trailing" secondItem="pDg-Bn-DD6" secondAttribute="trailing" constant="16" id="YBH-cB-E0w"/>
+                                    <constraint firstItem="pDg-Bn-DD6" firstAttribute="centerY" secondItem="btN-nm-10H" secondAttribute="centerY" id="fyB-He-dN4"/>
+                                    <constraint firstAttribute="height" constant="60" id="r5r-ko-jut"/>
+                                </constraints>
+                            </view>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ac7-ZD-DIJ">
+                                <rect key="frame" x="0.0" y="124" width="440" height="832"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gBu-Af-ffm" userLabel="Content View">
+                                        <rect key="frame" x="0.0" y="0.0" width="440" height="806"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Adv" translatesAutoresizingMaskIntoConstraints="NO" id="iQC-f0-UgO">
+                                                <rect key="frame" x="0.0" y="0.0" width="440" height="340"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="340" id="pes-Yp-DDR"/>
+                                                </constraints>
+                                            </imageView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="About" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Om-d7-EqY">
+                                                <rect key="frame" x="25" y="364" width="390" height="24"/>
+                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OBd-4A-GqC">
+                                                <rect key="frame" x="25" y="730" width="390" height="56"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="56" id="MpN-cg-rZB"/>
+                                                </constraints>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Donate Now">
+                                                    <backgroundConfiguration key="background">
+                                                        <color key="backgroundColor" red="0.96862745100000003" green="0.83137254900000002" blue="0.29803921570000003" alpha="1" colorSpace="calibratedRGB"/>
+                                                    </backgroundConfiguration>
+                                                    <color key="baseForegroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                </buttonConfiguration>
+                                            </button>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" misplaced="YES" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eQ9-QI-sfc">
+                                                <rect key="frame" x="16" y="406" width="408" height="243"/>
+                                                <string key="text">Gaza needs more than temporary aid. It needs justice, protection, and a voice the world cannot ignore. Families endure hardship every day, and relief alone cannot heal the wounds of displacement and destruction. Your donation strengthens advocacy that demands accountability, opens humanitarian access, amplifies Palestinian voices, and supports legal and media efforts that challenge injustice. Together, we can rise beyond short-term aid and work toward a future built on dignity, peace, and human rights for every Palestinian.</string>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstItem="iQC-f0-UgO" firstAttribute="top" secondItem="gBu-Af-ffm" secondAttribute="top" id="5IO-X1-gE0"/>
+                                            <constraint firstAttribute="trailing" secondItem="OBd-4A-GqC" secondAttribute="trailing" constant="25" id="AHx-af-pej"/>
+                                            <constraint firstItem="eQ9-QI-sfc" firstAttribute="top" secondItem="1Om-d7-EqY" secondAttribute="bottom" constant="8" id="CPI-b8-Yxl"/>
+                                            <constraint firstItem="iQC-f0-UgO" firstAttribute="leading" secondItem="gBu-Af-ffm" secondAttribute="leading" id="Jbj-IA-Cor"/>
+                                            <constraint firstAttribute="bottom" secondItem="OBd-4A-GqC" secondAttribute="bottom" constant="20" id="KCU-Fe-6gW"/>
+                                            <constraint firstAttribute="trailing" secondItem="iQC-f0-UgO" secondAttribute="trailing" id="Wsx-VF-7D7"/>
+                                            <constraint firstAttribute="trailing" secondItem="eQ9-QI-sfc" secondAttribute="trailing" constant="16" id="Zq1-OP-BQ9"/>
+                                            <constraint firstItem="1Om-d7-EqY" firstAttribute="top" secondItem="iQC-f0-UgO" secondAttribute="bottom" constant="24" id="fr9-Ra-Brq"/>
+                                            <constraint firstItem="eQ9-QI-sfc" firstAttribute="leading" secondItem="gBu-Af-ffm" secondAttribute="leading" constant="25" id="nLJ-NR-nY8"/>
+                                            <constraint firstItem="1Om-d7-EqY" firstAttribute="leading" secondItem="gBu-Af-ffm" secondAttribute="leading" constant="25" id="o93-iN-eOI"/>
+                                            <constraint firstAttribute="trailing" secondItem="1Om-d7-EqY" secondAttribute="trailing" constant="25" id="rBS-1u-SZC"/>
+                                            <constraint firstItem="OBd-4A-GqC" firstAttribute="leading" secondItem="gBu-Af-ffm" secondAttribute="leading" constant="25" id="tZc-fG-s5o"/>
+                                            <constraint firstItem="OBd-4A-GqC" firstAttribute="top" secondItem="eQ9-QI-sfc" secondAttribute="bottom" constant="86.670000000000002" id="w63-to-8qi"/>
+                                            <constraint firstItem="OBd-4A-GqC" firstAttribute="top" secondItem="gBu-Af-ffm" secondAttribute="top" constant="730" id="xr8-8j-pPW"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="gBu-Af-ffm" firstAttribute="leading" secondItem="lba-ro-sv3" secondAttribute="leading" id="BOb-so-dxp"/>
+                                    <constraint firstItem="lba-ro-sv3" firstAttribute="trailing" secondItem="gBu-Af-ffm" secondAttribute="trailing" id="UnB-zc-611"/>
+                                    <constraint firstItem="gBu-Af-ffm" firstAttribute="bottom" secondItem="DAt-vJ-6VY" secondAttribute="bottom" id="iHv-K5-YRz"/>
+                                    <constraint firstItem="gBu-Af-ffm" firstAttribute="width" secondItem="lba-ro-sv3" secondAttribute="width" id="kXs-re-Sxx"/>
+                                    <constraint firstItem="gBu-Af-ffm" firstAttribute="top" secondItem="DAt-vJ-6VY" secondAttribute="top" id="nYG-Xv-pqI"/>
+                                </constraints>
+                                <viewLayoutGuide key="contentLayoutGuide" id="DAt-vJ-6VY"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="lba-ro-sv3"/>
+                            </scrollView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="K1i-zE-1dW"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="btN-nm-10H" firstAttribute="top" secondItem="K1i-zE-1dW" secondAttribute="top" id="Hno-AX-Lag"/>
+                            <constraint firstItem="btN-nm-10H" firstAttribute="leading" secondItem="tZM-dN-Aqe" secondAttribute="leadingMargin" id="Ilg-7e-AVr"/>
+                            <constraint firstItem="btN-nm-10H" firstAttribute="trailing" secondItem="tZM-dN-Aqe" secondAttribute="trailingMargin" id="T5x-35-1il"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="jjv-7D-Jqf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1283" y="-37"/>
         </scene>
     </scenes>
     <resources>
+        <image name="Adv" width="291.33334350585938" height="244"/>
+        <image name="chevron.backward" catalog="system" width="97" height="128"/>
         <image name="chevron.left" catalog="system" width="97" height="128"/>
+        <image name="square.and.arrow.up" catalog="system" width="110" height="128"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

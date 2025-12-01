@@ -9,6 +9,7 @@ import UIKit
 
 class NGODonationOverviewViewController: UIViewController {
 
+    @IBOutlet weak var filterSegment: UISegmentedControl!
     override func viewDidLoad() {
         super.viewDidLoad()
 

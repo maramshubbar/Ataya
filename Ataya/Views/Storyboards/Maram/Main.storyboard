@@ -897,6 +897,71 @@
             </objects>
             <point key="canvasLocation" x="-282.27272727272731" y="717.9916317991632"/>
         </scene>
+        <!--NGO Donation-->
+        <scene sceneID="BCI-Al-QSS">
+            <objects>
+                <viewController title="NGO Donation" id="5hr-Qy-V9N" customClass="NGODonationOverviewViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="PtM-4v-ezc">
+                        <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xcU-gc-3ut" userLabel="TopBarContainer">
+                                <rect key="frame" x="0.0" y="149" width="440" height="56"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Donation Overview" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7EB-1A-3hP" userLabel="titleLabel">
+                                        <rect key="frame" x="131" y="16" width="178.33333333333337" height="24"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="d2E-oj-Jp3" userLabel="backButton">
+                                        <rect key="frame" x="35" y="16" width="24" height="24"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="24" id="QiB-mE-p8e"/>
+                                            <constraint firstAttribute="height" constant="24" id="e37-rm-IUn"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="chevron.left" catalog="system">
+                                            <color key="baseForegroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        </buttonConfiguration>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="d2E-oj-Jp3" firstAttribute="leading" secondItem="xcU-gc-3ut" secondAttribute="leading" constant="35" id="JEb-qo-MRc"/>
+                                    <constraint firstAttribute="height" constant="56" id="pm2-g1-OSh"/>
+                                    <constraint firstItem="d2E-oj-Jp3" firstAttribute="centerY" secondItem="xcU-gc-3ut" secondAttribute="centerY" id="vC9-w9-SiO"/>
+                                    <constraint firstItem="7EB-1A-3hP" firstAttribute="centerX" secondItem="xcU-gc-3ut" secondAttribute="centerX" id="ywN-bl-RfB"/>
+                                    <constraint firstItem="7EB-1A-3hP" firstAttribute="centerY" secondItem="xcU-gc-3ut" secondAttribute="centerY" id="zeh-58-7Wq"/>
+                                </constraints>
+                            </view>
+                            <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="BQv-XV-zIL">
+                                <rect key="frame" x="16" y="221" width="408" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="XA4-Hr-ZoB"/>
+                                </constraints>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="5hr-Qy-V9N" id="wk1-SZ-KxF"/>
+                                </connections>
+                            </searchBar>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="w8K-hx-Ihg"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="BQv-XV-zIL" firstAttribute="top" secondItem="xcU-gc-3ut" secondAttribute="bottom" constant="16" id="9kM-ms-Lqe"/>
+                            <constraint firstAttribute="trailing" secondItem="BQv-XV-zIL" secondAttribute="trailing" constant="16" id="JPP-Ho-HTA"/>
+                            <constraint firstItem="xcU-gc-3ut" firstAttribute="top" secondItem="w8K-hx-Ihg" secondAttribute="top" constant="25" id="Mt8-Ux-fe6"/>
+                            <constraint firstItem="xcU-gc-3ut" firstAttribute="leading" secondItem="w8K-hx-Ihg" secondAttribute="leading" id="gC5-ED-dTF"/>
+                            <constraint firstItem="BQv-XV-zIL" firstAttribute="leading" secondItem="w8K-hx-Ihg" secondAttribute="leading" constant="16" id="qwM-SY-gQR"/>
+                            <constraint firstItem="xcU-gc-3ut" firstAttribute="trailing" secondItem="w8K-hx-Ihg" secondAttribute="trailing" id="roa-oW-ALL"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="IPH-6l-1CW" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="334" y="39"/>
+        </scene>
     </scenes>
     <resources>
         <image name="Icon2" width="60" height="60"/>
@@ -904,6 +969,7 @@
         <image name="checkmark.seal.fill" catalog="system" width="128" height="124"/>
         <image name="chevron.backward" catalog="system" width="97" height="128"/>
         <image name="chevron.forward" catalog="system" width="97" height="128"/>
+        <image name="chevron.left" catalog="system" width="97" height="128"/>
         <image name="clock.circle" catalog="system" width="128" height="123"/>
         <image name="donation overview" width="140" height="200"/>
         <image name="flag" catalog="system" width="128" height="121"/>

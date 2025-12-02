@@ -15,9 +15,11 @@ class DonorSignupViewController: UIViewController {
     
     @IBOutlet weak var phoneTextField: UITextField!
     
+
     @IBOutlet weak var passwordTextField: UITextField!
     
     @IBOutlet weak var eyeButton: UIButton!
+    
     
     @IBOutlet weak var termsCheckButton: UIButton!
     

@@ -14,14 +14,30 @@ class NGODonationOverviewViewController: UIViewController, UITableViewDelegate, 
     @IBOutlet weak var tableView: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Remove top & bottom lines
+        searchBar.backgroundImage = UIImage()
+        searchBar.searchBarStyle = .minimal
 
-        // Register the XIB for the table view
-        let nib = UINib(nibName: "DonationCell", bundle: nil)
-        tableView.register(nib, forCellReuseIdentifier: "DonationCell")
-
+        // Make the search field perfectly white
+        if let searchField = searchBar.value(forKey: "searchField") as? UITextField {
+            searchField.backgroundColor = .white     // PURE WHITE
+            searchField.layer.cornerRadius = 10
+            searchField.clipsToBounds = true
+        }
+        
         // Setup tableView
         tableView.delegate = self
         tableView.dataSource = self
+        
+        // Register the XIB for the table view
+        let nib = UINib(nibName: "DonationCell", bundle: nil)
+        tableView.register(nib, forCellReuseIdentifier: "DonationCell")
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 200
+        tableView.separatorStyle = .none
+
+
     }
 
     // MARK: - TABLE VIEW DATA SOURCE
@@ -56,8 +72,5 @@ class NGODonationOverviewViewController: UIViewController, UITableViewDelegate, 
         return cell
     }
 
-    // OPTIONAL: row height
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 200 // Adjust based on your design
-    }
+    
 }

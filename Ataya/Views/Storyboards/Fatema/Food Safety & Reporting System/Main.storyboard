@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="XPY-Ro-POv">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="teE-Uc-qWh">
     <device id="retina6_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
@@ -90,6 +90,8 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="filterSegment" destination="6rN-zj-hNe" id="CrO-fw-25Q"/>
+                        <outlet property="searchBar" destination="Xay-fE-eqA" id="nPM-Eh-W7t"/>
                         <outlet property="tableView" destination="iaq-h5-m0g" id="u0m-Of-0pW"/>
                     </connections>
                 </viewController>
@@ -785,7 +787,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jko-1e-hQn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3259.0909090909095" y="-21.338912133891213"/>
+            <point key="canvasLocation" x="3326" y="-21"/>
         </scene>
     </scenes>
     <resources>

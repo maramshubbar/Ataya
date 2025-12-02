@@ -15,12 +15,13 @@ class SafetyVC: UIViewController {
         super.viewDidLoad()
 
         // Start with unchecked state
-                checkboxButton.isSelected = false
-                checkboxButton.setImage(UIImage(named: "checkbox_unchecked"), for: .normal)
-                checkboxButton.setImage(UIImage(named: "checkbox_checked"), for: .selected)
+        checkboxButton.isSelected = false
+        checkboxButton.setImage(UIImage(named: "checkbox_unchecked"), for: .normal)
+        checkboxButton.setImage(UIImage(named: "checkbox_checked"), for: .selected)
 
-                // Configure button disabled at start
-                configureNextButton(isEnabled: false)
+        // Configure button disabled at start
+        configureNextButton(isEnabled: false)
+        nextButton.removeHighlightEffect()
     }
     
     @IBAction func checkboxTapped(_ sender: UIButton) {
@@ -55,5 +56,15 @@ class SafetyVC: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
+}
 
+
+extension UIButton {
+    func removeHighlightEffect() {
+        self.configurationUpdateHandler = { button in
+            var config = button.configuration
+            config?.showsActivityIndicator = false
+            button.configuration = config
+        }
+    }
 }

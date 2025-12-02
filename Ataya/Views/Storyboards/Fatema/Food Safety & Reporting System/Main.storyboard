@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Prq-wa-efY">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="teE-Uc-qWh">
     <device id="retina6_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
@@ -345,10 +345,10 @@
             </objects>
             <point key="canvasLocation" x="1417" y="-21"/>
         </scene>
-        <!--Photos-->
+        <!--Add Food-->
         <scene sceneID="oJs-cB-YYr">
             <objects>
-                <viewController title="Photos" id="Prq-wa-efY" customClass="AddFoodDonationViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Add Food" id="Prq-wa-efY" customClass="AddFoodDonationViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="cdm-R7-S3H">
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -411,20 +411,20 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="ZVQ-Kk-apg">
-                                <rect key="frame" x="40" y="566" width="360" height="212"/>
+                                <rect key="frame" x="40" y="566" width="360" height="224"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TQw-bX-wY7" userLabel="Card View">
-                                        <rect key="frame" x="0.0" y="0.0" width="360" height="60"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="360" height="64"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="upload" translatesAutoresizingMaskIntoConstraints="NO" id="a6T-wu-aHU">
-                                                <rect key="frame" x="20" y="18" width="24" height="24"/>
+                                                <rect key="frame" x="20" y="20" width="24" height="24"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="24" id="02d-h5-vyo"/>
                                                     <constraint firstAttribute="width" constant="24" id="XuZ-0n-Oha"/>
                                                 </constraints>
                                             </imageView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Upload Photos" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ved-6B-Efj">
-                                                <rect key="frame" x="56" y="20.333333333333371" width="107" height="19.333333333333329"/>
+                                                <rect key="frame" x="56" y="22.333333333333371" width="107" height="19.333333333333329"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -437,7 +437,7 @@
                                             <constraint firstItem="a6T-wu-aHU" firstAttribute="centerY" secondItem="TQw-bX-wY7" secondAttribute="centerY" id="R3h-HV-etJ"/>
                                             <constraint firstItem="a6T-wu-aHU" firstAttribute="leading" secondItem="TQw-bX-wY7" secondAttribute="leading" constant="20" id="Wvs-Mf-g30"/>
                                             <constraint firstItem="Ved-6B-Efj" firstAttribute="centerY" secondItem="TQw-bX-wY7" secondAttribute="centerY" id="iHh-jp-c2I"/>
-                                            <constraint firstAttribute="height" constant="60" id="s9O-yZ-j74"/>
+                                            <constraint firstAttribute="height" constant="64" id="s9O-yZ-j74"/>
                                         </constraints>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -452,17 +452,17 @@
                                         </userDefinedRuntimeAttributes>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Qg9-9X-xQS" userLabel="Card View">
-                                        <rect key="frame" x="0.0" y="76" width="360" height="60"/>
+                                        <rect key="frame" x="0.0" y="80" width="360" height="64"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="details" translatesAutoresizingMaskIntoConstraints="NO" id="WPS-dM-tve">
-                                                <rect key="frame" x="20" y="18" width="24" height="24"/>
+                                                <rect key="frame" x="20" y="20" width="24" height="24"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="24" id="aZd-ab-gOf"/>
                                                     <constraint firstAttribute="height" constant="24" id="i6M-gU-iMz"/>
                                                 </constraints>
                                             </imageView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enter Details" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7SY-Eq-GSq">
-                                                <rect key="frame" x="55.999999999999993" y="20.333333333333371" width="92.333333333333314" height="19.333333333333329"/>
+                                                <rect key="frame" x="55.999999999999993" y="22.333333333333371" width="92.333333333333314" height="19.333333333333329"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -473,7 +473,7 @@
                                             <constraint firstItem="WPS-dM-tve" firstAttribute="leading" secondItem="Qg9-9X-xQS" secondAttribute="leading" constant="20" id="GoR-Cq-iMP"/>
                                             <constraint firstItem="7SY-Eq-GSq" firstAttribute="leading" secondItem="WPS-dM-tve" secondAttribute="trailing" constant="12" id="LzU-1F-BZD"/>
                                             <constraint firstItem="WPS-dM-tve" firstAttribute="centerY" secondItem="Qg9-9X-xQS" secondAttribute="centerY" id="QGb-OX-gmZ"/>
-                                            <constraint firstAttribute="height" constant="60" id="lja-eq-K7x"/>
+                                            <constraint firstAttribute="height" constant="64" id="lja-eq-K7x"/>
                                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="7SY-Eq-GSq" secondAttribute="trailing" constant="20" id="zDe-B7-AU8"/>
                                             <constraint firstItem="7SY-Eq-GSq" firstAttribute="centerY" secondItem="Qg9-9X-xQS" secondAttribute="centerY" id="zdk-Hp-26L"/>
                                         </constraints>
@@ -490,17 +490,17 @@
                                         </userDefinedRuntimeAttributes>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZnA-jB-kA5" userLabel="Card View">
-                                        <rect key="frame" x="0.0" y="152" width="360" height="60"/>
+                                        <rect key="frame" x="0.0" y="160" width="360" height="64"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="safety" translatesAutoresizingMaskIntoConstraints="NO" id="GrU-c0-EnF">
-                                                <rect key="frame" x="20" y="18" width="24" height="24"/>
+                                                <rect key="frame" x="20" y="20" width="24" height="24"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="24" id="RCw-86-qrW"/>
                                                     <constraint firstAttribute="width" constant="24" id="j6K-7O-H44"/>
                                                 </constraints>
                                             </imageView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Safety &amp; Submit" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2pW-Gc-oPd">
-                                                <rect key="frame" x="56" y="20.333333333333371" width="117" height="19.333333333333329"/>
+                                                <rect key="frame" x="56" y="22.333333333333371" width="117" height="19.333333333333329"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <color key="textColor" red="0.35294117650000001" green="0.35294117650000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <nil key="highlightedColor"/>
@@ -508,7 +508,7 @@
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="60" id="7HM-xv-dfW"/>
+                                            <constraint firstAttribute="height" constant="64" id="7HM-xv-dfW"/>
                                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="2pW-Gc-oPd" secondAttribute="trailing" constant="20" id="8ge-km-Ujw"/>
                                             <constraint firstItem="2pW-Gc-oPd" firstAttribute="leading" secondItem="GrU-c0-EnF" secondAttribute="trailing" constant="12" id="GuC-Y5-xpk"/>
                                             <constraint firstItem="GrU-c0-EnF" firstAttribute="leading" secondItem="ZnA-jB-kA5" secondAttribute="leading" constant="20" id="JHi-aK-xj3"/>
@@ -520,7 +520,7 @@
                                                 <integer key="value" value="12"/>
                                             </userDefinedRuntimeAttribute>
                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.borderWidth">
-                                                <integer key="value" value="2"/>
+                                                <integer key="value" value="1"/>
                                             </userDefinedRuntimeAttribute>
                                             <userDefinedRuntimeAttribute type="color" keyPath="layer.borderColor">
                                                 <color key="value" red="0.1647058824" green="0.1647058824" blue="0.1647058824" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -550,6 +550,11 @@
                             <constraint firstItem="ZVQ-Kk-apg" firstAttribute="leading" secondItem="YjV-4k-hvn" secondAttribute="leading" constant="40" id="zJf-hL-50E"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="enterDetailsCard" destination="Qg9-9X-xQS" id="UzJ-ST-lmO"/>
+                        <outlet property="safetySubmitCard" destination="ZnA-jB-kA5" id="9eM-Ff-lHN"/>
+                        <outlet property="uploadPhotosCard" destination="TQw-bX-wY7" id="xsg-El-vL0"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cF3-An-OZL" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>

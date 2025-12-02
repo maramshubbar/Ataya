@@ -544,7 +544,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fgH-nv-JvY">
-                                <rect key="frame" x="0.0" y="124" width="440" height="687"/>
+                                <rect key="frame" x="0.0" y="124" width="440" height="49"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My Address" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QSj-4m-JJB">
                                         <rect key="frame" x="59" y="2" width="322" height="21.666666666666668"/>
@@ -576,26 +576,6 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="S72-q7-Jvb">
                                 <rect key="frame" x="36" y="834" width="368" height="54"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="H4T-GS-Xck">
-                                        <rect key="frame" x="188" y="0.0" width="180" height="54"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="39" id="2ar-RY-pDD"/>
-                                        </constraints>
-                                        <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" title="Add New Address">
-                                            <fontDescription key="titleFontDescription" type="system" weight="semibold" pointSize="16"/>
-                                            <color key="baseForegroundColor" name="AccentColor"/>
-                                        </buttonConfiguration>
-                                        <userDefinedRuntimeAttributes>
-                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                <integer key="value" value="8"/>
-                                            </userDefinedRuntimeAttribute>
-                                            <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
-                                            <userDefinedRuntimeAttribute type="color" keyPath="layer.borderColor">
-                                                <color key="value" name="AccentColor"/>
-                                            </userDefinedRuntimeAttribute>
-                                        </userDefinedRuntimeAttributes>
-                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Ok-0C-fzh">
                                         <rect key="frame" x="0.0" y="0.0" width="188" height="54"/>
                                         <color key="backgroundColor" name="AccentColor"/>
@@ -614,18 +594,39 @@
                                             <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
                                         </userDefinedRuntimeAttributes>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="H4T-GS-Xck">
+                                        <rect key="frame" x="196" y="0.0" width="172" height="54"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="39" id="2ar-RY-pDD"/>
+                                            <constraint firstAttribute="height" constant="54" id="Ull-61-MgE"/>
+                                            <constraint firstAttribute="width" constant="172" id="e0f-01-TT4"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Add New Address">
+                                            <fontDescription key="titleFontDescription" type="system" weight="semibold" pointSize="16"/>
+                                            <color key="baseForegroundColor" name="AccentColor"/>
+                                        </buttonConfiguration>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="8"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                            <userDefinedRuntimeAttribute type="color" keyPath="layer.borderColor">
+                                                <color key="value" name="AccentColor"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="368" id="DVy-ak-RJl"/>
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="54" id="O3E-gc-dZf"/>
-                                    <constraint firstAttribute="trailing" secondItem="H4T-GS-Xck" secondAttribute="trailing" id="S8c-fc-Hkj"/>
-                                    <constraint firstItem="H4T-GS-Xck" firstAttribute="leading" secondItem="8Ok-0C-fzh" secondAttribute="trailing" id="Z0M-2p-cUb"/>
+                                    <constraint firstAttribute="trailing" secondItem="H4T-GS-Xck" secondAttribute="trailing" id="T7k-Q3-ZvI"/>
+                                    <constraint firstAttribute="height" constant="54" id="WBL-yU-D73"/>
                                     <constraint firstAttribute="bottom" secondItem="H4T-GS-Xck" secondAttribute="bottom" id="ZOX-hm-oGK"/>
                                     <constraint firstItem="H4T-GS-Xck" firstAttribute="top" secondItem="S72-q7-Jvb" secondAttribute="top" id="bPf-zW-6ae"/>
-                                    <constraint firstAttribute="width" constant="368" id="jlt-Wg-B2P"/>
                                     <constraint firstAttribute="bottom" secondItem="8Ok-0C-fzh" secondAttribute="bottom" id="kof-P2-111"/>
-                                    <constraint firstItem="8Ok-0C-fzh" firstAttribute="leading" secondItem="S72-q7-Jvb" secondAttribute="leading" id="nBX-an-4CV"/>
+                                    <constraint firstItem="H4T-GS-Xck" firstAttribute="leading" secondItem="8Ok-0C-fzh" secondAttribute="trailing" constant="8" id="ktb-qb-G6I"/>
                                     <constraint firstItem="8Ok-0C-fzh" firstAttribute="top" secondItem="H4T-GS-Xck" secondAttribute="top" id="tQi-HF-Ivh"/>
                                 </constraints>
                             </view>
@@ -634,7 +635,9 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="gBO-6J-Cbq" firstAttribute="bottom" secondItem="S72-q7-Jvb" secondAttribute="bottom" id="1qr-oU-5mh"/>
-                            <constraint firstItem="fgH-nv-JvY" firstAttribute="top" secondItem="gBO-6J-Cbq" secondAttribute="top" id="UJi-xw-bvT"/>
+                            <constraint firstItem="fgH-nv-JvY" firstAttribute="top" secondItem="gBO-6J-Cbq" secondAttribute="top" id="BDJ-6d-QO3"/>
+                            <constraint firstAttribute="bottom" secondItem="fgH-nv-JvY" secondAttribute="bottom" constant="783" id="IWy-0d-hwY"/>
+                            <constraint firstItem="fgH-nv-JvY" firstAttribute="centerX" secondItem="S72-q7-Jvb" secondAttribute="centerX" id="UzC-sX-EOe"/>
                             <constraint firstItem="fgH-nv-JvY" firstAttribute="leading" secondItem="gBO-6J-Cbq" secondAttribute="leading" id="bzj-8j-Pyx"/>
                             <constraint firstItem="fgH-nv-JvY" firstAttribute="leading" secondItem="gBO-6J-Cbq" secondAttribute="leading" id="eAG-0F-yin"/>
                             <constraint firstItem="gBO-6J-Cbq" firstAttribute="trailing" secondItem="fgH-nv-JvY" secondAttribute="trailing" id="iqr-qj-X7p"/>
@@ -642,8 +645,6 @@
                             <constraint firstItem="fgH-nv-JvY" firstAttribute="leading" secondItem="gBO-6J-Cbq" secondAttribute="leading" id="mv1-Ky-in5"/>
                             <constraint firstItem="gBO-6J-Cbq" firstAttribute="trailing" secondItem="fgH-nv-JvY" secondAttribute="trailing" id="soK-jg-CBM"/>
                             <constraint firstItem="gBO-6J-Cbq" firstAttribute="trailing" secondItem="S72-q7-Jvb" secondAttribute="trailing" constant="36" id="uDa-WQ-8uk"/>
-                            <constraint firstItem="S72-q7-Jvb" firstAttribute="top" secondItem="U2w-dh-9D9" secondAttribute="top" constant="834" id="wD6-EM-Eb6"/>
-                            <constraint firstItem="S72-q7-Jvb" firstAttribute="top" secondItem="fgH-nv-JvY" secondAttribute="bottom" constant="23" id="yfa-EJ-H0x"/>
                         </constraints>
                     </view>
                 </viewController>

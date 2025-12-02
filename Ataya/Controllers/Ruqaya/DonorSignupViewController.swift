@@ -25,12 +25,17 @@ class DonorSignupViewController: UIViewController {
     
     @IBOutlet weak var bottomLoginLabel: UILabel!
         
+    @IBOutlet weak var phoneContainerView: UIView!
+    
+    
+    
     func styleTextField(_ textField: UITextField) {
-        textField.layer.cornerRadius = 10
+        textField.layer.cornerRadius = 8
         textField.layer.borderWidth = 1
-        textField.layer.borderColor = UIColor.lightGray.cgColor
+        textField.layer.borderColor = UIColor(hex: "#B8B8B8").cgColor
         textField.layer.masksToBounds = true
     }
+
 
     
     override func viewDidLoad() {
@@ -39,9 +44,7 @@ class DonorSignupViewController: UIViewController {
         // Do any additional setup after loading the view.
         styleTextField(fullNameTextField)
         styleTextField(emailTextField)
-        styleTextField(phoneTextField)
         styleTextField(passwordTextField)
-        styleTextField(phoneTextField)
 
         
         passwordTextField.isSecureTextEntry = true
@@ -97,6 +100,14 @@ class DonorSignupViewController: UIViewController {
         
         //phone num code and flag
         phoneTextField.keyboardType = .numberPad
+        phoneTextField.borderStyle = .none
+
+
+        //phone number view style:
+        phoneContainerView.layer.cornerRadius = 8
+        phoneContainerView.layer.borderWidth = 1
+        phoneContainerView.layer.borderColor = UIColor(hex: "#B8B8B8").cgColor
+        phoneContainerView.layer.masksToBounds = true
 
 
     }

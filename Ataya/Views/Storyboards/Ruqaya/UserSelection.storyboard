@@ -928,10 +928,11 @@ and Privacy policy.</string>
                                 <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cx6-kP-Ov6">
-                                <rect key="frame" x="20" y="656" width="379.66666666666669" height="40"/>
+                                <rect key="frame" x="20" y="656" width="379.66666666666669" height="54"/>
                                 <color key="backgroundColor" red="0.96862745098039216" green="0.83137254901960778" blue="0.29803921568627451" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="zee-tg-iKl"/>
+                                    <constraint firstAttribute="width" constant="362" id="JbD-k1-Dny"/>
+                                    <constraint firstAttribute="height" constant="54" id="zee-tg-iKl"/>
                                 </constraints>
                                 <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" title="Button"/>
@@ -943,7 +944,7 @@ and Privacy policy.</string>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Already have an account? Log in" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KXm-td-3GA">
-                                <rect key="frame" x="99.333333333333314" y="716" width="221" height="18"/>
+                                <rect key="frame" x="99.333333333333314" y="730" width="221" height="18"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <color key="textColor" red="0.2627450980392157" green="0.2627450980392157" blue="0.2627450980392157" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
@@ -1049,6 +1050,7 @@ and Privacy policy.</string>
                             <constraint firstItem="wrH-mu-KPe" firstAttribute="top" secondItem="oLJ-9i-Dv4" secondAttribute="bottom" constant="30" id="rXq-Fw-mzD"/>
                             <constraint firstItem="vyJ-2k-2q0" firstAttribute="top" secondItem="DHT-iH-htf" secondAttribute="top" constant="40" id="s7U-gv-ARl"/>
                             <constraint firstItem="y6s-32-qhc" firstAttribute="leading" secondItem="vyJ-2k-2q0" secondAttribute="leading" id="vlP-m1-0Xj"/>
+                            <constraint firstItem="Cx6-kP-Ov6" firstAttribute="top" secondItem="wPz-In-OEV" secondAttribute="bottom" constant="37" id="yfF-oi-MJj"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="E2p-rM-Ne0"/>
@@ -1058,6 +1060,7 @@ and Privacy policy.</string>
                         <outlet property="eyeButton" destination="PUM-va-SbW" id="S73-vP-Szc"/>
                         <outlet property="fullNameTextField" destination="Xyi-Gp-LoH" id="ucD-VA-wm3"/>
                         <outlet property="passwordTextField" destination="oLJ-9i-Dv4" id="nJQ-EP-W7O"/>
+                        <outlet property="phoneContainerView" destination="4zj-7d-1Mx" id="eO9-k5-PEQ"/>
                         <outlet property="phoneTextField" destination="aAz-4S-bh7" id="1ly-hL-a1g"/>
                         <outlet property="termsCheckButton" destination="fLx-cJ-9Qz" id="4Wz-7a-o9D"/>
                         <outlet property="termsLabel" destination="wPz-In-OEV" id="f8P-zu-9ss"/>

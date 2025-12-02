@@ -8,9 +8,14 @@
 import UIKit
 
 class NGODonationDetailsViewController: UIViewController {
-
+    @IBOutlet weak var donationCardView: UIView!
+    @IBOutlet weak var donorCardView: UIView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        donationCardView.applyCardStyle()
+        donorCardView.applyCardStyle()
+
 
         // Do any additional setup after loading the view.
     }

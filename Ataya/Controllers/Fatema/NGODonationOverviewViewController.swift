@@ -36,8 +36,6 @@ class NGODonationOverviewViewController: UIViewController, UITableViewDelegate, 
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 200
         tableView.separatorStyle = .none
-
-
     }
 
     // MARK: - TABLE VIEW DATA SOURCE

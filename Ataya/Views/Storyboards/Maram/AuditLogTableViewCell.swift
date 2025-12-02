@@ -8,16 +8,44 @@
 import UIKit
 
 class AuditLogTableViewCell: UITableViewCell {
-
+    
+    
+    
+    @IBOutlet weak var cardView: UIView!
+    
+    @IBOutlet weak var titleLabel: UILabel!
+    
+    @IBOutlet weak var userTitleLabel: UILabel!
+    
+    @IBOutlet weak var userValueLabel: UILabel!
+    
+    @IBOutlet weak var actionTitleLabel: UILabel!
+    
+    @IBOutlet weak var actionValueLabel: UILabel!
+    
+    @IBOutlet weak var locationTitleLabel: UILabel!
+    
+    @IBOutlet weak var locationValueLabel: UILabel!
+    
+    @IBOutlet weak var dateTitleLabel: UILabel!
+    
+    @IBOutlet weak var dateValueLabel: UILabel!
+    
+    @IBOutlet weak var statusTitleLabel: UILabel!
+    
+    @IBOutlet weak var statusValueLabel: UILabel!
+    
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        cardView.layer.cornerRadius = 12
+            cardView.layer.borderWidth = 1
+            cardView.layer.borderColor = UIColor.systemGray5.cgColor
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
-        // Configure the view for the selected state
     }
     
 }

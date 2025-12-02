@@ -976,9 +976,36 @@
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="hqS-qP-Zlk">
+                                <rect key="frame" x="10" y="168" width="456" height="56"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="410" id="ku1-TQ-9Xd"/>
+                                </constraints>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="ngh-xP-Xpl" id="MmQ-zA-lsr"/>
+                                </connections>
+                            </searchBar>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="NYA-wY-zL6">
+                                <rect key="frame" x="16" y="232" width="444" height="33"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="32" id="QwF-mq-6EV"/>
+                                </constraints>
+                                <segments>
+                                    <segment title="All"/>
+                                    <segment title="Donations"/>
+                                    <segment title="Campaigns"/>
+                                    <segment title="Accounts"/>
+                                    <segment title="System"/>
+                                </segments>
+                            </segmentedControl>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Guj-j3-GRY">
+                                <rect key="frame" x="0.0" y="272" width="476" height="616"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Audit Log" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BMh-Bx-Riq">
-                                <rect key="frame" x="181.33333333333334" y="124" width="77.333333333333343" height="21"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                <rect key="frame" x="193.33333333333334" y="124" width="89.666666666666657" height="24"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -986,7 +1013,17 @@
                         <viewLayoutGuide key="safeArea" id="aJB-B4-pSH"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="aJB-B4-pSH" firstAttribute="bottom" secondItem="Guj-j3-GRY" secondAttribute="bottom" id="05I-U3-Wbz"/>
+                            <constraint firstItem="aJB-B4-pSH" firstAttribute="trailing" secondItem="Guj-j3-GRY" secondAttribute="trailing" id="38e-US-jCD"/>
+                            <constraint firstItem="NYA-wY-zL6" firstAttribute="top" secondItem="hqS-qP-Zlk" secondAttribute="bottom" constant="8" id="3Rg-KX-hNu"/>
+                            <constraint firstItem="Guj-j3-GRY" firstAttribute="leading" secondItem="aJB-B4-pSH" secondAttribute="leading" id="3Ux-91-ugu"/>
+                            <constraint firstItem="NYA-wY-zL6" firstAttribute="leading" secondItem="aJB-B4-pSH" secondAttribute="leading" constant="16" id="E48-P1-3Yn"/>
                             <constraint firstItem="BMh-Bx-Riq" firstAttribute="top" secondItem="aJB-B4-pSH" secondAttribute="top" id="HFI-Wm-TwB"/>
+                            <constraint firstItem="aJB-B4-pSH" firstAttribute="trailing" secondItem="NYA-wY-zL6" secondAttribute="trailing" constant="16" id="K1G-h7-LXH"/>
+                            <constraint firstItem="hqS-qP-Zlk" firstAttribute="leading" secondItem="aJB-B4-pSH" secondAttribute="leading" constant="10" id="c0h-fc-Sg4"/>
+                            <constraint firstItem="hqS-qP-Zlk" firstAttribute="centerX" secondItem="aJB-B4-pSH" secondAttribute="centerX" id="fmf-N9-dT0"/>
+                            <constraint firstItem="Guj-j3-GRY" firstAttribute="top" secondItem="NYA-wY-zL6" secondAttribute="bottom" constant="8" id="uwn-G0-rKR"/>
+                            <constraint firstItem="hqS-qP-Zlk" firstAttribute="top" secondItem="BMh-Bx-Riq" secondAttribute="bottom" constant="20" id="vbZ-7n-R6a"/>
                             <constraint firstItem="BMh-Bx-Riq" firstAttribute="centerX" secondItem="aJB-B4-pSH" secondAttribute="centerX" id="zpP-6R-JLG"/>
                         </constraints>
                     </view>

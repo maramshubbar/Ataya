@@ -69,6 +69,4 @@ class NGODonationOverviewViewController: UIViewController, UITableViewDelegate, 
 
         return cell
     }
-
-    
 }

@@ -34,14 +34,20 @@ class ReportCellTableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
         
-        cardView.layer.cornerRadius = 12
-                cardView.clipsToBounds = true
-       
+       // cardView.layer.cornerRadius = 12
+               // cardView.clipsToBounds = true
+        cardView.layer.cornerRadius = 8
+           cardView.layer.borderWidth = 1
+           cardView.layer.borderColor = UIColor.systemGray5.cgColor
+           cardView.clipsToBounds = true
         
         
         // Status badge
         statusBadgeView.layer.cornerRadius = 8
             statusBadgeView.clipsToBounds = true
+        statusBadgeView.backgroundColor = UIColor(red: 1.0, green: 0.984, blue: 0.8, alpha: 1.0) // #FFFBCC
+
+
 
         
         
@@ -49,6 +55,15 @@ class ReportCellTableViewCell: UITableViewCell {
         viewDetailsButton.layer.cornerRadius = 4.6
                 viewDetailsButton.clipsToBounds = true
     }
+    
+    
+    
+        override func layoutSubviews() {
+            super.layoutSubviews()
+            
+            // Apply the badge color AFTER layout (so nothing overrides it)
+            statusBadgeView.backgroundColor = UIColor(red: 1.0, green: 0.984, blue: 0.8, alpha: 1.0) // #FFFBCC
+        }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)

@@ -20,6 +20,20 @@ class ReportManagementViewController:
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        
+        // Remove top & bottom lines
+           searchBar.backgroundImage = UIImage()
+           searchBar.searchBarStyle = .minimal
+
+           // Make the search field perfectly white
+           if let searchField = searchBar.value(forKey: "searchField") as? UITextField {
+               searchField.backgroundColor = .white     // PURE WHITE
+               searchField.layer.cornerRadius = 10
+               searchField.clipsToBounds = true
+           }
+        
+        
+        
         tableView.delegate = self
         tableView.dataSource = self
 
@@ -29,19 +43,11 @@ class ReportManagementViewController:
 
                 tableView.rowHeight = UITableView.automaticDimension
                 tableView.estimatedRowHeight = 200
-
+                tableView.separatorStyle = .none
+        
     }
     
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
     
     @objc func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
             return 4
@@ -64,5 +70,7 @@ class ReportManagementViewController:
 
         return cell
     }
+    
+    
 
 }

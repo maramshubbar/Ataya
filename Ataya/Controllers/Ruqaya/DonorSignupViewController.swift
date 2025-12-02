@@ -23,7 +23,8 @@ class DonorSignupViewController: UIViewController {
     
     @IBOutlet weak var termsLabel: UILabel!
     
-    
+    @IBOutlet weak var bottomLoginLabel: UILabel!
+        
     func styleTextField(_ textField: UITextField) {
         textField.layer.cornerRadius = 10
         textField.layer.borderWidth = 1
@@ -40,6 +41,8 @@ class DonorSignupViewController: UIViewController {
         styleTextField(emailTextField)
         styleTextField(phoneTextField)
         styleTextField(passwordTextField)
+        styleTextField(phoneTextField)
+
         
         passwordTextField.isSecureTextEntry = true
         eyeButton.setImage(UIImage(systemName: "eye"), for: .normal)
@@ -67,11 +70,35 @@ class DonorSignupViewController: UIViewController {
             attributedString.addAttribute(.foregroundColor, value: goldColor, range: nsRange)
         }
 
-        // نحط النص الملوّن داخل اللابل
         termsLabel.attributedText = attributedString
-
-
         
+        
+        
+        
+        //bottom sentence
+
+        let fullLoginText = "Already have an account? Log in"
+
+        let loginAttributed = NSMutableAttributedString(string: fullLoginText)
+
+        let gray = UIColor(hex: "#5A5A5A")
+        let gold = UIColor(hex: "#F7D44C")
+
+        loginAttributed.addAttribute(.foregroundColor,
+                                     value: gray,
+                                     range: NSRange(location: 0, length: fullLoginText.count))
+
+        if let loginRange = fullLoginText.range(of: "Log in") {
+            let nsRange = NSRange(loginRange, in: fullLoginText)
+            loginAttributed.addAttribute(.foregroundColor, value: gold, range: nsRange)
+        }
+
+        bottomLoginLabel.attributedText = loginAttributed
+        
+        //phone num code and flag
+        phoneTextField.keyboardType = .numberPad
+
+
     }
     
     @IBAction func signUpPressed(_ sender: UIButton) {

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="teE-Uc-qWh">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="XPY-Ro-POv">
     <device id="retina6_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -560,17 +561,249 @@
             </objects>
             <point key="canvasLocation" x="2325" y="-21"/>
         </scene>
+        <!--Safety-->
+        <scene sceneID="0t9-A9-2aq">
+            <objects>
+                <viewController title="Safety" id="XPY-Ro-POv" customClass="SafetyVC" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="C9D-FH-dNC">
+                        <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jUK-nD-2EL" userLabel="TopBarContainer">
+                                <rect key="frame" x="0.0" y="149" width="440" height="56"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Safety &amp; Submit" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wnx-S3-MKR" userLabel="titleLabel">
+                                        <rect key="frame" x="144.33333333333337" y="16" width="151.66666666666663" height="24"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5EY-HM-VFd" userLabel="backButton">
+                                        <rect key="frame" x="35" y="16" width="24" height="24"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="24" id="lce-Y6-jZH"/>
+                                            <constraint firstAttribute="width" constant="24" id="loE-jP-3TC"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="chevron.left" catalog="system">
+                                            <color key="baseForegroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        </buttonConfiguration>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="Wnx-S3-MKR" firstAttribute="centerY" secondItem="jUK-nD-2EL" secondAttribute="centerY" id="1Gu-zW-d4F"/>
+                                    <constraint firstItem="5EY-HM-VFd" firstAttribute="centerY" secondItem="jUK-nD-2EL" secondAttribute="centerY" id="WG2-uG-unE"/>
+                                    <constraint firstItem="Wnx-S3-MKR" firstAttribute="centerX" secondItem="jUK-nD-2EL" secondAttribute="centerX" id="ady-jb-lv3"/>
+                                    <constraint firstAttribute="height" constant="56" id="aea-yD-6SP"/>
+                                    <constraint firstItem="5EY-HM-VFd" firstAttribute="leading" secondItem="jUK-nD-2EL" secondAttribute="leading" constant="35" id="gRN-KK-b0V"/>
+                                </constraints>
+                            </view>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="foodSafety" translatesAutoresizingMaskIntoConstraints="NO" id="h0z-66-0MV">
+                                <rect key="frame" x="92.666666666666686" y="245" width="255" height="240"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="255" id="Hff-dR-LwA"/>
+                                    <constraint firstAttribute="height" constant="240" id="hCM-GV-cTC"/>
+                                </constraints>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Is-ag-kNF">
+                                <rect key="frame" x="25" y="870" width="390" height="56"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="56" id="ZNH-TA-Rmj"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Next">
+                                    <backgroundConfiguration key="background">
+                                        <color key="backgroundColor" red="0.96862745100000003" green="0.83137254900000002" blue="0.29803921570000003" alpha="1" colorSpace="calibratedRGB"/>
+                                    </backgroundConfiguration>
+                                    <fontDescription key="titleFontDescription" type="system" pointSize="18"/>
+                                    <color key="baseForegroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="checkboxTapped:" destination="XPY-Ro-POv" eventType="touchUpInside" id="USU-y5-tgJ"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please review these quick food safety checks before submitting your donation." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="svx-f1-Flr" userLabel="label">
+                                <rect key="frame" x="104" y="525" width="232" height="50.333333333333371"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
+                                <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="4vo-Ij-Vkg">
+                                <rect key="frame" x="45" y="605.33333333333337" width="362" height="132"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="Qhd-dW-u3o">
+                                        <rect key="frame" x="0.0" y="0.0" width="362" height="20"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="checkmark.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="ZDx-XR-7Q9">
+                                                <rect key="frame" x="0.0" y="0.66666666666666607" width="20" height="18.666666666666671"/>
+                                                <color key="tintColor" name="AccentColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="20" id="oFK-vR-Tn1"/>
+                                                    <constraint firstAttribute="height" constant="20" id="qJK-eh-WqC"/>
+                                                </constraints>
+                                            </imageView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Food is fresh and not spoiled. " textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Q1x-Hc-26q">
+                                                <rect key="frame" x="32" y="0.0" width="330" height="20"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="Szl-Iy-VC5">
+                                        <rect key="frame" x="0.0" y="28" width="362" height="20"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="checkmark.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="Le8-EH-viw">
+                                                <rect key="frame" x="0.0" y="0.66666666666666607" width="20" height="18.666666666666671"/>
+                                                <color key="tintColor" name="AccentColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="20" id="R2h-92-H1b"/>
+                                                    <constraint firstAttribute="width" constant="20" id="Tac-gS-Bg3"/>
+                                                </constraints>
+                                            </imageView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Perishable items are stored in cool conditions." textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Cer-xv-r0J">
+                                                <rect key="frame" x="32" y="0.0" width="330" height="20"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="5ed-Ui-fs3">
+                                        <rect key="frame" x="0.0" y="56" width="362" height="20"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="checkmark.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="mw9-rP-TNj">
+                                                <rect key="frame" x="0.0" y="0.66666666666666607" width="20" height="18.666666666666671"/>
+                                                <color key="tintColor" name="AccentColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="20" id="86C-FY-4z7"/>
+                                                    <constraint firstAttribute="width" constant="20" id="9XJ-sC-7Ve"/>
+                                                </constraints>
+                                            </imageView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Meals are packed securely and sealed properly." textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Esg-Db-aRk">
+                                                <rect key="frame" x="32" y="0.0" width="330" height="20"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="lbE-SS-oyZ">
+                                        <rect key="frame" x="0.0" y="84" width="362" height="20"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="checkmark.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="ciU-lG-30H">
+                                                <rect key="frame" x="0.0" y="0.66666666666666607" width="20" height="18.666666666666671"/>
+                                                <color key="tintColor" name="AccentColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="20" id="XFk-Es-Em7"/>
+                                                    <constraint firstAttribute="width" constant="20" id="t5D-fn-iNs"/>
+                                                </constraints>
+                                            </imageView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="No expired, opened, or half-eaten food." textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3iu-sO-N45">
+                                                <rect key="frame" x="32" y="0.0" width="330" height="20"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="Ftd-Qk-dkD">
+                                        <rect key="frame" x="0.0" y="112" width="362" height="20"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="checkmark.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="DqI-ip-kjR">
+                                                <rect key="frame" x="0.0" y="0.66666666666666607" width="20" height="18.666666666666671"/>
+                                                <color key="tintColor" name="AccentColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="20" id="kbN-V9-0Lb"/>
+                                                    <constraint firstAttribute="height" constant="20" id="lz1-9p-iqg"/>
+                                                </constraints>
+                                            </imageView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Hands and containers were clean during preparation." textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BBL-zg-WWf">
+                                                <rect key="frame" x="32" y="0.0" width="330" height="20"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                            </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Cf-Km-Ry0">
+                                <rect key="frame" x="45" y="772.33333333333337" width="24" height="24"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="24" id="2KZ-eu-f8R"/>
+                                    <constraint firstAttribute="width" constant="24" id="MEz-bS-gWy"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="checkbox_checked"/>
+                                <connections>
+                                    <action selector="checkboxTapped:" destination="XPY-Ro-POv" eventType="touchUpInside" id="GVo-g5-bfq"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="I confirm my donation meets all safety requirements." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Icg-K5-JDk">
+                                <rect key="frame" x="81" y="760.33333333333337" width="267" height="48"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="48" id="Yld-Yt-qTj"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Cie-aW-EWR"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="Cie-aW-EWR" firstAttribute="trailing" secondItem="Icg-K5-JDk" secondAttribute="trailing" constant="92" id="3Bh-up-Ixn"/>
+                            <constraint firstItem="h0z-66-0MV" firstAttribute="centerX" secondItem="C9D-FH-dNC" secondAttribute="centerX" id="57f-FN-OI6"/>
+                            <constraint firstItem="4Cf-Km-Ry0" firstAttribute="leading" secondItem="Cie-aW-EWR" secondAttribute="leading" constant="45" id="6bM-bj-kuq"/>
+                            <constraint firstItem="svx-f1-Flr" firstAttribute="top" secondItem="h0z-66-0MV" secondAttribute="bottom" constant="40" id="8UO-ga-OEJ"/>
+                            <constraint firstItem="Icg-K5-JDk" firstAttribute="leading" secondItem="4Cf-Km-Ry0" secondAttribute="trailing" constant="12" id="AUP-WF-vRK"/>
+                            <constraint firstItem="4Cf-Km-Ry0" firstAttribute="top" secondItem="4vo-Ij-Vkg" secondAttribute="bottom" constant="35" id="ClY-Cu-Ohf"/>
+                            <constraint firstItem="4vo-Ij-Vkg" firstAttribute="top" secondItem="svx-f1-Flr" secondAttribute="bottom" constant="30" id="EYC-Uf-17R"/>
+                            <constraint firstItem="jUK-nD-2EL" firstAttribute="leading" secondItem="Cie-aW-EWR" secondAttribute="leading" id="GyQ-My-Caw"/>
+                            <constraint firstItem="Cie-aW-EWR" firstAttribute="trailing" secondItem="4vo-Ij-Vkg" secondAttribute="trailing" constant="33" id="I2U-X1-nTR"/>
+                            <constraint firstItem="Icg-K5-JDk" firstAttribute="centerY" secondItem="4Cf-Km-Ry0" secondAttribute="centerY" id="MYD-Ax-lWj"/>
+                            <constraint firstItem="Icg-K5-JDk" firstAttribute="top" secondItem="4vo-Ij-Vkg" secondAttribute="bottom" constant="23" id="MeS-k3-Uzi"/>
+                            <constraint firstItem="2Is-ag-kNF" firstAttribute="leading" secondItem="C9D-FH-dNC" secondAttribute="leading" constant="25" id="ORm-0a-EiI"/>
+                            <constraint firstItem="4vo-Ij-Vkg" firstAttribute="leading" secondItem="Cie-aW-EWR" secondAttribute="leading" constant="45" id="Otl-Ac-BAD"/>
+                            <constraint firstItem="Cie-aW-EWR" firstAttribute="trailing" secondItem="svx-f1-Flr" secondAttribute="trailing" constant="104" id="dOt-5U-8c9"/>
+                            <constraint firstItem="svx-f1-Flr" firstAttribute="leading" secondItem="Cie-aW-EWR" secondAttribute="leading" constant="104" id="fCe-9t-40u"/>
+                            <constraint firstItem="svx-f1-Flr" firstAttribute="centerX" secondItem="C9D-FH-dNC" secondAttribute="centerX" id="hI1-qF-MOn"/>
+                            <constraint firstAttribute="bottom" secondItem="2Is-ag-kNF" secondAttribute="bottom" constant="30" id="hZn-3a-94P"/>
+                            <constraint firstItem="jUK-nD-2EL" firstAttribute="trailing" secondItem="Cie-aW-EWR" secondAttribute="trailing" id="l33-48-S1V"/>
+                            <constraint firstItem="jUK-nD-2EL" firstAttribute="top" secondItem="Cie-aW-EWR" secondAttribute="top" constant="25" id="niu-3V-w2q"/>
+                            <constraint firstItem="h0z-66-0MV" firstAttribute="top" secondItem="jUK-nD-2EL" secondAttribute="bottom" constant="40" id="sAs-GF-xG8"/>
+                            <constraint firstAttribute="trailing" secondItem="2Is-ag-kNF" secondAttribute="trailing" constant="25" id="uw7-HQ-zXq"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="checkboxButton" destination="4Cf-Km-Ry0" id="Ecc-kd-Wcm"/>
+                        <outlet property="nextButton" destination="2Is-ag-kNF" id="CeJ-Hq-x74"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="jko-1e-hQn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3259.0909090909095" y="-21.338912133891213"/>
+        </scene>
     </scenes>
     <resources>
         <image name="Adv" width="291.33334350585938" height="244"/>
         <image name="addDonation" width="348" height="326.66665649414062"/>
         <image name="box" width="348" height="326.66665649414062"/>
         <image name="camera.fill" catalog="system" width="128" height="93"/>
+        <image name="checkbox_checked" width="20" height="20"/>
+        <image name="checkmark.circle.fill" catalog="system" width="128" height="123"/>
         <image name="chevron.left" catalog="system" width="97" height="128"/>
         <image name="details" width="20.666666030883789" height="20.666666030883789"/>
+        <image name="foodSafety" width="348" height="326.66665649414062"/>
         <image name="safety" width="20.666666030883789" height="20.666666030883789"/>
         <image name="square.and.arrow.up" catalog="system" width="110" height="128"/>
         <image name="upload" width="26" height="20"/>
+        <namedColor name="AccentColor">
+            <color red="1" green="0.79199999570846558" blue="0.15700000524520874" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

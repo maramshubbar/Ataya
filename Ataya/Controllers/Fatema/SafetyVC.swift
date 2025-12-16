@@ -10,57 +10,90 @@ import UIKit
 final class SafetyVC: UIViewController {
     @IBOutlet weak var checkboxButton: UIButton!
     @IBOutlet weak var nextButton: UIButton!
-   
-
+    
     private var isConfirmed = false
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+        private let disabledGray = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1) // #E8E8E8
+        private let enabledYellow = UIColor(red: 255/255, green: 216/255, blue: 63/255, alpha: 1) // #FFD83F
 
-        // Checkbox icons (system)
-        checkboxButton.setImage(UIImage(systemName: "square"), for: .normal)
-        checkboxButton.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
-        checkboxButton.tintColor = UIColor(white: 0.70, alpha: 1.0)
+        override func viewDidLoad() {
+            super.viewDidLoad()
+            configureNextButton(isEnabled: false)
+            setupCheckbox()
+            setupNextButton()
+            updateUI()
+        }
 
-        // Remove any image from Next button (prevents weird box)
-        nextButton.setImage(nil, for: .normal)
-        nextButton.setImage(nil, for: .disabled)
-        nextButton.setImage(nil, for: .highlighted)
-        nextButton.setImage(nil, for: .selected)
+        private func setupCheckbox() {
+            // iOS-style checkbox (gray)
+            checkboxButton.setImage(UIImage(systemName: "square"), for: .normal)
+            checkboxButton.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
+            checkboxButton.tintColor = UIColor(white: 0.70, alpha: 1.0) // gray like your last pic
 
-        nextButton.layer.cornerRadius = 12
-        nextButton.clipsToBounds = true
+            // IMPORTANT: start unchecked
+            checkboxButton.isSelected = false
+            isConfirmed = false
+        }
 
-        // Start unchecked
-        isConfirmed = false
-        applyState()
-    }
+        private func setupNextButton() {
+            // Remove any image that causes the weird square inside the button
+            nextButton.setImage(nil, for: .normal)
+            nextButton.setImage(nil, for: .disabled)
+            nextButton.setImage(nil, for: .highlighted)
+            nextButton.setImage(nil, for: .selected)
 
-    private func applyState() {
-        // ✅ THIS line is what makes the icon change
+            nextButton.layer.cornerRadius = 12
+            nextButton.clipsToBounds = true
+            nextButton.setTitle("Next", for: .normal)
+
+            // Ensure title color stays what we want
+            nextButton.setTitleColor(.black, for: .normal)
+            nextButton.setTitleColor(.white, for: .disabled)
+        }
+
+    private func updateUI() {
         checkboxButton.isSelected = isConfirmed
-
         nextButton.isEnabled = isConfirmed
 
         if isConfirmed {
+            // ✅ CHECKED → Yellow, enabled
             nextButton.backgroundColor = UIColor(hex: "#FFD83F")
             nextButton.setTitleColor(.white, for: .normal)
             nextButton.alpha = 1.0
         } else {
-            nextButton.backgroundColor = UIColor(hex: "#E8E8E8") // exact gray
+            // ❌ UNCHECKED → EXACT gray #E8E8E8
+            nextButton.backgroundColor = UIColor(hex: "#E8E8E8")
             nextButton.setTitleColor(.white, for: .normal)
             nextButton.setTitleColor(.white, for: .disabled)
-            nextButton.alpha = 1.0
+            nextButton.alpha = 1.0   // ❗ keep 1 so color stays true
         }
     }
 
-    @IBAction func checkboxTapped(_ sender: UIButton) {
-        isConfirmed.toggle()
-        applyState()
+    private func configureNextButton(isEnabled: Bool) {
+        nextButton.isEnabled = isEnabled
+
+        if isEnabled {
+            // ✅ checked
+            nextButton.backgroundColor = UIColor(hex: "#FFD83F")
+            nextButton.setTitleColor(.white, for: .normal)
+        } else {
+            // ❌ unchecked  ← HERE IS WHERE YOU PUT IT
+            nextButton.backgroundColor = UIColor(hex: "#E8E8E8")
+            nextButton.setTitleColor(.white, for: .disabled)
+            nextButton.setTitleColor(.white, for: .normal) // extra safety
+        }
     }
 
-    @IBAction func nextTapped(_ sender: UIButton) {
-        guard isConfirmed else { return }
-        performSegue(withIdentifier: "toNextPage", sender: nil)
+    
+
+        @IBAction func checkboxTapped(_ sender: UIButton) {
+            isConfirmed.toggle()
+            updateUI()
+        }
+
+        @IBAction func nextTapped(_ sender: UIButton) {
+            guard isConfirmed else { return }
+            performSegue(withIdentifier: "toNextPage", sender: nil)
+        }
     }
-}
+

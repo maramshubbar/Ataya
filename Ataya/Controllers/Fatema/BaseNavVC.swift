@@ -25,11 +25,6 @@ class BaseNavVC: UIViewController {
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = .white
             appearance.shadowColor = .clear // removes bottom line
-            appearance.titleTextAttributes = [
-                .font: UIFont.boldSystemFont(ofSize: 12),
-                .foregroundColor: UIColor.black
-            ]
-
             
             navBar.standardAppearance = appearance
             navBar.scrollEdgeAppearance = appearance
@@ -48,17 +43,20 @@ class BaseNavVC: UIViewController {
     }
     
     private func makeBackBarButton() -> UIBarButtonItem {
-        // Make sure your asset name matches exactly
-        let item = UIBarButtonItem(
-            image: UIImage(named: "back-button"),
-            style: .plain,
-            target: self,
-            action: #selector(backTapped)
-        )
-        
-        // Accessibility (good practice)
-        item.accessibilityLabel = "Back"
-        return item
+        let button = UIButton(type: .system)
+            button.setImage(UIImage(named: "back-button"), for: .normal)
+            button.tintColor = .black
+
+            button.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
+
+            // Optional: move it slightly down to match your reference
+            button.contentEdgeInsets = UIEdgeInsets(top: 6, left: 0, bottom: -6, right: 0)
+
+            button.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
+
+            let item = UIBarButtonItem(customView: button)
+            item.accessibilityLabel = "Back"
+            return item
     }
     
     @objc private func backTapped() {

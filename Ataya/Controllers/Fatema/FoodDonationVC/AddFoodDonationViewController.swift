@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class AddFoodDonationViewController: BaseNavVC{
+class AddFoodDonationViewController: UIViewController{
     @IBOutlet weak var uploadPhotosCard: UIView!
     @IBOutlet weak var enterDetailsCard: UIView!
     @IBOutlet weak var safetySubmitCard: UIView!

@@ -7,12 +7,13 @@
 
 import UIKit
 
-final class SafetyVC: BaseNavVC {
+final class SafetyVC: UIViewController {
     @IBOutlet weak var checkboxButton: UIButton!
     @IBOutlet weak var nextButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
 
         // Start with unchecked state
         checkboxButton.isSelected = false

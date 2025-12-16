@@ -7,7 +7,7 @@
 
 import UIKit
 
-class NGODonationOverviewViewController: BaseNavVC, UITableViewDelegate, UITableViewDataSource{
+class NGODonationOverviewViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
 
     @IBOutlet weak var filterSegment: UISegmentedControl!
     @IBOutlet weak var searchBar: UISearchBar!

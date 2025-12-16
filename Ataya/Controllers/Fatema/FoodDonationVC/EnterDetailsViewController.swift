@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class EnterDetailsViewController: BaseNavVC{
+class EnterDetailsViewController: UIViewController{
 
     override func viewDidLoad() {
         super.viewDidLoad()

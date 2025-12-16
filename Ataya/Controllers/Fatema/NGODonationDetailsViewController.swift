@@ -7,7 +7,7 @@
 
 import UIKit
 
-class NGODonationDetailsViewController: BaseNavVC {
+class NGODonationDetailsViewController: UIViewController {
     @IBOutlet weak var donationCardView: UIView!
     @IBOutlet weak var donorCardView: UIView!
     

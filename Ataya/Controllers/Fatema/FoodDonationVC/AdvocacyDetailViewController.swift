@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class AdvocacyDetailViewController: BaseNavVC{
+final class AdvocacyDetailViewController: UIViewController{
 
     override func viewDidLoad() {
         super.viewDidLoad()

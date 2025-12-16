@@ -10,13 +10,11 @@ import UIKit
 class AdminDashboardViewController: UIViewController {
     
     
-    var tabBarView: CustomTabBarView!
 
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupTabBar()
 
         
         
@@ -32,26 +30,7 @@ class AdminDashboardViewController: UIViewController {
         auditLogButton.layer.masksToBounds = true
         
     }
-   
-    func setupTabBar() {
-        print("TAB BAR LOADED")
 
-        // Load the XIB
-        let tabBar = CustomTabBarView.loadFromNib()
-        self.tabBarView = tabBar
-
-        // Add it to bottom
-        view.addSubview(tabBar)
-
-        tabBar.translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint.activate([
-            tabBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tabBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tabBar.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            tabBar.heightAnchor.constraint(equalToConstant: 110)
-        ])
-    }
 
 
     

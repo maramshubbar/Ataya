@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SafetyVC: UIViewController {
+final class SafetyVC: BaseNavVC {
     @IBOutlet weak var checkboxButton: UIButton!
     @IBOutlet weak var nextButton: UIButton!
     

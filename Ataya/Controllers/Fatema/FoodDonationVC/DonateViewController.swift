@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DonateViewController: UIViewController {
+class DonateViewController: BaseNavVC{
 
     @IBOutlet weak var card1: UIView!
     @IBOutlet weak var card2: UIView!

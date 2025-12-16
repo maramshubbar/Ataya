@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AddFoodDonationViewController: UIViewController {
+final class AddFoodDonationViewController: BaseNavVC{
     @IBOutlet weak var uploadPhotosCard: UIView!
     @IBOutlet weak var enterDetailsCard: UIView!
     @IBOutlet weak var safetySubmitCard: UIView!
@@ -43,18 +43,4 @@ class AddFoodDonationViewController: UIViewController {
         view.backgroundColor = bgColor
         view.layer.masksToBounds = true
     }
-
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
-

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class UploadPhotosViewController: UIViewController {
+final class UploadPhotosViewController: BaseNavVC {
     @IBOutlet weak var uploadCardView: UIView!
     
     override func viewDidLoad() {

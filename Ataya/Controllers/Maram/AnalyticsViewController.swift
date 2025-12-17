@@ -136,7 +136,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
             let cell = tableView.dequeueReusableCell(withIdentifier: "CountryCell", for: indexPath)
             let item = data[indexPath.row]
             
-            let dot = cell.contentView.viewWithTag(1) as? UIView
+            let dot = cell.contentView.viewWithTag(1)
             let nameLbl = cell.contentView.viewWithTag(2) as? UILabel
             let pctLbl  = cell.contentView.viewWithTag(3) as? UILabel
             let amtLbl  = cell.contentView.viewWithTag(4) as? UILabel

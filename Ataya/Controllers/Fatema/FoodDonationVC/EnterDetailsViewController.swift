@@ -7,12 +7,14 @@
 
 import UIKit
 
-class EnterDetailsViewController: UIViewController{
+final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
+    @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var expiryTextField: UITextField!
     @IBOutlet weak var categoryTextField: UITextField!
     @IBOutlet weak var allergenTextField: UITextField!
     @IBOutlet weak var packagingTextField: UITextField!
-    
+    @IBOutlet weak var descriptionTextView: UITextView!
     private let expiryMonthYearPicker = UIPickerView()
 
     private let months = Calendar.current.monthSymbols  // ["January", ...]
@@ -71,8 +73,10 @@ class EnterDetailsViewController: UIViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // ✅ Set tags (so icon tap knows which field to open)
+        scrollView.delegate = self
+        nextButton.isHidden = true
+        nextButton.alpha = 0
+        // Set tags (so icon tap knows which field to open)
                 expiryTextField.tag = 1
                 categoryTextField.tag = 2
                 packagingTextField.tag = 3
@@ -112,7 +116,14 @@ class EnterDetailsViewController: UIViewController{
         let year = years[selectedYearIndex]
         expiryTextField.text = "\(monthNumber) / \(year)"
     }
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let isNearBottom = scrollView.contentOffset.y + scrollView.bounds.height >= scrollView.contentSize.height - 80
 
+        nextButton.isHidden = !isNearBottom
+        nextButton.alpha = isNearBottom ? 1 : 0
+    }
+
+       
     
     // MARK: - Dropdown Setup
     private func setupDropdowns() {
@@ -182,7 +193,7 @@ class EnterDetailsViewController: UIViewController{
             let tap = UITapGestureRecognizer(target: self, action: #selector(rightIconTapped(_:)))
             container.addGestureRecognizer(tap)
 
-            // ✅ Use textfield tag so we know which one to open
+            // Use textfield tag so we know which one to open
             container.tag = textField.tag
 
             textField.rightView = container
@@ -194,8 +205,8 @@ class EnterDetailsViewController: UIViewController{
 extension EnterDetailsViewController: UIPickerViewDelegate, UIPickerViewDataSource {
 
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        if pickerView == expiryMonthYearPicker { return 2 }   // ✅ Month + Year
-        return 1                                               // ✅ Dropdowns
+        if pickerView == expiryMonthYearPicker { return 2 }
+        return 1
     }
 
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
@@ -226,7 +237,7 @@ extension EnterDetailsViewController: UIPickerViewDelegate, UIPickerViewDataSour
         if pickerView == expiryMonthYearPicker {
             if component == 0 { selectedMonthIndex = row }
             else { selectedYearIndex = row }
-            updateExpiryText()                                 // ✅ Live update
+            updateExpiryText()
             return
         }
 

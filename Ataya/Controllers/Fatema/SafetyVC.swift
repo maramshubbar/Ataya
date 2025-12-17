@@ -24,33 +24,49 @@ final class SafetyVC: UIViewController {
             isConfirmed = false
         }
 
-        private func configureUI() {
-            // ✅ prevent iOS 15+ configuration overlays
-            if #available(iOS 15.0, *) {
-                checkboxButton.configuration = nil
-                // If title was stored in UIButton.Configuration, it becomes nil after configuration=nil
-                if nextButton.title(for: .normal) == nil {
-                    nextButton.setTitle("Next", for: .normal)
-                }
-    
+    private func configureUI() {
+
+        if #available(iOS 15.0, *) {
+            checkboxButton.configuration = nil
+
+            // Setup Next button configuration updates ONCE
+            let base = nextButton.configuration
+            nextButton.configurationUpdateHandler = { [weak self] button in
+                guard let self else { return }
+                var cfg = button.configuration ?? base ?? .filled()
+
+                cfg.baseBackgroundColor = button.isEnabled ? self.enabledYellow : self.disabledGray
+                cfg.baseForegroundColor = button.isEnabled ? .black : .white
+
+                button.configuration = cfg
             }
 
-            // ✅ Checkbox (state-based)
-            checkboxButton.setImage(UIImage(systemName: "square"), for: .normal)
-            checkboxButton.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
-            checkboxButton.tintColor = .lightGray
-
-
-            updateUI()
+            // if title was in config and disappeared
+            if nextButton.title(for: .normal) == nil {
+                nextButton.setTitle("Next", for: .normal)
+            }
         }
 
-        private func updateUI() {
-            checkboxButton.isSelected = isConfirmed
-            checkboxButton.tintColor  = isConfirmed ? checkedGreen : .lightGray
+        // Checkbox
+        checkboxButton.setImage(UIImage(systemName: "square"), for: .normal)
+        checkboxButton.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
+        checkboxButton.tintColor = .lightGray
 
-            nextButton.isEnabled = isConfirmed
-            nextButton.backgroundColor = isConfirmed ? enabledYellow : disabledGray
+        updateUI()
+    }
+
+
+    private func updateUI() {
+        checkboxButton.isSelected = isConfirmed
+        checkboxButton.tintColor  = isConfirmed ? checkedGreen : .lightGray
+
+        nextButton.isEnabled = isConfirmed
+
+        if #available(iOS 15.0, *) {
+            nextButton.setNeedsUpdateConfiguration()
         }
+    }
+
 
 
         // MARK: - Actions

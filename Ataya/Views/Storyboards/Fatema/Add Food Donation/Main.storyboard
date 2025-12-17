@@ -3,6 +3,8 @@
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -36,6 +38,9 @@
                         <rect key="frame" x="0.0" y="118" width="393" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
+                    <connections>
+                        <segue destination="lpj-LE-YVY" kind="relationship" relationship="rootViewController" id="25A-bD-HeD"/>
+                    </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Uaj-iB-8e5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -68,6 +73,36 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fQa-6s-6Qq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="27" y="-1095"/>
+        </scene>
+        <!--Donor Dashboard View Controller-->
+        <scene sceneID="Roc-Ml-WPQ">
+            <objects>
+                <viewController id="lpj-LE-YVY" customClass="DonorDashboardViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="1j9-du-PLL">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kWq-vt-auw" userLabel="HeaderView">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="88"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="88" id="gL0-fb-zsQ"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="tTG-Xp-D5m"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="kWq-vt-auw" firstAttribute="top" secondItem="1j9-du-PLL" secondAttribute="top" id="DNR-y4-HED"/>
+                            <constraint firstAttribute="trailing" secondItem="kWq-vt-auw" secondAttribute="trailing" id="W8E-Rp-JcH"/>
+                            <constraint firstItem="kWq-vt-auw" firstAttribute="leading" secondItem="1j9-du-PLL" secondAttribute="leading" id="iFf-bE-gSd"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="CIL-Kg-B7H"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="K72-AG-oEi" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1535" y="-371"/>
         </scene>
         <!--Profile-->
         <scene sceneID="fR2-g2-ONc">
@@ -105,5 +140,8 @@
         <image name="prizegrey" width="20" height="20"/>
         <image name="tab_empty" width="0.3333333432674408" height="0.3333333432674408"/>
         <image name="usergrey" width="20" height="20"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

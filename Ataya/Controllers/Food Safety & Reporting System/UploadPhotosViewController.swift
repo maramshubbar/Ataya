@@ -36,6 +36,19 @@ class UploadPhotosViewController: UIViewController {
         dashed.lineDashPattern = [6, 4]
 
         uploadCardView.layer.addSublayer(dashed)
+        
+
+            Task {
+                do {
+                    try await AuthManager.shared.ensureSignedIn()
+                    print("✅ Donor UID:", AuthManager.shared.uid)
+                } catch {
+                    print("❌ Anonymous sign-in failed:", error.localizedDescription)
+                }
+            }
+        }
+
+        
     }
 
 
@@ -49,4 +62,4 @@ class UploadPhotosViewController: UIViewController {
     }
     */
 
-}
+

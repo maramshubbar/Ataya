@@ -1,41 +1,29 @@
 //
-//  AdminDashboardViewController.swift
+//  AdminDashboard1ViewController.swift
 //  Ataya
 //
-//  Created by Maram on 24/11/2025.
+//  Created by Maram on 17/12/2025.
 //
 
 import UIKit
 
-class AdminDashboardViewController: UIViewController {
-    
-    
+class AdminDashboard1ViewController: UIViewController {
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
 
-        
-        
         // Do any additional setup after loading the view.
-        donationOverviewButton.layer.borderColor = UIColor(red: 0xFE/255, green: 0xC4/255, blue: 0x00/255, alpha: 1).cgColor
-        donationOverviewButton.layer.borderWidth = 0.5
-        donationOverviewButton.layer.cornerRadius = 8
-        donationOverviewButton.layer.masksToBounds = true
-        
-        auditLogButton.layer.borderColor = UIColor(red: 0xFE/255, green: 0xC4/255, blue: 0x00/255, alpha: 1).cgColor
-        auditLogButton.layer.borderWidth = 0.5
-        auditLogButton.layer.cornerRadius = 8
-        auditLogButton.layer.masksToBounds = true
-        
     }
-
-
-
     
-    @IBOutlet weak var donationOverviewButton: UIButton!
-    
-    @IBOutlet weak var auditLogButton: UIButton!
+
+    /*
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destination.
+        // Pass the selected object to the new view controller.
+    }
+    */
+
 }
-

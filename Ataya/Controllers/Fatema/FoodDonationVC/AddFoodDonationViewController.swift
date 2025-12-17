@@ -8,6 +8,21 @@
 import UIKit
 
 class AddFoodDonationViewController: UIViewController{
+    var draft = DraftDonation()
+    
+    @IBAction func nextTapped(_ sender: UIButton) {
+            // save Add Food fields into draft here...
+
+            performSegue(withIdentifier: "toUploadPhotos", sender: nil)
+        }
+
+        override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+            if segue.identifier == "toUploadPhotos",
+               let vc = segue.destination as? UploadPhotosViewController {
+                vc.draft = draft
+            }
+        }
+
     @IBOutlet weak var uploadPhotosCard: UIView!
     @IBOutlet weak var enterDetailsCard: UIView!
     @IBOutlet weak var safetySubmitCard: UIView!

@@ -8,6 +8,23 @@
 import UIKit
 
 final class SafetyVC: UIViewController {
+    var draft: DraftDonation!
+    @IBAction func nextTapped(_ sender: UIButton) {
+        guard isConfirmed else { return }
+        draft.safetyConfirmed = true
+        performSegue(withIdentifier: "toEnterDetails", sender: nil)
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "toSafety",
+           let vc = segue.destination as? SafetyVC {
+            vc.draft = draft   // ✅ this is what prevents the crash
+        }
+    }
+
+
+
+
     @IBOutlet weak var checkboxButton: UIButton!
     @IBOutlet weak var nextButton: UIButton!
  
@@ -77,9 +94,6 @@ final class SafetyVC: UIViewController {
             isConfirmed.toggle()
         }
 
-        @IBAction func nextTapped(_ sender: UIButton) {
-            guard isConfirmed else { return }
-            
-        }
+
     }
 

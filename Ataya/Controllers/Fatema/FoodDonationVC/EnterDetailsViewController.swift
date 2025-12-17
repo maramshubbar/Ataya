@@ -8,6 +8,8 @@
 import UIKit
 
 final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
+    var draft: DraftDonation!
+
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var expiryTextField: UITextField!

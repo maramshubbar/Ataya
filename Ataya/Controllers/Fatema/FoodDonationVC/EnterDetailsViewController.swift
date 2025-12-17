@@ -191,29 +191,51 @@ class EnterDetailsViewController: UIViewController{
     }
 
     // MARK: - UIPickerView Delegate/DataSource (MUST be outside the class)
-    extension EnterDetailsViewController: UIPickerViewDelegate, UIPickerViewDataSource {
+extension EnterDetailsViewController: UIPickerViewDelegate, UIPickerViewDataSource {
 
-        func numberOfComponents(in pickerView: UIPickerView) -> Int { 1 }
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        if pickerView == expiryMonthYearPicker { return 2 }   // ✅ Month + Year
+        return 1                                               // ✅ Dropdowns
+    }
 
-        func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-            if pickerView == categoryPicker { return categories.count }
-            if pickerView == packagingPicker { return packagings.count }
-            return allergens.count
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+
+        if pickerView == expiryMonthYearPicker {
+            return component == 0 ? months.count : years.count
         }
 
-        func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-            if pickerView == categoryPicker { return categories[row] }
-            if pickerView == packagingPicker { return packagings[row] }
-            return allergens[row]
+        if pickerView == categoryPicker { return categories.count }
+        if pickerView == packagingPicker { return packagings.count }
+        return allergens.count
+    }
+
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+
+        if pickerView == expiryMonthYearPicker {
+            if component == 0 { return months[row] }          // Month name
+            return String(years[row])                         // Year number
         }
 
-        func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-            if pickerView == categoryPicker {
-                categoryTextField.text = categories[row]
-            } else if pickerView == packagingPicker {
-                packagingTextField.text = packagings[row]
-            } else {
-                allergenTextField.text = allergens[row]
-            }
+        if pickerView == categoryPicker { return categories[row] }
+        if pickerView == packagingPicker { return packagings[row] }
+        return allergens[row]
+    }
+
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+
+        if pickerView == expiryMonthYearPicker {
+            if component == 0 { selectedMonthIndex = row }
+            else { selectedYearIndex = row }
+            updateExpiryText()                                 // ✅ Live update
+            return
+        }
+
+        if pickerView == categoryPicker {
+            categoryTextField.text = categories[row]
+        } else if pickerView == packagingPicker {
+            packagingTextField.text = packagings[row]
+        } else {
+            allergenTextField.text = allergens[row]
         }
     }
+}

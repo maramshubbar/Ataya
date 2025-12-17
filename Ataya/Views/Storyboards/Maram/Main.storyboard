@@ -1205,17 +1205,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <searchBar contentMode="redraw" text="" placeholder="Search" translatesAutoresizingMaskIntoConstraints="NO" id="n4W-Gi-P8n">
-                                <rect key="frame" x="10" y="168" width="307" height="56"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="410" id="86B-au-hBk"/>
-                                </constraints>
+                                <rect key="frame" x="10" y="168" width="420" height="56"/>
                                 <textInputTraits key="textInputTraits"/>
                                 <connections>
                                     <outlet property="delegate" destination="d2s-5T-7LR" id="WUC-MH-9Bc"/>
                                 </connections>
                             </searchBar>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Fh0-hK-gRZ">
-                                <rect key="frame" x="16" y="232" width="295" height="33"/>
+                                <rect key="frame" x="16" y="232" width="408" height="33"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="32" id="769-ZO-AUx"/>
                                 </constraints>
@@ -1264,7 +1261,7 @@
             </objects>
             <point key="canvasLocation" x="-765" y="-380"/>
         </scene>
-        <!--Audit Log View Controller-->
+        <!--Audit Log-->
         <scene sceneID="ktM-f5-ASW">
             <objects>
                 <viewController id="ngh-xP-Xpl" customClass="AuditLogViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
@@ -1273,14 +1270,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="hqS-qP-Zlk">
-                                <rect key="frame" x="0.0" y="212" width="440" height="56"/>
+                                <rect key="frame" x="10" y="168" width="420" height="56"/>
                                 <textInputTraits key="textInputTraits"/>
                                 <connections>
                                     <outlet property="delegate" destination="ngh-xP-Xpl" id="MmQ-zA-lsr"/>
                                 </connections>
                             </searchBar>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="NYA-wY-zL6">
-                                <rect key="frame" x="-11" y="276" width="444" height="33"/>
+                                <rect key="frame" x="16" y="232" width="408" height="33"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="32" id="9V9-hc-Pwg"/>
                                 </constraints>
@@ -1293,40 +1290,30 @@
                                 </segments>
                             </segmentedControl>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Guj-j3-GRY">
-                                <rect key="frame" x="0.0" y="316" width="440" height="523"/>
+                                <rect key="frame" x="0.0" y="272" width="440" height="567"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <connections>
                                     <outlet property="dataSource" destination="ngh-xP-Xpl" id="KR8-C1-Zcj"/>
                                     <outlet property="delegate" destination="HHO-lF-RXC" id="2lL-TS-qa3"/>
                                 </connections>
                             </tableView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Audit Log" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BMh-Bx-Riq">
-                                <rect key="frame" x="174.33333333333334" y="168" width="89.666666666666657" height="24"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="89.666666666666629" id="jZA-C4-0X9"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="aJB-B4-pSH"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="aJB-B4-pSH" firstAttribute="bottom" secondItem="Guj-j3-GRY" secondAttribute="bottom" id="05I-U3-Wbz"/>
                             <constraint firstItem="aJB-B4-pSH" firstAttribute="trailing" secondItem="Guj-j3-GRY" secondAttribute="trailing" id="38e-US-jCD"/>
-                            <constraint firstItem="hqS-qP-Zlk" firstAttribute="leading" secondItem="Guj-j3-GRY" secondAttribute="leading" id="3NK-D5-ydJ"/>
                             <constraint firstItem="Guj-j3-GRY" firstAttribute="leading" secondItem="aJB-B4-pSH" secondAttribute="leading" id="3Ux-91-ugu"/>
-                            <constraint firstItem="BMh-Bx-Riq" firstAttribute="leading" secondItem="aJB-B4-pSH" secondAttribute="leading" constant="174.33333333333337" id="3rx-w5-Adc"/>
-                            <constraint firstItem="aJB-B4-pSH" firstAttribute="trailing" secondItem="NYA-wY-zL6" secondAttribute="trailing" constant="7" id="6o2-eK-aeV"/>
+                            <constraint firstItem="NYA-wY-zL6" firstAttribute="centerX" secondItem="Guj-j3-GRY" secondAttribute="centerX" id="E7G-jg-ClL"/>
                             <constraint firstItem="Guj-j3-GRY" firstAttribute="top" secondItem="NYA-wY-zL6" secondAttribute="bottom" constant="8" id="IBt-VV-Wep"/>
-                            <constraint firstItem="hqS-qP-Zlk" firstAttribute="centerX" secondItem="HHO-lF-RXC" secondAttribute="centerX" id="QLd-Wc-Hrt"/>
-                            <constraint firstItem="hqS-qP-Zlk" firstAttribute="top" secondItem="BMh-Bx-Riq" secondAttribute="bottom" constant="20" id="SHH-dV-VhR"/>
-                            <constraint firstItem="BMh-Bx-Riq" firstAttribute="top" secondItem="aJB-B4-pSH" secondAttribute="top" id="bmH-iX-Xb5"/>
+                            <constraint firstItem="NYA-wY-zL6" firstAttribute="leading" secondItem="aJB-B4-pSH" secondAttribute="leading" constant="16" id="SEZ-Cm-4Lc"/>
+                            <constraint firstItem="hqS-qP-Zlk" firstAttribute="leading" secondItem="aJB-B4-pSH" secondAttribute="leading" constant="10" id="qJY-yI-Bfo"/>
+                            <constraint firstItem="NYA-wY-zL6" firstAttribute="centerX" secondItem="hqS-qP-Zlk" secondAttribute="centerX" id="rhw-fG-1Kw"/>
                             <constraint firstItem="NYA-wY-zL6" firstAttribute="top" secondItem="hqS-qP-Zlk" secondAttribute="bottom" constant="8" id="tud-sn-BmT"/>
+                            <constraint firstItem="hqS-qP-Zlk" firstAttribute="top" secondItem="aJB-B4-pSH" secondAttribute="top" id="zDA-LK-gg2"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="JPa-pJ-Gq3"/>
+                    <navigationItem key="navigationItem" title="Audit Log" id="JPa-pJ-Gq3"/>
                     <connections>
                         <outlet property="filterSegment" destination="NYA-wY-zL6" id="nIZ-RT-Ea4"/>
                         <outlet property="searchBar" destination="hqS-qP-Zlk" id="BFt-Cs-5fi"/>

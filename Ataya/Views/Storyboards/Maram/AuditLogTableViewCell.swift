@@ -37,10 +37,16 @@ class AuditLogTableViewCell: UITableViewCell {
     
     
     override func awakeFromNib() {
+        
+        selectionStyle = .none
         super.awakeFromNib()
         cardView.layer.cornerRadius = 12
             cardView.layer.borderWidth = 1
             cardView.layer.borderColor = UIColor.systemGray5.cgColor
+        
+        
+        
+        
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

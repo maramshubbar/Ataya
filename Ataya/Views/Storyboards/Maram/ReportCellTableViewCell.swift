@@ -36,24 +36,19 @@ class ReportCellTableViewCell: UITableViewCell {
         
        // cardView.layer.cornerRadius = 12
                // cardView.clipsToBounds = true
-        cardView.layer.cornerRadius = 8
+        selectionStyle = .none   // ✅ يمنع لون السيلكت الرمادي
+
+           cardView.layer.cornerRadius = 8
            cardView.layer.borderWidth = 1
            cardView.layer.borderColor = UIColor.systemGray5.cgColor
            cardView.clipsToBounds = true
-        
-        
-        // Status badge
-        statusBadgeView.layer.cornerRadius = 8
-            statusBadgeView.clipsToBounds = true
-        statusBadgeView.backgroundColor = UIColor(red: 1.0, green: 0.984, blue: 0.8, alpha: 1.0) // #FFFBCC
 
+           statusBadgeView.layer.cornerRadius = 8
+           statusBadgeView.clipsToBounds = true
+           statusBadgeView.backgroundColor = UIColor(red: 1.0, green: 0.984, blue: 0.8, alpha: 1.0)
 
-
-        
-        
-        // Make the button rounded
-        viewDetailsButton.layer.cornerRadius = 4.6
-                viewDetailsButton.clipsToBounds = true
+           viewDetailsButton.layer.cornerRadius = 4.6
+           viewDetailsButton.clipsToBounds = true
     }
     
     

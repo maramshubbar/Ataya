@@ -24,6 +24,8 @@ class NGOVerificationTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        
+        selectionStyle = .none
         cardView.layer.cornerRadius = 8
            cardView.layer.borderWidth = 1
            cardView.layer.borderColor = UIColor.systemGray5.cgColor

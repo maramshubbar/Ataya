@@ -152,7 +152,7 @@ final class AdminTabBarController: UITabBarController {
     private func setupCenterButton() {
         centerButton.setBackgroundImage(UIImage(named: "hex_report_bg"), for: .normal)
         centerButton.setImage(UIImage(named: "ic_report_center"), for: .normal)
-        centerButton.adjustsImageWhenHighlighted = false
+       // centerButton.adjustsImageWhenHighlighted = false
         centerButton.addTarget(self, action: #selector(centerTapped), for: .touchUpInside)
 
         // ✅ مهم: خلّيه داخل tabBar (يحل no common ancestor خصوصًا بالآيباد)

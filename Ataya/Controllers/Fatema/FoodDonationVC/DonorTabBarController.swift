@@ -14,7 +14,6 @@ class DonorTabBarController: UITabBarController {
         override func viewDidLoad() {
             super.viewDidLoad()
      
-            // ✅ هذا يخلي الآيباد يرجّع التاب بار لتحت (iPadOS 18+)
             if #available(iOS 18.0, *), UIDevice.current.userInterfaceIdiom == .pad {
                 traitOverrides.horizontalSizeClass = .compact
             }
@@ -60,11 +59,9 @@ class DonorTabBarController: UITabBarController {
      
         private func setupCenterButton() {
             centerButton.setBackgroundImage(UIImage(named: "hex_report_bg"), for: .normal)
-            centerButton.setImage(UIImage(named: "ic_report_center"), for: .normal)
-           // centerButton.adjustsImageWhenHighlighted = false
+            centerButton.setImage(UIImage(named: "ic_donate_center"), for: .normal)
             centerButton.addTarget(self, action: #selector(centerTapped), for: .touchUpInside)
      
-            // ✅ مهم: خلّيه داخل tabBar (يحل no common ancestor خصوصًا بالآيباد)
             if centerButton.superview == nil {
                 tabBar.addSubview(centerButton)
             }

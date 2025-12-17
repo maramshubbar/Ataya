@@ -20,7 +20,7 @@
                         <segue destination="Ouh-XS-ScB" kind="relationship" relationship="viewControllers" id="5jo-BI-NCy"/>
                         <segue destination="rdc-YG-sBO" kind="relationship" relationship="viewControllers" id="Ru0-c4-HvR"/>
                         <segue destination="f2G-0K-wdg" kind="relationship" relationship="viewControllers" id="Ix0-DZ-tTd"/>
-                        <segue destination="Ecc-pn-ioB" kind="relationship" relationship="viewControllers" id="gEv-4X-UhC"/>
+                        <segue destination="Ecc-pn-ioB" kind="relationship" relationship="viewControllers" id="wdC-yY-Ixw"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MYl-oF-LBA" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -30,7 +30,7 @@
         <!--Home-->
         <scene sceneID="OFq-a4-Myg">
             <objects>
-                <navigationController id="j4Y-Yq-HRV" sceneMemberID="viewController">
+                <navigationController title="Home" id="j4Y-Yq-HRV" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Home" image="housefillgrey" id="UEC-nI-WWT"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="a48-gd-Ld5">
                         <rect key="frame" x="0.0" y="118" width="393" height="44"/>
@@ -39,7 +39,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Uaj-iB-8e5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1447" y="-1095"/>
+            <point key="canvasLocation" x="-1535" y="-1095"/>
         </scene>
         <!--Impact-->
         <scene sceneID="pAG-xW-nkz">
@@ -53,12 +53,12 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eQf-O6-Ywi" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-715" y="-1095"/>
+            <point key="canvasLocation" x="-747" y="-1095"/>
         </scene>
         <!--Donate-->
         <scene sceneID="Kyi-2Q-gEU">
             <objects>
-                <navigationController id="rdc-YG-sBO" sceneMemberID="viewController">
+                <navigationController title="Donate" id="rdc-YG-sBO" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Donate" image="tab_empty" id="rLg-L7-wHG"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="eCu-nD-0jb">
                         <rect key="frame" x="0.0" y="118" width="393" height="44"/>
@@ -72,8 +72,8 @@
         <!--Profile-->
         <scene sceneID="fR2-g2-ONc">
             <objects>
-                <navigationController title="Profile" id="Ecc-pn-ioB" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="usergrey" id="5J7-Ts-jOk"/>
+                <navigationController title="Profile" hidesBarsWhenVerticallyCompact="YES" id="Ecc-pn-ioB" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Profile" image="usergrey" id="5J7-Ts-jOk"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Fo4-hj-TO3">
                         <rect key="frame" x="0.0" y="118" width="393" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -82,7 +82,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CSW-Ue-UVT" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1579" y="-1095"/>
+            <point key="canvasLocation" x="1538" y="-1095"/>
         </scene>
         <!--Rewards-->
         <scene sceneID="Ztu-vA-S6T">
@@ -96,14 +96,14 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lGN-Zr-Eyk" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="811" y="-1095"/>
+            <point key="canvasLocation" x="776" y="-1095"/>
         </scene>
     </scenes>
     <resources>
         <image name="earthglobegrey" width="20" height="20"/>
         <image name="housefillgrey" width="20" height="20"/>
         <image name="prizegrey" width="20" height="20"/>
-        <image name="tab_empty" width="1" height="1"/>
+        <image name="tab_empty" width="0.3333333432674408" height="0.3333333432674408"/>
         <image name="usergrey" width="20" height="20"/>
     </resources>
 </document>

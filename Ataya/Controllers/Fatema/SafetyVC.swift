@@ -14,7 +14,7 @@ final class SafetyVC: UIViewController {
     private var isConfirmed = false {
             didSet { updateUI() }
         }
-
+    private let checkedGreen = UIColor.systemGreen
         private let disabledGray  = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1) // #E8E8E8
     private let enabledYellow = UIColor(red: 247/255, green: 212/255, blue: 76/255, alpha: 1) // #F7D44C
 
@@ -32,30 +32,21 @@ final class SafetyVC: UIViewController {
                 if nextButton.title(for: .normal) == nil {
                     nextButton.setTitle("Next", for: .normal)
                 }
-
+    
             }
 
             // ✅ Checkbox (state-based)
             checkboxButton.setImage(UIImage(systemName: "square"), for: .normal)
             checkboxButton.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
             checkboxButton.tintColor = .lightGray
-            print("checkboxButton frame:", checkboxButton.frame)
 
-            // ✅ Next button (no image inside)
-            nextButton.setImage(nil, for: .normal)
-            nextButton.setImage(nil, for: .disabled)
-            nextButton.setImage(nil, for: .highlighted)
-            nextButton.setImage(nil, for: .selected)
-
-            nextButton.setTitleColor(.white, for: .normal)
-            nextButton.setTitleColor(.white, for: .disabled)
 
             updateUI()
         }
 
         private func updateUI() {
             checkboxButton.isSelected = isConfirmed
-            checkboxButton.tintColor  = isConfirmed ? enabledYellow : .lightGray
+            checkboxButton.tintColor  = isConfirmed ? checkedGreen : .lightGray
 
             nextButton.isEnabled = isConfirmed
             nextButton.backgroundColor = isConfirmed ? enabledYellow : disabledGray

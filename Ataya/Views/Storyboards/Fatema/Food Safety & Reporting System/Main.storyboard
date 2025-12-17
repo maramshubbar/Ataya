@@ -448,7 +448,7 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Is-ag-kNF">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Is-ag-kNF" userLabel="Next Button">
                                 <rect key="frame" x="39" y="862" width="362" height="54"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="362" id="LZu-eD-Fr9"/>
@@ -463,7 +463,7 @@
                                     <color key="baseForegroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 </buttonConfiguration>
                                 <connections>
-                                    <action selector="nextTapped:" destination="XPY-Ro-POv" eventType="touchUpInside" id="yCh-q3-nQX"/>
+                                    <action selector="nextTapped:" destination="XPY-Ro-POv" eventType="touchUpInside" id="gLC-Ef-HL3"/>
                                     <segue destination="el0-8u-KP9" kind="push" identifier="" id="wKy-3O-Lei"/>
                                 </connections>
                             </button>
@@ -491,8 +491,8 @@
                     </view>
                     <navigationItem key="navigationItem" title="Safety &amp; Submit" id="uz0-Wu-V1X"/>
                     <connections>
-                        <outlet property="checkboxButton" destination="2Is-ag-kNF" id="pja-nk-UyQ"/>
-                        <outlet property="nextButton" destination="2Is-ag-kNF" id="KZW-bU-wCG"/>
+                        <outlet property="checkboxButton" destination="4Cf-Km-Ry0" id="1XJ-Lm-vdE"/>
+                        <outlet property="nextButton" destination="2Is-ag-kNF" id="ZV4-J8-vds"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jko-1e-hQn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

@@ -168,27 +168,27 @@
                                                     <constraint firstAttribute="height" constant="260" id="nGa-E8-EgB"/>
                                                 </constraints>
                                                 <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="16" minimumInteritemSpacing="16" id="yqU-3B-oWx">
-                                                    <size key="itemSize" width="320" height="260"/>
-                                                    <size key="estimatedItemSize" width="320" height="280"/>
+                                                    <size key="itemSize" width="331" height="260"/>
+                                                    <size key="estimatedItemSize" width="320" height="300"/>
                                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                                     <inset key="sectionInset" minX="16" minY="0.0" maxX="16" maxY="0.0"/>
                                                 </collectionViewFlowLayout>
                                                 <cells>
-                                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CampaignCell" id="E71-Wi-FjD">
-                                                        <rect key="frame" x="16" y="0.0" width="276" height="260"/>
+                                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CampaignCell" id="E71-Wi-FjD" customClass="CampaignCell" customModule="Ataya" customModuleProvider="target">
+                                                        <rect key="frame" x="16" y="0.0" width="331" height="260"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="fiw-8M-0NW">
-                                                            <rect key="frame" x="0.0" y="0.0" width="276" height="260"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="331" height="260"/>
                                                             <autoresizingMask key="autoresizingMask"/>
                                                             <subviews>
-                                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bb1-qS-NmR" userLabel="cardView">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="276" height="260"/>
+                                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bb1-qS-NmR" userLabel="cardView" customClass="CampaignCell" customModule="Ataya" customModuleProvider="target">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="331" height="260"/>
                                                                     <subviews>
-                                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="c2" translatesAutoresizingMaskIntoConstraints="NO" id="nPQ-bC-PoK" userLabel="imgCampaign">
-                                                                            <rect key="frame" x="0.0" y="0.0" width="276" height="170"/>
+                                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="campaign1" translatesAutoresizingMaskIntoConstraints="NO" id="nPQ-bC-PoK" userLabel="imgCampaign">
+                                                                            <rect key="frame" x="0.0" y="0.0" width="331" height="190"/>
                                                                             <constraints>
-                                                                                <constraint firstAttribute="height" constant="170" id="8QP-eG-rV8"/>
+                                                                                <constraint firstAttribute="height" constant="190" id="8QP-eG-rV8"/>
                                                                             </constraints>
                                                                         </imageView>
                                                                     </subviews>
@@ -207,6 +207,11 @@
                                                                 <constraint firstAttribute="bottom" secondItem="bb1-qS-NmR" secondAttribute="bottom" id="g7S-Pn-8zh"/>
                                                             </constraints>
                                                         </collectionViewCellContentView>
+                                                        <size key="customSize" width="331" height="260"/>
+                                                        <connections>
+                                                            <outlet property="cardView" destination="bb1-qS-NmR" id="bU4-tt-WUK"/>
+                                                            <outlet property="imgCampaign" destination="nPQ-bC-PoK" id="K67-o0-CPe"/>
+                                                        </connections>
                                                     </collectionViewCell>
                                                 </cells>
                                             </collectionView>
@@ -246,16 +251,19 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="vsa-7d-rzw"/>
+                    <connections>
+                        <outlet property="campaignsCollectionView" destination="buL-2Z-e4k" id="ZVh-Y4-fsi"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CVJ-AC-iYh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1535" y="-380"/>
+            <point key="canvasLocation" x="-1535.1145038167938" y="-380.28169014084511"/>
         </scene>
     </scenes>
     <resources>
         <image name="Logo" width="45" height="45"/>
         <image name="bell.fill" catalog="system" width="123" height="128"/>
-        <image name="c2" width="276" height="184.66667175292969"/>
+        <image name="campaign1" width="463.33334350585938" height="320.66665649414062"/>
         <image name="earthglobegrey" width="20" height="20"/>
         <image name="housefillgrey" width="20" height="20"/>
         <image name="prizegrey" width="20" height="20"/>

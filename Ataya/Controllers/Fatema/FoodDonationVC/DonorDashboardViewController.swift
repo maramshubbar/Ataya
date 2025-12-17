@@ -6,24 +6,29 @@
 //
 
 import UIKit
+final class DonorDashboardViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
 
-class DonorDashboardViewController: UIViewController {
+    @IBOutlet weak var campaignsCollectionView: UICollectionView!
+    private let demoImages = ["campaign1", "campaign2", "campaign3","campaign4"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        campaignsCollectionView.dataSource = self
+        campaignsCollectionView.delegate = self
     }
     
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+            return demoImages.count
+        }
 
-    /*
-    // MARK: - Navigation
+        func collectionView(_ collectionView: UICollectionView,
+                            cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CampaignCell",
+                                                          for: indexPath) as! CampaignCell
 
+            cell.imgCampaign.image = UIImage(named: demoImages[indexPath.item])
+            return cell
+        }
 }

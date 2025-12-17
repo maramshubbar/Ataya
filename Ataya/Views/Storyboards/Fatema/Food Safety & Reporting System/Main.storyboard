@@ -319,25 +319,6 @@
                                     <constraint firstAttribute="height" constant="240" id="hCM-GV-cTC"/>
                                 </constraints>
                             </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Is-ag-kNF">
-                                <rect key="frame" x="39" y="862" width="362" height="54"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="362" id="LZu-eD-Fr9"/>
-                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="54" id="ZNH-TA-Rmj"/>
-                                </constraints>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Next">
-                                    <backgroundConfiguration key="background">
-                                        <color key="backgroundColor" red="0.96862745100000003" green="0.83137254900000002" blue="0.29803921570000003" alpha="1" colorSpace="calibratedRGB"/>
-                                    </backgroundConfiguration>
-                                    <fontDescription key="titleFontDescription" type="system" weight="semibold" pointSize="18"/>
-                                    <color key="baseForegroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                </buttonConfiguration>
-                                <connections>
-                                    <action selector="nextTapped:" destination="XPY-Ro-POv" eventType="touchUpInside" id="yCh-q3-nQX"/>
-                                    <segue destination="el0-8u-KP9" kind="push" identifier="" id="wKy-3O-Lei"/>
-                                </connections>
-                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please review these quick food safety checks before submitting your donation." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="svx-f1-Flr" userLabel="label">
                                 <rect key="frame" x="70" y="496.00000000000006" width="300" height="33.666666666666686"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
@@ -444,7 +425,7 @@
                                     </stackView>
                                 </subviews>
                             </stackView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Cf-Km-Ry0">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Cf-Km-Ry0" userLabel="Checkbox Button">
                                 <rect key="frame" x="45" y="729.66666666666663" width="24" height="24"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="24" id="2KZ-eu-f8R"/>
@@ -467,6 +448,25 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Is-ag-kNF">
+                                <rect key="frame" x="39" y="862" width="362" height="54"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="362" id="LZu-eD-Fr9"/>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="54" id="ZNH-TA-Rmj"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Next">
+                                    <backgroundConfiguration key="background">
+                                        <color key="backgroundColor" red="0.96862745100000003" green="0.83137254900000002" blue="0.29803921570000003" alpha="1" colorSpace="calibratedRGB"/>
+                                    </backgroundConfiguration>
+                                    <fontDescription key="titleFontDescription" type="system" weight="semibold" pointSize="18"/>
+                                    <color key="baseForegroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="nextTapped:" destination="XPY-Ro-POv" eventType="touchUpInside" id="yCh-q3-nQX"/>
+                                    <segue destination="el0-8u-KP9" kind="push" identifier="" id="wKy-3O-Lei"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Cie-aW-EWR"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>

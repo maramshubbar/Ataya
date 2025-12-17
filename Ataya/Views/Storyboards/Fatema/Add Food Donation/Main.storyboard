@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="IHW-ZG-TpY">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
@@ -25,13 +25,13 @@
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MYl-oF-LBA" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="27" y="-1832"/>
+            <point key="canvasLocation" x="27" y="-1830"/>
         </scene>
         <!--Home-->
         <scene sceneID="OFq-a4-Myg">
             <objects>
                 <navigationController id="j4Y-Yq-HRV" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Home" image="tab_home" id="UEC-nI-WWT"/>
+                    <tabBarItem key="tabBarItem" title="Home" image="housefillgrey" id="UEC-nI-WWT"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="a48-gd-Ld5">
                         <rect key="frame" x="0.0" y="118" width="393" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -45,7 +45,7 @@
         <scene sceneID="pAG-xW-nkz">
             <objects>
                 <navigationController title="Impact" id="Ouh-XS-ScB" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Impact" image="tab_verify" id="lzm-uT-1Cw"/>
+                    <tabBarItem key="tabBarItem" title="Impact" image="earthglobegrey" id="lzm-uT-1Cw"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="DEs-6O-fgB">
                         <rect key="frame" x="0.0" y="118" width="393" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -69,11 +69,11 @@
             </objects>
             <point key="canvasLocation" x="27" y="-1095"/>
         </scene>
-        <!--Profile-->
+        <!--Navigation Controller-->
         <scene sceneID="fR2-g2-ONc">
             <objects>
                 <navigationController id="Ecc-pn-ioB" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Profile" image="tab_profile" id="5J7-Ts-jOk"/>
+                    <tabBarItem key="tabBarItem" title="" image="usergrey" id="5J7-Ts-jOk"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Fo4-hj-TO3">
                         <rect key="frame" x="0.0" y="118" width="393" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -88,7 +88,7 @@
         <scene sceneID="Ztu-vA-S6T">
             <objects>
                 <navigationController title="Rewards" hidesBarsWhenVerticallyCompact="YES" id="f2G-0K-wdg" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Rewards" image="tab_analytics" id="qEE-Ma-gP5"/>
+                    <tabBarItem key="tabBarItem" title="Rewards" image="prizegrey" id="qEE-Ma-gP5"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="gYk-SR-kkG">
                         <rect key="frame" x="0.0" y="118" width="393" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -100,10 +100,10 @@
         </scene>
     </scenes>
     <resources>
-        <image name="tab_analytics" width="40" height="40"/>
+        <image name="earthglobegrey" width="20" height="20"/>
+        <image name="housefillgrey" width="20" height="20"/>
+        <image name="prizegrey" width="20" height="20"/>
         <image name="tab_empty" width="1" height="1"/>
-        <image name="tab_home" width="40" height="40"/>
-        <image name="tab_profile" width="30" height="30"/>
-        <image name="tab_verify" width="40" height="40"/>
+        <image name="usergrey" width="20" height="20"/>
     </resources>
 </document>

@@ -21,14 +21,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let nav = UINavigationBarAppearance()
         nav.configureWithOpaqueBackground()
         nav.backgroundColor = .white
-        nav.titleTextAttributes = [.foregroundColor: UIColor.black]
-        nav.largeTitleTextAttributes = [.foregroundColor: UIColor.black]
+        nav.shadowColor = .clear          // ✅ removes the line
+        nav.shadowImage = UIImage()       // ✅ extra safe
 
         let bar = UINavigationBar.appearance()
         bar.standardAppearance = nav
         bar.scrollEdgeAppearance = nav
         bar.compactAppearance = nav
         bar.tintColor = .black
+
     }
     
 }

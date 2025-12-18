@@ -10,24 +10,24 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ReportCardCell" rowHeight="216" id="KGk-i7-Jjw" customClass="ReportCardCell" customModule="Ataya" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="408" height="216"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ReportCardCell" rowHeight="233" id="KGk-i7-Jjw" customClass="ReportCardCell" customModule="Ataya" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="408" height="233"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="408" height="216"/>
+                <rect key="frame" x="0.0" y="0.0" width="408" height="233"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mAz-qI-BAQ" userLabel="containerView">
-                        <rect key="frame" x="24" y="8" width="360" height="200"/>
+                        <rect key="frame" x="24" y="8" width="360" height="217"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cLe-6i-wpA" userLabel="shadowView">
-                                <rect key="frame" x="0.0" y="0.0" width="360" height="200"/>
+                                <rect key="frame" x="0.0" y="0.0" width="360" height="217"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pzf-5n-SFR" userLabel="cardView">
-                                        <rect key="frame" x="0.0" y="0.0" width="360" height="200"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="360" height="217"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="6" translatesAutoresizingMaskIntoConstraints="NO" id="Wsb-cO-LCI" userLabel="mainStack">
-                                                <rect key="frame" x="14" y="14" width="332" height="172"/>
+                                                <rect key="frame" x="14" y="14" width="332" height="189"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HYK-Tf-dkJ" userLabel="topRow">
                                                         <rect key="frame" x="0.0" y="0.0" width="332" height="29"/>
@@ -88,26 +88,26 @@
                                                             <constraint firstItem="cl7-pT-XQF" firstAttribute="centerY" secondItem="c1N-yi-yhS" secondAttribute="centerY" id="x8l-Lp-U4d"/>
                                                         </constraints>
                                                     </stackView>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PdN-dQ-sht" userLabel="reporterLabel">
-                                                        <rect key="frame" x="0.0" y="65" width="332" height="20.333333333333329"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PdN-dQ-sht" userLabel="reporterLabel">
+                                                        <rect key="frame" x="0.0" y="65" width="332" height="21.333333333333329"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nIe-Qj-dOX" userLabel="ngoLabel">
-                                                        <rect key="frame" x="0.0" y="91.333333333333329" width="332" height="20.333333333333329"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nIe-Qj-dOX" userLabel="ngoLabel">
+                                                        <rect key="frame" x="0.0" y="92.333333333333329" width="332" height="20.333333333333329"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NP1-rk-ix6" userLabel="dateLabel">
-                                                        <rect key="frame" x="0.0" y="117.66666666666666" width="332" height="4.3333333333333286"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" ambiguous="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NP1-rk-ix6" userLabel="dateLabel">
+                                                        <rect key="frame" x="0.0" y="118.66666666666664" width="332" height="20.333333333333329"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Bhf-kz-0pO" userLabel="buttonRow">
-                                                        <rect key="frame" x="0.0" y="128" width="332" height="44"/>
+                                                        <rect key="frame" x="0.0" y="145" width="332" height="44"/>
                                                         <subviews>
                                                             <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pgd-Ez-sfN" userLabel="btnViewDetails">
                                                                 <rect key="frame" x="0.0" y="1" width="160" height="42"/>
@@ -191,7 +191,7 @@
                 <outlet property="shadowView" destination="cLe-6i-wpA" id="A8z-qN-94e"/>
                 <outlet property="titleLabel" destination="PYb-22-pfv" id="X7Z-nU-HRS"/>
             </connections>
-            <point key="canvasLocation" x="59.541984732824424" y="62.676056338028175"/>
+            <point key="canvasLocation" x="59.541984732824424" y="68.661971830985919"/>
         </tableViewCell>
     </objects>
     <resources>

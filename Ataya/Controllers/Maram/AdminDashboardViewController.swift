@@ -152,6 +152,11 @@ final class AdminDashboardViewController: UIViewController {
     // Recent Activity Table
     @IBOutlet weak var tblRecentActivity: UITableView!
     @IBOutlet weak var tblRecentActivityHeight: NSLayoutConstraint!   // ✅ اربطيها على Height constraint للجدول
+    
+    @IBAction func donationOverviewTapped(_ sender: Any) {
+        performSegue(withIdentifier: "sgDonationOverview", sender: self)
+    }
+
 
     private let cardCornerRadius: CGFloat = 16
 

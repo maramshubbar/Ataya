@@ -11,11 +11,24 @@ final class DonationOverviewViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
 
+    @IBOutlet weak var searchBar: UISearchBar!
     private var items: [DonationItem] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        
+        searchBar.backgroundImage = UIImage()
+        searchBar.searchBarStyle = .minimal
+        
+        if let searchField = searchBar.value(forKey: "searchField") as? UITextField {
+            searchField.backgroundColor = .white
+            searchField.layer.cornerRadius = 10
+            searchField.clipsToBounds = true
+        }
+        
+        
+        
         tableView.register(UINib(nibName: "DonationOverviewCell", bundle: nil),
                            forCellReuseIdentifier: DonationOverviewCell.reuseId)
 
@@ -50,6 +63,10 @@ final class DonationOverviewViewController: UIViewController {
                          dateText: "Nov 6 2025",
                          imageName: "flour",
                          status: .rejected)
+            
+            
+            
+            
         ]
     }
 }

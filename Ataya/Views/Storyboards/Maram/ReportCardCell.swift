@@ -34,7 +34,7 @@ final class ReportCardCell: UITableViewCell {
 
     private func styleUI() {
         // Card
-        cardView.layer.cornerRadius = 14
+        cardView.layer.cornerRadius = 8
         cardView.clipsToBounds = true
 
         // ✅ Border instead of shadow

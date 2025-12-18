@@ -1,9 +1,3 @@
-//
-//  DonationOverviewCellTableViewCell.swift
-//  Ataya
-//
-//  Created by Maram on 18/12/2025.
-//
 import UIKit
 
 final class DonationOverviewCell: UITableViewCell {
@@ -27,7 +21,23 @@ final class DonationOverviewCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        selectionStyle = .none
         styleUI()
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        titleLabel.text = nil
+        donorLabel.text = nil
+        ngoLabel.text = nil
+        locationLabel.text = nil
+        dateLabel.text = nil
+
+        badgeLabel.text = nil
+        badgeView.backgroundColor = .clear
+
+        itemImageView.image = nil
     }
 
     private func styleUI() {
@@ -38,15 +48,25 @@ final class DonationOverviewCell: UITableViewCell {
         cardView.layer.borderColor = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1).cgColor
 
         // Badge
-        badgeView.layer.cornerRadius = 13
+        badgeView.layer.cornerRadius = 8
         badgeView.clipsToBounds = true
         badgeLabel.textAlignment = .center
+        badgeLabel.numberOfLines = 1
 
         // Button
-        btnViewDetails.layer.cornerRadius = 8
+        btnViewDetails.layer.cornerRadius = 4.6
         btnViewDetails.clipsToBounds = true
         btnViewDetails.backgroundColor = UIColor(red: 255/255, green: 216/255, blue: 63/255, alpha: 1)
         btnViewDetails.setTitleColor(.black, for: .normal)
+        btnViewDetails.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+
+        // Image (عشان ما تختفي إذا كانت فاتحة/شفافة)
+        // Image (بدون خلفية)
+        itemImageView.contentMode = .scaleAspectFit
+        itemImageView.backgroundColor = .clear
+        itemImageView.layer.cornerRadius = 0
+        itemImageView.clipsToBounds = false
+
     }
 
     @IBAction func viewDetailsTapped(_ sender: UIButton) {
@@ -70,7 +90,41 @@ final class DonationOverviewCell: UITableViewCell {
             badgeView.backgroundColor = UIColor(red: 242/255, green: 156/255, blue: 148/255, alpha: 1)
         }
 
-        itemImageView.image = UIImage(named: item.imageName) // حطي الصور في Assets
+        // Image
+        let img = UIImage(named: item.imageName)?.withRenderingMode(.alwaysOriginal)
+        let testImg = UIImage(named: "image88")
+        print("FOUND image88:", testImg != nil)
+        itemImageView.image = testImg
+
+        #if DEBUG
+        if img == nil {
+            print("❌ Image not found in Assets:", item.imageName)
+        }
+        #endif
     }
 }
+/*
+ 
+ 
+ func configure(title: String,
+                location: String,
+                reporter: String,
+                ngo: String,
+                date: String,
+                status: String) {
 
+     titleLabel.text = title
+     locationLabel.text = location
+     reporterLabel.text = reporter
+     ngoLabel.text = ngo
+     dateLabel.text = date
+
+     badgeLabel.text = status
+
+     if status.lowercased() == "resolved" {
+         badgeView.backgroundColor = UIColor(red: 213/255, green: 244/255, blue: 214/255, alpha: 1)
+     } else {
+         badgeView.backgroundColor = UIColor(red: 255/255, green: 244/255, blue: 191/255, alpha: 1)
+     }
+ }
+ */

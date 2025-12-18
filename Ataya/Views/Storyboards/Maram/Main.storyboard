@@ -269,6 +269,7 @@
                                                                         </constraints>
                                                                     </imageView>
                                                                 </subviews>
+                                                                <gestureRecognizers/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="65" id="99Q-Mf-He9"/>
                                                                     <constraint firstAttribute="trailing" secondItem="ybf-Ja-Jf3" secondAttribute="trailing" constant="16" id="NdQ-Hb-g17"/>
@@ -279,6 +280,9 @@
                                                                     <constraint firstItem="oiM-kb-93c" firstAttribute="leading" secondItem="4Ig-lN-o7B" secondAttribute="leading" constant="16" id="iJ0-Rv-1Ix"/>
                                                                     <constraint firstItem="miV-Kd-2rm" firstAttribute="centerY" secondItem="4Ig-lN-o7B" secondAttribute="centerY" id="yZc-D5-ScQ"/>
                                                                 </constraints>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="H7S-qB-EBq" appends="YES" id="Jdn-fM-BMM"/>
+                                                                </connections>
                                                             </view>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="y9i-ZG-YhW" userLabel="vwAuditLog">
                                                                 <rect key="frame" x="0.0" y="77" width="400" height="65"/>
@@ -414,9 +418,11 @@
                         <outlet property="tblRecentActivity" destination="G1d-SZ-DKN" id="gvW-Oh-Wzd"/>
                         <outlet property="tblRecentActivityHeight" destination="au4-qg-8IH" id="tgD-7H-lc5"/>
                         <segue destination="ngh-xP-Xpl" kind="show" identifier="sgAuditLog" id="Vyu-yM-6qS"/>
+                        <segue destination="UsO-bC-KUX" kind="show" identifier="sgDonationOverview" id="PKe-Zp-L43"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zLL-EC-3rW" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="H7S-qB-EBq"/>
             </objects>
             <point key="canvasLocation" x="-1489.0909090909092" y="-380.3347280334728"/>
         </scene>
@@ -1333,14 +1339,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <searchBar contentMode="redraw" text="" placeholder="Search" translatesAutoresizingMaskIntoConstraints="NO" id="m5U-L0-AsW">
-                                <rect key="frame" x="10" y="124" width="420" height="56"/>
+                                <rect key="frame" x="10" y="168" width="420" height="56"/>
                                 <textInputTraits key="textInputTraits"/>
                                 <connections>
                                     <outlet property="delegate" destination="d2s-5T-7LR" id="mbR-2i-NZn"/>
                                 </connections>
                             </searchBar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="TAQ-Xg-5KN">
-                                <rect key="frame" x="0.0" y="188" width="440" height="700"/>
+                                <rect key="frame" x="0.0" y="232" width="440" height="607"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                         </subviews>
@@ -1358,10 +1364,15 @@
                             <constraint firstItem="TAQ-Xg-5KN" firstAttribute="trailing" secondItem="13v-Qy-GdR" secondAttribute="trailing" id="wr4-dy-PYE"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="N4U-N5-TjL"/>
+                    <connections>
+                        <outlet property="searchBar" destination="m5U-L0-AsW" id="xQl-cc-fWY"/>
+                        <outlet property="tableView" destination="TAQ-Xg-5KN" id="NBf-6h-diU"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bq7-JS-aSz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1437.2727272727275" y="318.82845188284523"/>
+            <point key="canvasLocation" x="-1279" y="319"/>
         </scene>
         <!--Admin Tab Bar Controller-->
         <scene sceneID="YjR-o1-Oym">

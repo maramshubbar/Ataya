@@ -4,11 +4,16 @@
 //
 //  Created by Fatema Maitham on 26/11/2025.
 //
+
+
 import UIKit
 
 struct Campaign {
     let imageName: String
+    let tag: String
+    let title: String
 }
+
 
 final class DonorDashboardViewController: UIViewController,
     UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout,
@@ -16,23 +21,31 @@ final class DonorDashboardViewController: UIViewController,
     
     @IBOutlet weak var campaignsCollectionView: UICollectionView!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet private weak var tableHeightConstraint: NSLayoutConstraint!
     
     private let campaigns: [Campaign] = [
-        .init(imageName: "campaign1"),
-        .init(imageName: "campaign2"),
-        .init(imageName: "campaign3"),
-        .init(imageName: "campaign4")
+        .init(imageName: "campaign1", tag: "Emergency", title: "Food Aid for Families\nin Palestine"),
+        .init(imageName: "campaign2", tag: "Emergency", title: "Winter Relief\nCampaign"),
+        .init(imageName: "campaign3", tag: "Urgent", title: "Meals for Families\nThis Week"),
+        .init(imageName: "campaign4", tag: "Emergency", title: "Community Support\nProgram")
     ]
+    
     
     private let ongoing: [OngoingDonationItem] = [
         .init(title: "Bananas",     ngoName: "HopePal",      status: "Ready Pickup", imageName: "banana"),
         .init(title: "Baby Formula", ngoName: "Light of Gaza", status: "In Progress", imageName: "baby_formula"),
         .init(title: "Flour",       ngoName: "Meal of Hope", status: "Completed",    imageName: "flour")
     ]
-
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.isScrollEnabled = false
+        tableView.separatorStyle = .none
+
 
         
         // TableView
@@ -42,47 +55,75 @@ final class DonorDashboardViewController: UIViewController,
         tableView.separatorStyle = .none
         tableView.rowHeight = 120
         tableView.estimatedRowHeight = 120
-
+        
         // CollectionView
         campaignsCollectionView.dataSource = self
         campaignsCollectionView.delegate = self
+        
         if let layout = campaignsCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             layout.scrollDirection = .horizontal
             layout.minimumLineSpacing = 16
             layout.sectionInset = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)
             layout.estimatedItemSize = .zero
         }
-
+        
         tableView.reloadData()
         campaignsCollectionView.reloadData()
     }
-
     
-    // MARK: - CollectionView
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         campaigns.count
     }
     
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CampaignCell",
                                                       for: indexPath) as! CampaignCell
-        cell.imgCampaign.image = UIImage(named: campaigns[indexPath.item].imageName)
+        
+        // ✅ NEW: set all content (image + badge + title)
+        let c = campaigns[indexPath.item]
+        cell.imgCampaign.image = UIImage(named: c.imageName)
+        
+        // ✅ IMPORTANT: these outlets must exist in CampaignCell.swift and be connected in storyboard
+        cell.badgeLabel.text = c.tag
+        cell.titleLabel.text = c.title
+        
         return cell
     }
     
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let available = collectionView.bounds.width - 48
-        let width = traitCollection.userInterfaceIdiom == .pad ? (available - 16) / 2 : available
-        let height = min(190, collectionView.bounds.height)
-        return CGSize(width: floor(width), height: floor(height))
+    // ✅ NEW: set the size of each card based on the collectionView height
+    // This prevents the bottom white area (badge/title) from being CUT OFF.
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        guard let layout = campaignsCollectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
+        
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 16
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        
+        let h = campaignsCollectionView.bounds.height   // ✅ full height available
+        let w: CGFloat
+        
+        if traitCollection.userInterfaceIdiom == .pad {
+            // ✅ iPad: 2 cards per row
+            let available = campaignsCollectionView.bounds.width
+            - layout.sectionInset.left - layout.sectionInset.right
+            - layout.minimumLineSpacing
+            w = floor(available / 2)
+        } else {
+            // ✅ iPhone: show a “peek” of the next card
+            w = floor(campaignsCollectionView.bounds.width * 0.86)
+        }
+        
+        layout.itemSize = CGSize(width: w, height: h)
+        layout.invalidateLayout()
     }
     
     // MARK: - TableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return ongoing.count
+        ongoing.count
     }
     
     func tableView(_ tableView: UITableView,

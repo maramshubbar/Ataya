@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--AI-->
+        <scene sceneID="mmo-cU-JbB">
+            <objects>
+                <viewController title="AI" id="D8i-Tf-Tqh" customClass="AIVC" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="NLm-ed-lLS">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ENa-uG-F4B" userLabel="TopBarContainer">
+                                <rect key="frame" x="0.0" y="143" width="393" height="56"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="AI Analyzing" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fNs-XD-pgi" userLabel="titleLabel">
+                                        <rect key="frame" x="138" y="16" width="117.33333333333331" height="24"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6wh-7W-FbB" userLabel="backButton">
+                                        <rect key="frame" x="35" y="16" width="24" height="24"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="24" id="I22-cE-RZV"/>
+                                            <constraint firstAttribute="height" constant="24" id="X5v-nc-dWT"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="chevron.left" catalog="system">
+                                            <color key="baseForegroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        </buttonConfiguration>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="56" id="3pd-Cv-IEA"/>
+                                    <constraint firstItem="fNs-XD-pgi" firstAttribute="centerY" secondItem="ENa-uG-F4B" secondAttribute="centerY" id="68N-p2-2SF"/>
+                                    <constraint firstItem="6wh-7W-FbB" firstAttribute="centerY" secondItem="ENa-uG-F4B" secondAttribute="centerY" id="7tf-Wg-uaR"/>
+                                    <constraint firstItem="fNs-XD-pgi" firstAttribute="centerX" secondItem="ENa-uG-F4B" secondAttribute="centerX" id="AUC-fz-hvn"/>
+                                    <constraint firstItem="6wh-7W-FbB" firstAttribute="leading" secondItem="ENa-uG-F4B" secondAttribute="leading" constant="35" id="jxA-cB-eFe"/>
+                                </constraints>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YVX-z5-Khz">
+                                <rect key="frame" x="25" y="766" width="343" height="56"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="56" id="yaq-78-xAR"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Next">
+                                    <backgroundConfiguration key="background">
+                                        <color key="backgroundColor" red="0.96862745100000003" green="0.83137254900000002" blue="0.29803921570000003" alpha="1" colorSpace="calibratedRGB"/>
+                                    </backgroundConfiguration>
+                                    <fontDescription key="titleFontDescription" type="system" pointSize="18"/>
+                                    <color key="baseForegroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                </buttonConfiguration>
+                            </button>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ai_robot" translatesAutoresizingMaskIntoConstraints="NO" id="YcL-a7-E4m">
+                                <rect key="frame" x="59" y="239" width="275" height="260"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="275" id="oDy-l2-9C6"/>
+                                    <constraint firstAttribute="height" constant="260" id="r49-5g-tcF"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Analyzing your photo using AI" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="G9V-kg-iK3" userLabel="label">
+                                <rect key="frame" x="16" y="539" width="361" height="19.333333333333371"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                                <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The AI has detected your food details. Please review before proceeding." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ARD-Lr-xjv" userLabel="label">
+                                <rect key="frame" x="50" y="588.33333333333337" width="293" height="57.333333333333371"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                                <color key="textColor" red="0.72156862749999995" green="0.72156862749999995" blue="0.72156862749999995" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="fJd-IW-arS"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="fJd-IW-arS" firstAttribute="trailing" secondItem="G9V-kg-iK3" secondAttribute="trailing" constant="16" id="2E3-a3-Gel"/>
+                            <constraint firstItem="ENa-uG-F4B" firstAttribute="trailing" secondItem="fJd-IW-arS" secondAttribute="trailing" id="5fh-Aa-FHl"/>
+                            <constraint firstItem="ARD-Lr-xjv" firstAttribute="leading" secondItem="NLm-ed-lLS" secondAttribute="leading" constant="50" id="68G-9Z-deC"/>
+                            <constraint firstItem="G9V-kg-iK3" firstAttribute="centerX" secondItem="fJd-IW-arS" secondAttribute="centerX" id="804-hV-cRT"/>
+                            <constraint firstItem="G9V-kg-iK3" firstAttribute="leading" secondItem="fJd-IW-arS" secondAttribute="leading" constant="16" id="Agx-9P-8aV"/>
+                            <constraint firstItem="G9V-kg-iK3" firstAttribute="top" secondItem="YcL-a7-E4m" secondAttribute="bottom" constant="40" id="BhE-x0-CNh"/>
+                            <constraint firstItem="YcL-a7-E4m" firstAttribute="top" secondItem="ENa-uG-F4B" secondAttribute="bottom" constant="40" id="CqO-Ch-GWB"/>
+                            <constraint firstAttribute="bottom" secondItem="YVX-z5-Khz" secondAttribute="bottom" constant="30" id="Ik8-mZ-YjW"/>
+                            <constraint firstItem="ENa-uG-F4B" firstAttribute="leading" secondItem="fJd-IW-arS" secondAttribute="leading" id="YmC-tu-Aki"/>
+                            <constraint firstAttribute="trailing" secondItem="ARD-Lr-xjv" secondAttribute="trailing" constant="50" id="g1J-iO-3mG"/>
+                            <constraint firstItem="ARD-Lr-xjv" firstAttribute="top" secondItem="G9V-kg-iK3" secondAttribute="bottom" constant="30" id="kz4-yk-0qF"/>
+                            <constraint firstItem="ENa-uG-F4B" firstAttribute="top" secondItem="fJd-IW-arS" secondAttribute="top" constant="25" id="lPu-t2-R8Z"/>
+                            <constraint firstAttribute="trailing" secondItem="YVX-z5-Khz" secondAttribute="trailing" constant="25" id="qa0-VE-dTy"/>
+                            <constraint firstItem="YVX-z5-Khz" firstAttribute="leading" secondItem="NLm-ed-lLS" secondAttribute="leading" constant="25" id="rf9-Vb-f7D"/>
+                            <constraint firstItem="YcL-a7-E4m" firstAttribute="centerX" secondItem="NLm-ed-lLS" secondAttribute="centerX" id="vjo-iD-RRz"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="DjE-AO-5vt" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1169" y="-113"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="ai_robot" width="1212" height="1184"/>
+        <image name="chevron.left" catalog="system" width="97" height="128"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

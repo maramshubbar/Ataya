@@ -7,18 +7,18 @@
 
 import UIKit
 
-class NGODonationOverviewViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
+final class NGODonationOverviewViewController: UIViewController {
 
     @IBOutlet weak var filterSegment: UISegmentedControl!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
-    
+
     private var donations: [Donation] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Search bar style (same as your other VC)
+        // Search bar
         searchBar.backgroundImage = UIImage()
         searchBar.searchBarStyle = .minimal
         if let searchField = searchBar.value(forKey: "searchField") as? UITextField {
@@ -36,11 +36,10 @@ class NGODonationOverviewViewController: UIViewController, UITableViewDelegate, 
         tableView.dataSource = self
         tableView.delegate = self
 
-        // Register XIB
         tableView.register(UINib(nibName: "DonationCell", bundle: nil),
                            forCellReuseIdentifier: DonationCell.reuseId)
 
-        // TEMP test data (like ReportManagement)
+        // TEMP test data
         donations = [
             Donation(title: "Baby Formula (DON-10)",
                      donor: "Ahmed Saleh (ID: D-26)",
@@ -54,20 +53,20 @@ class NGODonationOverviewViewController: UIViewController, UITableViewDelegate, 
                      location: "Riffa, Bahrain",
                      dateText: "Nov 7 2025",
                      status: .accepted,
-                     imageName: "canned_beans"),
+                     imageName: "canned-beans"),
 
-            Donation(title: "Milk Pack (DON-12)",
+            Donation(title: "Eggs (DON-12)",
                      donor: "Noor Hasan (ID: D-09)",
                      location: "Muharraq, Bahrain",
                      dateText: "Nov 8 2025",
                      status: .rejected,
-                     imageName: "milk_pack")
+                     imageName: "eggs")
         ]
     }
 
     private func openDetails(donation: Donation) {
         // TODO: push details VC
-        // print(donation)
+        print("Open details for:", donation.title)
     }
 }
 
@@ -84,10 +83,16 @@ extension NGODonationOverviewViewController: UITableViewDataSource, UITableViewD
                                                  for: indexPath) as! DonationCell
 
         let d = donations[indexPath.row]
-        cell.configure(with: d)
+        cell.configure(
+            title: d.title,
+            donor: d.donor,
+            location: d.location,
+            date: d.dateText,
+            status: d.status.rawValue,
+            imageName: d.imageName
+        )
         cell.selectionStyle = .none
 
-        // Optional: if you have "View Details" button in cell
         cell.onViewDetailsTapped = { [weak self] in
             self?.openDetails(donation: d)
         }

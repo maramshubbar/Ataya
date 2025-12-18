@@ -1,49 +1,82 @@
-//
-//  DonationCell.swift
-//  Ataya
-//
-//  Created by Fatema Maitham on 01/12/2025.
-//
-
 import UIKit
 
-class DonationCell: UITableViewCell {
-//    @IBOutlet weak var shadowView: UIView!
-//    @IBOutlet weak var cardView: RoundedCardView!
+final class DonationCell: UITableViewCell {
+
+    static let reuseId = "DonationCell"
+
+    @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var donorLabel: UILabel!
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
+
     @IBOutlet weak var statusContainerView: UIView!
     @IBOutlet weak var statusLabel: UILabel!
+
     @IBOutlet weak var productImageView: UIImageView!
     @IBOutlet weak var detailsButton: UIButton!
-    
+
+    var onViewDetailsTapped: (() -> Void)?
+
     override func awakeFromNib() {
-            super.awakeFromNib()
-
-            // ✅ make cell background transparent like Report cards
-            backgroundColor = .clear
-            contentView.backgroundColor = .clear
-
-            // ✅ RoundedCardView handles radius+border (from Inspectables)
-            // Just ensure your defaults match Report:
-            cardView.cornerRadius = 15
-            cardView.borderWidth = 1
-            cardView.borderColor = UIColor.lightGray.withAlphaComponent(0.6)
-
-            // ✅ Shadow on OUTER view (must not clip)
-            shadowView.layer.shadowColor = UIColor.black.cgColor
-            shadowView.layer.shadowOpacity = 0.12
-            shadowView.layer.shadowRadius = 12
-            shadowView.layer.shadowOffset = CGSize(width: 0, height: 6)
-            shadowView.layer.masksToBounds = false
-
-            // ✅ Status badge
-            statusContainerView.layer.cornerRadius = 12
-            statusContainerView.layer.masksToBounds = true
-
-            // ✅ Button centered
-            detailsButton.titleLabel?.textAlignment = .center
-        }
+        super.awakeFromNib()
+        styleUI()
     }
+
+    private func styleUI() {
+        // Cell background
+        backgroundColor = .clear
+        contentView.backgroundColor = .clear
+
+        // Card (border only)
+        cardView.layer.cornerRadius = 14
+        cardView.clipsToBounds = true
+        cardView.layer.borderWidth = 1
+        cardView.layer.borderColor = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1).cgColor
+
+        // Status badge
+        statusContainerView.layer.cornerRadius = 12
+        statusContainerView.clipsToBounds = true
+        statusLabel.textAlignment = .center
+
+        // Button (yellow)
+        detailsButton.layer.cornerRadius = 8
+        detailsButton.clipsToBounds = true
+        detailsButton.backgroundColor = UIColor(red: 255/255, green: 216/255, blue: 63/255, alpha: 1)
+        detailsButton.setTitleColor(.black, for: .normal)
+        detailsButton.titleLabel?.textAlignment = .center
+    }
+
+    @IBAction func detailsTapped(_ sender: UIButton) {
+        onViewDetailsTapped?()
+    }
+
+    // ✅ Use this to fill data (same idea as your other cell)
+    func configure(title: String,
+                   donor: String,
+                   location: String,
+                   date: String,
+                   status: String,
+                   imageName: String) {
+
+        titleLabel.text = title
+        donorLabel.text = donor
+        locationLabel.text = location
+        dateLabel.text = date
+
+        statusLabel.text = status
+
+        switch status.lowercased() {
+        case "pending":
+            statusContainerView.backgroundColor = UIColor(red: 255/255, green: 244/255, blue: 191/255, alpha: 1)
+        case "accepted", "approved":
+            statusContainerView.backgroundColor = UIColor(red: 213/255, green: 244/255, blue: 214/255, alpha: 1)
+        case "rejected":
+            statusContainerView.backgroundColor = UIColor(red: 242/255, green: 156/255, blue: 148/255, alpha: 1)
+        default:
+            statusContainerView.backgroundColor = UIColor.systemGray5
+        }
+
+        productImageView.image = UIImage(named: imageName)
+    }
+}

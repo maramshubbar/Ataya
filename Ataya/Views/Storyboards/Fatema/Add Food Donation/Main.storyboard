@@ -129,7 +129,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bell.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="xaM-fn-2pu" userLabel="btnNotifications">
-                                        <rect key="frame" x="349" y="16.333333333333332" width="24" height="23.333333333333339"/>
+                                        <rect key="frame" x="349" y="16.333333333333332" width="24" height="23.333333333333353"/>
                                         <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="24" id="8dM-gc-x8H"/>
@@ -169,21 +169,21 @@
                                                 </constraints>
                                                 <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="16" minimumInteritemSpacing="16" id="yqU-3B-oWx">
                                                     <size key="itemSize" width="331" height="260"/>
-                                                    <size key="estimatedItemSize" width="320" height="300"/>
+                                                    <size key="estimatedItemSize" width="320" height="340"/>
                                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                                     <inset key="sectionInset" minX="16" minY="0.0" maxX="16" maxY="0.0"/>
                                                 </collectionViewFlowLayout>
                                                 <cells>
                                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CampaignCell" id="E71-Wi-FjD" customClass="CampaignCell" customModule="Ataya" customModuleProvider="target">
-                                                        <rect key="frame" x="16" y="0.0" width="331" height="260"/>
+                                                        <rect key="frame" x="16" y="2" width="331" height="256"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="fiw-8M-0NW">
-                                                            <rect key="frame" x="0.0" y="0.0" width="331" height="260"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="331" height="256"/>
                                                             <autoresizingMask key="autoresizingMask"/>
                                                             <subviews>
                                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bb1-qS-NmR" userLabel="cardView" customClass="CampaignCell" customModule="Ataya" customModuleProvider="target">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="331" height="260"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="331" height="256"/>
                                                                     <subviews>
                                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="campaign1" translatesAutoresizingMaskIntoConstraints="NO" id="nPQ-bC-PoK" userLabel="imgCampaign">
                                                                             <rect key="frame" x="0.0" y="0.0" width="331" height="190"/>
@@ -191,11 +191,41 @@
                                                                                 <constraint firstAttribute="height" constant="190" id="8QP-eG-rV8"/>
                                                                             </constraints>
                                                                         </imageView>
+                                                                        <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mzq-ig-X0p">
+                                                                            <rect key="frame" x="16" y="193" width="95" height="26"/>
+                                                                            <subviews>
+                                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Emergency" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9YF-oL-TAd">
+                                                                                    <rect key="frame" x="12" y="5" width="71" height="16"/>
+                                                                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                                    <nil key="highlightedColor"/>
+                                                                                </label>
+                                                                            </subviews>
+                                                                            <color key="backgroundColor" red="0.96470588235294119" green="0.42352941176470588" blue="0.38431372549019605" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                            <constraints>
+                                                                                <constraint firstAttribute="height" constant="26" id="Hnk-wg-Xbf"/>
+                                                                                <constraint firstItem="9YF-oL-TAd" firstAttribute="top" secondItem="mzq-ig-X0p" secondAttribute="top" constant="5" id="Zxo-Pm-M9n"/>
+                                                                                <constraint firstAttribute="bottom" secondItem="9YF-oL-TAd" secondAttribute="bottom" constant="5" id="ieH-aC-MWr"/>
+                                                                                <constraint firstItem="9YF-oL-TAd" firstAttribute="leading" secondItem="mzq-ig-X0p" secondAttribute="leading" constant="12" id="lKU-7W-WGU"/>
+                                                                                <constraint firstAttribute="trailing" secondItem="9YF-oL-TAd" secondAttribute="trailing" constant="12" id="pVv-dS-2WX"/>
+                                                                            </constraints>
+                                                                        </view>
+                                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="1Sh-7B-wps" userLabel="Food Aid for Families in Palestine">
+                                                                            <rect key="frame" x="-15" y="-2" width="361" height="260"/>
+                                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                                            <string key="text">Food Aid for Families
+in Palestine</string>
+                                                                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="20"/>
+                                                                            <nil key="textColor"/>
+                                                                            <nil key="highlightedColor"/>
+                                                                        </label>
                                                                     </subviews>
                                                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                                     <constraints>
                                                                         <constraint firstItem="nPQ-bC-PoK" firstAttribute="top" secondItem="bb1-qS-NmR" secondAttribute="top" id="8nd-dE-TuJ"/>
                                                                         <constraint firstAttribute="trailing" secondItem="nPQ-bC-PoK" secondAttribute="trailing" id="Ary-kp-85g"/>
+                                                                        <constraint firstItem="mzq-ig-X0p" firstAttribute="top" secondItem="nPQ-bC-PoK" secondAttribute="bottom" constant="3" id="DyE-8L-cwX"/>
+                                                                        <constraint firstItem="mzq-ig-X0p" firstAttribute="leading" secondItem="nPQ-bC-PoK" secondAttribute="leading" constant="16" id="VPH-W3-zGB"/>
                                                                         <constraint firstItem="nPQ-bC-PoK" firstAttribute="leading" secondItem="bb1-qS-NmR" secondAttribute="leading" id="wFq-S1-8aV"/>
                                                                     </constraints>
                                                                 </view>
@@ -207,7 +237,7 @@
                                                                 <constraint firstAttribute="bottom" secondItem="bb1-qS-NmR" secondAttribute="bottom" id="g7S-Pn-8zh"/>
                                                             </constraints>
                                                         </collectionViewCellContentView>
-                                                        <size key="customSize" width="331" height="260"/>
+                                                        <size key="customSize" width="331" height="256"/>
                                                         <connections>
                                                             <outlet property="cardView" destination="bb1-qS-NmR" id="bU4-tt-WUK"/>
                                                             <outlet property="imgCampaign" destination="nPQ-bC-PoK" id="K67-o0-CPe"/>

@@ -9,6 +9,18 @@ import UIKit
 
 class DonorProfileViewController: UIViewController {
 
+    @IBOutlet weak var Aboutme: UIView!
+    
+    @IBOutlet weak var Notification: UIButton!
+    
+    @IBOutlet weak var RecurringHisttory: UIButton!
+    
+    @IBOutlet weak var Darkmode: UIButton!
+    
+    @IBOutlet weak var HelpSupport: UIButton!
+    
+    @IBOutlet weak var Logout: UIView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 

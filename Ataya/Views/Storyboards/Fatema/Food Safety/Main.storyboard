@@ -1054,6 +1054,65 @@
             </objects>
             <point key="canvasLocation" x="-345" y="-19.456066945606697"/>
         </scene>
+        <!--Report Management-->
+        <scene sceneID="7Vw-g6-aMl">
+            <objects>
+                <viewController storyboardIdentifier="ReportVC" id="R8T-fg-aYs" customClass="ReportManagementViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="x4a-gk-Wn2">
+                        <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="tfd-3s-1fr">
+                                <rect key="frame" x="16" y="188" width="408" height="33"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="32" id="tpv-BC-e98"/>
+                                </constraints>
+                                <segments>
+                                    <segment title="All"/>
+                                    <segment title="Donation"/>
+                                    <segment title="Accounts"/>
+                                    <segment title="Resolved"/>
+                                </segments>
+                            </segmentedControl>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="9Av-TL-BKC">
+                                <rect key="frame" x="0.0" y="228" width="440" height="611"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
+                            <searchBar contentMode="redraw" text="" placeholder="Search" translatesAutoresizingMaskIntoConstraints="NO" id="eeF-bn-4CQ">
+                                <rect key="frame" x="10" y="124" width="420" height="56"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="R8T-fg-aYs" id="fuc-AK-lhv"/>
+                                </connections>
+                            </searchBar>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="q7N-KK-PLl"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="eeF-bn-4CQ" firstAttribute="centerX" secondItem="tfd-3s-1fr" secondAttribute="centerX" id="0b7-X1-VGV"/>
+                            <constraint firstItem="tfd-3s-1fr" firstAttribute="centerX" secondItem="9Av-TL-BKC" secondAttribute="centerX" id="6Y1-pi-fJd"/>
+                            <constraint firstItem="9Av-TL-BKC" firstAttribute="top" secondItem="tfd-3s-1fr" secondAttribute="bottom" constant="8" id="HOn-xO-JVc"/>
+                            <constraint firstItem="eeF-bn-4CQ" firstAttribute="top" secondItem="q7N-KK-PLl" secondAttribute="top" id="NhO-qR-PIt"/>
+                            <constraint firstItem="eeF-bn-4CQ" firstAttribute="leading" secondItem="q7N-KK-PLl" secondAttribute="leading" constant="10" id="UUm-iJ-PLo"/>
+                            <constraint firstItem="q7N-KK-PLl" firstAttribute="trailing" secondItem="9Av-TL-BKC" secondAttribute="trailing" id="UZW-u4-4zj"/>
+                            <constraint firstItem="tfd-3s-1fr" firstAttribute="leading" secondItem="q7N-KK-PLl" secondAttribute="leading" constant="16" id="WrC-mW-fSF"/>
+                            <constraint firstItem="q7N-KK-PLl" firstAttribute="bottom" secondItem="9Av-TL-BKC" secondAttribute="bottom" id="iBo-Ho-VKF"/>
+                            <constraint firstItem="tfd-3s-1fr" firstAttribute="top" secondItem="eeF-bn-4CQ" secondAttribute="bottom" constant="8" id="irA-gW-QYB"/>
+                            <constraint firstItem="9Av-TL-BKC" firstAttribute="leading" secondItem="q7N-KK-PLl" secondAttribute="leading" id="yB5-nc-SwJ"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Report Management" id="VT5-Q2-gGL"/>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="filterSegment" destination="tfd-3s-1fr" id="cnx-sX-NLq"/>
+                        <outlet property="searchBar" destination="eeF-bn-4CQ" id="0q3-x7-w5G"/>
+                        <outlet property="tableView" destination="9Av-TL-BKC" id="Da9-c1-3nU"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="W8D-62-nQP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2924" y="-19"/>
+        </scene>
     </scenes>
     <resources>
         <image name="baby_formula" width="94.666664123535156" height="94.666664123535156"/>

@@ -8,7 +8,8 @@
 import UIKit
 
 class DonationCell: UITableViewCell {
-
+//    @IBOutlet weak var shadowView: UIView!
+//    @IBOutlet weak var cardView: RoundedCardView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var donorLabel: UILabel!
     @IBOutlet weak var locationLabel: UILabel!
@@ -19,20 +20,30 @@ class DonationCell: UITableViewCell {
     @IBOutlet weak var detailsButton: UIButton!
     
     override func awakeFromNib() {
-        super.awakeFromNib()
-        
-        // Initialization code
-        // Ensure button text stays centered
-        detailsButton.titleLabel?.textAlignment = .center
+            super.awakeFromNib()
 
-        // Optional: round the status badge corners
-        statusContainerView.layer.cornerRadius = 12
+            // ✅ make cell background transparent like Report cards
+            backgroundColor = .clear
+            contentView.backgroundColor = .clear
+
+            // ✅ RoundedCardView handles radius+border (from Inspectables)
+            // Just ensure your defaults match Report:
+            cardView.cornerRadius = 15
+            cardView.borderWidth = 1
+            cardView.borderColor = UIColor.lightGray.withAlphaComponent(0.6)
+
+            // ✅ Shadow on OUTER view (must not clip)
+            shadowView.layer.shadowColor = UIColor.black.cgColor
+            shadowView.layer.shadowOpacity = 0.12
+            shadowView.layer.shadowRadius = 12
+            shadowView.layer.shadowOffset = CGSize(width: 0, height: 6)
+            shadowView.layer.masksToBounds = false
+
+            // ✅ Status badge
+            statusContainerView.layer.cornerRadius = 12
+            statusContainerView.layer.masksToBounds = true
+
+            // ✅ Button centered
+            detailsButton.titleLabel?.textAlignment = .center
+        }
     }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-    
-}

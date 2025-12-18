@@ -21,16 +21,16 @@
                         <rect key="frame" x="20" y="8" width="317" height="173"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="W4I-cb-Qaz">
-                                <rect key="frame" x="35" y="16" width="148" height="83"/>
+                                <rect key="frame" x="35" y="16" width="166" height="83"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Baby Formula (DON-10)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="I3r-gR-AxU">
-                                        <rect key="frame" x="0.0" y="0.0" width="148" height="20"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="166" height="20"/>
                                         <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Ahmed Saleh (ID: D-26)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nAB-4I-5z3">
-                                        <rect key="frame" x="0.0" y="24" width="148" height="17"/>
+                                        <rect key="frame" x="0.0" y="24" width="154.33333333333334" height="17"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <color key="textColor" red="0.3529411764705882" green="0.3529411764705882" blue="0.3529411764705882" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
@@ -69,10 +69,10 @@
                                 </userDefinedRuntimeAttributes>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cah-cj-UH6">
-                                <rect key="frame" x="191" y="16" width="110" height="33"/>
+                                <rect key="frame" x="211" y="16" width="90" height="33"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pending" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EIO-V4-vC6">
-                                        <rect key="frame" x="27.000000000000004" y="8" width="56.333333333333343" height="17"/>
+                                        <rect key="frame" x="17.000000000000004" y="8" width="56.333333333333343" height="17"/>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -80,12 +80,11 @@
                                 </subviews>
                                 <color key="backgroundColor" red="1" green="0.96078431372549022" blue="0.80000000000000004" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="EIO-V4-vC6" secondAttribute="trailing" constant="8" id="7fA-XB-xcp"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="EIO-V4-vC6" secondAttribute="trailing" constant="15" id="7fA-XB-xcp"/>
                                     <constraint firstItem="EIO-V4-vC6" firstAttribute="centerY" secondItem="cah-cj-UH6" secondAttribute="centerY" id="E6T-AW-orZ"/>
-                                    <constraint firstAttribute="width" constant="110" id="HS1-wM-8CT"/>
                                     <constraint firstAttribute="height" constant="33" id="Uay-35-IbJ"/>
                                     <constraint firstItem="EIO-V4-vC6" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="cah-cj-UH6" secondAttribute="leading" constant="8" id="cMB-fd-UcU"/>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="110" id="hiu-Ct-Sol"/>
+                                    <constraint firstAttribute="width" constant="90" id="hiu-Ct-Sol"/>
                                     <constraint firstItem="EIO-V4-vC6" firstAttribute="centerX" secondItem="cah-cj-UH6" secondAttribute="centerX" id="mCL-8U-P9g"/>
                                 </constraints>
                                 <userDefinedRuntimeAttributes>
@@ -109,7 +108,7 @@
                             <constraint firstItem="T44-sg-jSr" firstAttribute="top" secondItem="cah-cj-UH6" secondAttribute="bottom" constant="10" id="HQd-Vz-6fD"/>
                             <constraint firstAttribute="bottom" secondItem="iKk-bJ-ydw" secondAttribute="bottom" constant="16" id="I4W-k6-JLx"/>
                             <constraint firstAttribute="trailing" secondItem="T44-sg-jSr" secondAttribute="trailing" constant="20" id="Jmf-NB-ham"/>
-                            <constraint firstItem="cah-cj-UH6" firstAttribute="leading" secondItem="W4I-cb-Qaz" secondAttribute="trailing" constant="8" id="Mhh-Gs-YfD"/>
+                            <constraint firstItem="cah-cj-UH6" firstAttribute="leading" secondItem="W4I-cb-Qaz" secondAttribute="trailing" constant="10" id="Mhh-Gs-YfD"/>
                             <constraint firstItem="iKk-bJ-ydw" firstAttribute="leading" secondItem="rmM-fO-sWd" secondAttribute="leading" constant="30" id="atf-Ru-9FW"/>
                             <constraint firstAttribute="trailing" secondItem="cah-cj-UH6" secondAttribute="trailing" constant="16" id="eo4-ux-gRR"/>
                             <constraint firstItem="W4I-cb-Qaz" firstAttribute="leading" secondItem="rmM-fO-sWd" secondAttribute="leading" constant="35" id="qZe-9h-bP8"/>

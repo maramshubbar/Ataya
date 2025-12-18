@@ -12,61 +12,90 @@ class NGODonationOverviewViewController: UIViewController, UITableViewDelegate, 
     @IBOutlet weak var filterSegment: UISegmentedControl!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
+    
+    private var donations: [Donation] = []
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Remove top & bottom lines
+
+        // Search bar style (same as your other VC)
         searchBar.backgroundImage = UIImage()
         searchBar.searchBarStyle = .minimal
-
-        // Make the search field perfectly white
         if let searchField = searchBar.value(forKey: "searchField") as? UITextField {
-            searchField.backgroundColor = .white     // PURE WHITE
+            searchField.backgroundColor = .white
             searchField.layer.cornerRadius = 10
             searchField.clipsToBounds = true
         }
-        
-        // Setup tableView
-        tableView.delegate = self
-        tableView.dataSource = self
-        
-        // Register the XIB for the table view
-        let nib = UINib(nibName: "DonationCell", bundle: nil)
-        tableView.register(nib, forCellReuseIdentifier: "DonationCell")
+
+        // Table
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = .clear
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 200
-        tableView.separatorStyle = .none
+
+        tableView.dataSource = self
+        tableView.delegate = self
+
+        // Register XIB
+        tableView.register(UINib(nibName: "DonationCell", bundle: nil),
+                           forCellReuseIdentifier: DonationCell.reuseId)
+
+        // TEMP test data (like ReportManagement)
+        donations = [
+            Donation(title: "Baby Formula (DON-10)",
+                     donor: "Ahmed Saleh (ID: D-26)",
+                     location: "Manama, Bahrain",
+                     dateText: "Nov 6 2025",
+                     status: .pending,
+                     imageName: "baby_formula"),
+
+            Donation(title: "Canned Beans (DON-11)",
+                     donor: "Sara Ali (ID: D-18)",
+                     location: "Riffa, Bahrain",
+                     dateText: "Nov 7 2025",
+                     status: .accepted,
+                     imageName: "canned_beans"),
+
+            Donation(title: "Milk Pack (DON-12)",
+                     donor: "Noor Hasan (ID: D-09)",
+                     location: "Muharraq, Bahrain",
+                     dateText: "Nov 8 2025",
+                     status: .rejected,
+                     imageName: "milk_pack")
+        ]
     }
 
-    // MARK: - TABLE VIEW DATA SOURCE
+    private func openDetails(donation: Donation) {
+        // TODO: push details VC
+        // print(donation)
+    }
+}
+
+extension NGODonationOverviewViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 4 // TEMP: number of test rows
+        donations.count
     }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView,
+                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let cell = tableView.dequeueReusableCell(
-            withIdentifier: "DonationCell",
-            for: indexPath
-        ) as! DonationCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: DonationCell.reuseId,
+                                                 for: indexPath) as! DonationCell
 
-        // TEMP TEST DATA
-        cell.titleLabel.text = "Baby Formula (DON-10)"
-        cell.donorLabel.text = "Ahmed Saleh (ID: D-26)"
-        cell.locationLabel.text = "Manama, Bahrain"
-        cell.dateLabel.text = "Nov 6 2025"
+        let d = donations[indexPath.row]
+        cell.configure(with: d)
+        cell.selectionStyle = .none
 
-        cell.statusLabel.text = "Pending"
-        cell.statusContainerView.backgroundColor = UIColor(
-            red: 1.0,
-            green: 0.98,
-            blue: 0.85,
-            alpha: 1.0
-        )
-
-        cell.productImageView.image = UIImage(named: "baby_formula")
+        // Optional: if you have "View Details" button in cell
+        cell.onViewDetailsTapped = { [weak self] in
+            self?.openDetails(donation: d)
+        }
 
         return cell
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        openDetails(donation: donations[indexPath.row])
     }
 }

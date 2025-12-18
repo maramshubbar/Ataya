@@ -4,7 +4,7 @@ final class DonationCell: UITableViewCell {
 
     static let reuseId = "DonationCell"
 
-    @IBOutlet weak var cardView: UIView!
+    @IBOutlet weak var donationCardView: UIView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var donorLabel: UILabel!
     @IBOutlet weak var locationLabel: UILabel!
@@ -29,10 +29,10 @@ final class DonationCell: UITableViewCell {
         contentView.backgroundColor = .clear
 
         // Card (border only)
-        cardView.layer.cornerRadius = 14
-        cardView.clipsToBounds = true
-        cardView.layer.borderWidth = 1
-        cardView.layer.borderColor = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1).cgColor
+        donationCardView.layer.cornerRadius = 14
+        donationCardView.clipsToBounds = true
+        donationCardView.layer.borderWidth = 1
+        donationCardView.layer.borderColor = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1).cgColor
 
         // Status badge
         statusContainerView.layer.cornerRadius = 12

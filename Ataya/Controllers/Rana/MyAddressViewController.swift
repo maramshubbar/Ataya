@@ -17,5 +17,5 @@ class MyAddressViewController: UIViewController {
     
     @IBOutlet weak var ngoButton: UIButton!
     
-    
+   
 }

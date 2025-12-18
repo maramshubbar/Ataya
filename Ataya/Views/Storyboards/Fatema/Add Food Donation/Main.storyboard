@@ -329,7 +329,7 @@ History</string>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <prototypes>
-                                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="DonationCardCell" rowHeight="148" id="V0z-Ek-xoM" customClass="DonationCardCell" customModule="Ataya" customModuleProvider="target">
+                                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="OngoingDonationCell" rowHeight="148" id="V0z-Ek-xoM" customClass="OngoingDonationCell" customModule="Ataya" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="50" width="390" height="148"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="V0z-Ek-xoM" id="MNG-VG-nIo">
@@ -409,6 +409,14 @@ History</string>
                                                                 <constraint firstAttribute="trailing" secondItem="i1t-Pd-4Mz" secondAttribute="trailing" constant="20" id="sDg-JV-BkV"/>
                                                             </constraints>
                                                         </tableViewCellContentView>
+                                                        <connections>
+                                                            <outlet property="cardView" destination="i1t-Pd-4Mz" id="Tf8-dC-fzj"/>
+                                                            <outlet property="ngoLabel" destination="H4V-dp-ZKb" id="prM-jS-NRP"/>
+                                                            <outlet property="productImageView" destination="AhM-mE-EKU" id="nHO-j5-cZr"/>
+                                                            <outlet property="statusContainerView" destination="asL-ZO-zgi" id="lOJ-ID-NbM"/>
+                                                            <outlet property="statusLabel" destination="YTY-th-7L3" id="avu-jC-1rM"/>
+                                                            <outlet property="titleLabel" destination="F6D-as-f5p" id="d4b-Oh-Pwy"/>
+                                                        </connections>
                                                     </tableViewCell>
                                                 </prototypes>
                                             </tableView>
@@ -529,7 +537,7 @@ History</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="idf-uD-8GG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-598" y="-380"/>
+            <point key="canvasLocation" x="-764" y="-379"/>
         </scene>
     </scenes>
     <resources>

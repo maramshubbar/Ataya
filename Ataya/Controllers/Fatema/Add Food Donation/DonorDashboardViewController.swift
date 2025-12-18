@@ -25,14 +25,24 @@ final class DonorDashboardViewController: UIViewController,
     ]
     
     private let ongoing: [OngoingDonationItem] = [
-        .init(title: "banana", ngoName: "HopePal", status: "Ready Pickup", imageName: "banana"),
-        .init(title: "Milk Powder", ngoName: "HopePal", status: "In Progress", imageName: "baby_formula")
+        .init(title: "Bananas",     ngoName: "HopePal",      status: "Ready Pickup", imageName: "banana"),
+        .init(title: "Baby Formula", ngoName: "Light of Gaza", status: "In Progress", imageName: "baby_formula"),
+        .init(title: "Flour",       ngoName: "Meal of Hope", status: "Completed",    imageName: "flour")
     ]
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        
+        // TableView
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.isScrollEnabled = false
+        tableView.separatorStyle = .none
         tableView.rowHeight = 120
         tableView.estimatedRowHeight = 120
+
         // CollectionView
         campaignsCollectionView.dataSource = self
         campaignsCollectionView.delegate = self
@@ -42,18 +52,11 @@ final class DonorDashboardViewController: UIViewController,
             layout.sectionInset = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)
             layout.estimatedItemSize = .zero
         }
-        
-        // TableView
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.isScrollEnabled = false
-        tableView.separatorStyle = .none
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 120
-        
+
         tableView.reloadData()
         campaignsCollectionView.reloadData()
     }
+
     
     // MARK: - CollectionView
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

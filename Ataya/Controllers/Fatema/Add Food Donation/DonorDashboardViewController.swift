@@ -14,16 +14,43 @@ struct Campaign {
 }
 
 final class DonorDashboardViewController: UIViewController,
-    UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    UICollectionViewDataSource, UICollectionViewDelegateFlowLayout,
+    UITableViewDataSource, UITableViewDelegate {
     private let campaigns: [Campaign] = [
         .init(imageName: "campaign1", tag: "Emergency", title: "Food Aid for Families\nin Palestine"),
         .init(imageName: "campaign2", tag: "Climate Change", title: "Shallow Water Well"),
         .init(imageName: "campaign3", tag: "Emergency", title: "Medical Relief for\nInjured Palestinian")
     ]
     
+    private let ongoing: [OngoingDonationItem] = [
+        .init(title: "Bananas", ngoName: "HopePal", status: "Ready Pickup", imageName: "banana"),
+        .init(title: "Baby Formula", ngoName: "Light of Gaza", status: "In Progress", imageName: "baby_formula"),
+        .init(title: "Flour", ngoName: "Meal of Hope", status: "Completed", imageName: "flour")
+    ]
+
+    
     @IBOutlet weak var recurringStackView: UIStackView!
     @IBOutlet weak var discoverStackView: UIStackView!
     @IBOutlet weak var historyStackView: UIStackView!
+    
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var tableHeightConstraint: NSLayoutConstraint!
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        ongoing.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: OngoingDonationCell.reuseId,
+                                                 for: indexPath) as! OngoingDonationCell
+        cell.configure(with: ongoing[indexPath.row])
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print("Tapped ongoing: \(ongoing[indexPath.row].title)")
+    }
+
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         campaigns.count
@@ -77,6 +104,21 @@ final class DonorDashboardViewController: UIViewController,
         makeTappable(discoverStackView, action: #selector(tapDiscover))
         makeTappable(historyStackView, action: #selector(tapHistory))
         
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = .clear
+        tableView.isScrollEnabled = false
+
+        tableView.register(UINib(nibName: "OngoingDonationCell", bundle: nil),
+                           forCellReuseIdentifier: OngoingDonationCell.reuseId)
+
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 120
+
+        tableView.reloadData()
+        updateTableHeight()
+
     }
     private func makeTappable(_ view: UIView, action: Selector) {
         view.isUserInteractionEnabled = true
@@ -95,4 +137,15 @@ final class DonorDashboardViewController: UIViewController,
     @objc private func tapHistory() {
         print("Tapped History")
     }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateTableHeight()
+    }
+
+    private func updateTableHeight() {
+        tableView.layoutIfNeeded()
+        tableHeightConstraint.constant = tableView.contentSize.height
+    }
+
 }

@@ -335,11 +335,15 @@ History</string>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="zUI-fq-8Gn">
-                                                <rect key="frame" x="16" y="641.33333333333337" width="408" height="450.00000000000011"/>
+                                                <rect key="frame" x="16" y="641.33333333333337" width="408" height="420.00000000000011"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="450" id="RgV-6d-WAD"/>
+                                                    <constraint firstAttribute="height" constant="420" id="RgV-6d-WAD"/>
                                                 </constraints>
+                                                <connections>
+                                                    <outlet property="dataSource" destination="9EP-zR-rDM" id="U3N-9m-BS6"/>
+                                                    <outlet property="delegate" destination="9EP-zR-rDM" id="TRA-cQ-0Lq"/>
+                                                </connections>
                                             </tableView>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -396,6 +400,8 @@ History</string>
                         <outlet property="discoverStackView" destination="kgz-vZ-Nt7" id="4Im-Lp-INU"/>
                         <outlet property="historyStackView" destination="8pl-yZ-xkE" id="bYG-Yx-8wE"/>
                         <outlet property="recurringStackView" destination="IdX-Ve-f3H" id="8PH-dy-Qip"/>
+                        <outlet property="tableHeightConstraint" destination="RgV-6d-WAD" id="zAX-Bn-lMs"/>
+                        <outlet property="tableView" destination="zUI-fq-8Gn" id="TLW-VD-lmU"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0Ss-fs-o9I" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

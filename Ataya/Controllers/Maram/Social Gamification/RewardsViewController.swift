@@ -3,14 +3,6 @@
 //  Ataya
 //
 //  Created by Maram on 18/12/2025.
-//
-//
-//  RewardsViewController.swift
-//  Ataya
-//
-//  Created by Maram on 18/12/2025.
-//
-
 
 
 import UIKit
@@ -84,6 +76,9 @@ final class RewardsViewController: UIViewController {
         badgesCollectionView.showsHorizontalScrollIndicator = false
         badgesCollectionView.alwaysBounceHorizontal = true
         badgesCollectionView.backgroundColor = .clear
+        badgesCollectionView.clipsToBounds = false
+        badgesCollectionView.layer.masksToBounds = false
+
     }
 }
 
@@ -118,7 +113,7 @@ extension RewardsViewController: UICollectionViewDataSource, UICollectionViewDel
                            icon: UIImage(named: "community")?.withRenderingMode(.alwaysOriginal))
 
         default: // ✅ الكارد الرابع
-            cell.configure(title: "Global Giver",
+            cell.configure(title: "Gold Donor",
                            subtitle: "Donated to international causes",
                            icon: UIImage(named: "last")?.withRenderingMode(.alwaysOriginal))
         }
@@ -126,7 +121,7 @@ extension RewardsViewController: UICollectionViewDataSource, UICollectionViewDel
 
         // ✅ ADDED: set background color per card
         let hex = badgeCardHexColors[indexPath.item % badgeCardHexColors.count]
-        cell.cardView.backgroundColor = UIColor(hex: hex)
+        cell.contentView.backgroundColor = UIColor(hex: hex)
 
         return cell
     }

@@ -31,9 +31,9 @@ final class CouponDetailsViewController: UIViewController {
         cardView.layer.masksToBounds = false     // لازم false عشان الشادو يبين
 
         cardView.layer.shadowColor = UIColor.black.cgColor
-        cardView.layer.shadowOpacity = 0.12
+        cardView.layer.shadowOpacity = 0.08
         cardView.layer.shadowOffset = CGSize(width: 0, height: 6)
-        cardView.layer.shadowRadius = 10
+        cardView.layer.shadowRadius = 8
 
         // شادو نظيف وسريع
         cardView.layer.shadowPath =

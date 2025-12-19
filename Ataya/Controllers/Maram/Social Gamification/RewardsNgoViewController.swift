@@ -1,25 +1,18 @@
 //
-//  RewardsViewController.swift
+//  RewardsNgoViewController.swift
 //  Ataya
 //
-//  Created by Maram on 18/12/2025.
+//  Created by Maram on 19/12/2025.
+//
 
 
 import UIKit
 
-final class RewardsViewController: UIViewController {
+final class RewardsNgoViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
 
     @IBOutlet weak var badgesCollectionView: UICollectionView!
 
-    // ✅ ADDED: connect your 3 row views here (Outlet Collection)
-    @IBOutlet var rewardRowViews: [UIView]!
-
-    // ✅ ADDED: connect Available/Locked buttons here (Outlet Collection)
-    @IBOutlet var statusPillButtons: [UIButton]!
-
-    // ✅ ADDED: badge card background colors
     private let badgeCardHexColors = [
-        //"#E5E5E5",
         "#fff8ed",
         "#FBF9FF",
         "#F6FCF3",
@@ -29,32 +22,9 @@ final class RewardsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupBadges()
-
-        // ✅ ADDED
-        styleRewardsUI()
-    }
-
-    // ✅ ADDED
-    private func styleRewardsUI() {
-        let borderColor = UIColor(hex: "#F7D44C")
-
-        // 3 row views: border + radius 8
-        rewardRowViews.forEach { v in
-            v.layer.borderWidth = 1
-            v.layer.borderColor = borderColor.cgColor
-            v.layer.cornerRadius = 8
-            v.clipsToBounds = true
-        }
-
-        // Available/Locked buttons: radius 4
-        statusPillButtons.forEach { b in
-            b.layer.cornerRadius = 4
-            b.clipsToBounds = true
-        }
     }
 
     private func setupBadges() {
-        // ✅ Register XIB cell
         badgesCollectionView.register(
             UINib(nibName: "BadgeCardCell", bundle: nil),
             forCellWithReuseIdentifier: BadgeCardCell.reuseId
@@ -63,13 +33,12 @@ final class RewardsViewController: UIViewController {
         badgesCollectionView.dataSource = self
         badgesCollectionView.delegate = self
 
-        // ✅ Horizontal layout
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumLineSpacing = 14
         layout.minimumInteritemSpacing = 0
         layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-        layout.itemSize = CGSize(width: 104, height: 194)   // ✅ مثل التصميم
+        layout.itemSize = CGSize(width: 104, height: 194)
 
         badgesCollectionView.collectionViewLayout = layout
 
@@ -78,14 +47,12 @@ final class RewardsViewController: UIViewController {
         badgesCollectionView.backgroundColor = .clear
         badgesCollectionView.clipsToBounds = false
         badgesCollectionView.layer.masksToBounds = false
-
     }
-}
 
-extension RewardsViewController: UICollectionViewDataSource, UICollectionViewDelegate {
+    // MARK: - UICollectionViewDataSource
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 4
+        return 4 // change to 3 if you want only 3 cards
     }
 
     func collectionView(_ collectionView: UICollectionView,
@@ -100,7 +67,7 @@ extension RewardsViewController: UICollectionViewDataSource, UICollectionViewDel
         case 0:
             cell.configure(title: "Gold Heart",
                            subtitle: "Donated 10+ times",
-                           icon: UIImage(systemName: "heart.fill"))   // ✅ نفس ما هي
+                           icon: UIImage(systemName: "heart.fill"))
 
         case 1:
             cell.configure(title: "Meal Hero",
@@ -112,38 +79,15 @@ extension RewardsViewController: UICollectionViewDataSource, UICollectionViewDel
                            subtitle: "Supported 3 campaigns",
                            icon: UIImage(named: "community")?.withRenderingMode(.alwaysOriginal))
 
-        default: // ✅ الكارد الرابع
+        default:
             cell.configure(title: "Gold Donor",
                            subtitle: "Donated to international causes",
                            icon: UIImage(named: "last")?.withRenderingMode(.alwaysOriginal))
         }
 
-
-        // ✅ ADDED: set background color per card
         let hex = badgeCardHexColors[indexPath.item % badgeCardHexColors.count]
         cell.contentView.backgroundColor = UIColor(hex: hex)
 
         return cell
-    }
-    
-    
-}
-
-// ✅ ADDED: Hex color helper
-import UIKit
-
-extension UIColor {
-    convenience init(hex: String) {
-        var h = hex.trimmingCharacters(in: .whitespacesAndNewlines)
-        if h.hasPrefix("#") { h.removeFirst() }
-        if h.count == 6 { h += "FF" } // add alpha
-        var v: UInt64 = 0
-        Scanner(string: h).scanHexInt64(&v)
-
-        let r = CGFloat((v & 0xFF000000) >> 24) / 255
-        let g = CGFloat((v & 0x00FF0000) >> 16) / 255
-        let b = CGFloat((v & 0x0000FF00) >> 8) / 255
-        let a = CGFloat(v & 0x000000FF) / 255
-        self.init(red: r, green: g, blue: b, alpha: a)
     }
 }

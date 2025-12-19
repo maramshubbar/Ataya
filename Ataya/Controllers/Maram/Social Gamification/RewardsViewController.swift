@@ -4,6 +4,14 @@
 //
 //  Created by Maram on 18/12/2025.
 //
+//
+//  RewardsViewController.swift
+//  Ataya
+//
+//  Created by Maram on 18/12/2025.
+//
+
+
 
 import UIKit
 
@@ -19,10 +27,11 @@ final class RewardsViewController: UIViewController {
 
     // ✅ ADDED: badge card background colors
     private let badgeCardHexColors = [
-        "#E5E5E5",
+        //"#E5E5E5",
+        "#fff8ed",
         "#FBF9FF",
         "#F6FCF3",
-        "#F6FCF3"
+        "#fffbfb"
     ]
 
     override func viewDidLoad() {
@@ -96,23 +105,24 @@ extension RewardsViewController: UICollectionViewDataSource, UICollectionViewDel
         case 0:
             cell.configure(title: "Gold Heart",
                            subtitle: "Donated 10+ times",
-                           icon: UIImage(systemName: "heart.fill"))
+                           icon: UIImage(systemName: "heart.fill"))   // ✅ نفس ما هي
 
         case 1:
             cell.configure(title: "Meal Hero",
                            subtitle: "Provided 100+ meals",
-                           icon: UIImage(systemName: "takeoutbag.and.cup.and.straw.fill"))
+                           icon: UIImage(named: "meal")?.withRenderingMode(.alwaysOriginal))
 
         case 2:
             cell.configure(title: "Community Helper",
                            subtitle: "Supported 3 campaigns",
-                           icon: UIImage(systemName: "person.3.fill"))
+                           icon: UIImage(named: "community")?.withRenderingMode(.alwaysOriginal))
 
         default: // ✅ الكارد الرابع
-            cell.configure(title: "Gold Donor",
-                           subtitle: "12 successful donations",
-                           icon: UIImage(systemName: "star.fill"))
+            cell.configure(title: "Global Giver",
+                           subtitle: "Donated to international causes",
+                           icon: UIImage(named: "last")?.withRenderingMode(.alwaysOriginal))
         }
+
 
         // ✅ ADDED: set background color per card
         let hex = badgeCardHexColors[indexPath.item % badgeCardHexColors.count]
@@ -120,6 +130,8 @@ extension RewardsViewController: UICollectionViewDataSource, UICollectionViewDel
 
         return cell
     }
+    
+    
 }
 
 // ✅ ADDED: Hex color helper

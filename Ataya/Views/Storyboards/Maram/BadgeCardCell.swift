@@ -49,3 +49,4 @@ final class BadgeCardCell: UICollectionViewCell {
         iconImageView?.image = icon
     }
 }
+

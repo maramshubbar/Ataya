@@ -78,19 +78,15 @@ final class DonorDashboardViewController: UIViewController,
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CampaignCell",
-                                                      for: indexPath) as! CampaignCell
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: CampaignCell.reuseId,
+            for: indexPath
+        ) as! CampaignCell
         
-        // ✅ NEW: set all content (image + badge + title)
-        let c = campaigns[indexPath.item]
-        cell.imgCampaign.image = UIImage(named: c.imageName)
-        
-        // ✅ IMPORTANT: these outlets must exist in CampaignCell.swift and be connected in storyboard
-        cell.badgeLabel.text = c.tag
-        cell.titleLabel.text = c.title
-        
+        cell.configure(with: campaigns[indexPath.item])
         return cell
     }
+
     
     // ✅ NEW: set the size of each card based on the collectionView height
     // This prevents the bottom white area (badge/title) from being CUT OFF.

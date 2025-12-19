@@ -36,6 +36,8 @@ final class DonorDashboardViewController: UIViewController,
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var tableHeightConstraint: NSLayoutConstraint!
 
+    @IBOutlet weak var scrollView: UIScrollView!
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         ongoing.count
     }
@@ -65,7 +67,7 @@ final class DonorDashboardViewController: UIViewController,
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = collectionView.bounds.width - 80
+        let width = collectionView.bounds.width - 35
         return CGSize(width: width, height: collectionView.bounds.height)
     }
 
@@ -113,11 +115,18 @@ final class DonorDashboardViewController: UIViewController,
         tableView.register(UINib(nibName: "OngoingDonationCell", bundle: nil),
                            forCellReuseIdentifier: OngoingDonationCell.reuseId)
 
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 120
-
+        tableView.rowHeight = 120
         tableView.reloadData()
         updateTableHeight()
+        
+        tableView.contentInset = .zero
+        tableView.scrollIndicatorInsets = .zero
+
+        print("ongoing count =", ongoing.count)
+
+//        scrollView.alwaysBounceVertical = false
+//        scrollView.bounces = false
+
 
     }
     private func makeTappable(_ view: UIView, action: Selector) {
@@ -145,7 +154,16 @@ final class DonorDashboardViewController: UIViewController,
 
     private func updateTableHeight() {
         tableView.layoutIfNeeded()
-        tableHeightConstraint.constant = tableView.contentSize.height
+            let h = tableView.contentSize.height
+            if tableHeightConstraint.constant != h {
+                tableHeightConstraint.constant = h
+                view.layoutIfNeeded()
+            }
     }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        scrollView.setContentOffset(.zero, animated: false)
+    }
+
 
 }

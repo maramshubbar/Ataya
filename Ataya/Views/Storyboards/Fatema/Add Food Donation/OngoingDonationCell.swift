@@ -35,17 +35,16 @@ final class OngoingDonationCell: UITableViewCell {
         contentView.backgroundColor = .clear
         selectionStyle = .none
 
-        // Shadow view (NO clipping)
-        shadowView.backgroundColor = .clear
-        shadowView.layer.cornerRadius = radius
+        // Shadow (must NOT clip)
         shadowView.layer.shadowColor = UIColor.black.cgColor
-        shadowView.layer.shadowOpacity = 0.10
-        shadowView.layer.shadowOffset = CGSize(width: 0, height: 10)
-        shadowView.layer.shadowRadius = 14
-        shadowView.layer.masksToBounds = false
+        shadowView.layer.shadowOpacity = 0.06
+        shadowView.layer.shadowOffset = CGSize(width: 0, height: 4)
+        shadowView.layer.shadowRadius = 8
         shadowView.layer.shouldRasterize = true
         shadowView.layer.rasterizationScale = UIScreen.main.scale
 
+
+        
         // Card view (clips for rounded corners)
         cardView.backgroundColor = .white
         cardView.layer.cornerRadius = radius
@@ -62,6 +61,10 @@ final class OngoingDonationCell: UITableViewCell {
         titleLabel.font = .systemFont(ofSize: 20, weight: .semibold)
         ngoLabel.font = .systemFont(ofSize: 16, weight: .regular)
         ngoLabel.textColor = .systemGray
+        
+        clipsToBounds = false
+        contentView.clipsToBounds = false
+
     }
 
     override func layoutSubviews() {

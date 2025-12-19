@@ -15,7 +15,8 @@ class InspectDonationViewController: UIViewController {
     @IBOutlet weak var descriptionSectionStack: UIStackView!
     @IBOutlet weak var reasonTextField: UITextField!
     @IBOutlet weak var descriptionTextView: UITextView!
-    
+    @IBOutlet weak var photoImageView: UIImageView!
+
     
     private let yellow = UIColor(red: 255/255, green: 216/255, blue: 63/255, alpha: 1) // #FFD83F
        private let ringGray = UIColor.systemGray3
@@ -42,12 +43,24 @@ class InspectDonationViewController: UIViewController {
         setupRadioButtons()
         setupReasonDropdown()
         updateRadioUI()
+        styleCard(photoCardView)
+        
+        photoImageView.contentMode = .scaleAspectFill
+        photoImageView.clipsToBounds = true
     }
 
     private func setupRadioButtons() {
            configure(button: rejectButton)
            configure(button: acceptButton)
        }
+    
+    private func styleCard(_ v: UIView) {
+        v.backgroundColor = .white
+        v.layer.cornerRadius = 14
+        v.layer.borderWidth = 1
+        v.layer.borderColor = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1).cgColor
+        v.clipsToBounds = true
+    }
     
     private func configure(button: UIButton) {
             // ✅ Keep storyboard title (do NOT set config.title)
@@ -84,6 +97,18 @@ class InspectDonationViewController: UIViewController {
         let isReject = (decision == .reject)
         reasonSectionStack.isHidden = !isReject
         descriptionSectionStack.isHidden = !isReject
+        descriptionTextView.backgroundColor = .white
+        descriptionTextView.layer.cornerRadius = 12
+        descriptionTextView.layer.borderWidth = 1
+        descriptionTextView.layer.borderColor = UIColor.systemGray5.cgColor
+        descriptionTextView.clipsToBounds = true
+
+        descriptionTextView.textContainerInset = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
+        descriptionTextView.font = .systemFont(ofSize: 16)
+        
+        
+        photoCardView
+        
         
         // ✅ If Accept: clear + close keyboard
         if !isReject {

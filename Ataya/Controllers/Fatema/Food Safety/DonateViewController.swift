@@ -31,13 +31,18 @@ final class DonateViewController: UIViewController{
     // MARK: - Style Function (shadow + corner radius)
         func styleCard(_ card: UIView) {
             card.layer.cornerRadius = 10
-            card.layer.shadowColor = UIColor.black.cgColor
-            card.layer.shadowOpacity = 0.08
-            card.layer.shadowOffset = CGSize(width: 0, height: 4)
-            card.layer.shadowRadius = 14
             card.layer.masksToBounds = false
+            card.layer.shadowColor = UIColor.black.cgColor
+            card.layer.shadowOpacity = 0.06
+            card.layer.shadowOffset = CGSize(width: 0, height: 4)
+            card.layer.shadowRadius = 8
+            card.layer.shouldRasterize = true
+            card.layer.rasterizationScale = UIScreen.main.scale
+
+
         }
 
+    
         // MARK: - Perfect shadow path rendering
         override func viewDidLayoutSubviews() {
             super.viewDidLayoutSubviews()

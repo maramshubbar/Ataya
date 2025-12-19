@@ -11,9 +11,45 @@ final class RewardsViewController: UIViewController {
 
     @IBOutlet weak var badgesCollectionView: UICollectionView!
 
+    // ✅ ADDED: connect your 3 row views here (Outlet Collection)
+    @IBOutlet var rewardRowViews: [UIView]!
+
+    // ✅ ADDED: connect Available/Locked buttons here (Outlet Collection)
+    @IBOutlet var statusPillButtons: [UIButton]!
+
+    // ✅ ADDED: badge card background colors
+    private let badgeCardHexColors = [
+        "#E5E5E5",
+        "#FBF9FF",
+        "#F6FCF3",
+        "#F6FCF3"
+    ]
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupBadges()
+
+        // ✅ ADDED
+        styleRewardsUI()
+    }
+
+    // ✅ ADDED
+    private func styleRewardsUI() {
+        let borderColor = UIColor(hex: "#F7D44C")
+
+        // 3 row views: border + radius 8
+        rewardRowViews.forEach { v in
+            v.layer.borderWidth = 1
+            v.layer.borderColor = borderColor.cgColor
+            v.layer.cornerRadius = 8
+            v.clipsToBounds = true
+        }
+
+        // Available/Locked buttons: radius 4
+        statusPillButtons.forEach { b in
+            b.layer.cornerRadius = 4
+            b.clipsToBounds = true
+        }
     }
 
     private func setupBadges() {
@@ -78,8 +114,27 @@ extension RewardsViewController: UICollectionViewDataSource, UICollectionViewDel
                            icon: UIImage(systemName: "star.fill"))
         }
 
+        // ✅ ADDED: set background color per card
+        let hex = badgeCardHexColors[indexPath.item % badgeCardHexColors.count]
+        cell.cardView.backgroundColor = UIColor(hex: hex)
+
         return cell
     }
 }
 
+// ✅ ADDED: Hex color helper
+extension UIColor {
+    convenience init(hex: String) {
+        var h = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+        if h.hasPrefix("#") { h.removeFirst() }
+        if h.count == 6 { h += "FF" } // add alpha
+        var v: UInt64 = 0
+        Scanner(string: h).scanHexInt64(&v)
 
+        let r = CGFloat((v & 0xFF000000) >> 24) / 255
+        let g = CGFloat((v & 0x00FF0000) >> 16) / 255
+        let b = CGFloat((v & 0x0000FF00) >> 8) / 255
+        let a = CGFloat(v & 0x000000FF) / 255
+        self.init(red: r, green: g, blue: b, alpha: a)
+    }
+}

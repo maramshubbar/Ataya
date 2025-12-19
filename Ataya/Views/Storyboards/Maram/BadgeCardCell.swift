@@ -3,6 +3,7 @@ import UIKit
 final class BadgeCardCell: UICollectionViewCell {
 
     static let reuseId = "BadgeCardCell"
+    @IBOutlet weak var cardView: UIView!   // ✅ لازم يكون مربوط بالـXIB
 
     @IBOutlet weak var iconImageView: UIImageView?
     @IBOutlet weak var titleLabel: UILabel?
@@ -48,4 +49,3 @@ final class BadgeCardCell: UICollectionViewCell {
         iconImageView?.image = icon
     }
 }
-

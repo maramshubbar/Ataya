@@ -22,7 +22,7 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="9pN-Lr-SrN">
                                 <rect key="frame" x="12" y="14" width="80" height="166"/>
                                 <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Google" translatesAutoresizingMaskIntoConstraints="NO" id="taQ-nL-Wgo">
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="taQ-nL-Wgo">
                                         <rect key="frame" x="0.0" y="0.0" width="80" height="50"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="ZI2-Rp-Eex"/>
@@ -68,6 +68,7 @@
             </constraints>
             <size key="customSize" width="104" height="194"/>
             <connections>
+                <outlet property="cardView" destination="jUn-r0-dq7" id="ytX-zm-Q47"/>
                 <outlet property="iconImageView" destination="taQ-nL-Wgo" id="hdI-Q3-bCy"/>
                 <outlet property="subtitleLabel" destination="tQU-18-xCg" id="EOn-ft-Qdg"/>
                 <outlet property="titleLabel" destination="CRp-QV-P2R" id="4FA-nM-bu9"/>
@@ -75,7 +76,4 @@
             <point key="canvasLocation" x="-390.83969465648852" y="47.183098591549296"/>
         </collectionViewCell>
     </objects>
-    <resources>
-        <image name="Google" width="24" height="24"/>
-    </resources>
 </document>

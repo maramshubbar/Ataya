@@ -29,7 +29,7 @@ class AddFoodDonationViewController: UIViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupCards()
+//        setupCards()
         // Do any additional setup after loading the view.
     }
     

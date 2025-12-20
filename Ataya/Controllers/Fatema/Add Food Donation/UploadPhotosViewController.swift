@@ -112,37 +112,37 @@ class UploadPhotosViewController: UIViewController {
             present(sheet, animated: true)
         }
 
-        // MARK: - Next
-        @IBAction func nextTapped(_ sender: UIButton) {
-            guard !selectedImages.isEmpty else { return }
-
-            Task {
-                do {
-                    // 1) Ensure signed-in (anonymous)
-                    try await AuthManager.shared.ensureSignedIn()
-
-                    // 2) Make sure draft has an id
-                    if draft.id.isEmpty {
-                        draft.id = UUID().uuidString
-                    }
-
-                    // 3) Upload photos -> URLs
-                    let urls = try await uploadSelectedImagesToFirebase()
-                    draft.photoURLs = urls
-
-                    print("✅ Uploaded photo URLs:", urls)
-
-                    // 4) Go next screen (use your segue / push)
-                    await MainActor.run {
-                        self.performSegue(withIdentifier: "toSafety", sender: nil)
-                    }
-
-
-                } catch {
-                    showAlert(title: "Upload Failed", message: error.localizedDescription)
-                }
-            }
-        }
+//        // MARK: - Next
+//        @IBAction func nextTapped(_ sender: UIButton) {
+//            guard !selectedImages.isEmpty else { return }
+//
+//            Task {
+//                do {
+//                    // 1) Ensure signed-in (anonymous)
+//                    try await AuthManager.shared.ensureSignedIn()
+//
+//                    // 2) Make sure draft has an id
+//                    if draft.id.isEmpty {
+//                        draft.id = UUID().uuidString
+//                    }
+//
+//                    // 3) Upload photos -> URLs
+//                    let urls = try await uploadSelectedImagesToFirebase()
+//                    draft.photoURLs = urls
+//
+//                    print("✅ Uploaded photo URLs:", urls)
+//
+//                    // 4) Go next screen (use your segue / push)
+//                    await MainActor.run {
+//                        self.performSegue(withIdentifier: "toSafety", sender: nil)
+//                    }
+//
+//
+//                } catch {
+//                    showAlert(title: "Upload Failed", message: error.localizedDescription)
+//                }
+//            }
+//        }
 
         // MARK: - Photo Picker
         private func presentPhotoPicker(selectionLimit: Int) {
@@ -170,31 +170,31 @@ class UploadPhotosViewController: UIViewController {
     }
 
 
-        // MARK: - Firebase Storage Upload
-        private func uploadSelectedImagesToFirebase() async throws -> [String] {
-            let uid = AuthManager.shared.uid
-            let storage = Storage.storage()
-
-            var urls: [String] = []
-            urls.reserveCapacity(selectedImages.count)
-
-            for (index, image) in selectedImages.enumerated() {
-                guard let data = image.jpegData(compressionQuality: 0.85) else { continue }
-
-                let filename = "photo_\(index+1)_\(UUID().uuidString).jpg"
-                let path = "donations/\(uid)/\(draft.id)/\(filename)"
-                let ref = storage.reference().child(path)
-
-                let meta = StorageMetadata()
-                meta.contentType = "image/jpeg"
-
-                _ = try await ref.putDataAsync(data, metadata: meta)
-                let url = try await ref.downloadURL()
-                urls.append(url.absoluteString)
-            }
-
-            return urls
-        }
+//        // MARK: - Firebase Storage Upload
+//        private func uploadSelectedImagesToFirebase() async throws -> [String] {
+//            let uid = AuthManager.shared.uid
+//            let storage = Storage.storage()
+//
+//            var urls: [String] = []
+//            urls.reserveCapacity(selectedImages.count)
+//
+//            for (index, image) in selectedImages.enumerated() {
+//                guard let data = image.jpegData(compressionQuality: 0.85) else { continue }
+//
+//                let filename = "photo_\(index+1)_\(UUID().uuidString).jpg"
+//                let path = "donations/\(uid)/\(draft.id)/\(filename)"
+//                let ref = storage.reference().child(path)
+//
+//                let meta = StorageMetadata()
+//                meta.contentType = "image/jpeg"
+//
+//                _ = try await ref.putDataAsync(data, metadata: meta)
+//                let url = try await ref.downloadURL()
+//                urls.append(url.absoluteString)
+//            }
+//
+//            return urls
+//        }
 
         // MARK: - Helpers
         private func showAlert(title: String, message: String) {

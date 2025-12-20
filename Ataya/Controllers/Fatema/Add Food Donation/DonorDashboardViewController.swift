@@ -38,6 +38,10 @@ final class DonorDashboardViewController: UIViewController,
 
     @IBOutlet weak var scrollView: UIScrollView!
 
+    @IBOutlet weak var quickToolsTitleLabel: UILabel!
+    @IBOutlet weak var ongoingDonationTitleLabel: UILabel!
+
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         ongoing.count
     }
@@ -85,6 +89,13 @@ final class DonorDashboardViewController: UIViewController,
     override func viewDidLoad() {
         super.viewDidLoad()
         
+//        quickToolsTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+//        quickToolsTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25).isActive = true
+//
+//        ongoingDonationTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+//        ongoingDonationTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25).isActive = true
+
+        
         campaignsCollectionView.dataSource = self
         campaignsCollectionView.delegate = self
         campaignsCollectionView.backgroundColor = .clear
@@ -117,6 +128,11 @@ final class DonorDashboardViewController: UIViewController,
 
         tableView.rowHeight = 120
         tableView.reloadData()
+        DispatchQueue.main.async {
+            self.tableView.layoutIfNeeded()
+            self.tableHeightConstraint.constant = self.tableView.contentSize.height
+        }
+        
         updateTableHeight()
         
         tableView.contentInset = .zero
@@ -149,7 +165,8 @@ final class DonorDashboardViewController: UIViewController,
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        updateTableHeight()
+        tableView.layoutIfNeeded()
+        tableHeightConstraint.constant = tableView.contentSize.height
     }
 
     private func updateTableHeight() {
@@ -164,6 +181,7 @@ final class DonorDashboardViewController: UIViewController,
         super.viewDidAppear(animated)
         scrollView.setContentOffset(.zero, animated: false)
     }
-
-
+    
+    
+    
 }

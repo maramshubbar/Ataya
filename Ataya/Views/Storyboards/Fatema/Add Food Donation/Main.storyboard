@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="IHW-ZG-TpY">
     <device id="retina6_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
@@ -362,7 +362,7 @@ History</string>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="Wcx-mQ-0wX" firstAttribute="top" secondItem="dre-1R-EVN" secondAttribute="top" id="Gqt-Wd-hrH"/>
-                                    <constraint firstItem="dre-1R-EVN" firstAttribute="bottom" secondItem="Wcx-mQ-0wX" secondAttribute="bottom" constant="457.66666666666674" id="JkE-4F-M8z"/>
+                                    <constraint firstItem="dre-1R-EVN" firstAttribute="bottom" secondItem="Wcx-mQ-0wX" secondAttribute="bottom" id="JkE-4F-M8z"/>
                                     <constraint firstItem="Wcx-mQ-0wX" firstAttribute="width" secondItem="JNp-W8-B4X" secondAttribute="width" id="ioZ-xK-203"/>
                                     <constraint firstItem="Wcx-mQ-0wX" firstAttribute="leading" secondItem="dre-1R-EVN" secondAttribute="leading" id="pER-yi-FXx"/>
                                     <constraint firstItem="dre-1R-EVN" firstAttribute="trailing" secondItem="Wcx-mQ-0wX" secondAttribute="trailing" id="w4D-PX-jiE"/>
@@ -388,6 +388,8 @@ History</string>
                         <outlet property="campaignsCollectionView" destination="5uq-M6-2cJ" id="6ct-9f-ZpA"/>
                         <outlet property="discoverStackView" destination="kgz-vZ-Nt7" id="4Im-Lp-INU"/>
                         <outlet property="historyStackView" destination="8pl-yZ-xkE" id="bYG-Yx-8wE"/>
+                        <outlet property="ongoingDonationTitleLabel" destination="b8v-wd-hqM" id="RmM-1r-n8h"/>
+                        <outlet property="quickToolsTitleLabel" destination="7BZ-wo-hb7" id="xQf-Ju-5I1"/>
                         <outlet property="recurringStackView" destination="IdX-Ve-f3H" id="8PH-dy-Qip"/>
                         <outlet property="scrollView" destination="PG6-z8-cbb" id="D47-0d-vGX"/>
                         <outlet property="tableHeightConstraint" destination="RgV-6d-WAD" id="zAX-Bn-lMs"/>

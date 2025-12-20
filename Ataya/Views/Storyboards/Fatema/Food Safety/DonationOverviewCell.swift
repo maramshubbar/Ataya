@@ -17,7 +17,6 @@ final class DonationOverviewCell: UITableViewCell {
     @IBOutlet weak var badgeLabel: UILabel!
  
     @IBOutlet weak var donorLabel: UILabel!
-    @IBOutlet weak var ngoLabel: UILabel!
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
  
@@ -37,7 +36,6 @@ final class DonationOverviewCell: UITableViewCell {
  
         titleLabel.text = nil
         donorLabel.text = nil
-        ngoLabel.text = nil
         locationLabel.text = nil
         dateLabel.text = nil
  
@@ -83,7 +81,6 @@ final class DonationOverviewCell: UITableViewCell {
     func configure(item: DonationItem) {
         titleLabel.text = item.title
         donorLabel.text = item.donorText
-        ngoLabel.text = item.ngoText
         locationLabel.text = item.locationText
         dateLabel.text = item.dateText
         badgeLabel.text = item.status.rawValue

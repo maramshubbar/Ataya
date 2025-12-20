@@ -13,93 +13,96 @@ final class NGODonationOverviewViewController: UIViewController {
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
 
-    private var donations: [Donation] = []
+    private var donations: [DonationItem] = []
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+        override func viewDidLoad() {
+            super.viewDidLoad()
 
-        // Search bar
-        searchBar.backgroundImage = UIImage()
-        searchBar.searchBarStyle = .minimal
-        if let searchField = searchBar.value(forKey: "searchField") as? UITextField {
-            searchField.backgroundColor = .white
-            searchField.layer.cornerRadius = 10
-            searchField.clipsToBounds = true
+            // Search bar UI
+            searchBar.backgroundImage = UIImage()
+            searchBar.searchBarStyle = .minimal
+            if let searchField = searchBar.value(forKey: "searchField") as? UITextField {
+                searchField.backgroundColor = .white
+                searchField.layer.cornerRadius = 10
+                searchField.clipsToBounds = true
+            }
+
+            // Table UI
+            tableView.separatorStyle = .none
+            tableView.backgroundColor = .clear
+            tableView.rowHeight = UITableView.automaticDimension
+            tableView.estimatedRowHeight = 200
+
+            tableView.dataSource = self
+            tableView.delegate = self
+
+            // ✅ IMPORTANT:
+            // إذا اسم الـ XIB عندك مو "DonationOverviewCell" غيريه هنا لنفس اسم ملف الـ xib بالضبط
+            tableView.register(
+                UINib(nibName: "DonationOverviewCell", bundle: nil),
+                forCellReuseIdentifier: DonationOverviewCell.reuseId
+            )
+
+            // TEMP test data
+            donations = [
+                DonationItem(
+                    title: "Baby Formula (DON-10)",
+                    donorText: "Ahmed Saleh (ID: D-26)",
+                    locationText: "Manama, Bahrain",
+                    dateText: "Nov 6 2025",
+                    status: .pending,
+                    imageName: "baby_formula"
+                ),
+                DonationItem(
+                    title: "Canned Beans (DON-11)",
+                    donorText: "Sara Ali (ID: D-18)",
+                    locationText: "Riffa, Bahrain",
+                    dateText: "Nov 7 2025",
+                    status: .approved,
+                    imageName: "canned-beans"
+                ),
+                DonationItem(
+                    title: "Eggs (DON-12)",
+                    donorText: "Noor Hasan (ID: D-09)",
+                    locationText: "Muharraq, Bahrain",
+                    dateText: "Nov 8 2025",
+                    status: .rejected,
+                    imageName: "eggs"
+                )
+            ]
+
+            tableView.reloadData()
         }
 
-        // Table
-        tableView.separatorStyle = .none
-        tableView.backgroundColor = .clear
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 200
-
-        tableView.dataSource = self
-        tableView.delegate = self
-
-        tableView.register(UINib(nibName: "DonationCell", bundle: nil),
-                           forCellReuseIdentifier: DonationCell.reuseId)
-
-        // TEMP test data
-        donations = [
-            Donation(title: "Baby Formula (DON-10)",
-                     donor: "Ahmed Saleh (ID: D-26)",
-                     location: "Manama, Bahrain",
-                     dateText: "Nov 6 2025",
-                     status: .pending,
-                     imageName: "baby_formula"),
-
-            Donation(title: "Canned Beans (DON-11)",
-                     donor: "Sara Ali (ID: D-18)",
-                     location: "Riffa, Bahrain",
-                     dateText: "Nov 7 2025",
-                     status: .accepted,
-                     imageName: "canned-beans"),
-
-            Donation(title: "Eggs (DON-12)",
-                     donor: "Noor Hasan (ID: D-09)",
-                     location: "Muharraq, Bahrain",
-                     dateText: "Nov 8 2025",
-                     status: .rejected,
-                     imageName: "eggs")
-        ]
+        private func openDetails(donation: DonationItem) {
+            print("Open details for:", donation.title)
+            // TODO: push details VC
+        }
     }
-
-    private func openDetails(donation: Donation) {
-        // TODO: push details VC
-        print("Open details for:", donation.title)
-    }
-}
 
 extension NGODonationOverviewViewController: UITableViewDataSource, UITableViewDelegate {
-
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         donations.count
     }
-
-    func tableView(_ tableView: UITableView,
-                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
-        let cell = tableView.dequeueReusableCell(withIdentifier: DonationCell.reuseId,
-                                                 for: indexPath) as! DonationCell
-
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: DonationOverviewCell.reuseId,
+            for: indexPath
+        ) as! DonationOverviewCell
+        
         let d = donations[indexPath.row]
-        cell.configure(
-            title: d.title,
-            donor: d.donor,
-            location: d.location,
-            date: d.dateText,
-            status: d.status.rawValue,
-            imageName: d.imageName
-        )
-        cell.selectionStyle = .none
-
+        cell.configure(item: d)
+        
         cell.onViewDetailsTapped = { [weak self] in
             self?.openDetails(donation: d)
         }
-
+        
         return cell
     }
-
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         openDetails(donation: donations[indexPath.row])
     }

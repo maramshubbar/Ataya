@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Sax-hb-REP">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="5Zo-if-JS9">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
@@ -99,7 +99,6 @@
                                                     </stackView>
                                                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="l8y-Rt-OnL" userLabel="badgesCollectionView">
                                                         <rect key="frame" x="0.0" y="337.66666666666669" width="362" height="200.00000000000006"/>
-                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="200" id="6LN-D7-XGM"/>
                                                         </constraints>
@@ -447,13 +446,13 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="badgesCollectionView" destination="l8y-Rt-OnL" id="ZT9-qH-ftF"/>
-                        <outletCollection property="rewardRowViews" destination="rem-d3-X9o" collectionClass="NSMutableArray" id="R7N-Tw-r5Y"/>
-                        <outletCollection property="rewardRowViews" destination="XFM-Ms-uNs" collectionClass="NSMutableArray" id="MYy-yd-gyx"/>
-                        <outletCollection property="rewardRowViews" destination="qAf-oa-ead" collectionClass="NSMutableArray" id="Fsh-M6-GXr"/>
-                        <outletCollection property="statusPillButtons" destination="Ycq-JD-qor" collectionClass="NSMutableArray" id="yNm-R1-MiV"/>
-                        <outletCollection property="statusPillButtons" destination="l3Y-Bm-UgI" collectionClass="NSMutableArray" id="SXu-Cu-Wsb"/>
-                        <outletCollection property="statusPillButtons" destination="OGm-1w-s0b" collectionClass="NSMutableArray" id="K9Q-kn-Pl0"/>
+                        <outlet property="badgesCollectionView" destination="l8y-Rt-OnL" id="fur-Qx-ELz"/>
+                        <outletCollection property="rewardRowViews" destination="rem-d3-X9o" collectionClass="NSMutableArray" id="ZwD-Xj-KYy"/>
+                        <outletCollection property="rewardRowViews" destination="XFM-Ms-uNs" collectionClass="NSMutableArray" id="25c-2u-Zn1"/>
+                        <outletCollection property="rewardRowViews" destination="qAf-oa-ead" collectionClass="NSMutableArray" id="aOD-eu-cXp"/>
+                        <outletCollection property="statusPillButtons" destination="Ycq-JD-qor" collectionClass="NSMutableArray" id="bHd-HH-M5X"/>
+                        <outletCollection property="statusPillButtons" destination="l3Y-Bm-UgI" collectionClass="NSMutableArray" id="boM-KC-QlG"/>
+                        <outletCollection property="statusPillButtons" destination="OGm-1w-s0b" collectionClass="NSMutableArray" id="YuH-mS-XCh"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

@@ -3,7 +3,7 @@
 //  Ataya
 //
 //  Created by Maram on 18/12/2025.
-
+//
 
 import UIKit
 
@@ -34,6 +34,24 @@ final class RewardsViewController: UIViewController {
         styleRewardsUI()
     }
 
+    // ✅ ADDED (NEW): dynamic sizing after AutoLayout
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateBadgesItemSizeIfNeeded()
+    }
+
+    // ✅ ADDED (NEW): makes carousel show a “peek” of next card
+    private func updateBadgesItemSizeIfNeeded() {
+        guard let layout = badgesCollectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
+
+        let newSize = CGSize(width: 104, height: 194)   // ✅ EXACT size you want
+        if layout.itemSize != newSize {
+            layout.itemSize = newSize
+            layout.invalidateLayout()
+        }
+    }
+
+
     // ✅ ADDED
     private func styleRewardsUI() {
         let borderColor = UIColor(hex: "#F7D44C")
@@ -63,22 +81,30 @@ final class RewardsViewController: UIViewController {
         badgesCollectionView.dataSource = self
         badgesCollectionView.delegate = self
 
-        // ✅ Horizontal layout
+        // ✅ Horizontal layout (carousel)
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 14
+        layout.minimumLineSpacing = 18
         layout.minimumInteritemSpacing = 0
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-        layout.itemSize = CGSize(width: 104, height: 194)   // ✅ مثل التصميم
+
+        // ✅ Peek (shows a bit of the next card)
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
+
+        // ✅ temporary size (final size will be set in viewDidLayoutSubviews)
+        layout.itemSize = CGSize(width: 104, height: 194)  // ✅ EXACT
 
         badgesCollectionView.collectionViewLayout = layout
 
         badgesCollectionView.showsHorizontalScrollIndicator = false
         badgesCollectionView.alwaysBounceHorizontal = true
         badgesCollectionView.backgroundColor = .clear
+
+        // ✅ important for shadow
         badgesCollectionView.clipsToBounds = false
         badgesCollectionView.layer.masksToBounds = false
 
+        // ✅ smoother carousel feel
+        badgesCollectionView.decelerationRate = .fast
     }
 }
 
@@ -96,42 +122,54 @@ extension RewardsViewController: UICollectionViewDataSource, UICollectionViewDel
             for: indexPath
         ) as! BadgeCardCell
 
+        // ✅ background color per card (now passed into configure)
+        let hex = badgeCardHexColors[indexPath.item % badgeCardHexColors.count]
+        let bgColor = UIColor(hex: hex)
+
         switch indexPath.item {
         case 0:
-            cell.configure(title: "Gold Heart",
-                           subtitle: "Donated 10+ times",
-                           icon: UIImage(systemName: "heart.fill"))   // ✅ نفس ما هي
+            cell.configure(
+                title: "Gold Heart",
+                subtitle: "Donated 10+ times",
+                iconName: "Heart",          // ✅ اسم الصورة في Assets
+                bgColor: bgColor
+            )
+
 
         case 1:
-            cell.configure(title: "Meal Hero",
-                           subtitle: "Provided 100+ meals",
-                           icon: UIImage(named: "meal")?.withRenderingMode(.alwaysOriginal))
+            cell.configure(
+                title: "Meal Hero",
+                subtitle: "Provided 100+ meals",
+                iconName: "meal",
+                bgColor: bgColor
+            )
 
         case 2:
-            cell.configure(title: "Community Helper",
-                           subtitle: "Supported 3 campaigns",
-                           icon: UIImage(named: "community")?.withRenderingMode(.alwaysOriginal))
+            cell.configure(
+                title: "Community Helper",
+                subtitle: "Supported 3 campaigns",
+                iconName: "community",
+                bgColor: bgColor
+            )
 
-        default: // ✅ الكارد الرابع
-            cell.configure(title: "Gold Donor",
-                           subtitle: "Donated to international causes",
-                           icon: UIImage(named: "last")?.withRenderingMode(.alwaysOriginal))
+        default:
+            cell.configure(
+                title: "Gold Donor",
+                subtitle: "Donated to international causes",
+                iconName: "last",
+                bgColor: bgColor
+            )
         }
 
-
-        // ✅ ADDED: set background color per card
-        let hex = badgeCardHexColors[indexPath.item % badgeCardHexColors.count]
-        cell.contentView.backgroundColor = UIColor(hex: hex)
+        // keep cell clear around the card (for shadow)
+        cell.contentView.backgroundColor = .clear
+        cell.backgroundColor = .clear
 
         return cell
     }
-    
-    
 }
 
 // ✅ ADDED: Hex color helper
-import UIKit
-
 extension UIColor {
     convenience init(hex: String) {
         var h = hex.trimmingCharacters(in: .whitespacesAndNewlines)

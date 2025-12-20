@@ -17,16 +17,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             UIOffset(horizontal: -1000, vertical: 0),
             for: .default
         )
-        
-        UINavigationBar.appearance().tintColor = .black
-
-        let navAppearance = UINavigationBarAppearance()
-        navAppearance.configureWithOpaqueBackground()
-        navAppearance.backgroundColor = .white
-
-        UINavigationBar.appearance().titleTextAttributes = [
-            .font: UIFont.systemFont(ofSize: 22, weight: .semibold)
-        ]
 
 
     }

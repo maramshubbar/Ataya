@@ -16,7 +16,7 @@ class InspectDonationViewController: UIViewController {
     @IBOutlet weak var reasonTextField: UITextField!
     @IBOutlet weak var descriptionTextView: UITextView!
     @IBOutlet weak var photoImageView: UIImageView!
-
+    @IBOutlet weak var confirmButton: UIView!
     
     private let yellow = UIColor(red: 255/255, green: 216/255, blue: 63/255, alpha: 1) // #FFD83F
        private let ringGray = UIColor.systemGray3
@@ -47,6 +47,10 @@ class InspectDonationViewController: UIViewController {
         
         photoImageView.contentMode = .scaleAspectFill
         photoImageView.clipsToBounds = true
+        
+        confirmButton.setContentHuggingPriority(.required, for: .vertical)
+        confirmButton.setContentCompressionResistancePriority(.required, for: .vertical)
+
     }
 
     private func setupRadioButtons() {
@@ -106,9 +110,7 @@ class InspectDonationViewController: UIViewController {
         descriptionTextView.textContainerInset = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
         descriptionTextView.font = .systemFont(ofSize: 16)
         
-        
-        photoCardView
-        
+                
         
         // ✅ If Accept: clear + close keyboard
         if !isReject {

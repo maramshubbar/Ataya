@@ -10,7 +10,7 @@ import PhotosUI
 import FirebaseStorage
 
 class UploadPhotosViewController: UIViewController {
-    var draft: DraftDonation!
+    var draft: DraftDonation?
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "toSafety",
            let vc = segue.destination as? SafetyVC {
@@ -33,6 +33,7 @@ class UploadPhotosViewController: UIViewController {
         addTapToUploadArea()
         styleNextButtonIfNeeded()
         updateUI()
+        if draft == nil { draft = DraftDonation() }
     }
     
     override func viewDidLayoutSubviews() {
@@ -132,7 +133,10 @@ class UploadPhotosViewController: UIViewController {
                     print("✅ Uploaded photo URLs:", urls)
 
                     // 4) Go next screen (use your segue / push)
-                    // performSegue(withIdentifier: "toEnterDetails", sender: nil)
+                    await MainActor.run {
+                        self.performSegue(withIdentifier: "toSafety", sender: nil)
+                    }
+
 
                 } catch {
                     showAlert(title: "Upload Failed", message: error.localizedDescription)

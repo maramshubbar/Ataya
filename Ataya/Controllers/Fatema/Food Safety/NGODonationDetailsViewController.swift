@@ -10,12 +10,13 @@ import UIKit
 class NGODonationDetailsViewController: UIViewController {
     @IBOutlet weak var donationCardView: UIView!
     @IBOutlet weak var donorCardView: UIView!
+    @IBOutlet weak var collectorCardView: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         donationCardView.applyCardStyle()
         donorCardView.applyCardStyle()
-
+        collectorCardView.applyCardStyle()
 
         // Do any additional setup after loading the view.
     }

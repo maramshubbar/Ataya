@@ -8,17 +8,30 @@
 import UIKit
 
 final class SafetyVC: UIViewController {
-    var draft: DraftDonation!
+    var draft: DraftDonation?
     @IBAction func nextTapped(_ sender: UIButton) {
         guard isConfirmed else { return }
+        guard var draft = self.draft else { return }
+
         draft.safetyConfirmed = true
+        self.draft = draft
+
         performSegue(withIdentifier: "toEnterDetails", sender: nil)
     }
 
+
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "toSafety",
-           let vc = segue.destination as? SafetyVC {
-            vc.draft = draft   // ✅ this is what prevents the crash
+        if segue.identifier == "toEnterDetails" {
+
+            if let nav = segue.destination as? UINavigationController,
+               let vc = nav.topViewController as? EnterDetailsViewController {
+                vc.draft = draft
+            }
+
+            else if let vc = segue.destination as? EnterDetailsViewController {
+                vc.draft = draft
+            }
         }
     }
 

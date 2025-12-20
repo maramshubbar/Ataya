@@ -96,7 +96,7 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </view>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="T44-sg-jSr">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="T44-sg-jSr">
                                 <rect key="frame" x="160" y="59" width="100" height="100"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="100" id="Ka1-vV-wnp"/>
@@ -139,9 +139,9 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
-                <outlet property="cardView" destination="H2p-sc-9uM" id="jT4-Gx-2x3"/>
                 <outlet property="dateLabel" destination="18o-dR-hJQ" id="p6f-Rq-1Ga"/>
                 <outlet property="detailsButton" destination="iKk-bJ-ydw" id="nji-Y1-8t7"/>
+                <outlet property="donationCardView" destination="H2p-sc-9uM" id="mrj-V6-Kml"/>
                 <outlet property="donorLabel" destination="nAB-4I-5z3" id="reu-qd-UsL"/>
                 <outlet property="locationLabel" destination="9eW-9o-B4S" id="5yf-RJ-0RV"/>
                 <outlet property="productImageView" destination="T44-sg-jSr" id="rdL-90-4j8"/>

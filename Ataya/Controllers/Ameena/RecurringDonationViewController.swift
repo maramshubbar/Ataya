@@ -1,168 +1,157 @@
-//
-//  RecurringDonationViewController.swift
-//  Ataya
-//
-//  Created by Zahraa Ahmed on 01/12/2025.
-//
-
 import UIKit
 
-class RecurringDonationViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource
-    {
-
-    @IBOutlet weak var periodTextField: UITextField!
-    @IBOutlet weak var datePicker: UIDatePicker!
+final class recurringDonationViewController: UIViewController {
+    
+    // MARK: - Storyboard Outlets (ONLY these)
     @IBOutlet weak var nextButton: UIButton!
-    @IBOutlet weak var arrowButton: UITextField!
     
-    //Mark: -Proprities
-    private let periodOptions = [
-        "Dialy",
-        "Weekly",
-        "Bi-Weekly (Every 2 weeks)",
-        "Monthly",
-        "Bi-Monthly (Every 2 months)",
-        "Yearly"
-    ]
     
-    private let periodPicker = UIPickerView()
+    @IBOutlet weak var calendarView: UIDatePicker!
     
-    //Mark - LifeCycle
-    override func loadView() {
-        super.viewDidLoad()
-        setupUI()
-        setupPeriodPicker()
-    }
+    // MARK: - Code UI
+    private let selectLabel = UILabel()
     
-    //Set up UI
-    private func setupUI(){
-        periodTextField.layer.cornerRadius = 8
-        periodTextField.layer.borderWidth = 1
-        periodTextField.layer.borderColor = UIColor.systemGray.cgColor
-        periodTextField.layer.masksToBounds = true
-        
-        //prevent typing
-        periodTextField.tintColor = .clear
-        
-        //style next button
-        nextButton.layer.cornerRadius = 8
-        nextButton.layer.masksToBounds = true
-        
-        //Minimum date
-        datePicker.minimumDate = Date()
-    }
+    private let periodStack = UIStackView()
+    private let dailyButton = UIButton(type: .system)
+    private let weeklyButton = UIButton(type: .system)
+    private let monthlyButton = UIButton(type: .system)
     
-    //Picker Set Up
-    private func setupPeriodPicker(){
-        periodPicker.delegate = self
-        periodPicker.dataSource = self
-        periodTextField.inputView = periodPicker
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        
-        let cancelButton = UIBarButtonItem(
-            title: "Cancel",
-            style: .plain,
-            target: self,
-            action: #selector(cancelPickingPeriod)
-            )
-        
-        let flexSpace = UIBarButtonItem(
-                    barButtonSystemItem: .flexibleSpace,
-                    target: nil,
-                    action: nil
-                )
-
-                let doneButton = UIBarButtonItem(
-                    title: "Done",
-                    style: .done,
-                    target: self,
-                    action: #selector(donePickingPeriod)
-                )
-
-                toolbar.setItems([cancelButton, flexSpace, doneButton], animated: false)
-                periodTextField.inputAccessoryView = toolbar
-            }
-    // MARK: - UIPickerViewDataSource
-        func numberOfComponents(in pickerView: UIPickerView) -> Int {
-            return 1
-        }
-
-        func pickerView(_ pickerView: UIPickerView,
-                        numberOfRowsInComponent component: Int) -> Int {
-            return periodOptions.count
-        }
-
-        // MARK: - UIPickerViewDelegate
-        func pickerView(_ pickerView: UIPickerView,
-                        titleForRow row: Int,
-                        forComponent component: Int) -> String? {
-            return periodOptions[row]
-        }
-
-        func pickerView(_ pickerView: UIPickerView,
-                        didSelectRow row: Int,
-                        inComponent component: Int) {
-            periodTextField.text = periodOptions[row]
-        }
-
-        // MARK: - Picker Actions
-        @objc private func donePickingPeriod() {
-            let selectedRow = periodPicker.selectedRow(inComponent: 0)
-            periodTextField.text = periodOptions[selectedRow]
-            periodTextField.resignFirstResponder()
-        }
-
-        @objc private func cancelPickingPeriod() {
-            periodTextField.resignFirstResponder()
-        }
-
-        // MARK: - Button Actions
-        @IBAction func arrowButtonTapped(_ sender: UIButton) {
-            // Open drop-down picker when arrow is pressed
-            periodTextField.becomeFirstResponder()
-        }
-
-        @IBAction func nextButtonTapped(_ sender: UIButton) {
-            guard let period = periodTextField.text,
-                  !period.isEmpty else {
-                showAlert(title: "Missing period",
-                          message: "Please select a relevant period before continuing.")
-                return
-            }
-
-            let selectedDate = datePicker.date
-            print("Recurring period: \(period)")
-            print("Start date: \(selectedDate)")
-
-            // Later: performSegue(...)
-        }
-    // MARK: - Helpers
-        private func showAlert(title: String, message: String) {
-            let alert = UIAlertController(title: title,
-                                          message: message,
-                                          preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK",
-                                          style: .default,
-                                          handler: nil))
-            present(alert, animated: true, completion: nil)
-        }
+    private enum Period { case daily, weekly, monthly }
+    private var selectedPeriod: Period?
+    
+    private let yellow = UIColor(red: 0xF7/255.0, green: 0xD4/255.0, blue: 0x4C/255.0, alpha: 1.0)
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        
+        // Navigation title (if you want it in code too; otherwise set in storyboard)
+        // self.title = "Recurring Donation"
+        navigationItem.largeTitleDisplayMode = .never
+        styleNextButton()
+        buildLabel()
+        buildPeriodButtons()
+        setupLayout()
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    // MARK: - Label
+    private func buildLabel() {
+        selectLabel.text = "Select Relevant Period"
+        selectLabel.font = .systemFont(ofSize: 18, weight: .semibold)
+        selectLabel.textColor = .label
+        selectLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(selectLabel)
     }
-    */
-
+    
+    // MARK: - Next button style
+    private func styleNextButton() {
+        nextButton.layer.cornerRadius = 8
+        nextButton.layer.masksToBounds = true
+        nextButton.backgroundColor = yellow
+        nextButton.setTitleColor(.black, for: .normal)
+        nextButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+    }
+    
+    // MARK: - Period buttons
+    private func buildPeriodButtons() {
+        [dailyButton, weeklyButton, monthlyButton].forEach {
+            $0.configuration = nil // avoid iOS15 configuration padding issues
+            stylePeriodButton($0)
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            $0.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        }
+        
+        dailyButton.setTitle("Daily", for: .normal)
+        weeklyButton.setTitle("Weekly", for: .normal)
+        monthlyButton.setTitle("Monthly", for: .normal)
+        
+        dailyButton.addTarget(self, action: #selector(dailyTapped), for: .touchUpInside)
+        weeklyButton.addTarget(self, action: #selector(weeklyTapped), for: .touchUpInside)
+        monthlyButton.addTarget(self, action: #selector(monthlyTapped), for: .touchUpInside)
+        
+        periodStack.axis = .horizontal
+        periodStack.spacing = 12
+        periodStack.distribution = .fillEqually
+        periodStack.translatesAutoresizingMaskIntoConstraints = false
+        
+        periodStack.addArrangedSubview(dailyButton)
+        periodStack.addArrangedSubview(weeklyButton)
+        periodStack.addArrangedSubview(monthlyButton)
+        
+        view.addSubview(periodStack)
+        
+        updatePeriodUI(nil)
+    }
+    
+    private func stylePeriodButton(_ button: UIButton) {
+        button.layer.cornerRadius = 8
+        button.layer.borderWidth = 1
+        button.layer.borderColor = yellow.cgColor
+        button.layer.masksToBounds = true
+        button.backgroundColor = .clear
+        button.setTitleColor(.black, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
+    }
+    
+    private func updatePeriodUI(_ selected: Period?) {
+        [dailyButton, weeklyButton, monthlyButton].forEach {
+            $0.backgroundColor = .clear
+            $0.layer.borderColor = yellow.cgColor
+        }
+        
+        let target: UIButton?
+        switch selected {
+        case .daily: target = dailyButton
+        case .weekly: target = weeklyButton
+        case .monthly: target = monthlyButton
+        case .none: target = nil
+        }
+        
+        target?.backgroundColor = yellow
+        target?.layer.borderColor = yellow.cgColor
+    }
+    
+    // MARK: - Layout
+    private func setupLayout() {
+        let safe = view.safeAreaLayoutGuide
+        
+    // Turn off autoresizing masks
+    selectLabel.translatesAutoresizingMaskIntoConstraints = false
+    periodStack.translatesAutoresizingMaskIntoConstraints = false
+    calendarView.translatesAutoresizingMaskIntoConstraints = false
+    nextButton.translatesAutoresizingMaskIntoConstraints = false
+    
+    // Make calendar willing to stretch
+    calendarView.setContentHuggingPriority(.defaultLow, for: .vertical)
+    calendarView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+    
+    NSLayoutConstraint.activate([
+        // Label (will sit correctly under the nav bar)
+        selectLabel.topAnchor.constraint(equalTo: safe.topAnchor, constant: 24),
+        selectLabel.leadingAnchor.constraint(equalTo: safe.leadingAnchor, constant: 20),
+        selectLabel.trailingAnchor.constraint(equalTo: safe.trailingAnchor, constant: -20),
+        
+        // Buttons
+        periodStack.topAnchor.constraint(equalTo: selectLabel.bottomAnchor, constant: 30),
+        periodStack.leadingAnchor.constraint(equalTo: safe.leadingAnchor, constant: 20),
+        periodStack.trailingAnchor.constraint(equalTo: safe.trailingAnchor, constant: -20),
+        periodStack.heightAnchor.constraint(equalToConstant: 40),
+        
+        // Next button bottom
+        nextButton.leadingAnchor.constraint(equalTo: safe.leadingAnchor, constant: 20),
+        nextButton.trailingAnchor.constraint(equalTo: safe.trailingAnchor, constant: -20),
+        nextButton.bottomAnchor.constraint(equalTo: safe.bottomAnchor, constant: -16),
+        nextButton.heightAnchor.constraint(equalToConstant: 54),
+        
+        // Calendar fills between buttons and Next (no big gap)
+        calendarView.topAnchor.constraint(equalTo: periodStack.bottomAnchor, constant: 40),
+        calendarView.leadingAnchor.constraint(equalTo: safe.leadingAnchor, constant: 20),
+        calendarView.trailingAnchor.constraint(equalTo: safe.trailingAnchor, constant: -20),
+        calendarView.bottomAnchor.constraint(equalTo: nextButton.topAnchor, constant: -70)
+    ])
+}
+    
+    // MARK: - Actions
+    @objc private func dailyTapped() { selectedPeriod = .daily; updatePeriodUI(.daily) }
+    @objc private func weeklyTapped() { selectedPeriod = .weekly; updatePeriodUI(.weekly) }
+    @objc private func monthlyTapped() { selectedPeriod = .monthly; updatePeriodUI(.monthly) }
 }

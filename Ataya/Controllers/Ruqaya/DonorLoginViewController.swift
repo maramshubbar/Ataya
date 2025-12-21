@@ -1,0 +1,106 @@
+//
+//  DonorLoginViewController.swift
+//  AtayaTest
+//
+//  Created by Ruqaya Habib on 17/12/2025.
+//
+
+import UIKit
+
+class DonorLoginViewController: UIViewController {
+
+    
+    
+
+    @IBOutlet weak var emailTextField: UITextField!
+    
+    @IBOutlet weak var passwordTextField: UITextField!
+    
+    @IBOutlet weak var loginButton: UIButton!
+    
+    
+    @IBOutlet weak var signUpLabel: UILabel!
+
+    private let atayaYellow = UIColor(red: 0xF7/255, green: 0xD4/255, blue: 0x4C/255, alpha: 1)
+    private let baseGray   = UIColor(red: 0x5A/255, green: 0x5A/255, blue: 0x5A/255, alpha: 1)
+    private let eyeGray  = UIColor(red: 0xB8/255.0, green: 0xB8/255.0, blue: 0xB8/255.0, alpha: 1.0)
+
+
+    private var isPasswordVisible = false
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Do any additional setup after loading the view.
+        
+        setupPasswordEye()
+        setupSignUpLabel()
+        setuploginButton()
+
+    }
+    
+    
+    private func setuploginButton() {
+        loginButton.layer.cornerRadius = 8
+        }
+
+    private func setupPasswordEye() {
+        var config = UIButton.Configuration.plain()
+        config.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 16, weight: .regular)
+        config.baseForegroundColor = eyeGray
+        config.image = UIImage(systemName: "eye.slash")
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 14)
+
+        let eyeButton = UIButton(configuration: config)
+        eyeButton.frame = CGRect(x: 0, y: 0, width: 56, height: 56)
+        eyeButton.addTarget(self, action: #selector(togglePassword), for: .touchUpInside)
+
+        let container = UIView(frame: CGRect(x: 0, y: 0, width: 56, height: 56))
+        container.addSubview(eyeButton)
+
+        passwordTextField.rightView = container
+        passwordTextField.rightViewMode = .always
+    }
+
+    @objc private func togglePassword() {
+        isPasswordVisible.toggle()
+
+        let text = passwordTextField.text
+        passwordTextField.isSecureTextEntry = !isPasswordVisible
+        passwordTextField.text = text
+
+        let imageName = isPasswordVisible ? "eye" : "eye.slash"
+        if let container = passwordTextField.rightView,
+           let button = container.subviews.first as? UIButton {
+            var config = button.configuration
+            config?.image = UIImage(systemName: imageName)
+            button.configuration = config
+        }
+    }
+    
+    
+    private func setupSignUpLabel() {
+        let text = "Don’t have an account? Sign Up"
+        let attr = NSMutableAttributedString(string: text)
+
+        attr.addAttribute(.foregroundColor, value: baseGray, range: NSRange(location: 0, length: text.count))
+
+        let SignUpRange = (text as NSString).range(of: "Sign Up")
+        if SignUpRange.location != NSNotFound {
+            attr.addAttribute(.foregroundColor, value: atayaYellow, range: SignUpRange)
+        }
+
+        signUpLabel.attributedText = attr
+        signUpLabel.numberOfLines = 1
+    }
+    /*
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destination.
+        // Pass the selected object to the new view controller.
+    }
+    */
+
+}

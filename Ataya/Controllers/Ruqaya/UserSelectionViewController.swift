@@ -9,6 +9,7 @@ import UIKit
 
 class UserSelectionViewController: UIViewController {
 
+
     @IBOutlet weak var donorView: UIView!
     
     @IBOutlet weak var ngoView: UIView!
@@ -18,18 +19,21 @@ class UserSelectionViewController: UIViewController {
     @IBOutlet weak var nextButton: UIButton!
     
     var selectedUser: String?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
         let cards = [donorView, ngoView, adminView]
         for card in cards {
-            card?.layer.cornerRadius = 16
+            card?.layer.cornerRadius = 8
             card?.layer.borderWidth = 1
             card?.layer.borderColor = UIColor.lightGray.cgColor
             card?.layer.masksToBounds = true
         }
+        
+        nextButton.layer.cornerRadius = 8
+        nextButton.layer.masksToBounds = true
         let donorTap = UITapGestureRecognizer(target: self, action: #selector(donorTapped))
         donorView.addGestureRecognizer(donorTap)
 

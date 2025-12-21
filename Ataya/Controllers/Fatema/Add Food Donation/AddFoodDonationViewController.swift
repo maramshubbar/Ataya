@@ -10,6 +10,7 @@ import UIKit
 class AddFoodDonationViewController: UIViewController{
     var draft = DraftDonation()
     
+    //Still not checked this method
     @IBAction func nextTapped(_ sender: UIButton) {
             // save Add Food fields into draft here...
 

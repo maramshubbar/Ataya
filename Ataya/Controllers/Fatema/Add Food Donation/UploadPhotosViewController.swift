@@ -7,10 +7,10 @@
 
 import UIKit
 import PhotosUI
-import FirebaseStorage
 
 class UploadPhotosViewController: UIViewController {
-    var draft: DraftDonation?
+    var draft: DraftDonation!
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "toSafety",
            let vc = segue.destination as? SafetyVC {
@@ -18,22 +18,34 @@ class UploadPhotosViewController: UIViewController {
         }
     }
 
-    
     @IBOutlet weak var uploadCardView: UIView!
     @IBOutlet weak var nextButton: UIButton!
+    @IBOutlet weak var helperLabel: UILabel!
     
     private let maxImages = 3
+    private var helperOriginalText: String = ""
+
     private var selectedImages: [UIImage] = [] {
-        didSet { updateUI() }
+        didSet {
+            draft.images = selectedImages
+            updateUI()
+        }
     }
-    // MARK: - Life cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         styleCard()
         addTapToUploadArea()
         styleNextButtonIfNeeded()
         updateUI()
+        
+        // temporary to prevent crashes
         if draft == nil { draft = DraftDonation() }
+        selectedImages = draft.images
+        
+        helperOriginalText = helperLabel.text ?? ""
+
     }
     
     override func viewDidLayoutSubviews() {
@@ -41,7 +53,6 @@ class UploadPhotosViewController: UIViewController {
         addDashedBorder()
     }
     
-    // MARK: - UI Setup
     private func styleCard() {
         uploadCardView.backgroundColor = .white
         uploadCardView.layer.cornerRadius = 12
@@ -79,9 +90,20 @@ class UploadPhotosViewController: UIViewController {
     }
     
     private func updateUI() {
-        let hasPhotos = !selectedImages.isEmpty
+        let count = selectedImages.count
+        let hasPhotos = count > 0
+
         nextButton.isEnabled = hasPhotos
         nextButton.alpha = hasPhotos ? 1.0 : 0.5
+
+        if hasPhotos {
+            let word = (count == 1) ? "photo" : "photos"
+            helperLabel.textColor = .systemGreen
+            helperLabel.text = "\(count) \(word) uploaded successfully."
+        } else {
+            helperLabel.textColor = .secondaryLabel
+            helperLabel.text = helperOriginalText
+        }
     }
     
     @objc private func uploadAreaTapped() {
@@ -156,7 +178,7 @@ class UploadPhotosViewController: UIViewController {
         }
 
     private func presentCamera() {
-        // ✅ Put the guard HERE (first line inside the function)
+        // Put the guard HERE (first line inside the function)
         guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
             showAlert(title: "Camera not available", message: "Use a real iPhone for camera testing.")
             return

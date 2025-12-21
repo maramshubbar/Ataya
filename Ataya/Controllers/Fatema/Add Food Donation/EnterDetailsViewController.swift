@@ -19,170 +19,167 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
     @IBOutlet weak var descriptionTextView: UITextView!
     private let expiryMonthYearPicker = UIPickerView()
 
-    private let months = Calendar.current.monthSymbols  // ["January", ...]
-    private let years: [Int] = Array(Calendar.current.component(.year, from: Date())...(Calendar.current.component(.year, from: Date()) + 20))
-    private var selectedDayIndex = Calendar.current.component(.day, from: Date()) - 1
+        // Expiry: UIDatePicker
+        private let expiryDatePicker = UIDatePicker()
+        private let expiryFormatter: DateFormatter = {
+            let f = DateFormatter()
+            f.dateFormat = "dd / MM / yyyy"   // نفس فورماتج
+            return f
+        }()
 
-    private func daysCount(forMonth monthIndex: Int, year: Int) -> Int {
-        // monthIndex: 0...11
-        var comps = DateComponents()
-        comps.year = year
-        comps.month = monthIndex + 1
-        comps.day = 1
-        let cal = Calendar.current
-        let date = cal.date(from: comps) ?? Date()
-        return cal.range(of: .day, in: .month, for: date)?.count ?? 30
-    }
+        // MARK: - Dropdown Data
+        private let categories: [String] = [
+            "Fruits & Vegetables",
+            "Bakery",
+            "Dairy",
+            "Meat & Poultry",
+            "Seafood",
+            "Frozen Foods",
+            "Canned & Jarred",
+            "Dry Goods (Rice/Pasta)",
+            "Snacks",
+            "Beverages",
+            "Infant Nutrition",
+            "Condiments & Sauces",
+            "Other"
+        ]
 
-    private var selectedMonthIndex = Calendar.current.component(.month, from: Date()) - 1
-    private var selectedYearIndex  = 0
+        private let packagings: [String] = [
+            "Plastic",
+            "Glass",
+            "Metal Can",
+            "Paper/Cardboard",
+            "Bag/Pouch",
+            "Tray/Clamshell",
+            "Other"
+        ]
 
-    
-    // MARK: - Dropdown Data
-    private let categories: [String] = [
-        "Fruits & Vegetables",
-        "Bakery",
-        "Dairy",
-        "Meat & Poultry",
-        "Seafood",
-        "Frozen Foods",
-        "Canned & Jarred",
-        "Dry Goods (Rice/Pasta)",
-        "Snacks",
-        "Beverages",
-        "Infant Nutrition",
-        "Condiments & Sauces",
-        "Other"
-    ]
-    
-    private let packagings: [String] = [
-        "Plastic",
-        "Glass",
-        "Metal Can",
-        "Paper/Cardboard",
-        "Bag/Pouch",
-        "Tray/Clamshell",
-        "Other"
-    ]
-    
-    private let allergens: [String] = [
-        "None",
-        "Milk",
-        "Eggs",
-        "Peanuts",
-        "Tree Nuts",
-        "Soy",
-        "Wheat (Gluten)",
-        "Fish",
-        "Shellfish",
-        "Sesame",
-        "Multiple Allergens",
-        "Other"
-    ]
-    
-    // MARK: - Pickers
-    private let categoryPicker = UIPickerView()
-    private let packagingPicker = UIPickerView()
-    private let allergenPicker  = UIPickerView()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        scrollView.delegate = self
-        nextButton.isHidden = true
-        nextButton.alpha = 0
-        styleCard(descriptionTextView)
+        private let allergens: [String] = [
+            "None",
+            "Milk",
+            "Eggs",
+            "Peanuts",
+            "Tree Nuts",
+            "Soy",
+            "Wheat (Gluten)",
+            "Fish",
+            "Shellfish",
+            "Sesame",
+            "Multiple Allergens",
+            "Other"
+        ]
 
-        // Set tags (so icon tap knows which field to open)
-                expiryTextField.tag = 1
-                categoryTextField.tag = 2
-                packagingTextField.tag = 3
-                allergenTextField.tag = 4
+        // MARK: - Pickers (Dropdowns)
+        private let categoryPicker = UIPickerView()
+        private let packagingPicker = UIPickerView()
+        private let allergenPicker  = UIPickerView()
 
-                setupExpiryPicker()
-                setupDropdowns()
-    }
-    private func styleCard(_ v: UIView) {
-        v.backgroundColor = .white
-        v.layer.cornerRadius = 14
-        v.layer.borderWidth = 1
-        v.layer.borderColor = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1).cgColor
-        v.clipsToBounds = true
-    }
-    
-    // MARK: - Expiry Setup
-    private func setupExpiryPicker() {
-        expiryMonthYearPicker.delegate = self
-        expiryMonthYearPicker.dataSource = self
+        override func viewDidLoad() {
+            super.viewDidLoad()
 
-        expiryTextField.inputView = expiryMonthYearPicker
-        expiryTextField.inputAccessoryView = makeDoneToolbar(action: #selector(expiryDoneTapped))
+            scrollView.delegate = self
+            nextButton.isHidden = true
+            nextButton.alpha = 0
 
-        setRightIcon("calendar", for: expiryTextField)
-        expiryTextField.tintColor = .clear
+            styleCard(descriptionTextView)
 
-        // Start on current day/month/year
-        expiryMonthYearPicker.selectRow(selectedDayIndex, inComponent: 0, animated: false)
-        expiryMonthYearPicker.selectRow(selectedMonthIndex, inComponent: 1, animated: false)
-        expiryMonthYearPicker.selectRow(selectedYearIndex, inComponent: 2, animated: false)
+            // Set tags (so icon tap knows which field to open)
+            expiryTextField.tag = 1
+            categoryTextField.tag = 2
+            packagingTextField.tag = 3
+            allergenTextField.tag = 4
 
-        // Optional: show initial text
-        updateExpiryText()
-    }
+//            Safer approach
+//            if draft == nil { draft = DraftDonation() }
 
-    
-    @objc private func expiryDoneTapped() {
-        updateExpiryText()
-        view.endEditing(true)
-    }
+            setupExpiryDatePicker()
+            setupDropdowns()
+        }
 
-    private func updateExpiryText() {
-        let day = String(format: "%02d", selectedDayIndex + 1)
-            let month = String(format: "%02d", selectedMonthIndex + 1)
-            let year = years[selectedYearIndex]
-            expiryTextField.text = "\(day) / \(month) / \(year)"
-    }
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let isNearBottom = scrollView.contentOffset.y + scrollView.bounds.height >= scrollView.contentSize.height - 80
+        private func styleCard(_ v: UIView) {
+            v.backgroundColor = .white
+            v.layer.cornerRadius = 14
+            v.layer.borderWidth = 1
+            v.layer.borderColor = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1).cgColor
+            v.clipsToBounds = true
+        }
 
-        nextButton.isHidden = !isNearBottom
-        nextButton.alpha = isNearBottom ? 1 : 0
-    }
+        // MARK: - Expiry Setup (✅ UIDatePicker)
+        private func setupExpiryDatePicker() {
 
-       
-    
-    // MARK: - Dropdown Setup
-    private func setupDropdowns() {
-        categoryPicker.delegate = self
-                categoryPicker.dataSource = self
+            expiryDatePicker.datePickerMode = .date
+            expiryDatePicker.preferredDatePickerStyle = .wheels
 
-                packagingPicker.delegate = self
-                packagingPicker.dataSource = self
+            expiryDatePicker.minimumDate = Calendar.current.startOfDay(for: Date())
 
-                allergenPicker.delegate = self
-                allergenPicker.dataSource = self
+            expiryTextField.inputView = expiryDatePicker
+            expiryTextField.inputAccessoryView = makeDoneToolbar(action: #selector(expiryDoneTapped))
 
-                categoryTextField.inputView = categoryPicker
-                packagingTextField.inputView = packagingPicker
-                allergenTextField.inputView  = allergenPicker
+            setRightIcon("calendar", for: expiryTextField)
+            expiryTextField.tintColor = .clear
 
-                let toolbar = makeDoneToolbar(action: #selector(closePicker))
-                categoryTextField.inputAccessoryView = toolbar
-                packagingTextField.inputAccessoryView = toolbar
-                allergenTextField.inputAccessoryView  = toolbar
+            expiryDatePicker.addTarget(self, action: #selector(expiryChanged), for: .valueChanged)
 
-                setRightIcon("chevron.down", for: categoryTextField)
-                setRightIcon("chevron.down", for: packagingTextField)
-                setRightIcon("chevron.down", for: allergenTextField)
+            if let saved = draft.expiryDate {
+                expiryDatePicker.date = saved
+                expiryTextField.text = expiryFormatter.string(from: saved)
+            } else {
+                expiryTextField.text = ""
+            }
+        }
 
-                categoryTextField.tintColor = .clear
-                packagingTextField.tintColor = .clear
-                allergenTextField.tintColor = .clear
-    }
-    
-    @objc private func closePicker() {
+        @objc private func expiryChanged() {
+            expiryTextField.text = expiryFormatter.string(from: expiryDatePicker.date)
+        }
+
+        @objc private func expiryDoneTapped() {
+            let picked = expiryDatePicker.date
+            draft.expiryDate = picked
+            expiryTextField.text = expiryFormatter.string(from: picked)
             view.endEditing(true)
         }
-    private func makeDoneToolbar(action: Selector) -> UIToolbar {
+
+        // MARK: - Scroll: show Next near bottom
+        func scrollViewDidScroll(_ scrollView: UIScrollView) {
+            let isNearBottom = scrollView.contentOffset.y + scrollView.bounds.height >= scrollView.contentSize.height - 80
+            nextButton.isHidden = !isNearBottom
+            nextButton.alpha = isNearBottom ? 1 : 0
+        }
+
+        // MARK: - Dropdown Setup
+        private func setupDropdowns() {
+            categoryPicker.delegate = self
+            categoryPicker.dataSource = self
+
+            packagingPicker.delegate = self
+            packagingPicker.dataSource = self
+
+            allergenPicker.delegate = self
+            allergenPicker.dataSource = self
+
+            categoryTextField.inputView = categoryPicker
+            packagingTextField.inputView = packagingPicker
+            allergenTextField.inputView  = allergenPicker
+
+            let toolbar = makeDoneToolbar(action: #selector(closePicker))
+            categoryTextField.inputAccessoryView = toolbar
+            packagingTextField.inputAccessoryView = toolbar
+            allergenTextField.inputAccessoryView  = toolbar
+
+            setRightIcon("chevron.down", for: categoryTextField)
+            setRightIcon("chevron.down", for: packagingTextField)
+            setRightIcon("chevron.down", for: allergenTextField)
+
+            categoryTextField.tintColor = .clear
+            packagingTextField.tintColor = .clear
+            allergenTextField.tintColor = .clear
+        }
+
+        @objc private func closePicker() {
+            view.endEditing(true)
+        }
+
+        private func makeDoneToolbar(action: Selector) -> UIToolbar {
             let toolbar = UIToolbar()
             toolbar.sizeToFit()
             let flex = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
@@ -190,8 +187,8 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
             toolbar.setItems([flex, done], animated: false)
             return toolbar
         }
-    
-    @objc private func rightIconTapped(_ sender: UITapGestureRecognizer) {
+
+        @objc private func rightIconTapped(_ sender: UITapGestureRecognizer) {
             guard let tag = sender.view?.tag else { return }
 
             switch tag {
@@ -218,83 +215,30 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
             let tap = UITapGestureRecognizer(target: self, action: #selector(rightIconTapped(_:)))
             container.addGestureRecognizer(tap)
 
-            // Use textfield tag so we know which one to open
             container.tag = textField.tag
-
             textField.rightView = container
             textField.rightViewMode = .always
         }
     }
 
-    // MARK: - UIPickerView Delegate/DataSource (MUST be outside the class)
+    // MARK: - UIPickerView Delegate/DataSource (Dropdowns)
 extension EnterDetailsViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        if pickerView == expiryMonthYearPicker { return 3 } // Day / Month / Year
-        return 1
-    }
+    func numberOfComponents(in pickerView: UIPickerView) -> Int { 1 }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        if pickerView == expiryMonthYearPicker {
-            if component == 0 {
-                let year = years[selectedYearIndex]
-                return daysCount(forMonth: selectedMonthIndex, year: year)
-            } else if component == 1 {
-                return months.count
-            } else {
-                return years.count
-            }
-        }
-        
         if pickerView == categoryPicker { return categories.count }
         if pickerView == packagingPicker { return packagings.count }
         return allergens.count
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        if pickerView == expiryMonthYearPicker {
-            if component == 0 { return String(row + 1) }     // Day
-            if component == 1 { return months[row] }         // Month name
-            return String(years[row])                        // Year
-        }
-        
         if pickerView == categoryPicker { return categories[row] }
         if pickerView == packagingPicker { return packagings[row] }
         return allergens[row]
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if pickerView == expiryMonthYearPicker {
-            
-            if component == 0 {
-                selectedDayIndex = row
-            } else if component == 1 {
-                selectedMonthIndex = row
-                
-                // month changed -> update days
-                let year = years[selectedYearIndex]
-                let maxDays = daysCount(forMonth: selectedMonthIndex, year: year)
-                if selectedDayIndex >= maxDays { selectedDayIndex = maxDays - 1 }
-                
-                expiryMonthYearPicker.reloadComponent(0)
-                expiryMonthYearPicker.selectRow(selectedDayIndex, inComponent: 0, animated: true)
-                
-            } else {
-                selectedYearIndex = row
-                
-                // year changed -> update days (leap year)
-                let year = years[selectedYearIndex]
-                let maxDays = daysCount(forMonth: selectedMonthIndex, year: year)
-                if selectedDayIndex >= maxDays { selectedDayIndex = maxDays - 1 }
-                
-                expiryMonthYearPicker.reloadComponent(0)
-                expiryMonthYearPicker.selectRow(selectedDayIndex, inComponent: 0, animated: true)
-            }
-            
-            updateExpiryText()
-            return
-        }
-        
         if pickerView == categoryPicker {
             categoryTextField.text = categories[row]
         } else if pickerView == packagingPicker {

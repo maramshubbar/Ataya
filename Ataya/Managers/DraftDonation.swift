@@ -1,30 +1,13 @@
-//
-//  DraftDonation.swift
-//  Ataya
-//
-//  Created by Fatema Maitham on 17/12/2025.
-//
-
-
-import Foundation
 import UIKit
 
 // Holds ALL data across the 3-step donation flow.
-// We pass ONE instance between screens until final submit.
-struct DraftDonation {
-
-    // MARK: - Photos (Cloudinary later)
-    // For now (no Cloudinary): keep photo URLs empty.
-    // Later: fill this with Cloudinary secure URLs.
-    var photoUrls: [String] = []
-    var images: [UIImage] = []
-
-    // Optional: just to prove photos were selected even before Cloudinary.
-    var localPhotosCount: Int = 0
+// ONE instance is passed between screens until final submit.
+final class DraftDonation{
+    // MARK: - Photos (No Cloudinary here)
+    var images: [UIImage] = []          // selected photos (local only)
+    var photoURLs: [String] = []        // later filled by teammate after upload
 
     // MARK: - Details
-    var id: String = ""
-    var photoURLs: [String] = []
     var itemName: String = ""
     var quantity: Int = 0
     var expiryDate: Date? = nil

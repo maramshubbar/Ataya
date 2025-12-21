@@ -8,7 +8,8 @@
 import UIKit
 
 final class SafetyVC: UIViewController {
-    var draft: DraftDonation?
+    var draft: DraftDonation!
+    // see later
     @IBAction func nextTapped(_ sender: UIButton) {
         guard isConfirmed else { return }
         guard var draft = self.draft else { return }
@@ -29,6 +30,7 @@ final class SafetyVC: UIViewController {
                 vc.draft = draft
             }
 
+            // didn't write
             else if let vc = segue.destination as? EnterDetailsViewController {
                 vc.draft = draft
             }

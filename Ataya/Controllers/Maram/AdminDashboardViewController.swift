@@ -1,141 +1,11 @@
 //
-//  AdminDashboard1ViewController.swift
+//  AdminDashboardViewController.swift
 //  Ataya
 //
-//  Created by Maram on 17/12/2025.
-/*
+//  Created by Maram on 24/11/2025.
+//
 import UIKit
-
-final class AdminDashboardViewController: UIViewController {
-    
-    // MARK: - Outlets (Cards)
-    @IBOutlet private weak var cardRegisteredUsers: UIView!
-    @IBOutlet private weak var cardTotalDonations: UIView!
-    @IBOutlet private weak var cardFlaggedReports: UIView!
-    @IBOutlet private weak var cardVerifiedCollectors: UIView!
-    
-    @IBOutlet weak var donationOverviewCard: UIView!
-    
-    @IBOutlet weak var auditLogCard: UIView!
-    // MARK: - Outlets (Buttons)
-    //@IBOutlet private weak var btnDonationOverview: UIButton!
-    // @IBOutlet private weak var btnAuditLog: UIButton!   // إذا عندج زر ثاني، فعّليه
-    let activities = [
-        "New donation request received from Al Noor Charity with a large quantity of packaged food items that require verification.",
-        "Collector Ahmed Hassan has been verified successfully after completing all required safety and identity checks.",
-        "A donation was flagged due to missing expiration date information and is pending admin review.",
-        "System update completed successfully without any issues reported by users."
-    ]
-    
-    
-    @IBOutlet weak var tblRecentActivity: UITableView!
-    
-    private let cardCornerRadius: CGFloat = 16
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-      
-        
-        tblRecentActivity.dataSource = self
-        tblRecentActivity.delegate = self
-        tblRecentActivity.isScrollEnabled = false
-        tblRecentActivity.rowHeight = UITableView.automaticDimension
-        tblRecentActivity.estimatedRowHeight = 90
-
-
-       
-        
-        styleCard(donationOverviewCard)
-            styleCard(auditLogCard)
-        
-
-
-        
-        // 1) Cards style (corner + shadow)
-        let cards: [UIView] = [
-            cardRegisteredUsers,
-            cardTotalDonations,
-            cardFlaggedReports,
-            cardVerifiedCollectors
-        ]
-        cards.forEach { $0.applyCardShadow(cornerRadius: cardCornerRadius) }
-                 
-    }
-    
-    
-    private func styleCard(_ v: UIView) {
-        v.layer.cornerRadius = 8
-        v.layer.borderWidth = 1
-        v.layer.borderColor = UIColor(red: 247/255, green: 212/255, blue: 76/255, alpha: 1).cgColor
-        v.layer.masksToBounds = true
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        // لازم تتحدث بعد layout عشان bounds صحيح
-        let cards: [UIView] = [
-            cardRegisteredUsers,
-            cardTotalDonations,
-            cardFlaggedReports,
-            cardVerifiedCollectors
-        ]
-        cards.forEach { $0.updateShadowPath(cornerRadius: cardCornerRadius) }
-    }
-    
-    
-    
-}
-// MARK: - Card Shadow Helpers
-private extension UIView {
-
-    func applyCardShadow(cornerRadius: CGFloat) {
-        layer.cornerRadius = cornerRadius
-        layer.masksToBounds = false
-
-        layer.shadowColor = UIColor.black.cgColor
-        layer.shadowOpacity = 0.10
-        layer.shadowRadius = 10
-        layer.shadowOffset = CGSize(width: 0, height: 4)
-
-        // نخليه هنا، وبنحدثه بعدين في viewDidLayoutSubviews
-        layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: cornerRadius).cgPath
-    }
-
-    func updateShadowPath(cornerRadius: CGFloat) {
-        layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: cornerRadius).cgPath
-    }
-}
-// MARK: - Image Resize
-/*private extension UIImage {
-    func resized(to size: CGSize) -> UIImage {
-        let renderer = UIGraphicsImageRenderer(size: size)
-        return renderer.image { _ in
-            self.draw(in: CGRect(origin: .zero, size: size))
-        }
-    }*/
-
-extension AdminDashboardViewController: UITableViewDataSource, UITableViewDelegate {
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return activities.count
-    }
-
-    func tableView(_ tableView: UITableView,
-                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cellActivity", for: indexPath)
-
-        let lbl = cell.viewWithTag(2) as? UILabel   // أو outlet إذا سويتي
-        lbl?.text = activities[indexPath.row]
-        cell.selectionStyle = .none
-
-        return cell
-    }
-}
-
-*/
-import UIKit
+import FirebaseFirestore
 
 final class AdminDashboardViewController: UIViewController {
 
@@ -144,6 +14,12 @@ final class AdminDashboardViewController: UIViewController {
     @IBOutlet private weak var cardTotalDonations: UIView!
     @IBOutlet private weak var cardFlaggedReports: UIView!
     @IBOutlet private weak var cardVerifiedCollectors: UIView!
+
+    // ✅ Outlets للأرقام الأربع (اربطيهم على Labels اللي فيها الأرقام)
+    @IBOutlet private weak var lblRegisteredUsersValue: UILabel!
+    @IBOutlet private weak var lblTotalDonationsValue: UILabel!
+    @IBOutlet private weak var lblFlaggedReportsValue: UILabel!
+    @IBOutlet private weak var lblVerifiedCollectorsValue: UILabel!
 
     // Quick Links Views
     @IBOutlet weak var donationOverviewCard: UIView!
@@ -151,28 +27,25 @@ final class AdminDashboardViewController: UIViewController {
 
     // Recent Activity Table
     @IBOutlet weak var tblRecentActivity: UITableView!
-    @IBOutlet weak var tblRecentActivityHeight: NSLayoutConstraint!   // ✅ اربطيها على Height constraint للجدول
-    
+    @IBOutlet weak var tblRecentActivityHeight: NSLayoutConstraint!
+
     @IBAction func donationOverviewTapped(_ sender: Any) {
         performSegue(withIdentifier: "sgDonationOverview", sender: self)
     }
 
-
     private let cardCornerRadius: CGFloat = 16
 
-    // Test data (long text)
-    private let activities = [
-        "New donation request received from Al Noor Charity with a large quantity of packaged food items that require verification.",
-        "Collector Ahmed Hassan has been verified successfully after completing all required safety and identity checks.",
-        "A donation was flagged due to missing expiration date information and is pending admin review.",
-        "System update completed successfully without any issues reported by users."
-    ]
+    // ✅ Firestore + listeners
+    private let db = Firestore.firestore()
+    private var statsListener: ListenerRegistration?
+    private var activityListener: ListenerRegistration?
+
+    // ✅ بدل let activities
+    private var activities: [String] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
-        
+
         donationOverviewCard.isUserInteractionEnabled = true
         auditLogCard.isUserInteractionEnabled = true
 
@@ -184,13 +57,10 @@ final class AdminDashboardViewController: UIViewController {
             UITapGestureRecognizer(target: self, action: #selector(openAuditLog))
         )
 
-
         // Table setup
         tblRecentActivity.dataSource = self
         tblRecentActivity.delegate = self
         tblRecentActivity.isScrollEnabled = false
-
-        // ✅ خلي ارتفاع الـ cells يتمدد حسب النص
         tblRecentActivity.rowHeight = UITableView.automaticDimension
         tblRecentActivity.estimatedRowHeight = 120
 
@@ -206,9 +76,11 @@ final class AdminDashboardViewController: UIViewController {
             cardVerifiedCollectors
         ]
         cards.forEach { $0.applyCardShadow(cornerRadius: cardCornerRadius) }
+
+        // ✅ ابدأ listening بعد ما تجهز UI
+        startListening()
     }
-    
-    
+
     @objc private func openDonationOverview() {
         performSegue(withIdentifier: "sgDonationOverview", sender: self)
     }
@@ -217,11 +89,9 @@ final class AdminDashboardViewController: UIViewController {
         performSegue(withIdentifier: "sgAuditLog", sender: self)
     }
 
-
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        // Update shadow paths after layout
         let cards: [UIView] = [
             cardRegisteredUsers,
             cardTotalDonations,
@@ -230,12 +100,10 @@ final class AdminDashboardViewController: UIViewController {
         ]
         cards.forEach { $0.updateShadowPath(cornerRadius: cardCornerRadius) }
 
-        // ✅ أهم جزء: خليه يحسب ارتفاع الجدول ويكبره داخل الـ ScrollView
         updateRecentActivityTableHeight()
     }
 
     private func updateRecentActivityTableHeight() {
-        // لازم يتأكد إن الـ layout جاهز
         tblRecentActivity.layoutIfNeeded()
         tblRecentActivityHeight.constant = tblRecentActivity.contentSize.height
     }
@@ -243,9 +111,79 @@ final class AdminDashboardViewController: UIViewController {
     private func styleCard(_ v: UIView) {
         v.layer.cornerRadius = 12
         v.layer.borderWidth = 1
-        v.layer.borderColor = UIColor(red: 247/255, green: 212/255, blue: 76/255, alpha: 1).cgColor // #F7D44C
+        v.layer.borderColor = UIColor(red: 247/255, green: 212/255, blue: 76/255, alpha: 1).cgColor
         v.layer.masksToBounds = true
         v.backgroundColor = .white
+    }
+
+    // MARK: - Firestore Listening
+    private func startListening() {
+
+        // 1) Stats listener
+        statsListener = db.collection("admin_stats").document("global")
+            .addSnapshotListener { [weak self] snap, err in
+                guard let self else { return }
+                if let err = err {
+                    print("❌ Stats error:", err.localizedDescription)
+                    return
+                }
+
+                let data = snap?.data() ?? [:]
+
+                let registeredUsers     = self.intValue(data["registeredUsers"])
+                let totalDonations      = self.intValue(data["totalDonations"])
+                let flaggedReports      = self.intValue(data["flaggedReports"])
+                let verifiedCollectors  = self.intValue(data["verifiedCollectors"])
+
+                DispatchQueue.main.async {
+                    self.lblRegisteredUsersValue.text = self.formatNumber(registeredUsers)
+                    self.lblFlaggedReportsValue.text = self.formatNumber(flaggedReports)
+                    self.lblVerifiedCollectorsValue.text = self.formatNumber(verifiedCollectors)
+
+                    // إذا تبينه مبلغ:
+                    self.lblTotalDonationsValue.text = "$" + self.formatNumber(totalDonations)
+                }
+            }
+
+        // 2) Recent activity listener
+        activityListener = db.collection("audit_logs")
+            .order(by: "createdAt", descending: true)
+            .limit(to: 10)
+            .addSnapshotListener { [weak self] snap, err in
+                guard let self else { return }
+                if let err = err {
+                    print("❌ Activity error:", err.localizedDescription)
+                    return
+                }
+
+                let docs = snap?.documents ?? []
+                self.activities = docs.map { $0.data()["message"] as? String ?? "" }
+
+                DispatchQueue.main.async {
+                    self.tblRecentActivity.reloadData()
+                    self.updateRecentActivityTableHeight()
+                }
+            }
+    }
+
+    deinit {
+        statsListener?.remove()
+        activityListener?.remove()
+    }
+
+    // MARK: - Helpers
+    private func intValue(_ any: Any?) -> Int {
+        if let v = any as? Int { return v }
+        if let v = any as? Int64 { return Int(v) }
+        if let v = any as? Double { return Int(v) }
+        if let v = any as? NSNumber { return v.intValue }
+        return 0
+    }
+
+    private func formatNumber(_ n: Int) -> String {
+        let f = NumberFormatter()
+        f.numberStyle = .decimal
+        return f.string(from: NSNumber(value: n)) ?? "\(n)"
     }
 }
 

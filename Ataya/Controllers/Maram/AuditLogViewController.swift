@@ -1,114 +1,219 @@
-//
-//  AuditLogViewController.swift
-//  Ataya
-//
-//  Created by Maram on 02/12/2025.
-//
-
 import UIKit
+import FirebaseFirestore
 
 struct AuditLogItem {
     let title: String
     let user: String
     let action: String
     let location: String
-    let date: String
     let status: String
+    let category: String
+    let createdAt: Date
 }
 
+final class AuditLogViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
-class AuditLogViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     @IBOutlet weak var tableView: UITableView!
-    
     @IBOutlet weak var searchBar: UISearchBar!
-    
     @IBOutlet weak var filterSegment: UISegmentedControl!
-    
-    // REAL DATA (temporary but real records)
-    let auditItems: [AuditLogItem] = [
-        AuditLogItem(
-            title: "Donation Approved",
-            user: "Zahraa Ali",
-            action: "Approved donation Baby Formula (DON-100) for collection by WarmMeal (N-07).",
-            location: "Manama, Bahrain",
-            date: "Nov 6, 2025 – 10:42 PM",
-            status: "Action Completed"
-        ),
-        AuditLogItem(
-            title: "NGO Suspended",
-            user: "Admin Sarah Ibrahim",
-            action: "Suspended NGO United Care Foundation (N-34) due to repeated violations.",
-            location: "Johannesburg, South Africa",
-            date: "Nov 7, 2025 – 9:15 AM",
-            status: "Account Suspended"
-        ),
-        AuditLogItem(
-            title: "Campaign Created",
-            user: "Walaa Ahmed",
-            action: "Created a new campaign 'Winter Warmth Drive' with a goal of $50,000.",
-            location: "Kuwait City, Kuwait",
-            date: "Nov 5, 2025 – 2:30 PM",
-            status: "Campaign Active"
-        )
-    ]
-    
+
+    private let db = Firestore.firestore()
+    private var listener: ListenerRegistration?
+
+    // كل الداتا من Firestore
+    private var allItems: [AuditLogItem] = []
+
+    // الداتا المعروضة بعد الفلتر + البحث
+    private var shownItems: [AuditLogItem] = []
+
+    // ✅ DateFormatter ثابت (أفضل للأداء)
+    private static let dateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateStyle = .medium
+        f.timeStyle = .short
+        return f
+    }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
+
+        // SearchBar UI (مثل كودج)
         searchBar.backgroundImage = UIImage()
         searchBar.searchBarStyle = .minimal
-        
         if let searchField = searchBar.value(forKey: "searchField") as? UITextField {
             searchField.backgroundColor = .white
             searchField.layer.cornerRadius = 10
             searchField.clipsToBounds = true
         }
-        
-        // Remove separator lines
+
+        // Delegates
+        tableView.delegate = self
+        tableView.dataSource = self
+        searchBar.delegate = self
+
+        // Table view style
         tableView.separatorStyle = .none
         tableView.sectionHeaderTopPadding = 0
-        
-        // Auto height for XIB cell
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 160
-        
+
         // Register XIB
         let nib = UINib(nibName: "AuditLogTableViewCell", bundle: nil)
         tableView.register(nib, forCellReuseIdentifier: "AuditLogTableViewCell")
-        
-        // Set delegates
-        tableView.delegate = self
-        tableView.dataSource = self
+
+        // Segment change (بدون توصيل IBAction)
+        filterSegment.addTarget(self, action: #selector(filterChanged), for: .valueChanged)
+
+        // ابدأ اسمع الداتا
+        startListening()
     }
-    
+
+    deinit {
+        listener?.remove()
+    }
+
+    // MARK: - Firestore Listener
+    private func startListening() {
+        // ترتيب حسب createdAt (الأحدث فوق)
+        listener = db.collection("audit_logs")
+            .order(by: "createdAt", descending: true)
+            .limit(to: 100)
+            .addSnapshotListener { [weak self] snap, err in
+                guard let self else { return }
+
+                if let err = err {
+                    print("❌ Audit logs error:", err.localizedDescription)
+                    return
+                }
+
+                let docs = snap?.documents ?? []
+                self.allItems = docs.compactMap { d in
+                    let data = d.data()
+
+                    let title = data["title"] as? String ?? ""
+                    let user = data["user"] as? String ?? ""
+                    let action = data["action"] as? String ?? ""
+                    let location = data["location"] as? String ?? ""
+                    let status = data["status"] as? String ?? ""
+                    let category = data["category"] as? String ?? "System"
+
+                    let ts = data["createdAt"] as? Timestamp
+                    let createdAt = ts?.dateValue() ?? Date.distantPast
+
+                    return AuditLogItem(
+                        title: title,
+                        user: user,
+                        action: action,
+                        location: location,
+                        status: status,
+                        category: category,
+                        createdAt: createdAt
+                    )
+                }
+
+                // ✅ UI تحديث على الـ Main Thread
+                DispatchQueue.main.async {
+                    self.applyFiltersAndReload()
+                }
+            }
+    }
+
+    // MARK: - Filtering / Search
+    @objc private func filterChanged() {
+        applyFiltersAndReload()
+    }
+
+    private func applyFiltersAndReload() {
+        let selectedCategory = categoryFromSegmentIndex(filterSegment.selectedSegmentIndex)
+        let searchText = (searchBar.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+
+        var items = allItems
+
+        // hookup if you need to show All and filter by segment index.
+        if selectedCategory != "All" {
+            items = items.filter { $0.category.caseInsensitiveCompare(selectedCategory) == .orderedSame }
+        }
+
+        if !searchText.isEmpty {
+            items = items.filter { item in
+                let haystack = [
+                    item.title, item.user, item.action, item.location, item.status, item.category
+                ].joined(separator: " ").lowercased()
+
+                return haystack.contains(searchText)
+            }
+        }
+
+        shownItems = items
+        tableView.reloadData()
+    }
+
+    private func categoryFromSegmentIndex(_ index: Int) -> String {
+        // حسب UI عندج: All / Donations / Campaigns / Accounts / System
+        switch index {
+        case 0: return "All"
+        case 1: return "Donations"
+        case 2: return "Campaigns"
+        case 3: return "Accounts"
+        case 4: return "System"
+        default: return "All"
+        }
+    }
+
+    private func formatDate(_ date: Date) -> String {
+        return Self.dateFormatter.string(from: date)
+    }
+
     // MARK: - Table View Data
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return auditItems.count
+        return shownItems.count
     }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
+
+    func tableView(_ tableView: UITableView,
+                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+
         let cell = tableView.dequeueReusableCell(
             withIdentifier: "AuditLogTableViewCell",
             for: indexPath
         ) as! AuditLogTableViewCell
-        
-        let item = auditItems[indexPath.row]
-        
-        // TOP TITLE
+
+        let item = shownItems[indexPath.row]
+
         cell.titleLabel.text = item.title
-        
-        // VALUE LABELS (RIGHT SIDE)
         cell.userValueLabel.text = item.user
         cell.actionValueLabel.text = item.action
         cell.locationValueLabel.text = item.location
-        cell.dateValueLabel.text = item.date
+        cell.dateValueLabel.text = formatDate(item.createdAt)
         cell.statusValueLabel.text = item.status
-        
-        // FIXED TITLES (LEFT SIDE) — set once in XIB for clean design
-        
+
+        cell.selectionStyle = .none
         return cell
+    }
+}
+
+// MARK: - UISearchBarDelegate
+extension AuditLogViewController: UISearchBarDelegate {
+
+    // ✅ عشان يظهر زر Cancel
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = true
+    }
+
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = false
+    }
+
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        applyFiltersAndReload()
+    }
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
+
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.text = ""
+        searchBar.resignFirstResponder()
+        applyFiltersAndReload()
     }
 }

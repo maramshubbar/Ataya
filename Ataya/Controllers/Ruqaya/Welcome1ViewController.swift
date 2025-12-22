@@ -28,10 +28,8 @@ class Welcome1ViewController: UIViewController {
     
     
     @objc private func nextTapped() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "Welcome2ViewController")
+        performSegue(withIdentifier: "toWelcome2", sender: nil)
 
-        navigationController?.pushViewController(vc, animated: true)
 
     }
 

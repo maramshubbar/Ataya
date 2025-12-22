@@ -24,10 +24,9 @@ class Welcome2ViewController: UIViewController {
     
     
     @objc private func nextTapped() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "Welcome3ViewController")
+        performSegue(withIdentifier: "toWelcome3", sender: nil)
 
-        navigationController?.pushViewController(vc, animated: true)
+
 
         
     }

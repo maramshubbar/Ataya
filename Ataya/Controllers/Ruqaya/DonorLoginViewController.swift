@@ -11,7 +11,11 @@ class DonorLoginViewController: UIViewController {
 
     
     
-
+    
+    
+    @IBOutlet weak var rememberCheckButton: UIButton!
+    
+    
     @IBOutlet weak var emailTextField: UITextField!
     
     @IBOutlet weak var passwordTextField: UITextField!
@@ -27,6 +31,11 @@ class DonorLoginViewController: UIViewController {
 
 
     private var isPasswordVisible = false
+    
+    private var isRememberChecked = false
+
+
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,7 +46,60 @@ class DonorLoginViewController: UIViewController {
         setupSignUpLabel()
         setuploginButton()
 
+        setupRememberCheckbox()
+        updateRememberUI()
+        
+        loginButton.isEnabled = false
+        loginButton.alpha = 0.5
+        emailTextField.addTarget(self, action: #selector(textFieldsChanged), for: .editingChanged)
+        passwordTextField.addTarget(self, action: #selector(textFieldsChanged), for: .editingChanged)
+
+
+
+
     }
+    
+    @objc private func textFieldsChanged() {
+        let emailFilled = !(emailTextField.text ?? "").isEmpty
+        let passwordFilled = !(passwordTextField.text ?? "").isEmpty
+
+        let shouldEnable = emailFilled && passwordFilled
+
+        loginButton.isEnabled = shouldEnable
+        loginButton.alpha = shouldEnable ? 1.0 : 0.5
+    }
+
+    
+    private func setupRememberCheckbox() {
+        rememberCheckButton.layer.cornerRadius = 4
+        rememberCheckButton.layer.borderWidth = 1
+        rememberCheckButton.layer.borderColor = UIColor.systemGray4.cgColor
+        rememberCheckButton.backgroundColor = .white
+        rememberCheckButton.setImage(nil, for: .normal)
+        rememberCheckButton.tintColor = .white
+
+        rememberCheckButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        rememberCheckButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+    }
+
+    private func updateRememberUI() {
+        if isRememberChecked {
+            rememberCheckButton.backgroundColor = UIColor(red: 0x4C/255.0, green: 0xAF/255.0, blue: 0x50/255.0, alpha: 1.0)
+            rememberCheckButton.setImage(
+                UIImage(systemName: "checkmark")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 10, weight: .bold)),
+                for: .normal
+            )
+            rememberCheckButton.layer.borderColor = UIColor.clear.cgColor
+        } else {
+            rememberCheckButton.backgroundColor = .white
+            rememberCheckButton.setImage(nil, for: .normal)
+            rememberCheckButton.layer.borderColor = UIColor.systemGray4.cgColor
+        }
+    }
+
+
+
+
     
     
     private func setuploginButton() {
@@ -93,6 +155,18 @@ class DonorLoginViewController: UIViewController {
         signUpLabel.attributedText = attr
         signUpLabel.numberOfLines = 1
     }
+    
+    
+    
+    @IBAction func rememberCheckTapped(_ sender: UIButton) {
+        isRememberChecked.toggle()
+        updateRememberUI()
+    }
+    
+    
+    
+    
+    
     /*
     // MARK: - Navigation
 

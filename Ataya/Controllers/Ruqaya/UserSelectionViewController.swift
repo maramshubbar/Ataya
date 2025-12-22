@@ -18,6 +18,9 @@ class UserSelectionViewController: UIViewController {
     
     @IBOutlet weak var nextButton: UIButton!
     
+    private let atayaYellow = UIColor(red: 0xF7/255.0, green: 0xD4/255.0, blue: 0x4C/255.0, alpha: 1.0)
+
+    
     var selectedUser: String?
 
     override func viewDidLoad() {
@@ -42,9 +45,23 @@ class UserSelectionViewController: UIViewController {
 
         let adminTap = UITapGestureRecognizer(target: self, action: #selector(adminTapped))
         adminView.addGestureRecognizer(adminTap)
+        
+        
+        nextButton.isEnabled = false
+        nextButton.alpha = 0.5
+        updateNextButton()
+
 
     }
     
+    
+    private func updateNextButton() {
+        let enabled = (selectedUser != nil)
+        nextButton.isEnabled = enabled
+        nextButton.alpha = enabled ? 1.0 : 0.5
+    }
+
+ 
     @IBAction func nextPressed(_ sender: UIButton) {
         guard let selectedUser = selectedUser else {
 
@@ -75,34 +92,41 @@ class UserSelectionViewController: UIViewController {
     func resetCardBorders() {
         let cards = [donorView, ngoView, adminView]
         for card in cards {
-            card?.layer.borderColor = UIColor.lightGray.cgColor
+            card?.layer.borderWidth = 1
+            card?.layer.borderColor = UIColor.systemGray4.cgColor
             card?.backgroundColor = .white
         }
     }
 
     func highlight(card: UIView) {
-        card.layer.borderColor = UIColor(red: 1.0, green: 0.984, blue: 0.906, alpha: 1.0).cgColor
-        card.backgroundColor = UIColor(red: 1.0, green: 0.984, blue: 0.906, alpha: 1.0)
+        card.layer.borderWidth = 2
+        card.layer.borderColor = atayaYellow.cgColor
+        card.backgroundColor = atayaYellow.withAlphaComponent(0.25)
     }
+
 
     
     @objc func donorTapped() {
         selectedUser = "Donor"
         resetCardBorders()
         highlight(card: donorView)
+        updateNextButton()
     }
-    
+
     @objc func ngoTapped() {
         selectedUser = "NGO"
         resetCardBorders()
         highlight(card: ngoView)
+        updateNextButton()
     }
 
     @objc func adminTapped() {
         selectedUser = "Admin"
         resetCardBorders()
         highlight(card: adminView)
+        updateNextButton()
     }
+
 
     
 

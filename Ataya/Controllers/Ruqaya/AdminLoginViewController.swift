@@ -10,6 +10,7 @@ import UIKit
 class AdminLoginViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     
+    @IBOutlet weak var rememberCheckButton: UIButton!
     
     @IBOutlet weak var emailTextField: UITextField!
     
@@ -29,6 +30,8 @@ class AdminLoginViewController: UIViewController, UIImagePickerControllerDelegat
     
     private var isPasswordVisible = false
     private var isConfirmPasswordVisible = false
+    private var isRememberChecked = false
+
     
     
     override func viewDidLoad() {
@@ -48,9 +51,42 @@ class AdminLoginViewController: UIViewController, UIImagePickerControllerDelegat
         setupLoginEnabledRule()
         updateLoginButtonState()
 
+        
+        setupRememberCheckbox()
+        updateRememberUI()
+
 
 
     }
+    
+    
+    private func setupRememberCheckbox() {
+        rememberCheckButton.layer.cornerRadius = 4
+        rememberCheckButton.layer.borderWidth = 1
+        rememberCheckButton.layer.borderColor = UIColor.systemGray4.cgColor
+        rememberCheckButton.backgroundColor = .white
+        rememberCheckButton.setImage(nil, for: .normal)
+        rememberCheckButton.tintColor = .white
+
+        rememberCheckButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        rememberCheckButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+    }
+
+    private func updateRememberUI() {
+        if isRememberChecked {
+            rememberCheckButton.backgroundColor = UIColor(red: 0x4C/255.0, green: 0xAF/255.0, blue: 0x50/255.0, alpha: 1.0)
+            rememberCheckButton.setImage(
+                UIImage(systemName: "checkmark")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 10, weight: .bold)),
+                for: .normal
+            )
+            rememberCheckButton.layer.borderColor = UIColor.clear.cgColor
+        } else {
+            rememberCheckButton.backgroundColor = .white
+            rememberCheckButton.setImage(nil, for: .normal)
+            rememberCheckButton.layer.borderColor = UIColor.systemGray4.cgColor
+        }
+    }
+
     
     private func setupLoginEnabledRule() {
         loginButton.isEnabled = false
@@ -243,6 +279,14 @@ class AdminLoginViewController: UIViewController, UIImagePickerControllerDelegat
 
             print("Admin Login tapped")
         }
+    
+    
+    @IBAction func rememberCheckTapped(_ sender: UIButton) {
+        isRememberChecked.toggle()
+        updateRememberUI()
+    }
+    
+    
     /*
     // MARK: - Navigation
 

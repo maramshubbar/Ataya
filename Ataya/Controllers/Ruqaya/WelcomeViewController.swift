@@ -20,13 +20,7 @@ class WelcomeViewController: UIViewController {
 
     @objc private func screenTapped() {
 
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "Welcome1ViewController")
-        
-        navigationController?.pushViewController(vc, animated: true)
-        
-        print("tapped")
-
+        performSegue(withIdentifier: "toWelcome1", sender: nil)
 
     }
     

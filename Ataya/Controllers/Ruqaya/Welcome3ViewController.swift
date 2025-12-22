@@ -21,10 +21,9 @@ class Welcome3ViewController: UIViewController {
     
     
     @objc private func goTapped() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "UserSelectionViewController")
 
-        navigationController?.pushViewController(vc, animated: true)
+        performSegue(withIdentifier: "toUserSelection", sender: nil)
+
 
     }
 

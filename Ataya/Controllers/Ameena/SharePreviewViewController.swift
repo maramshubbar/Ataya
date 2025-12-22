@@ -1,39 +1,39 @@
 import UIKit
 
 final class SharePreviewViewController: UIViewController {
-
+    
     @IBOutlet weak var previewImageView: UIImageView!
 
-    var imageToShare: UIImage?
-    var shareText: String = ""
+        var imageToShare: UIImage?
+        var shareText: String = ""
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+        override func viewDidLoad() {
+            super.viewDidLoad()
 
-        title = "Share Impact"
-        navigationItem.largeTitleDisplayMode = .never
+            title = "Share Impact"
+            navigationItem.largeTitleDisplayMode = .never
 
-        previewImageView.image = imageToShare
+            previewImageView.image = imageToShare
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .action,
-            target: self,
-            action: #selector(shareNow)
-        )
-    }
-
-    @objc private func shareNow() {
-        guard let image = imageToShare else { return }
-
-        let vc = UIActivityViewController(
-            activityItems: [shareText, image],
-            applicationActivities: nil
-        )
-
-        if let pop = vc.popoverPresentationController {
-            pop.barButtonItem = navigationItem.rightBarButtonItem
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                barButtonSystemItem: .action,
+                target: self,
+                action: #selector(shareNow)
+            )
         }
 
-        present(vc, animated: true)
+        @objc private func shareNow() {
+            guard let image = imageToShare else { return }
+
+            let vc = UIActivityViewController(
+                activityItems: [shareText, image],
+                applicationActivities: nil
+            )
+
+            if let pop = vc.popoverPresentationController {
+                pop.barButtonItem = navigationItem.rightBarButtonItem
+            }
+
+            present(vc, animated: true)
+        }
     }
-}

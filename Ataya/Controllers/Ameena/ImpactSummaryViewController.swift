@@ -41,7 +41,7 @@ final class ImpactSummaryViewController: UIViewController {
         // Description text inside the card
         descriptionLabel.text = "Together, we're fighting hunger and reducing food waste."
         descriptionLabel.numberOfLines = 0
-        descriptionLabel.font = .systemFont(ofSize: 15, weight: .medium)
+        descriptionLabel.font = .systemFont(ofSize: 17, weight: .medium)
         descriptionLabel.textColor = UIColor.black.withAlphaComponent(0.75)
     }
 
@@ -69,6 +69,12 @@ final class ImpactSummaryViewController: UIViewController {
             alpha: 1
         )
         shareImpactButton.layer.cornerRadius = 8
+        
+        // Button font
+            shareImpactButton.titleLabel?.font = UIFont.systemFont(
+                ofSize: 18,
+                weight: .semibold
+            )
     }
 
     private func setupChart() {
@@ -82,7 +88,7 @@ final class ImpactSummaryViewController: UIViewController {
     }
 
     @IBAction func shareImpactTapped(_ sender: UIButton) {
-        // Hide button before taking the screenshot
+// Hide button before taking the screenshot
         shareImpactButton.isHidden = true
         let image = view.asImage()
         shareImpactButton.isHidden = false

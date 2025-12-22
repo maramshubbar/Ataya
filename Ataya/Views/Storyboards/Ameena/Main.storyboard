@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="bgb-8u-iUR">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--ImapctDashboard-->
+        <scene sceneID="s0d-6b-0kx">
+            <objects>
+                <viewController title="ImapctDashboard" id="Y6W-OH-hqX" customClass="ImpactSummaryViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Okm-gE-BCh" userLabel="Chart" customClass="ImpactBarChartView" customModule="Ataya" customModuleProvider="target">
+                                <rect key="frame" x="17" y="251" width="359" height="211"/>
+                                <color key="backgroundColor" systemColor="tertiarySystemGroupedBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="211" id="mXu-TK-cJF"/>
+                                </constraints>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yEk-aF-CiW" userLabel="Description">
+                                <rect key="frame" x="17" y="486" width="359" height="100"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CDa-4g-bad">
+                                        <rect key="frame" x="16" y="16" width="327" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" red="1" green="0.96862745098039216" blue="0.8784313725490196" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="0HG-Uf-ViD"/>
+                                    <constraint firstItem="CDa-4g-bad" firstAttribute="leading" secondItem="yEk-aF-CiW" secondAttribute="leading" constant="16" id="6rY-Yc-iIv"/>
+                                    <constraint firstItem="CDa-4g-bad" firstAttribute="top" secondItem="yEk-aF-CiW" secondAttribute="top" constant="16" id="IDu-se-Sem"/>
+                                    <constraint firstAttribute="trailing" secondItem="CDa-4g-bad" secondAttribute="trailing" constant="16" id="wWj-1f-zVI"/>
+                                </constraints>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="haJ-kW-Vg4">
+                                <rect key="frame" x="24" y="754" width="345" height="54"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="54" id="RZN-hw-9ad"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Share Imapct">
+                                    <backgroundConfiguration key="background">
+                                        <color key="backgroundColor" red="0.96862745098039216" green="0.83137254901960778" blue="0.29803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </backgroundConfiguration>
+                                    <fontDescription key="titleFontDescription" type="system" weight="semibold" pointSize="18"/>
+                                    <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </buttonConfiguration>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0QL-lZ-SOA">
+                                <rect key="frame" x="33" y="205" width="327" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="Okm-gE-BCh" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="17" id="7z5-xb-acw"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="haJ-kW-Vg4" secondAttribute="trailing" constant="24" id="8Lo-h8-OA7"/>
+                            <constraint firstItem="haJ-kW-Vg4" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="24" id="8Wq-gB-mAB"/>
+                            <constraint firstItem="yEk-aF-CiW" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="17" id="Fvp-4b-3ih"/>
+                            <constraint firstAttribute="trailing" secondItem="0QL-lZ-SOA" secondAttribute="trailing" constant="33" id="Meh-yX-47x"/>
+                            <constraint firstItem="haJ-kW-Vg4" firstAttribute="bottom" secondItem="vDu-zF-Fre" secondAttribute="bottom" constant="24" id="OEu-H7-RVa"/>
+                            <constraint firstItem="Okm-gE-BCh" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="89" id="a8K-cg-cFh"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="yEk-aF-CiW" secondAttribute="trailing" constant="17" id="aWh-4k-3vm"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="Okm-gE-BCh" secondAttribute="trailing" constant="17" id="hJc-gQ-L1Q"/>
+                            <constraint firstItem="yEk-aF-CiW" firstAttribute="top" secondItem="Okm-gE-BCh" secondAttribute="bottom" constant="24" id="itd-uf-FMl"/>
+                            <constraint firstItem="0QL-lZ-SOA" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="43" id="nQz-sr-x2Z"/>
+                            <constraint firstItem="0QL-lZ-SOA" firstAttribute="leading" secondItem="5EZ-qb-Rvc" secondAttribute="leading" constant="33" id="uMF-mS-7Mz"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Impact Dashboard" id="zIe-xf-k0C"/>
+                    <connections>
+                        <outlet property="chart" destination="Okm-gE-BCh" id="1B9-zT-IcB"/>
+                        <outlet property="descriptionCard" destination="yEk-aF-CiW" id="0C8-7O-QQJ"/>
+                        <outlet property="descriptionLabel" destination="CDa-4g-bad" id="4lh-Q3-rNH"/>
+                        <outlet property="shareImpactButton" destination="haJ-kW-Vg4" id="6PT-dD-tFs"/>
+                        <outlet property="titleLabel" destination="0QL-lZ-SOA" id="AIy-7v-1JZ"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="951.90839694656484" y="-2.1126760563380285"/>
+        </scene>
+        <!--SharePreviewViewController-->
+        <scene sceneID="gEi-Lf-zvt">
+            <objects>
+                <viewController title="SharePreviewViewController" id="lQu-aM-s2L" customClass="SharePreviewViewController" customModule="Ataya" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="lbd-64-hiF">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="z9g-hd-4H5"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="1Oa-SD-nnz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1752" y="-2"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="b5r-xx-lN4">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="bgb-8u-iUR" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Ubh-wH-00M">
+                        <rect key="frame" x="0.0" y="118" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="Y6W-OH-hqX" kind="relationship" relationship="rootViewController" id="3jC-PX-yJr"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="lH3-lL-g5j" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="25.190839694656489" y="-2.1126760563380285"/>
+        </scene>
+    </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="tertiarySystemGroupedBackgroundColor">
+            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>

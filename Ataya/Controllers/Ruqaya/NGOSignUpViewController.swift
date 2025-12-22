@@ -58,10 +58,16 @@ class NGOSignUpViewController: UIViewController {
         updateTermsUI()
         
 
+        let tap = UITapGestureRecognizer(target: self, action: #selector(loginTapped))
+        loginLabel.isUserInteractionEnabled = true
+        loginLabel.addGestureRecognizer(tap)
 
     }
     
 
+    @objc private func loginTapped() {
+        performSegue(withIdentifier: "ngoSignupToLogin", sender: self)
+    }
     
     
     

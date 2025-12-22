@@ -228,6 +228,9 @@
                                                 <buttonConfiguration key="configuration" style="plain" title="Save">
                                                     <fontDescription key="titleFontDescription" type="system" weight="medium" pointSize="16"/>
                                                 </buttonConfiguration>
+                                                <connections>
+                                                    <segue destination="6Ey-Fs-w2Y" kind="show" id="GGI-bl-SHE"/>
+                                                </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lhi-5u-iEE">
                                                 <rect key="frame" x="190" y="0.0" width="178" height="54"/>
@@ -633,6 +636,11 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="My Address" style="editor" id="yVW-3y-8Tt"/>
+                    <connections>
+                        <outlet property="addNewAddressButton" destination="Kcl-wR-ydx" id="SZT-on-Qen"/>
+                        <outlet property="confirmButton" destination="mjN-4T-Zle" id="YcO-lc-KE3"/>
+                        <outlet property="tabelView" destination="093-qg-YgZ" id="4oN-Ue-2vk"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hEX-LN-5b1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>

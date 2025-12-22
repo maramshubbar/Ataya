@@ -23,8 +23,11 @@ class WelcomeViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "Welcome1ViewController")
         
-        vc.modalPresentationStyle = .fullScreen
-        present(vc, animated: true)
+        navigationController?.pushViewController(vc, animated: true)
+        
+        print("tapped")
+
+
     }
     
     

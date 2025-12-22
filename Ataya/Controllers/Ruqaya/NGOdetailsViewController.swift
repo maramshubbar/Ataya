@@ -6,8 +6,10 @@
 //
 
 import UIKit
+import UniformTypeIdentifiers
 
-class NGOdetailsViewController: UIViewController {
+
+class NGOdetailsViewController: UIViewController, UIDocumentPickerDelegate {
 
     
     @IBOutlet weak var typeButton: UIButton!
@@ -23,6 +25,14 @@ class NGOdetailsViewController: UIViewController {
     @IBOutlet weak var missionCard: UIView!
     
     @IBOutlet weak var submitButton: UIButton!
+    
+    private enum UploadKind { case personalID, training, mission }
+    private var currentUploadKind: UploadKind?
+
+    private var personalIDURL: URL?
+    private var trainingURL: URL?
+    private var missionURL: URL?
+
     
     
     override func viewDidLoad() {
@@ -41,8 +51,40 @@ class NGOdetailsViewController: UIViewController {
 
         styleSubmitButton()
         definesPresentationContext = true
+        
+        addTap(to: personalIDCard, kind: .personalID)
+        addTap(to: trainingCard, kind: .training)
+        addTap(to: missionCard, kind: .mission)
+
 
     }
+    
+    
+    private func addTap(to view: UIView, kind: UploadKind) {
+        view.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(cardTapped(_:)))
+        tap.name = String(describing: kind)
+        view.addGestureRecognizer(tap)
+    }
+
+    @objc private func cardTapped(_ sender: UITapGestureRecognizer) {
+        guard let name = sender.name else { return }
+
+        if name.contains("personalID") { currentUploadKind = .personalID }
+        else if name.contains("training") { currentUploadKind = .training }
+        else { currentUploadKind = .mission }
+
+        presentDocumentPicker()
+    }
+
+    private func presentDocumentPicker() {
+        let allowedTypes: [UTType] = [.pdf, .image, .data]
+        let picker = UIDocumentPickerViewController(forOpeningContentTypes: allowedTypes, asCopy: true)
+        picker.delegate = self
+        picker.allowsMultipleSelection = false
+        present(picker, animated: true)
+    }
+
     
     
     private func styleDocumentCard(_ view: UIView) {
@@ -126,7 +168,31 @@ class NGOdetailsViewController: UIViewController {
         present(vc, animated: true)
     }
     
-    
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let url = urls.first, let kind = currentUploadKind else { return }
+
+        switch kind {
+        case .personalID:
+            personalIDURL = url
+            personalIDCard.layer.borderColor = UIColor.systemGreen.cgColor
+            personalIDCard.layer.borderWidth = 1.5
+
+        case .training:
+            trainingURL = url
+            trainingCard.layer.borderColor = UIColor.systemGreen.cgColor
+            trainingCard.layer.borderWidth = 1.5
+
+        case .mission:
+            missionURL = url
+            missionCard.layer.borderColor = UIColor.systemGreen.cgColor
+            missionCard.layer.borderWidth = 1.5
+        }
+    }
+
+    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        print("Cancelled")
+    }
+
 
 
 

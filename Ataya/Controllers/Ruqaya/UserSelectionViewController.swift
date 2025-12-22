@@ -63,30 +63,20 @@ class UserSelectionViewController: UIViewController {
 
  
     @IBAction func nextPressed(_ sender: UIButton) {
-        guard let selectedUser = selectedUser else {
+        guard let selectedUser else { return }
 
-            let alert = UIAlertController(
-                title: "Select a User",
-                message: "Please choose Donor, NGO, or Admin",
-                preferredStyle: .alert
-            )
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            present(alert, animated: true)
-            return
-        }
-
+        let segueID: String
         switch selectedUser {
-        case "Donor":
-            performSegue(withIdentifier: "donorSignupSegue", sender: self)
-        case "NGO":
-            performSegue(withIdentifier: "ngoSignupSegue", sender: self)
-        case "Admin":
-            performSegue(withIdentifier: "adminLoginSegue", sender: self)
-        default:
-            break
+        case "Donor": segueID = "donorSignupSegue"
+        case "NGO":   segueID = "ngoSignupSegue"
+        case "Admin": segueID = "adminLoginSegue"
+        default: return
         }
 
-    }
+        performSegue(withIdentifier: segueID, sender: self)
+        }
+
+
     
     
     func resetCardBorders() {

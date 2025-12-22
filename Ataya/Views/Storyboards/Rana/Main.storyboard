@@ -393,7 +393,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MLk-Zx-8zt" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <exit id="BAT-l7-pm1" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="3719" y="599"/>
+            <point key="canvasLocation" x="3742" y="599"/>
         </scene>
         <!--Confirm Location-->
         <scene sceneID="HFs-11-ApN">
@@ -429,6 +429,9 @@
                                         <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" title="Confirm"/>
+                                        <connections>
+                                            <action selector="confirmTapped:" destination="iSY-SY-jQJ" eventType="touchUpInside" id="rHX-zF-dA0"/>
+                                        </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Current Address" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z2f-ZO-3ka">
                                         <rect key="frame" x="36" y="31" width="129" height="21"/>
@@ -472,7 +475,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aFX-lm-s0a" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4489.090909090909" y="598.74476987447702"/>
+            <point key="canvasLocation" x="4519" y="599"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="51b-kz-0yj">
@@ -496,7 +499,7 @@
         <!--My Address List-->
         <scene sceneID="jnO-tW-ZpN">
             <objects>
-                <viewController id="6Ey-Fs-w2Y" userLabel="My Address List" customClass="MyAddressListTableViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MyAddressListTableViewController" id="6Ey-Fs-w2Y" userLabel="My Address List" customClass="MyAddressListTableViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="sRy-9Q-bYx">
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -550,7 +553,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="169" id="zWO-g3-JJg">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="169" id="zWO-g3-JJg" customClass="AddressCardCell" customModule="Ataya" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="50" width="440" height="169"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="zWO-g3-JJg" id="h5s-c9-Cdi">
@@ -561,24 +564,18 @@
                                                     <rect key="frame" x="36" y="8" width="368" height="149"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Home Address" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Pk-Yw-AdC">
-                                                            <rect key="frame" x="18.999999999999993" y="8" width="109.33333333333331" height="22"/>
+                                                            <rect key="frame" x="18.999999999999993" y="7.9999999999999982" width="109.33333333333331" height="19.333333333333329"/>
                                                             <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="Flat 24, Round 125, Block 314" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="peY-YV-Gtb">
-                                                            <rect key="frame" x="19" y="38" width="191" height="17"/>
+                                                            <rect key="frame" x="19" y="35.333333333333336" width="191" height="17"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="253" text="AI Noor Building, Manama" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JYc-FP-wJy">
-                                                            <rect key="frame" x="19" y="63" width="167" height="17"/>
-                                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                            <nil key="textColor"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
-                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cbg-lR-0aW">
+                                                        <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cbg-lR-0aW">
                                                             <rect key="frame" x="19" y="88" width="92" height="42"/>
                                                             <color key="backgroundColor" name="AccentColor"/>
                                                             <constraints>
@@ -597,12 +594,9 @@
                                                     <constraints>
                                                         <constraint firstItem="peY-YV-Gtb" firstAttribute="leading" secondItem="8Pk-Yw-AdC" secondAttribute="leading" id="Mcp-45-Mx3"/>
                                                         <constraint firstAttribute="bottom" secondItem="Cbg-lR-0aW" secondAttribute="bottom" constant="19" id="aAX-W8-L6Z"/>
-                                                        <constraint firstItem="Cbg-lR-0aW" firstAttribute="leading" secondItem="JYc-FP-wJy" secondAttribute="leading" id="bfT-c4-od6"/>
-                                                        <constraint firstItem="JYc-FP-wJy" firstAttribute="leading" secondItem="IrS-wy-AmP" secondAttribute="leading" constant="19" id="bms-74-Y2S"/>
                                                         <constraint firstItem="peY-YV-Gtb" firstAttribute="top" secondItem="8Pk-Yw-AdC" secondAttribute="bottom" constant="8" id="d2n-fI-Jzm"/>
                                                         <constraint firstItem="8Pk-Yw-AdC" firstAttribute="top" secondItem="IrS-wy-AmP" secondAttribute="topMargin" id="dfZ-v4-hoC"/>
-                                                        <constraint firstItem="JYc-FP-wJy" firstAttribute="top" secondItem="peY-YV-Gtb" secondAttribute="bottom" constant="8" id="eWF-MC-avc"/>
-                                                        <constraint firstItem="Cbg-lR-0aW" firstAttribute="top" secondItem="JYc-FP-wJy" secondAttribute="bottom" constant="8" id="pyB-6Q-ytO"/>
+                                                        <constraint firstAttribute="bottom" secondItem="Cbg-lR-0aW" secondAttribute="bottom" constant="19" id="orO-nd-oEw"/>
                                                         <constraint firstItem="8Pk-Yw-AdC" firstAttribute="leading" secondItem="IrS-wy-AmP" secondAttribute="leading" constant="19" id="vzh-Fw-R3b"/>
                                                     </constraints>
                                                     <userDefinedRuntimeAttributes>
@@ -622,6 +616,11 @@
                                                 <constraint firstItem="IrS-wy-AmP" firstAttribute="top" secondItem="h5s-c9-Cdi" secondAttribute="top" constant="8" id="xU5-WQ-jXM"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="detailsLabel" destination="peY-YV-Gtb" id="Gig-ss-Ai1"/>
+                                            <outlet property="editButton" destination="Cbg-lR-0aW" id="L2c-uh-qki"/>
+                                            <outlet property="titleLabel" destination="8Pk-Yw-AdC" id="FS0-Q3-koG"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
@@ -637,7 +636,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hEX-LN-5b1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3705" y="-119"/>
+            <point key="canvasLocation" x="3705.0000000000005" y="-119.2468619246862"/>
         </scene>
     </scenes>
     <resources>

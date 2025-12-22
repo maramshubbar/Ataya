@@ -11,6 +11,23 @@ import CoreLocation
 
 class ConfirmLocationViewController: UIViewController {
 
+    @IBAction func confirmTapped(_ sender: Any) {
+        guard let coord = lastCoordinate else {
+                txtReadOnlyLocation.text = "Location not ready yet."
+                return
+            }
+
+            let saved = savedLocation(
+                latitude: coord.latitude,
+                longitude: coord.longitude,
+                address: lastAddress,
+                savedAt: Date()
+            )
+
+            locationStorage.save(saved)
+
+            navigationController?.popViewController(animated: true)
+    }
     @IBOutlet weak var currentAddressField: UIView!
     @IBOutlet weak var txtReadOnlyLocation: UITextField!
     @IBOutlet weak var mapView: MKMapView!
@@ -159,24 +176,6 @@ class ConfirmLocationViewController: UIViewController {
         private func distanceMeters(from: CLLocationCoordinate2D, to: CLLocationCoordinate2D) -> Double {
             CLLocation(latitude: from.latitude, longitude: from.longitude)
                 .distance(from: CLLocation(latitude: to.latitude, longitude: to.longitude))
-        }
-
-        // MARK: - Confirm
-        @IBAction func confirmTapped(_ sender: UIButton) {
-            guard let coord = lastCoordinate else {
-                txtReadOnlyLocation.text = "Pick a location by moving the map."
-                return
-            }
-
-            let saved = savedLocation(
-                latitude: coord.latitude,
-                longitude: coord.longitude,
-                address: lastAddress,
-                savedAt: Date()
-            )
-
-            locationStorage.save(saved)
-            navigationController?.popViewController(animated: true)
         }
     }
 

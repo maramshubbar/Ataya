@@ -8,64 +8,6 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Donation-->
-        <scene sceneID="s0d-6b-0kx">
-            <objects>
-                <viewController title="Donation" id="Y6W-OH-hqX" customClass="RecurringDonationViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
-                        <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <datePicker contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="date" style="inline" translatesAutoresizingMaskIntoConstraints="NO" id="uKO-67-ZnS">
-                                <rect key="frame" x="0.0" y="288" width="440" height="191"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                <color key="tintColor" red="0.96862745098039216" green="0.83137254901960778" blue="0.29803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            </datePicker>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m2O-8p-UXL">
-                                <rect key="frame" x="16" y="759" width="362" height="54"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Next">
-                                    <backgroundConfiguration key="background">
-                                        <color key="backgroundColor" red="0.96862745100000003" green="0.83137254900000002" blue="0.29803921570000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    </backgroundConfiguration>
-                                    <fontDescription key="titleFontDescription" type="system" pointSize="16"/>
-                                    <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </buttonConfiguration>
-                                <connections>
-                                    <segue destination="3Yl-Q1-sCQ" kind="push" id="IDX-1y-3Bk"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    </view>
-                    <navigationItem key="navigationItem" title="Recurring Donation" id="IHb-jv-muh"/>
-                    <connections>
-                        <outlet property="calendarView" destination="uKO-67-ZnS" id="1ud-57-y8G"/>
-                        <outlet property="nextButton" destination="m2O-8p-UXL" id="mMV-xy-lpA"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="999.23664122137404" y="1.4084507042253522"/>
-        </scene>
-        <!--Recurring Donation-->
-        <scene sceneID="EAq-Df-aun">
-            <objects>
-                <viewController id="3Yl-Q1-sCQ" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="xfd-f3-Gvq">
-                        <rect key="frame" x="0.0" y="0.0" width="440" height="884"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="Nvs-4R-bmI"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    </view>
-                    <navigationItem key="navigationItem" title="Recurring Donation" id="Va2-PV-Wp5"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="F8U-nb-4E0" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1929" y="1"/>
-        </scene>
         <!--RecurringDonation-->
         <scene sceneID="cUO-5w-YpP">
             <objects>
@@ -295,7 +237,7 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="200" sectionHeaderHeight="28" estimatedSectionHeaderHeight="-1" sectionFooterHeight="28" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="VGe-Aa-NxU">
                                 <rect key="frame" x="30" y="252" width="380" height="636"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="RecurringHistoryCell" rowHeight="170" id="sts-J3-sPS" customClass="RecurringHistoryCell" customModule="MYPAGES" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="RecurringHistoryCell" rowHeight="170" id="sts-J3-sPS" customClass="RecurringHistoryCell" customModule="Ataya" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="50" width="380" height="170"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="sts-J3-sPS" id="CwI-Pw-Pj3">
@@ -453,6 +395,70 @@
             </objects>
             <point key="canvasLocation" x="1926.818181818182" y="1369.4560669456068"/>
         </scene>
+        <!--ImpactSummaryViewController-->
+        <scene sceneID="hRb-Q4-Ai3">
+            <objects>
+                <viewController title="ImpactSummaryViewController" id="yPP-gR-0Qa" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="NKc-E5-S7e">
+                        <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cYd-EX-gIK" userLabel="ChartContainer">
+                                <rect key="frame" x="40" y="218" width="360" height="260"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vdY-8g-Orq" userLabel="ImpactTitleLabel">
+                                        <rect key="frame" x="159" y="21" width="42" height="21"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="tertiarySystemGroupedBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="260" id="VTJ-hN-B95"/>
+                                </constraints>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LPJ-Qs-Too" userLabel="ImpactCard">
+                                <rect key="frame" x="40" y="528" width="360" height="160"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EKs-Ek-WxI" userLabel="ImapctLLabel">
+                                        <rect key="frame" x="12" y="22" width="332" height="21"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="21" id="PXH-Ri-NXL"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" red="1" green="0.96862745098039216" blue="0.8784313725490196" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="160" id="4kT-Yc-tQc"/>
+                                    <constraint firstAttribute="trailing" secondItem="EKs-Ek-WxI" secondAttribute="trailing" constant="16" id="NHM-Jk-Zi0"/>
+                                    <constraint firstItem="EKs-Ek-WxI" firstAttribute="leading" secondItem="LPJ-Qs-Too" secondAttribute="leading" constant="12" id="bjX-Sf-4ui"/>
+                                    <constraint firstItem="EKs-Ek-WxI" firstAttribute="top" secondItem="LPJ-Qs-Too" secondAttribute="top" constant="22" id="xyb-Se-2un"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="GIK-CN-eZe"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="GIK-CN-eZe" firstAttribute="trailing" secondItem="LPJ-Qs-Too" secondAttribute="trailing" constant="40" id="6CH-Nx-3KY"/>
+                            <constraint firstItem="LPJ-Qs-Too" firstAttribute="leading" secondItem="GIK-CN-eZe" secondAttribute="leading" constant="40" id="7ZJ-La-ulz"/>
+                            <constraint firstItem="cYd-EX-gIK" firstAttribute="centerX" secondItem="GIK-CN-eZe" secondAttribute="centerX" id="Bdl-aA-Zg0"/>
+                            <constraint firstItem="cYd-EX-gIK" firstAttribute="leading" secondItem="GIK-CN-eZe" secondAttribute="leading" constant="40" id="OU4-NR-q1Q"/>
+                            <constraint firstItem="LPJ-Qs-Too" firstAttribute="top" secondItem="cYd-EX-gIK" secondAttribute="bottom" constant="50" id="OVK-qS-ZiJ"/>
+                            <constraint firstItem="cYd-EX-gIK" firstAttribute="top" secondItem="GIK-CN-eZe" secondAttribute="top" constant="50" id="d1v-3j-ysc"/>
+                            <constraint firstItem="GIK-CN-eZe" firstAttribute="trailing" secondItem="cYd-EX-gIK" secondAttribute="trailing" constant="40" id="o55-3X-idb"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Impact Dahshboard" id="W2P-OG-nrc"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="frI-DI-n3p" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2799.545454545455" y="2053.5564853556484"/>
+        </scene>
         <!--PausedPopupViewController-->
         <scene sceneID="FWR-pc-mcU">
             <objects>
@@ -606,9 +612,27 @@
             </objects>
             <point key="canvasLocation" x="4301" y="1369"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="aaQ-if-uqg">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="vKP-o5-Boa" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="TBU-hG-wWW">
+                        <rect key="frame" x="0.0" y="124" width="440" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="yPP-gR-0Qa" kind="relationship" relationship="rootViewController" id="t3v-au-gfx"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iCa-OM-bqr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1907.727272727273" y="2053.5564853556484"/>
+        </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="NFF-Yz-Nym"/>
+        <segue reference="lcQ-w7-fkL"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="DoneIcon" width="124" height="124"/>
@@ -620,6 +644,9 @@
         </systemColor>
         <systemColor name="systemYellowColor">
             <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="tertiarySystemGroupedBackgroundColor">
+            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

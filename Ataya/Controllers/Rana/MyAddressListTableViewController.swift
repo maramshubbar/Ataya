@@ -7,9 +7,10 @@
 
 import UIKit
 
-final class MyAddressListTableViewController: UIViewController {
+final class MyAddressListTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
-    @IBOutlet weak var tabelView: UITableView!
+
+    @IBOutlet weak var tableView: UITableView!
     
     @IBOutlet weak var confirmButton: UIButton!
     
@@ -39,6 +40,7 @@ final class MyAddressListTableViewController: UIViewController {
             addresses = AddressStorage.shared.loadAddresses()
             selectedIndex = AddressStorage.shared.loadSelectedIndex()
 
+            // if selectedIndex invalid
             if let idx = selectedIndex, idx >= addresses.count {
                 selectedIndex = nil
                 AddressStorage.shared.saveSelectedIndex(nil)
@@ -50,51 +52,99 @@ final class MyAddressListTableViewController: UIViewController {
         private func updateButtons() {
             let canAdd = addresses.count < 2
             addNewAddressButton.isEnabled = canAdd
-            addNewAddressButton.alpha = canAdd ? 1 : 0.4
+            addNewAddressButton.alpha = canAdd ? 1.0 : 0.4
 
+            // new user: confirm disabled
             let canConfirm = (selectedIndex != nil) && !addresses.isEmpty
             confirmButton.isEnabled = canConfirm
-            confirmButton.alpha = canConfirm ? 1 : 0.4
+            confirmButton.alpha = canConfirm ? 1.0 : 0.4
         }
 
+        // MARK: - Actions
+
         @IBAction func addNewAddressTapped(_ sender: UIButton) {
-            guard addresses.count < 2 else { return }
+            if addresses.count >= 2 {
+                showAlert("Limit Reached", "You can only save 2 addresses.")
+                return
+            }
             performSegue(withIdentifier: "toAddressDetails", sender: nil)
         }
 
         @IBAction func confirmTapped(_ sender: UIButton) {
             guard let idx = selectedIndex, idx < addresses.count else { return }
-            // TODO: popup later
-            print("Confirmed address:", addresses[idx])
+            showEndPopup(for: addresses[idx])
         }
 
         @objc private func editTapped(_ sender: UIButton) {
-            let index = sender.tag
-            performSegue(withIdentifier: "toAddressDetails", sender: index)
+            performSegue(withIdentifier: "toAddressDetails", sender: sender.tag)
         }
 
-        override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-            guard segue.identifier == "toAddressDetails" else { return }
-            guard let vc = segue.destination as? MyAddressDetailsViewController else { return }
+        // MARK: - UITableViewDataSource
 
-            // EDIT
+        func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+            return addresses.count
+        }
+
+        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "AddressCell", for: indexPath) as? AddressCardCell else {
+                return UITableViewCell()
+            }
+
+            let item = addresses[indexPath.row]
+            cell.titleLabel.text = item.title
+            cell.detailsLabel.text = item.fullAddress
+
+            // show checkmark for selected
+            cell.accessoryType = (indexPath.row == selectedIndex) ? .checkmark : .none
+
+            // Edit
+            cell.editButton.tag = indexPath.row
+            cell.editButton.removeTarget(nil, action: nil, for: .allEvents)
+            cell.editButton.addTarget(self, action: #selector(editTapped(_:)), for: .touchUpInside)
+
+            return cell
+        }
+
+        // MARK: - UITableViewDelegate
+
+        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+            selectedIndex = indexPath.row
+            AddressStorage.shared.saveSelectedIndex(selectedIndex)
+
+            tableView.reloadData()
+            updateButtons()
+
+            // Optional: show popup immediately when selecting (if you want)
+            // showEndPopup(for: addresses[indexPath.row])
+        }
+
+        // MARK: - Navigation
+
+        override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+            guard segue.identifier == "toAddressDetails",
+                  let vc = segue.destination as? MyAddressDetailsViewController else { return }
+
+            // editing existing
             if let index = sender as? Int, index < addresses.count {
                 vc.editIndex = index
                 vc.existingAddress = addresses[index]
             } else {
-                // ADD
                 vc.editIndex = nil
                 vc.existingAddress = nil
             }
 
+            // callback save into storage
             vc.onSaveAddress = { savedAddress, editIndex in
                 var list = AddressStorage.shared.loadAddresses()
 
                 if let i = editIndex, i < list.count {
                     list[i] = savedAddress
                 } else {
-                    guard list.count < 2 else { return }
+                    guard list.count < 2 else { return } // limit
                     list.append(savedAddress)
+
+                    // if first address and nothing selected, select it
                     if AddressStorage.shared.loadSelectedIndex() == nil {
                         AddressStorage.shared.saveSelectedIndex(0)
                     }
@@ -103,42 +153,22 @@ final class MyAddressListTableViewController: UIViewController {
                 AddressStorage.shared.saveAddresses(list)
             }
         }
-    }
 
-    extension MyAddressListTableViewController: UITableViewDataSource, UITableViewDelegate {
+        // MARK: - Popup
 
-        func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return addresses.count
+        private func showEndPopup(for address: AddressModel) {
+            let alert = UIAlertController(
+                title: "Pickup Location Confirmed ✅",
+                message: "\(address.title)\n\(address.fullAddress)",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "Done", style: .default))
+            present(alert, animated: true)
         }
 
-        func tableView(_ tableView: UITableView,
-                       cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
-            guard let cell = tableView.dequeueReusableCell(
-                withIdentifier: "AddressCell",
-                for: indexPath
-            ) as? AddressCardCell else {
-                return UITableViewCell()
-            }
-
-            let item = addresses[indexPath.row]
-            cell.titleLabel.text = item.title
-            cell.detailsLabel.text = item.fullAddress
-
-            cell.accessoryType = (indexPath.row == selectedIndex) ? .checkmark : .none
-
-            cell.editButton.tag = indexPath.row
-            cell.editButton.removeTarget(nil, action: nil, for: .allEvents)
-            cell.editButton.addTarget(self, action: #selector(editTapped(_:)), for: .touchUpInside)
-
-            return cell
-        }
-
-        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            selectedIndex = indexPath.row
-            AddressStorage.shared.saveSelectedIndex(selectedIndex)
-            tableView.reloadData()
-            updateButtons()
+        private func showAlert(_ title: String, _ message: String) {
+            let a = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            a.addAction(UIAlertAction(title: "OK", style: .default))
+            present(a, animated: true)
         }
     }
-

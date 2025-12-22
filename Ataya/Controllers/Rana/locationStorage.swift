@@ -7,21 +7,32 @@
 
 import Foundation
 
-enum locationStorage {
-    private static let key = "saved_location"
+struct SavedLocation: Codable {
+    let latitude: Double
+    let longitude: Double
+    let address: String
+    let savedAt: Date
+}
 
-    static func save(_ saved: savedLocation) {
-        if let data = try? JSONEncoder().encode(saved) {
+enum LocationStorage {
+    private static let key = "saved_location_key"
+
+    static func save(_ location: SavedLocation) {
+        if let data = try? JSONEncoder().encode(location) {
             UserDefaults.standard.set(data, forKey: key)
         }
     }
 
-    static func load() -> savedLocation? {
-        guard let data = UserDefaults.standard.data(forKey: key) else { return nil }
-        return try? JSONDecoder().decode(savedLocation.self, from: data)
+    static func load() -> SavedLocation? {
+        guard let data = UserDefaults.standard.data(forKey: key),
+              let loc = try? JSONDecoder().decode(SavedLocation.self, from: data) else {
+            return nil
+        }
+        return loc
     }
 
     static func clear() {
         UserDefaults.standard.removeObject(forKey: key)
+        UserDefaults.standard.synchronize()
     }
 }

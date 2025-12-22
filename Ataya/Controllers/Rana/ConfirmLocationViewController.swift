@@ -9,37 +9,20 @@ import UIKit
 import MapKit
 import CoreLocation
 
-class ConfirmLocationViewController: UIViewController {
+final class ConfirmLocationViewController: UIViewController {
 
-    @IBAction func confirmTapped(_ sender: Any) {
-        guard let coord = lastCoordinate else {
-                txtReadOnlyLocation.text = "Location not ready yet."
-                return
-            }
-
-            let saved = savedLocation(
-                latitude: coord.latitude,
-                longitude: coord.longitude,
-                address: lastAddress,
-                savedAt: Date()
-            )
-
-            locationStorage.save(saved)
-
-            navigationController?.popViewController(animated: true)
-    }
     @IBOutlet weak var currentAddressField: UIView!
     @IBOutlet weak var txtReadOnlyLocation: UITextField!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var confirmbtn: UIButton!
 
-        private let locationManager = CLLocationManager()
+    private let locationManager = CLLocationManager()
         private let geocoder = CLGeocoder()
 
         // Center pin (old style)
         private let centerPin = UIImageView(image: UIImage(systemName: "mappin.circle.fill"))
 
-        // state
+        // State
         private var hasCenteredOnGPS = false
         private var lastGeocodeCenter: CLLocationCoordinate2D?
         private var lastAddress: String = "Move map to pick location..."
@@ -51,20 +34,22 @@ class ConfirmLocationViewController: UIViewController {
             super.viewDidLoad()
             title = "Confirm Location"
 
+            // clear old selection so Address screen doesn't reuse it
+            LocationStorage.clear()
+
             setupUI()
             setupMap()
             setupLocation()
 
-            // If GPS doesn't come, still allow user to move map and pick.
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
+            // Fallback if GPS doesn't return quickly (simulator/no permission)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
                 guard let self = self else { return }
                 if self.lastCoordinate == nil {
-                    // Set a default coordinate (Bahrain) so pin works even with no GPS
                     let fallback = CLLocationCoordinate2D(latitude: 26.0667, longitude: 50.5577) // Manama-ish
-                    self.mapView.setRegion(
-                        MKCoordinateRegion(center: fallback, latitudinalMeters: 20000, longitudinalMeters: 20000),
-                        animated: true
-                    )
+                    let region = MKCoordinateRegion(center: fallback,
+                                                    latitudinalMeters: 20000,
+                                                    longitudinalMeters: 20000)
+                    self.mapView.setRegion(region, animated: true)
                     self.updateAddressFromMapCenter(force: true)
                 }
             }
@@ -72,7 +57,6 @@ class ConfirmLocationViewController: UIViewController {
 
         // MARK: - UI
         private func setupUI() {
-            // Card style
             currentAddressField.backgroundColor = .white
             currentAddressField.layer.cornerRadius = 16
             currentAddressField.layer.shadowColor = UIColor.black.cgColor
@@ -81,13 +65,11 @@ class ConfirmLocationViewController: UIViewController {
             currentAddressField.layer.shadowOffset = CGSize(width: 0, height: 4)
             currentAddressField.layer.masksToBounds = false
 
-            // Confirm button
             confirmbtn.backgroundColor = yellow
             confirmbtn.setTitleColor(.black, for: .normal)
             confirmbtn.layer.cornerRadius = 8
             confirmbtn.clipsToBounds = true
 
-            // Read-only field
             txtReadOnlyLocation.isUserInteractionEnabled = false
             txtReadOnlyLocation.borderStyle = .roundedRect
             txtReadOnlyLocation.text = lastAddress
@@ -99,7 +81,6 @@ class ConfirmLocationViewController: UIViewController {
             mapView.showsUserLocation = true
             mapView.showsCompass = true
 
-            // Center pin overlay (old style)
             centerPin.tintColor = yellow
             centerPin.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(centerPin)
@@ -118,7 +99,7 @@ class ConfirmLocationViewController: UIViewController {
             locationManager.desiredAccuracy = kCLLocationAccuracyBest
 
             guard CLLocationManager.locationServicesEnabled() else {
-                txtReadOnlyLocation.text = "Location Services are OFF. Move map to pick location."
+                txtReadOnlyLocation.text = "Location Services OFF. Move map to pick."
                 return
             }
 
@@ -126,15 +107,15 @@ class ConfirmLocationViewController: UIViewController {
             case .notDetermined:
                 locationManager.requestWhenInUseAuthorization()
 
-            case .authorizedWhenInUse, .authorizedAlways:
-                // ✅ Request ONE GPS fix (better than continuous for this screen)
+            case .authorizedAlways, .authorizedWhenInUse:
+                // one-time fix (perfect for this screen)
                 locationManager.requestLocation()
 
             case .denied, .restricted:
-                txtReadOnlyLocation.text = "Location denied. Move map to pick location."
+                txtReadOnlyLocation.text = "Location denied. Move map to pick."
 
             @unknown default:
-                txtReadOnlyLocation.text = "Unknown permission state. Move map to pick location."
+                txtReadOnlyLocation.text = "Unknown permission. Move map to pick."
             }
         }
 
@@ -143,10 +124,8 @@ class ConfirmLocationViewController: UIViewController {
             let center = mapView.centerCoordinate
             lastCoordinate = center
 
-            // throttle geocoder
             if !force, let last = lastGeocodeCenter {
-                let moved = distanceMeters(from: last, to: center)
-                if moved < 25 { return }
+                if distanceMeters(from: last, to: center) < 25 { return }
             }
             lastGeocodeCenter = center
 
@@ -177,6 +156,24 @@ class ConfirmLocationViewController: UIViewController {
             CLLocation(latitude: from.latitude, longitude: from.longitude)
                 .distance(from: CLLocation(latitude: to.latitude, longitude: to.longitude))
         }
+
+        // MARK: - Confirm
+        @IBAction func confirmTapped(_ sender: Any) {
+            guard let coord = lastCoordinate else {
+                txtReadOnlyLocation.text = "Location not ready yet."
+                return
+            }
+
+            let saved = SavedLocation(
+                latitude: coord.latitude,
+                longitude: coord.longitude,
+                address: lastAddress,
+                savedAt: Date()
+            )
+
+            LocationStorage.save(saved)
+            navigationController?.popViewController(animated: true)
+        }
     }
 
     // MARK: - CLLocationManagerDelegate
@@ -189,7 +186,7 @@ class ConfirmLocationViewController: UIViewController {
         func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
             guard let userLoc = locations.last else { return }
 
-            // ✅ only center once on GPS
+            // center once on GPS
             if !hasCenteredOnGPS {
                 hasCenteredOnGPS = true
 
@@ -198,14 +195,12 @@ class ConfirmLocationViewController: UIViewController {
                                                 longitudinalMeters: 800)
                 mapView.setRegion(region, animated: true)
 
-                // update address for center (now it will be near your GPS)
                 updateAddressFromMapCenter(force: true)
             }
         }
 
         func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-            // If GPS fails, user can still move map manually with center pin
-            txtReadOnlyLocation.text = "GPS not available. Move map to pick location."
+            txtReadOnlyLocation.text = "GPS not available. Move map to pick."
         }
     }
 

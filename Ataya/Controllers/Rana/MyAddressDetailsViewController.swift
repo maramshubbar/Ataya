@@ -19,7 +19,7 @@ final class MyAddressDetailsViewController: UIViewController {
     @IBOutlet weak var houseNumbertxt: UITextField!
     @IBOutlet weak var addressLabeltxt: UITextField!
 
-        // MARK: - UI Colors
+    // MARK: - UI Colors
         private let yellow = UIColor(hex: "#FEC400")
         private let yellowBG = UIColor(hex: "#FFFBE7")
 
@@ -48,30 +48,31 @@ final class MyAddressDetailsViewController: UIViewController {
             // If editing existing address
             if let existing = existingAddress {
                 addressLabeltxt.text = existing.title
-                // NOTE: We only stored "fullAddress" as one string in the model.
-                // If you want to split it back into house/street/block, you need a different model.
-                // So we keep those fields empty unless you store them separately.
                 confirmedLat = existing.latitude
                 confirmedLng = existing.longitude
+                confirmedAddress = existing.fullAddress
 
-                // Optional: show something on the button
                 viewLocationtxt.setTitle("Location Selected", for: .normal)
+            } else {
+                // New address (default button title)
+                viewLocationtxt.setTitle("View or Change Pin Location", for: .normal)
             }
         }
 
         override func viewWillAppear(_ animated: Bool) {
             super.viewWillAppear(animated)
 
-            // Load confirmed location after coming back from ConfirmLocation screen
+            // ✅ ONLY update if Confirm screen saved something
             if let saved = LocationStorage.load() {
                 confirmedLat = saved.latitude
                 confirmedLng = saved.longitude
                 confirmedAddress = saved.address
 
-                // show chosen address on button
                 viewLocationtxt.setTitle(saved.address, for: .normal)
-            } else {
-                viewLocationtxt.setTitle("View or Change Pin Location", for: .normal)
+
+                // ✅ IMPORTANT: stop it from re-loading forever
+                // so next time it won't keep showing old location unless user confirms again
+                LocationStorage.clear()
             }
         }
 
@@ -134,7 +135,21 @@ final class MyAddressDetailsViewController: UIViewController {
             savebtn.addTarget(self, action: #selector(saveTapped), for: .touchUpInside)
             cancelbtn.addTarget(self, action: #selector(cancelTapped), for: .touchUpInside)
 
-            // viewLocationtxt uses storyboard segue → don’t wire here
+            // ✅ IMPORTANT: don't use storyboard segue for location
+            // We wire it so we can clear old location before opening confirm screen
+            viewLocationtxt.removeTarget(nil, action: nil, for: .touchUpInside)
+            viewLocationtxt.addTarget(self, action: #selector(openConfirmLocation), for: .touchUpInside)
+        }
+
+        // MARK: - Open Confirm Location (clears old before going)
+
+        @objc private func openConfirmLocation() {
+            // ✅ Clear any old saved location BEFORE opening confirm screen
+            LocationStorage.clear()
+
+            // push confirm location screen
+            let vc = storyboard?.instantiateViewController(withIdentifier: "ConfirmLocationViewController") as! ConfirmLocationViewController
+            navigationController?.pushViewController(vc, animated: true)
         }
 
         // MARK: - Actions
@@ -154,8 +169,7 @@ final class MyAddressDetailsViewController: UIViewController {
                 return showAlert("Missing Location", "Please confirm your location on the map.")
             }
 
-            // This is what will show in the card details
-            let full = "House \(house), Street \(street), Block \(block)"
+            let full = "Block \(block), Street \(street), House \(house)"
 
             let newAddress = AddressModel(
                 title: label,
@@ -164,11 +178,29 @@ final class MyAddressDetailsViewController: UIViewController {
                 longitude: lng
             )
 
-            // ✅ send back to list screen
-            onSaveAddress?(newAddress, editIndex)
+            // ✅ Normal flow: list VC will save it
+            if let onSaveAddress {
+                onSaveAddress(newAddress, editIndex)
+            } else {
+                // ✅ Safety: if opened directly, still save
+                var list = AddressStorage.shared.loadAddresses()
+                if let i = editIndex, i < list.count {
+                    list[i] = newAddress
+                } else {
+                    guard list.count < 2 else {
+                        return showAlert("Limit Reached", "You can only save 2 addresses.")
+                    }
+                    list.append(newAddress)
+                }
+                AddressStorage.shared.saveAddresses(list)
+            }
 
-            // ✅ go back
-            navigationController?.popViewController(animated: true)
+            // ✅ go back (works for push or modal)
+            if let nav = navigationController {
+                nav.popViewController(animated: true)
+            } else {
+                dismiss(animated: true)
+            }
         }
 
         @objc private func cancelTapped() {
@@ -222,4 +254,3 @@ final class MyAddressDetailsViewController: UIViewController {
             )
         }
     }
-

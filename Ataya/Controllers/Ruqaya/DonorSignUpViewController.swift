@@ -56,9 +56,27 @@ class DonorSignUpViewController: UIViewController, UIImagePickerControllerDelega
 
         updateTermsUI()
         updatePasswordMatchUI()
-
+        
+ 
+        loginLabel.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(openLogin))
+        loginLabel.addGestureRecognizer(tap)
+        
+    
     }
+    
 
+    @objc private func openLogin() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewController(
+            withIdentifier: "DonorLoginViewController"
+        )
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    
+    
+    
     private func setupSignUpButton() {
             signUpButton.layer.cornerRadius = 8
             signUpButton.layer.masksToBounds = true
@@ -299,6 +317,9 @@ class DonorSignUpViewController: UIViewController, UIImagePickerControllerDelega
             // بدون Firebase حالياً
             print("Donor Sign Up tapped")
         }
+    
+    
+    
     /*
     // MARK: - Navigation
 

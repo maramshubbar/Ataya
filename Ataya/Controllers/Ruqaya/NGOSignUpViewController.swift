@@ -31,6 +31,10 @@ class NGOSignUpViewController: UIViewController {
     
     
     
+    
+    
+    
+    
     private let atayaYellow = UIColor(red: 0xF7/255.0, green: 0xD4/255.0, blue: 0x4C/255.0, alpha: 1.0)
     private let baseGray    = UIColor(red: 0x5A/255.0, green: 0x5A/255.0, blue: 0x5A/255.0, alpha: 1.0)
     private let eyeGray     = UIColor(red: 0xB8/255.0, green: 0xB8/255.0, blue: 0xB8/255.0, alpha: 1.0)
@@ -52,8 +56,14 @@ class NGOSignUpViewController: UIViewController {
         setupTermsLabel()
         setupLoginLabel()
         updateTermsUI()
+        
+
 
     }
+    
+
+    
+    
     
     
     // MARK: - Button
@@ -223,6 +233,16 @@ class NGOSignUpViewController: UIViewController {
        @IBAction func signUpPressed(_ sender: UIButton) {
            print("NGO Sign Up tapped")
        }
+    
+    
+    
+    @IBAction func signUpTapped(_ sender: UIButton) {
+        
+        performSegue(withIdentifier: "ngoToOrgDetailsSegue", sender: self)
+
+
+    }
+    
     
     /*
     // MARK: - Navigation

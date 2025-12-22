@@ -10,6 +10,11 @@ import UIKit
 class AdminLoginViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     
+    
+    
+    
+    @IBOutlet weak var forgotPasswordLabel: UILabel!
+    
     @IBOutlet weak var rememberCheckButton: UIButton!
     
     @IBOutlet weak var emailTextField: UITextField!
@@ -55,9 +60,22 @@ class AdminLoginViewController: UIViewController, UIImagePickerControllerDelegat
         setupRememberCheckbox()
         updateRememberUI()
 
+        
+        
+        forgotPasswordLabel.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(forgotPasswordTapped))
+        forgotPasswordLabel.addGestureRecognizer(tap)
 
 
     }
+    
+    
+    @objc private func forgotPasswordTapped() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "ForgotPasswordViewController")
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
     
     
     private func setupRememberCheckbox() {

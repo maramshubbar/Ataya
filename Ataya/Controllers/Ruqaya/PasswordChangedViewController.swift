@@ -47,7 +47,35 @@ class PasswordChangedViewController: UIViewController {
     private func setupbackButton() {
             backButton.layer.cornerRadius = 8
         }
+    
+    
 
+    
+    
+    @IBAction func backToLoginTapped(_ sender: UIButton) {
+
+
+        dismiss(animated: true) {
+
+
+            guard
+                    let window = UIApplication.shared.connectedScenes
+                        .compactMap({ ($0 as? UIWindowScene)?.keyWindow })
+                        .first,
+                    let nav = window.rootViewController as? UINavigationController
+                else { return }
+
+
+            if let target = nav.viewControllers.last(where: { vc in
+                    vc is AdminLoginViewController ||
+                    vc is DonorLoginViewController ||
+                    vc is NGOLoginViewController
+                }) {
+                    nav.popToViewController(target, animated: true)
+                }
+            }
+    }
+    
     /*
     // MARK: - Navigation
 

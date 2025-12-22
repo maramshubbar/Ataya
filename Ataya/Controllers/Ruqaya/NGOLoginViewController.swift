@@ -10,6 +10,7 @@ import UIKit
 class NGOLoginViewController: UIViewController {
 
     
+    @IBOutlet weak var forgetPasswordLabel: UILabel!
     
     @IBOutlet weak var rememberCheckButton: UIButton!
     
@@ -37,6 +38,7 @@ class NGOLoginViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        setupForgetPasswordTap()
         
         setupPasswordEye()
         setupSignUpLabel()
@@ -50,8 +52,40 @@ class NGOLoginViewController: UIViewController {
 
         loginButton.isEnabled = false
         loginButton.alpha = 0.5
+        
+
+        signUpLabel.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(signUpTapped))
+        signUpLabel.addGestureRecognizer(tap)
+        
+
 
     }
+    
+
+    @objc private func signUpTapped() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewController(
+            withIdentifier: "NGOSignUpViewController"
+        )
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+
+    
+    
+    
+    private func setupForgetPasswordTap() {
+        forgetPasswordLabel.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(forgetPasswordTapped))
+        forgetPasswordLabel.addGestureRecognizer(tap)
+    }
+
+    @objc private func forgetPasswordTapped() {
+        performSegue(withIdentifier: "ngoForgotSegue", sender: self)
+    }
+
+    
     
     private func setupRememberCheckbox() {
         rememberCheckButton.layer.cornerRadius = 4

@@ -62,7 +62,7 @@ class ResetPasswordViewController: UIViewController {
 
             let isValid = isValidPassword(pass) && pass == verify
 
-            // ✅ لا تخفينه، بس Disable
+
             saveButton.isEnabled = isValid
             saveButton.alpha = isValid ? 1.0 : 0.5
         }
@@ -77,7 +77,7 @@ class ResetPasswordViewController: UIViewController {
             saveButton.layer.cornerRadius = 8
             saveButton.clipsToBounds = true
 
-            // ✅ شكل disabled من البداية
+
             saveButton.isEnabled = false
             saveButton.alpha = 0.5
         }

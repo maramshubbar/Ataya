@@ -22,6 +22,7 @@ class DonorLoginViewController: UIViewController {
     
     @IBOutlet weak var loginButton: UIButton!
     
+    @IBOutlet weak var forgetPasswordLabel: UILabel!
     
     @IBOutlet weak var signUpLabel: UILabel!
 
@@ -41,7 +42,7 @@ class DonorLoginViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        
+        setupForgetPasswordTap()
         setupPasswordEye()
         setupSignUpLabel()
         setuploginButton()
@@ -55,9 +56,32 @@ class DonorLoginViewController: UIViewController {
         passwordTextField.addTarget(self, action: #selector(textFieldsChanged), for: .editingChanged)
 
 
+        signUpLabel.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(openSignUp))
+        signUpLabel.addGestureRecognizer(tap)
 
 
     }
+    
+    private func setupForgetPasswordTap() {
+        forgetPasswordLabel.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(forgetPasswordTapped))
+        forgetPasswordLabel.addGestureRecognizer(tap)
+    }
+
+    @objc private func forgetPasswordTapped() {
+        performSegue(withIdentifier: "donorForgotSegue", sender: self)
+    }
+
+
+    @objc private func openSignUp() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewController(
+            withIdentifier: "DonorSignUpViewController"
+        )
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
     
     @objc private func textFieldsChanged() {
         let emailFilled = !(emailTextField.text ?? "").isEmpty

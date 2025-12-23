@@ -1,11 +1,12 @@
 //
-//  DonorSignUpViewController.swift
-//  AtayaTest
+//  NGOSignUpViewController.swift
+//  Ataya
 //
 //  Created by Ruqaya Habib on 16/12/2025.
 //
 
 import UIKit
+import FirebaseAuth
 
 class NGOSignUpViewController: UIViewController {
 
@@ -236,11 +237,7 @@ class NGOSignUpViewController: UIViewController {
            updateTermsUI()
        }
 
-       @IBAction func signUpPressed(_ sender: UIButton) {
-           print("NGO Sign Up tapped")
-       }
-    
-    
+
     
     @IBAction func signUpTapped(_ sender: UIButton) {
         

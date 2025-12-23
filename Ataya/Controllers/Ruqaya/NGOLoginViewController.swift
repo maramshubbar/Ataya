@@ -1,11 +1,13 @@
 //
-//  DonorLoginViewController.swift
-//  AtayaTest
+//  NGOLoginViewController.swift
+//  Ataya
 //
 //  Created by Ruqaya Habib on 17/12/2025.
 //
 
 import UIKit
+import FirebaseAuth
+
 
 class NGOLoginViewController: UIViewController {
 
@@ -60,6 +62,12 @@ class NGOLoginViewController: UIViewController {
         
 
 
+    }
+    
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
     
 
@@ -188,6 +196,39 @@ class NGOLoginViewController: UIViewController {
         updateRememberUI()
     }
     
+    @IBAction func loginPressed(_ sender: UIButton) {
+        let email = (emailTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            let password = (passwordTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !email.isEmpty else {
+                showAlert(title: "Missing Email", message: "Please enter your email.")
+                return
+            }
+
+            guard !password.isEmpty else {
+                showAlert(title: "Missing Password", message: "Please enter your password.")
+                return
+            }
+
+            guard loginButton.isEnabled else { return }
+
+            Auth.auth().signIn(withEmail: email, password: password) { [weak self] result, error in
+                if let error = error {
+                    self?.showAlert(title: "Login Failed", message: error.localizedDescription)
+                    return
+                }
+
+
+                if self?.isRememberChecked == true, let uid = result?.user.uid {
+                    UserDefaults.standard.set(uid, forKey: "ngo_uid")
+                } else {
+                    UserDefaults.standard.removeObject(forKey: "ngo_uid")
+                }
+
+                // روحي للصفحة اللي بعد اللوقن
+                self?.performSegue(withIdentifier: "toNGOHome", sender: nil)
+            }
+    }
     /*
     // MARK: - Navigation
 

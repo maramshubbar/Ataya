@@ -430,6 +430,7 @@
                                 <buttonConfiguration key="configuration" style="plain" title="Sign Up"/>
                                 <connections>
                                     <action selector="nextButton:" destination="y1E-sX-w8x" eventType="touchUpInside" id="O10-R1-NTX"/>
+                                    <action selector="signUpPressed:" destination="jfm-VT-fH3" eventType="touchUpInside" id="P7A-q5-HTO"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="By signing up, you agree to the Terms of service and Privacy policy." lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ccX-4A-EMR">
@@ -645,6 +646,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Login"/>
                                 <connections>
+                                    <action selector="loginPressed:" destination="cze-Xt-aRN" eventType="touchUpInside" id="Od2-yn-pEj"/>
                                     <action selector="nextButton:" destination="y1E-sX-w8x" eventType="touchUpInside" id="SbQ-c1-Jrw"/>
                                 </connections>
                             </button>
@@ -865,6 +867,9 @@
                                 <color key="tintColor" systemColor="labelColor"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Login"/>
+                                <connections>
+                                    <action selector="loginPressed:" destination="o1g-Ph-glb" eventType="touchUpInside" id="f8Y-IJ-1zG"/>
+                                </connections>
                             </button>
                             <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Forget Password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qnM-XO-MXD">
                                 <rect key="frame" x="293" y="563" width="111" height="16"/>

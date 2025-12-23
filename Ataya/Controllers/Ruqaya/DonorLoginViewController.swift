@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import FirebaseAuth
+
 
 class DonorLoginViewController: UIViewController {
 
@@ -62,6 +64,14 @@ class DonorLoginViewController: UIViewController {
 
 
     }
+    
+    
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+
     
     private func setupForgetPasswordTap() {
         forgetPasswordLabel.isUserInteractionEnabled = true
@@ -189,6 +199,40 @@ class DonorLoginViewController: UIViewController {
     
     
     
+    @IBAction func loginPressed(_ sender: UIButton) {
+        let email = (emailTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let password = (passwordTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !email.isEmpty else {
+                showAlert(title: "Missing Email", message: "Please enter your email.")
+                return
+            }
+
+            guard !password.isEmpty else {
+                showAlert(title: "Missing Password", message: "Please enter your password.")
+                return
+            }
+
+            guard loginButton.isEnabled else { return }
+
+            Auth.auth().signIn(withEmail: email, password: password) { [weak self] result, error in
+                if let error = error {
+                    self?.showAlert(title: "Login Failed", message: error.localizedDescription)
+                    return
+                }
+
+
+                if self?.isRememberChecked == true, let uid = result?.user.uid {
+                    UserDefaults.standard.set(uid, forKey: "donor_uid")
+                } else {
+                    UserDefaults.standard.removeObject(forKey: "donor_uid")
+                }
+
+                // روحي للصفحة اللي بعد اللوقن
+                self?.performSegue(withIdentifier: "toDonorHome", sender: nil)
+                // أو لو عندك push/instantiate بدل segue قولي لي
+            }
+    }
     
     
     /*

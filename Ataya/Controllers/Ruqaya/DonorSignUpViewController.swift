@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class DonorSignUpViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
@@ -56,6 +57,8 @@ class DonorSignUpViewController: UIViewController, UIImagePickerControllerDelega
 
         updateTermsUI()
         updatePasswordMatchUI()
+        updateSignUpButtonState()
+
         
  
         loginLabel.isUserInteractionEnabled = true
@@ -64,6 +67,13 @@ class DonorSignUpViewController: UIViewController, UIImagePickerControllerDelega
         
     
     }
+    
+    func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+
     
 
     @objc private func openLogin() {
@@ -75,7 +85,26 @@ class DonorSignUpViewController: UIViewController, UIImagePickerControllerDelega
     }
     
     
-    
+    private func updateSignUpButtonState() {
+        let name = (nameTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let email = (emailTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let phone = (phoneTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let password = passwordTextField.text ?? ""
+        let confirm = confirmPasswordTextField.text ?? ""
+
+        let isValid =
+            isTermsChecked &&
+            !name.isEmpty &&
+            !email.isEmpty &&
+            !phone.isEmpty &&
+            password.count >= 6 &&
+            password == confirm
+
+
+        signUpButton.isEnabled = isValid
+        signUpButton.alpha = isValid ? 1.0 : 0.5
+    }
+
     
     private func setupSignUpButton() {
             signUpButton.layer.cornerRadius = 8
@@ -127,7 +156,7 @@ class DonorSignUpViewController: UIViewController, UIImagePickerControllerDelega
 
         @objc private func textChanged(_ sender: UITextField) {
             updatePasswordMatchUI()
-        }
+            updateSignUpButtonState()        }
 
         // MARK: - Password Eyes
         private func setupPasswordEyes() {
@@ -225,8 +254,6 @@ class DonorSignUpViewController: UIViewController, UIImagePickerControllerDelega
                 termsCheckButton.layer.borderColor = UIColor.systemGray4.cgColor
             }
 
-            signUpButton.isEnabled = isTermsChecked
-            signUpButton.alpha = isTermsChecked ? 1.0 : 0.5
         }
 
         // MARK: - Labels
@@ -305,20 +332,69 @@ class DonorSignUpViewController: UIViewController, UIImagePickerControllerDelega
         @IBAction func termsCheckTapped(_ sender: UIButton) {
             isTermsChecked.toggle()
             updateTermsUI()
+            updateSignUpButtonState()
         }
 
         @IBAction func signUpPressed(_ sender: UIButton) {
-            guard passwordsMatch() else {
-                // تقدرين تحطين Alert إذا تبين
-                print("Passwords do not match")
+            let name = (nameTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            let phone = (phoneTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            let email = (emailTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            let password = passwordTextField.text ?? ""
+            let confirm = confirmPasswordTextField.text ?? ""
+
+            // 1) Terms
+            guard isTermsChecked else {
+                showAlert(title: "Terms Required", message: "Please accept Terms & Privacy to continue.")
                 return
             }
 
-            // بدون Firebase حالياً
-            print("Donor Sign Up tapped")
+            // 2) Validation
+            guard !name.isEmpty else {
+                showAlert(title: "Missing Name", message: "Please enter your full name.")
+                return
+            }
+
+            guard !email.isEmpty else {
+                showAlert(title: "Missing Email", message: "Please enter your email.")
+                return
+            }
+
+            guard !phone.isEmpty else {
+                showAlert(title: "Missing Phone", message: "Please enter your phone number.")
+                return
+            }
+
+            guard password.count >= 6 else {
+                showAlert(title: "Weak Password", message: "Password must be at least 6 characters.")
+                return
+            }
+
+            guard password == confirm else {
+                showAlert(title: "Password Mismatch", message: "Passwords do not match.")
+                return
+            }
+
+            // 3) Firebase Create User
+            Auth.auth().createUser(withEmail: email, password: password) { [weak self] result, error in
+                if let error = error {
+                    self?.showAlert(title: "Sign Up Failed", message: error.localizedDescription)
+                    return
+                }
+
+                // sucess
+                self?.showAlert(title: "Success", message: "Account created successfully!")
+
+                // 4) Navigate (اختياري)
+                // إذا تبين تودينه للـ Donor Login:
+                // self?.navigationController?.popViewController(animated: true)
+
+                // أو تسوين segue لصفحة Donor Home إذا عندك:
+                // self?.performSegue(withIdentifier: "toDonorHome", sender: nil)
+            }
+
         }
     
-    
+
     
     /*
     // MARK: - Navigation

@@ -87,9 +87,13 @@ class ForgotPasswordViewController: UIViewController {
                         self.updateButtonState()
                         return
                     }
+                    
+                    UserDefaults.standard.set(email, forKey: "reset_email")
+
 
                     self.showAlert(title: "Email Sent", message: "Check your email to reset your password.")
 
+                    self.performSegue(withIdentifier: "toOTP", sender: nil)
 
                 }
         }

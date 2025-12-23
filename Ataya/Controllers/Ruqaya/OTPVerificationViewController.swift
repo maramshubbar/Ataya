@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import FirebaseAuth
+
 
 class OTPVerificationViewController: UIViewController, UITextFieldDelegate {
 
@@ -48,6 +50,13 @@ class OTPVerificationViewController: UIViewController, UITextFieldDelegate {
 
 
     }
+    
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+
    
     private func setupOTPFields() {
         for (index, tf) in fields.enumerated() {
@@ -161,8 +170,21 @@ class OTPVerificationViewController: UIViewController, UITextFieldDelegate {
     }
     
     @objc private func resendTapped() {
+        let email = UserDefaults.standard.string(forKey: "reset_email") ?? ""
 
-        print("Resend tapped")
+        guard !email.isEmpty else {
+            showAlert(title: "Missing Email", message: "Go back and enter your email again.")
+            return
+        }
+
+        Auth.auth().sendPasswordReset(withEmail: email) { [weak self] error in
+            if let error = error {
+                self?.showAlert(title: "Resend Failed", message: error.localizedDescription)
+                return
+            }
+            self?.showAlert(title: "Email Resent", message: "Check your email again.")
+        }
+
     }
     
     private func updateVerifyState() {

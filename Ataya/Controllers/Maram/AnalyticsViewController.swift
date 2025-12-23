@@ -4,6 +4,13 @@
 //
 //  Created by Maram on 02/12/2025.
 //
+//
+//  AnalyticsViewController.swift
+//  Ataya
+//
+//  Created by Maram on 02/12/2025.
+//
+
 import UIKit
 import FirebaseFirestore
 import DGCharts   // إذا ما اشتغل عندج، بدليه إلى: import Charts
@@ -13,6 +20,9 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     @IBOutlet weak var tblCountries: UITableView!
     @IBOutlet weak var tblList: UITableView!
     @IBOutlet weak var segListFilter: UISegmentedControl!
+
+    // ✅ SegmentedControl حق 7 Days / 6 Months / 1 Year (اربطية من storyboard)
+    @IBOutlet weak var segTimeRange: UISegmentedControl!
 
     @IBOutlet weak var lblRegisteredUsers: UILabel!
     @IBOutlet weak var lblTotalDonations: UILabel!
@@ -29,10 +39,10 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         let type: RowType
     }
 
-    // ✅ Countries = count (لا تغيرناها)
+    // ✅ Countries = amountUSD + percent (مثل الصورة)
     struct CountryRow {
         let name: String
-        let count: Int
+        let amountUSD: Double
         let percent: Int
     }
 
@@ -91,6 +101,10 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         segListFilter.selectedSegmentIndex = 0
         segListFilter.addTarget(self, action: #selector(filterChanged), for: .valueChanged)
 
+        // ✅ Time range (7 Days / 6 Months / 1 Year) — default = 6 Months مثل الصورة
+        segTimeRange.selectedSegmentIndex = 1
+        segTimeRange.addTarget(self, action: #selector(timeRangeChanged), for: .valueChanged)
+
         setupChart()
         startListening()
     }
@@ -140,7 +154,6 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         for doc in docs {
             let data = doc.data()
 
-            // ✅ ناخذ السعر بالدولار من Firestore
             let amountUSD = (data["amountUSD"] as? Double)
                 ?? (data["amountUSD"] as? NSNumber)?.doubleValue
                 ?? 0
@@ -170,7 +183,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         set.mode = .linear
         set.lineWidth = 3
         set.drawValuesEnabled = false
-        set.colors = [UIColor(red: 255/255, green: 216/255, blue: 63/255, alpha: 1)] // نفس لون التصميم
+        set.colors = [UIColor(red: 255/255, green: 216/255, blue: 63/255, alpha: 1)]
 
         let data = LineChartData(dataSet: set)
         lineChart.data = data
@@ -178,7 +191,6 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         lineChart.xAxis.valueFormatter = IndexAxisValueFormatter(values: months)
         lineChart.xAxis.granularity = 1
 
-        // ✅ تنسيق محور Y كدولار
         lineChart.leftAxis.valueFormatter = DollarAxisFormatter()
         lineChart.leftAxis.axisMinimum = 0
 
@@ -193,6 +205,23 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         listenUsersCountFuture()
         listenNgoApplications()
         listenDonations()
+    }
+
+    // ✅ تغيير المدة يعيد تحميل الداتا
+    @objc private func timeRangeChanged() {
+        startListening()
+    }
+
+    private func selectedStartDate() -> Date {
+        let now = Date()
+        switch segTimeRange.selectedSegmentIndex {
+        case 0: // 7 Days
+            return Calendar.current.date(byAdding: .day, value: -7, to: now) ?? Date.distantPast
+        case 2: // 1 Year
+            return Calendar.current.date(byAdding: .year, value: -1, to: now) ?? Date.distantPast
+        default: // 6 Months
+            return Calendar.current.date(byAdding: .month, value: -6, to: now) ?? Date.distantPast
+        }
     }
 
     private func listenUsersCountFuture() {
@@ -249,7 +278,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     }
 
     private func listenDonations() {
-        let startDate = Calendar.current.date(byAdding: .month, value: -6, to: Date()) ?? Date.distantPast
+        let startDate = selectedStartDate()
 
         let l = db.collection(donationsCol)
             .whereField("createdAt", isGreaterThanOrEqualTo: Timestamp(date: startDate))
@@ -262,11 +291,12 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
 
                 let docs = snap?.documents ?? []
 
-                // ✅ Total Donations = عدد الدوكومنتس (نفس ما هو)
+                // ✅ Total Donations = عدد الدوكومنتس (يبقى عدد)
                 let totalDonationsCount = docs.count
 
-                // ✅ Countries = عدد الدونيشن لكل دولة (نفس ما هو)
-                var byCountryCount: [String: Int] = [:]
+                // ✅ Countries = مجموع amountUSD لكل دولة
+                var byCountryUSD: [String: Double] = [:]
+                var totalUSD: Double = 0
 
                 // ✅ fallback Registered Users = unique donors
                 var uniqueDonors = Set<String>()
@@ -275,11 +305,16 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
                 for d in docs {
                     let data = d.data()
 
+                    let amountUSD = (data["amountUSD"] as? Double)
+                        ?? (data["amountUSD"] as? NSNumber)?.doubleValue
+                        ?? 0
+                    totalUSD += amountUSD
+
                     let country = self.stringValue(data, keys: ["country"])
                         .ifEmpty(self.extractCountry(from: self.stringValue(data, keys: ["location", "address"])))
                         .ifEmpty("Unknown")
 
-                    byCountryCount[country, default: 0] += 1
+                    byCountryUSD[country, default: 0] += amountUSD
 
                     let donorCode = self.stringValue(data, keys: ["donorCode", "donorId", "reporterCode", "userCode"])
                     let donorName = self.stringValue(data, keys: ["donorName", "reporter", "name", "fullName"]).ifEmpty("Donor")
@@ -297,18 +332,17 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
                     }
                 }
 
-                // Countries rows
-                let grandTotal = max(totalDonationsCount, 1)
-                let cRows = byCountryCount
-                    .map { (name: $0.key, count: $0.value) }
-                    .sorted { $0.count > $1.count }
+                // ✅ Countries rows (amount + %)
+                let safeTotal = max(totalUSD, 0.000001)
+                let cRows = byCountryUSD
+                    .map { (name: $0.key, amountUSD: $0.value) }
+                    .sorted { $0.amountUSD > $1.amountUSD }
                     .map { item -> CountryRow in
-                        let pct = Int(round((Double(item.count) / Double(grandTotal)) * 100))
-                        return CountryRow(name: item.name, count: item.count, percent: pct)
+                        let pct = Int(round((item.amountUSD / safeTotal) * 100))
+                        return CountryRow(name: item.name, amountUSD: item.amountUSD, percent: pct)
                     }
 
                 DispatchQueue.main.async {
-                    // ✅ Total donations label = رقم
                     self.lblTotalDonations.text = self.formatNumber(totalDonationsCount)
 
                     self.usersCountFallback = uniqueDonors.count
@@ -371,10 +405,10 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
             let dot = cell.contentView.viewWithTag(1)
             let nameLbl = cell.contentView.viewWithTag(2) as? UILabel
             let pctLbl  = cell.contentView.viewWithTag(3) as? UILabel
-            let countLbl  = cell.contentView.viewWithTag(4) as? UILabel
+            let amtLbl  = cell.contentView.viewWithTag(4) as? UILabel
 
             nameLbl?.text = item.name
-            countLbl?.text  = "\(item.count)"
+            amtLbl?.text  = formatUSD(item.amountUSD)   // ✅ $ مثل الصورة
             pctLbl?.text  = "\(item.percent)%"
 
             dot?.backgroundColor = dotColors[indexPath.row % dotColors.count]
@@ -424,6 +458,14 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         let nf = NumberFormatter()
         nf.numberStyle = .decimal
         return nf.string(from: NSNumber(value: value)) ?? "\(value)"
+    }
+
+    private func formatUSD(_ value: Double) -> String {
+        let nf = NumberFormatter()
+        nf.numberStyle = .currency
+        nf.currencySymbol = "$"
+        nf.maximumFractionDigits = 0
+        return nf.string(from: NSNumber(value: value)) ?? "$\(Int(value))"
     }
 }
 

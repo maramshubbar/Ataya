@@ -1000,7 +1000,7 @@
                                                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CountryCell" rowHeight="44" id="sMk-CF-frR">
                                                                         <rect key="frame" x="0.0" y="50" width="384" height="44"/>
                                                                         <autoresizingMask key="autoresizingMask"/>
-                                                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="sMk-CF-frR" id="Cqt-QS-BCB">
+                                                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="sMk-CF-frR" id="Cqt-QS-BCB" customClass="CountryCell" customModule="Ataya" customModuleProvider="target">
                                                                             <rect key="frame" x="0.0" y="0.0" width="384" height="44"/>
                                                                             <autoresizingMask key="autoresizingMask"/>
                                                                             <subviews>
@@ -1193,6 +1193,7 @@
                         <outlet property="lblTotalDonations" destination="G0q-UR-CXF" id="DqS-LW-MME"/>
                         <outlet property="lblVerifiedNGOs" destination="UHB-9E-t0j" id="n6n-c9-pJk"/>
                         <outlet property="segListFilter" destination="4SJ-OG-kEf" id="oBg-u8-D53"/>
+                        <outlet property="segTimeRange" destination="EhS-7T-rUg" id="1Yf-Wz-YQt"/>
                         <outlet property="tblCountries" destination="rLh-gc-Az9" id="Acd-kz-FlD"/>
                         <outlet property="tblList" destination="UfQ-ia-pg3" id="Cwh-mb-Oq6"/>
                     </connections>

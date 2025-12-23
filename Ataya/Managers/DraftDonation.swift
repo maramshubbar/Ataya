@@ -1,21 +1,39 @@
 import UIKit
-
+import Foundation
 // Holds ALL data across the 3-step donation flow.
 // ONE instance is passed between screens until final submit.
-final class DraftDonation{
-    // MARK: - Photos (No Cloudinary here)
-    var images: [UIImage] = []          // selected photos (local only)
-    var photoURLs: [String] = []        // later filled by teammate after upload
+final class DraftDonation {
+    var id: String?
 
-    // MARK: - Details
     var itemName: String = ""
     var quantity: String = ""
-    var expiryDate: Date? = nil
-    var category: String = ""
-    var allergenInfo: String = ""
-    var packagingType: String = ""
-    var notes: String = ""
 
-    // MARK: - Safety
+    var expiryDate: Date?
+    var category: String = ""
+    var packagingType: String = ""
+    var allergenInfo: String? = nil
+    var notes: String? = nil
+
     var safetyConfirmed: Bool = false
+
+    var images: [UIImage] = []
+
+    var photoCount: Int { images.count }
+
+    func toFirestoreDict() -> [String: Any] {
+        var data: [String: Any] = [
+            "itemName": itemName,
+            "quantity": quantity,
+            "category": category,
+            "packagingType": packagingType,
+            "safetyConfirmed": safetyConfirmed,
+            "photoCount": photoCount
+        ]
+
+        if let expiryDate { data["expiryDate"] = expiryDate }
+        if let allergenInfo { data["allergenInfo"] = allergenInfo }
+        if let notes { data["notes"] = notes }
+
+        return data
+    }
 }

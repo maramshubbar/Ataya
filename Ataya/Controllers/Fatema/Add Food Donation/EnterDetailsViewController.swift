@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseFirestore
 
 final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
     var draft: DraftDonation!
@@ -19,6 +20,12 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
     @IBOutlet weak var descriptionTextView: UITextView!
     @IBOutlet weak var foodItemTextField: UITextField!
     @IBOutlet weak var quantityTextField: UITextField!
+    @IBOutlet weak var foodItemErrorLabel: UILabel!
+    @IBOutlet weak var quantityErrorLabel: UILabel!
+    @IBOutlet weak var expiryErrorLabel: UILabel!
+    @IBOutlet weak var categoryErrorLabel: UILabel!
+    @IBOutlet weak var packagingErrorLabel: UILabel!
+    
     // Expiry: UIDatePicker
     private let expiryDatePicker = UIDatePicker()
     private let expiryFormatter: DateFormatter = {
@@ -69,6 +76,7 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
         "Other"
     ]
     
+    
     // MARK: - Pickers (Dropdowns)
     private let categoryPicker = UIPickerView()
     private let packagingPicker = UIPickerView()
@@ -76,7 +84,6 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         
         // Safer approach
         if draft == nil { draft = DraftDonation() }
@@ -98,6 +105,7 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
         setupDropdowns()
     }
     
+    
     private func styleCard(_ v: UIView) {
         v.backgroundColor = .white
         v.layer.cornerRadius = 14
@@ -106,7 +114,7 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
         v.clipsToBounds = true
     }
     
-    // MARK: - Expiry Setup (✅ UIDatePicker)
+    // MARK: - Expiry Setup
     private func setupExpiryDatePicker() {
         
         expiryDatePicker.datePickerMode = .date
@@ -250,8 +258,8 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
         
         draft.itemName = (foodItemTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         draft.quantity = (quantityTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-
-    
+        
+        
         // Expiry
         let expiryText = (expiryTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         draft.expiryDate = expiryText.isEmpty ? nil : expiryDatePicker.date
@@ -269,7 +277,62 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
         super.viewWillDisappear(animated)
         syncDraftFromUI()
     }
-
+    
+    private func hideAllErrors() {
+        foodItemErrorLabel.isHidden = true
+        quantityErrorLabel.isHidden = true
+        expiryErrorLabel.isHidden = true
+        categoryErrorLabel.isHidden = true
+        packagingErrorLabel.isHidden = true
+    }
+    
+    private func showError(_ label: UILabel, _ message: String) {
+        label.text = message
+        label.isHidden = false
+    }
+    
+    private func validateAndShowInlineErrors() -> Bool {
+        hideAllErrors()
+        syncDraftFromUI()
+        
+        var firstInvalidField: UIView?
+        var ok = true
+        
+        func fail(_ label: UILabel, _ message: String, focus: UIView?) {
+            showError(label, message)
+            if firstInvalidField == nil { firstInvalidField = focus }
+            ok = false
+        }
+        
+        if draft.itemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            fail(foodItemErrorLabel, "Please enter the food item name.", focus: foodItemTextField)
+        }
+        
+        if draft.quantity.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            fail(quantityErrorLabel, "Please enter the quantity.", focus: quantityTextField)
+        }
+        
+        let today = Calendar.current.startOfDay(for: Date())
+        if let expiry = draft.expiryDate {
+            if Calendar.current.startOfDay(for: expiry) < today {
+                fail(expiryErrorLabel, "Please choose a valid expiry date (today or later).", focus: expiryTextField)
+            }
+        } else {
+            fail(expiryErrorLabel, "Please choose a valid expiry date.", focus: expiryTextField)
+        }
+        
+        if draft.category.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            fail(categoryErrorLabel, "Please choose a food category.", focus: categoryTextField)
+        }
+        
+        if draft.packagingType.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            fail(packagingErrorLabel, "Please choose a packaging type.", focus: packagingTextField)
+        }
+        
+        firstInvalidField?.becomeFirstResponder()
+        return ok
+    }
+    
     
     // Then i connect to rana's page
     //    @IBAction func nextTapped(_ sender: UIButton) {
@@ -286,7 +349,45 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
     //        }
     //    }
     
-    
+    @IBAction func nextTapped(_ sender: UIButton) {
+        view.endEditing(true)
+        syncDraftFromUI()
+        
+        guard validateAndShowInlineErrors() else { return }
+
+        nextButton.isEnabled = false
+        saveToFirestore()
+    }
+
+
+    private func saveToFirestore() {
+        let db = Firestore.firestore()
+
+        // reuse same doc if already created
+        let docId = draft.id ?? db.collection("donations").document().documentID
+        let ref = db.collection("donations").document(docId)
+        draft.id = docId
+
+        var data = draft.toFirestoreDict()
+        data["photoURLs"] = []
+        data["status"] = "pending_media"
+        data["createdAt"] = FieldValue.serverTimestamp()
+
+        ref.setData(data, merge: true) { [weak self] error in
+            guard let self else { return }
+            self.nextButton.isEnabled = true
+
+            if let error {
+                print("Firestore error:", error.localizedDescription)
+
+                return
+            }
+
+            // self.performSegue(withIdentifier: "toNextPage", sender: self)
+        }
+    }
+
+
 }
     // MARK: - UIPickerView Delegate/DataSource (Dropdowns)
 extension EnterDetailsViewController: UIPickerViewDelegate, UIPickerViewDataSource {

@@ -539,19 +539,19 @@
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="NmD-1U-5OD" userLabel="stkMain">
                                                 <rect key="frame" x="39" y="30" width="362" height="911"/>
                                                 <subviews>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="qfJ-XC-h3o" userLabel="stkFoodItem">
-                                                        <rect key="frame" x="0.0" y="0.0" width="362" height="56.666666666666664"/>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="qfJ-XC-h3o" userLabel="stkFoodItem">
+                                                        <rect key="frame" x="0.0" y="0.0" width="362" height="91"/>
                                                         <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="*Food Item" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jAC-yh-WIE">
-                                                                <rect key="frame" x="0.0" y="0.0" width="362" height="4.666666666666667"/>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="*Food Item" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jAC-yh-WIE">
+                                                                <rect key="frame" x="0.0" y="0.0" width="362" height="23"/>
                                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="19"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AzR-QI-UZe">
-                                                                <rect key="frame" x="0.0" y="12.666666666666657" width="362" height="44"/>
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AzR-QI-UZe">
+                                                                <rect key="frame" x="0.0" y="31" width="362" height="60"/>
                                                                 <subviews>
-                                                                    <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" ambiguous="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="x0x-ai-8DU">
+                                                                    <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="x0x-ai-8DU">
                                                                         <rect key="frame" x="0.0" y="5" width="362" height="50"/>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                         <textInputTraits key="textInputTraits"/>
@@ -565,14 +565,17 @@
                                                                     <constraint firstItem="x0x-ai-8DU" firstAttribute="centerY" secondItem="AzR-QI-UZe" secondAttribute="centerY" id="xA0-ZP-VQy"/>
                                                                 </constraints>
                                                             </view>
+                                                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" text="Required" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="v5r-PU-NXd">
+                                                                <rect key="frame" x="0.0" y="97" width="362" height="15.666666666666671"/>
+                                                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                                <color key="textColor" systemColor="systemRedColor"/>
+                                                                <nil key="highlightedColor"/>
+                                                            </label>
                                                         </subviews>
+                                                        <constraints>
+                                                            <constraint firstItem="v5r-PU-NXd" firstAttribute="top" secondItem="AzR-QI-UZe" secondAttribute="bottom" constant="6" id="Wzo-vq-Rha"/>
+                                                        </constraints>
                                                     </stackView>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Required" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="v5r-PU-NXd">
-                                                        <rect key="frame" x="0.0" y="76.666666666666686" width="362" height="14.333333333333329"/>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                                        <color key="textColor" systemColor="systemRedColor"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="jAL-6s-Dbx" userLabel="stkFoodItem">
                                                         <rect key="frame" x="0.0" y="111" width="362" height="91"/>
                                                         <subviews>
@@ -599,7 +602,16 @@
                                                                     <constraint firstItem="Odf-AY-Izg" firstAttribute="centerX" secondItem="paG-5q-MeU" secondAttribute="centerX" id="wtN-gA-W1X"/>
                                                                 </constraints>
                                                             </view>
+                                                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" text="Required" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="feG-uE-Svg">
+                                                                <rect key="frame" x="0.0" y="97" width="362" height="15.666666666666671"/>
+                                                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                                <color key="textColor" systemColor="systemRedColor"/>
+                                                                <nil key="highlightedColor"/>
+                                                            </label>
                                                         </subviews>
+                                                        <constraints>
+                                                            <constraint firstItem="feG-uE-Svg" firstAttribute="top" secondItem="paG-5q-MeU" secondAttribute="bottom" constant="6" id="SUH-Vi-vcb"/>
+                                                        </constraints>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="ydv-Ot-wKn" userLabel="stkFoodItem">
                                                         <rect key="frame" x="0.0" y="222" width="362" height="91"/>
@@ -627,7 +639,16 @@
                                                                     <constraint firstItem="oP8-19-qJh" firstAttribute="top" secondItem="QKy-Ex-ZlN" secondAttribute="top" constant="5" id="vfg-2v-ntb"/>
                                                                 </constraints>
                                                             </view>
+                                                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Required" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zet-wp-Bkk">
+                                                                <rect key="frame" x="0.0" y="97" width="362" height="0.0"/>
+                                                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                                <color key="textColor" systemColor="systemRedColor"/>
+                                                                <nil key="highlightedColor"/>
+                                                            </label>
                                                         </subviews>
+                                                        <constraints>
+                                                            <constraint firstItem="Zet-wp-Bkk" firstAttribute="top" secondItem="QKy-Ex-ZlN" secondAttribute="bottom" constant="6" id="usN-0j-96o"/>
+                                                        </constraints>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="9Ma-vd-lKY" userLabel="stkFoodItem">
                                                         <rect key="frame" x="0.0" y="333" width="362" height="91"/>
@@ -655,7 +676,16 @@
                                                                     <constraint firstItem="Ove-Tt-FO3" firstAttribute="leading" secondItem="2Cv-YQ-4nG" secondAttribute="leading" id="rLl-bn-8ic"/>
                                                                 </constraints>
                                                             </view>
+                                                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Required" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2tz-bw-cV0">
+                                                                <rect key="frame" x="0.0" y="97" width="362" height="0.0"/>
+                                                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                                <color key="textColor" systemColor="systemRedColor"/>
+                                                                <nil key="highlightedColor"/>
+                                                            </label>
                                                         </subviews>
+                                                        <constraints>
+                                                            <constraint firstItem="2tz-bw-cV0" firstAttribute="top" secondItem="2Cv-YQ-4nG" secondAttribute="bottom" constant="6" id="AuU-Ke-d8l"/>
+                                                        </constraints>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Ywe-Tc-HrX" userLabel="stkFoodItem">
                                                         <rect key="frame" x="0.0" y="444" width="362" height="91"/>
@@ -683,7 +713,16 @@
                                                                     <constraint firstItem="Kki-N1-dVW" firstAttribute="centerY" secondItem="MSM-3T-QaF" secondAttribute="centerY" id="lhF-ci-3qr"/>
                                                                 </constraints>
                                                             </view>
+                                                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Required" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gAu-uL-MLc">
+                                                                <rect key="frame" x="0.0" y="97" width="362" height="0.0"/>
+                                                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                                <color key="textColor" systemColor="systemRedColor"/>
+                                                                <nil key="highlightedColor"/>
+                                                            </label>
                                                         </subviews>
+                                                        <constraints>
+                                                            <constraint firstItem="gAu-uL-MLc" firstAttribute="top" secondItem="MSM-3T-QaF" secondAttribute="bottom" constant="6" id="k6f-LN-q0c"/>
+                                                        </constraints>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="4tH-c6-VAF" userLabel="stkFoodItem">
                                                         <rect key="frame" x="0.0" y="555" width="362" height="91"/>
@@ -765,8 +804,7 @@
                                                             <color key="baseForegroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                         </buttonConfiguration>
                                                         <connections>
-                                                            <action selector="nextTapped:" destination="el0-8u-KP9" eventType="touchUpInside" id="4yI-Fp-odA"/>
-                                                            <action selector="nextTapped:" destination="XPY-Ro-POv" eventType="touchUpInside" id="ohr-yv-XHh"/>
+                                                            <action selector="nextTapped:" destination="el0-8u-KP9" eventType="touchUpInside" id="pdq-JR-c4t"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>
@@ -812,12 +850,17 @@
                     <navigationItem key="navigationItem" title="Enter Details" id="0Ui-N6-w8X"/>
                     <connections>
                         <outlet property="allergenTextField" destination="9wO-c8-ueX" id="l3h-iO-1qq"/>
+                        <outlet property="categoryErrorLabel" destination="2tz-bw-cV0" id="9Cl-L2-uAX"/>
                         <outlet property="categoryTextField" destination="Ove-Tt-FO3" id="aE0-yH-A2q"/>
                         <outlet property="descriptionTextView" destination="26r-rd-5TM" id="7Lg-7G-7UE"/>
+                        <outlet property="expiryErrorLabel" destination="Zet-wp-Bkk" id="9B4-Rj-UfY"/>
                         <outlet property="expiryTextField" destination="oP8-19-qJh" id="EPw-Xl-TD8"/>
+                        <outlet property="foodItemErrorLabel" destination="v5r-PU-NXd" id="zMr-4K-uVs"/>
                         <outlet property="foodItemTextField" destination="x0x-ai-8DU" id="1gJ-9J-qaX"/>
                         <outlet property="nextButton" destination="e3M-zG-Ktq" id="RBB-n4-wQb"/>
+                        <outlet property="packagingErrorLabel" destination="gAu-uL-MLc" id="1Nd-3J-fom"/>
                         <outlet property="packagingTextField" destination="Kki-N1-dVW" id="s3C-o4-kW6"/>
+                        <outlet property="quantityErrorLabel" destination="feG-uE-Svg" id="Kj9-Kw-QIR"/>
                         <outlet property="quantityTextField" destination="Odf-AY-Izg" id="9RF-Iq-9v8"/>
                         <outlet property="scrollView" destination="BAT-dM-k9e" id="bWg-sj-Sp7"/>
                     </connections>

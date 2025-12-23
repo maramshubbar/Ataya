@@ -11,11 +11,11 @@ class AddFoodDonationViewController: UIViewController{
     var draft = DraftDonation()
     
     //Still not checked this method
-    @IBAction func nextTapped(_ sender: UIButton) {
-            // save Add Food fields into draft here...
-
-            performSegue(withIdentifier: "toUploadPhotos", sender: nil)
-        }
+//    @IBAction func nextTapped(_ sender: UIButton) {
+//            // save Add Food fields into draft here...
+//
+//            performSegue(withIdentifier: "toUploadPhotos", sender: nil)
+//        }
 
         override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
             if segue.identifier == "toUploadPhotos",
@@ -30,8 +30,7 @@ class AddFoodDonationViewController: UIViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        setupCards()
-        // Do any additional setup after loading the view.
+        setupCards()
     }
     
     func setupCards() {

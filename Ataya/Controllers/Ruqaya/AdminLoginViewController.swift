@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class AdminLoginViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
@@ -68,6 +69,18 @@ class AdminLoginViewController: UIViewController, UIImagePickerControllerDelegat
 
 
     }
+    
+    
+    func showAlert(title: String, message: String) {
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+
     
     
     @objc private func forgotPasswordTapped() {
@@ -170,7 +183,7 @@ class AdminLoginViewController: UIViewController, UIImagePickerControllerDelegat
         }
 
         private func addEyeButton(to textField: UITextField, selector: Selector) {
-            // ✅ امسحي أي rightView قديم
+
             textField.rightView = nil
             textField.rightViewMode = .never
 
@@ -280,24 +293,52 @@ class AdminLoginViewController: UIViewController, UIImagePickerControllerDelegat
 
         // MARK: - Login Action
         @IBAction func loginPressed(_ sender: UIButton) {
-            let p1 = passwordTextField.text ?? ""
-            let p2 = confirmPasswordTextField.text ?? ""
+                let email = (emailTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                let password = passwordTextField.text ?? ""
+                let confirm = confirmPasswordTextField.text ?? ""
 
-            guard !p1.isEmpty, !p2.isEmpty else {
-                print("Fill both password fields")
-                return
+                // 1) Validation
+                guard !email.isEmpty else {
+                    showAlert(title: "Missing Email", message: "Please enter your email.")
+                    return
+                }
+
+                guard !password.isEmpty else {
+                    showAlert(title: "Missing Password", message: "Please enter your password.")
+                    return
+                }
+
+                guard !confirm.isEmpty else {
+                    showAlert(title: "Missing Confirm Password", message: "Please confirm your password.")
+                    return
+                }
+
+                guard password == confirm else {
+                    showAlert(title: "Password Mismatch", message: "Passwords do not match.")
+                    return
+                }
+
+                // 2) Firebase Login
+                Auth.auth().signIn(withEmail: email, password: password) { [weak self] result, error in
+                    if let error = error {
+                        self?.showAlert(title: "Login Failed", message: error.localizedDescription)
+                        return
+                    }
+
+                    // 3) Remember Me (اختياري)
+                    if self?.isRememberChecked == true, let uid = result?.user.uid {
+                        UserDefaults.standard.set(uid, forKey: "admin_uid")
+                    } else {
+                        UserDefaults.standard.removeObject(forKey: "admin_uid")
+                    }
+
+                    // 4) Navigation
+                    self?.performSegue(withIdentifier: "toAdminHome", sender: nil)
+                }
             }
 
-            guard passwordsMatch() else {
-                print("Passwords do not match")
-                return
-            }
-
-            guard loginButton.isEnabled else { return }
-
-            print("Admin Login tapped")
-        }
     
+  
     
     @IBAction func rememberCheckTapped(_ sender: UIButton) {
         isRememberChecked.toggle()

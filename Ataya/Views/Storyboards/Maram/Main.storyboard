@@ -974,15 +974,6 @@
                                                     </label>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kIf-ug-Qms" userLabel="vwLineChartContainer">
                                                         <rect key="frame" x="0.0" y="212.33333333333331" width="408" height="180"/>
-                                                        <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Chart Placeholder" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="g4j-Tm-wUx" userLabel="Chart Placeholder">
-                                                                <rect key="frame" x="136" y="80" width="137" height="21"/>
-                                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                                <nil key="textColor"/>
-                                                                <nil key="highlightedColor"/>
-                                                            </label>
-                                                        </subviews>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="180" id="Bca-3f-Izd"/>
@@ -1197,6 +1188,10 @@
                     </view>
                     <navigationItem key="navigationItem" title="Analytics" id="1tg-52-LfN"/>
                     <connections>
+                        <outlet property="chartContainer" destination="kIf-ug-Qms" id="lPj-wA-0oZ"/>
+                        <outlet property="lblRegisteredUsers" destination="0tZ-IZ-NPk" id="Oao-uK-UIH"/>
+                        <outlet property="lblTotalDonations" destination="G0q-UR-CXF" id="DqS-LW-MME"/>
+                        <outlet property="lblVerifiedNGOs" destination="UHB-9E-t0j" id="n6n-c9-pJk"/>
                         <outlet property="segListFilter" destination="4SJ-OG-kEf" id="oBg-u8-D53"/>
                         <outlet property="tblCountries" destination="rLh-gc-Az9" id="Acd-kz-FlD"/>
                         <outlet property="tblList" destination="UfQ-ia-pg3" id="Cwh-mb-Oq6"/>

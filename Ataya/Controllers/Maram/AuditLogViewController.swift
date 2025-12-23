@@ -37,7 +37,7 @@ final class AuditLogViewController: UIViewController, UITableViewDataSource, UIT
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // SearchBar UI (مثل كودج)
+        // SearchBar UI
         searchBar.backgroundImage = UIImage()
         searchBar.searchBarStyle = .minimal
         if let searchField = searchBar.value(forKey: "searchField") as? UITextField {
@@ -57,15 +57,28 @@ final class AuditLogViewController: UIViewController, UITableViewDataSource, UIT
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 160
 
+        // ✅ يخلي الكيبورد يختفي لما يسحبون
+        tableView.keyboardDismissMode = .onDrag
+
         // Register XIB
         let nib = UINib(nibName: "AuditLogTableViewCell", bundle: nil)
         tableView.register(nib, forCellReuseIdentifier: "AuditLogTableViewCell")
 
         // Segment change (بدون توصيل IBAction)
         filterSegment.addTarget(self, action: #selector(filterChanged), for: .valueChanged)
+    }
 
-        // ابدأ اسمع الداتا
+    // ✅ شغلي الليسنر لما الصفحة تظهر
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         startListening()
+    }
+
+    // ✅ وقفي الليسنر لما الصفحة تختفي (عشان ما يظل يقرأ بالخلفية)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        listener?.remove()
+        listener = nil
     }
 
     deinit {
@@ -74,6 +87,10 @@ final class AuditLogViewController: UIViewController, UITableViewDataSource, UIT
 
     // MARK: - Firestore Listener
     private func startListening() {
+        // ✅ امنعي تكرار listeners
+        listener?.remove()
+        listener = nil
+
         // ترتيب حسب createdAt (الأحدث فوق)
         listener = db.collection("audit_logs")
             .order(by: "createdAt", descending: true)
@@ -125,11 +142,12 @@ final class AuditLogViewController: UIViewController, UITableViewDataSource, UIT
 
     private func applyFiltersAndReload() {
         let selectedCategory = categoryFromSegmentIndex(filterSegment.selectedSegmentIndex)
-        let searchText = (searchBar.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let searchText = (searchBar.text ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
 
         var items = allItems
 
-        // hookup if you need to show All and filter by segment index.
         if selectedCategory != "All" {
             items = items.filter { $0.category.caseInsensitiveCompare(selectedCategory) == .orderedSame }
         }
@@ -161,12 +179,12 @@ final class AuditLogViewController: UIViewController, UITableViewDataSource, UIT
     }
 
     private func formatDate(_ date: Date) -> String {
-        return Self.dateFormatter.string(from: date)
+        Self.dateFormatter.string(from: date)
     }
 
     // MARK: - Table View Data
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return shownItems.count
+        shownItems.count
     }
 
     func tableView(_ tableView: UITableView,
@@ -194,7 +212,6 @@ final class AuditLogViewController: UIViewController, UITableViewDataSource, UIT
 // MARK: - UISearchBarDelegate
 extension AuditLogViewController: UISearchBarDelegate {
 
-    // ✅ عشان يظهر زر Cancel
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         searchBar.showsCancelButton = true
     }

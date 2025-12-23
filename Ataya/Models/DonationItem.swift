@@ -17,9 +17,19 @@ struct DonationItem {
     let status: Status
 
     enum Status: String {
-        case pending = "Pending"
-        case approved = "Approved"
-        case rejected = "Rejected"
+        case pending
+        case approved
+        case rejected
+
+        // للعرض في UI
+        var displayText: String {
+            switch self {
+            case .pending: return "Pending"
+            case .approved: return "Approved"
+            case .rejected: return "Rejected"
+            }
+        }
     }
 }
+
 

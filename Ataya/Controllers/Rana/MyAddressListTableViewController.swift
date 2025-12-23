@@ -2,6 +2,7 @@ import UIKit
 
 // MARK: - In-memory ONLY store (resets when app closes)
 final class AddressRuntimeStore {
+    var confirmedAddress: AddressModel? = nil
     static let shared = AddressRuntimeStore()
     private init() {}
 
@@ -17,6 +18,11 @@ final class AddressRuntimeStore {
             guard addresses.count < 2 else { return }
             addresses.append(address)
         }
+    }
+    
+    func selectedAddress() -> AddressModel? {
+        guard let idx = selectedIndex, idx >= 0, idx < addresses.count else { return nil }
+        return addresses[idx]
     }
 }
 
@@ -93,9 +99,18 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
     // MARK: - Actions
 
     @IBAction func confirmTapped(_ sender: UIButton) {
-        guard let idx = store.selectedIndex, idx < store.addresses.count else { return }
-        showEndPopup(for: store.addresses[idx])
+        guard let address = store.selectedAddress() else {
+            showAlert("Select Address", "Please select an address first.")
+            return
+        }
+
+        // ✅ Save confirmed address for END flow
+        store.confirmedAddress = address
+
+        // ✅ Go back to previous screen (Pickup Location screen)
+        navigationController?.popViewController(animated: true)
     }
+
 
     @IBAction func addNewAddressTapped(_ sender: UIButton) {
         guard store.canAddNew() else {

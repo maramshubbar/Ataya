@@ -14,8 +14,8 @@ class MyAddressListViewController: UIViewController {
     @IBOutlet weak var myAddressButton: UIButton!
     @IBOutlet weak var ngoButton: UIButton!
     @IBOutlet weak var nextButton: UIButton!
-    
-    
+    private let store = AddressRuntimeStore.shared
+
     private enum Choice {
             case myAddress
             case ngo
@@ -115,26 +115,39 @@ class MyAddressListViewController: UIViewController {
             nextButton.isEnabled = enabled
             nextButton.alpha = enabled ? 1.0 : 0.5
         }
+    
+    private func presentThankYouPopup() {
+        let sb = UIStoryboard(name: "Main", bundle: nil)
+        guard let popup = sb.instantiateViewController(withIdentifier: "PopupConfirmPickupViewController") as? PopupConfirmPickupViewController else {
+            showAlert(title: "Storyboard Error", message: "Set Popup Storyboard ID = PopupConfirmPickupViewController")
+            return
+        }
+        popup.modalPresentationStyle = .overFullScreen
+        popup.modalTransitionStyle = .crossDissolve
+        present(popup, animated: true)
+    }
+
 
         // Connect this in storyboard if you want, OR addTarget like the others.
-        @IBAction func nextTapped(_ sender: UIButton) {
-            guard let selectedChoice else {
-                showAlert(title: "Choose an option", message: "Please select My Address or NGO Drop-off Facility.")
-                return
-            }
-
-            switch selectedChoice {
-            case .ngo:
-                showAlert(title: "NGO Selected", message: "You chose NGO Drop-off Facility. This flow ends here.")
-                // You can pop/dismiss here if needed:
-                // navigationController?.popViewController(animated: true)
-
-            case .myAddress:
-                // Continue flow (put your segue identifier)
-                // performSegue(withIdentifier: "toAddressDetails", sender: nil)
-                showAlert(title: "My Address Selected", message: "You chose My Address. Continue to the next screen.")
-            }
+    @IBAction func nextTapped(_ sender: UIButton) {
+        guard let selectedChoice else {
+            showAlert(title: "Choose an option", message: "Please select My Address or NGO Drop-off Facility.")
+            return
         }
+
+        guard store.confirmedAddress != nil else {
+            showAlert(title: "Confirm Address First", message: "Please choose an address and press Confirm first.")
+            return
+        }
+
+        switch selectedChoice {
+        case .ngo:
+            presentThankYouPopup()
+        case .myAddress:
+            showAlert(title: "Done", message: "Address confirmed. Continue flow.")
+        }
+    }
+
 
         // MARK: - Hover / Press
 

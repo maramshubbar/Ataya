@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import FirebaseAuth
+
 
 class ForgotPasswordViewController: UIViewController {
 
@@ -28,6 +30,11 @@ class ForgotPasswordViewController: UIViewController {
         
     }
     
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
 
     
     private func setupButton() {
@@ -66,13 +73,29 @@ class ForgotPasswordViewController: UIViewController {
         @IBAction func sendCodePressed(_ sender: UIButton) {
             guard sendCodeButton.isEnabled else { return }
 
-            let email = (emailTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-            print("Send code to: \(email)")
-            // لاحقاً: Firebase reset password / send code
+                let email = (emailTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+
+
+            sendCodeButton.isEnabled = false
+                sendCodeButton.alpha = 0.5
+
+                Auth.auth().sendPasswordReset(withEmail: email) { [weak self] error in
+                    guard let self = self else { return }
+
+                    if let error = error {
+                        self.showAlert(title: "Error", message: error.localizedDescription)
+                        self.updateButtonState()
+                        return
+                    }
+
+                    self.showAlert(title: "Email Sent", message: "Check your email to reset your password.")
+
+
+                }
         }
     
     
-    
+  
     /*
     // MARK: - Navigation
 

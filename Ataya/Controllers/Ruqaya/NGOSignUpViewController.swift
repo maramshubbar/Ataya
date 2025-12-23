@@ -44,6 +44,9 @@ class NGOSignUpViewController: UIViewController {
     private var isConfirmPasswordVisible = false
     private var isTermsChecked = false
     
+    private var isSigningUp = false
+
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,12 +61,25 @@ class NGOSignUpViewController: UIViewController {
         setupLoginLabel()
         updateTermsUI()
         
+        updateSignUpButtonState()
+
 
         let tap = UITapGestureRecognizer(target: self, action: #selector(loginTapped))
         loginLabel.isUserInteractionEnabled = true
         loginLabel.addGestureRecognizer(tap)
 
     }
+    
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+
     
 
     @objc private func loginTapped() {
@@ -96,6 +112,8 @@ class NGOSignUpViewController: UIViewController {
                styleTextField(tf)
                tf.addTarget(self, action: #selector(textFieldFocused(_:)), for: .editingDidBegin)
                tf.addTarget(self, action: #selector(textFieldUnfocused(_:)), for: .editingDidEnd)
+               tf.addTarget(self, action: #selector(textChanged(_:)), for: .editingChanged)
+
            }
 
            passwordTextField.isSecureTextEntry = true
@@ -227,25 +245,121 @@ class NGOSignUpViewController: UIViewController {
                termsCheckButton.layer.borderColor = UIColor.systemGray4.cgColor
            }
 
-           signUpButton.isEnabled = isTermsChecked
-           signUpButton.alpha = isTermsChecked ? 1.0 : 0.5
+
        }
 
        // MARK: - Actions
        @IBAction func termsCheckTapped(_ sender: UIButton) {
            isTermsChecked.toggle()
            updateTermsUI()
+           updateSignUpButtonState()
        }
 
 
     
     @IBAction func signUpTapped(_ sender: UIButton) {
         
-        performSegue(withIdentifier: "ngoToOrgDetailsSegue", sender: self)
+        let name = (nameTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let phone = (phoneTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let email = (emailTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let password = passwordTextField.text ?? ""
+        let confirm = confirmPasswordTextField.text ?? ""
+
+        guard isTermsChecked else {
+            showAlert(title: "Terms Required", message: "Please accept Terms & Privacy to continue.")
+            return
+        }
+
+        guard !name.isEmpty else {
+            showAlert(title: "Missing NGO Name", message: "Please enter NGO name.")
+            return
+        }
+
+        guard !email.isEmpty else {
+            showAlert(title: "Missing Email", message: "Please enter your email.")
+            return
+        }
+
+        guard !phone.isEmpty else {
+            showAlert(title: "Missing Phone", message: "Please enter your phone number.")
+            return
+        }
+
+        guard password.count >= 6 else {
+            showAlert(title: "Weak Password", message: "Password must be at least 6 characters.")
+            return
+        }
+
+        guard password == confirm else {
+            showAlert(title: "Password Mismatch", message: "Passwords do not match.")
+            return
+        }
+
+        if isSigningUp { return }
+        guard signUpButton.isEnabled else { return }
+
+    
+        
+        isSigningUp = true
+        signUpButton.isEnabled = false
+        signUpButton.alpha = 0.5
+
+        Auth.auth().createUser(withEmail: email, password: password) { [weak self] result, error in
+            if let error = error {
+                
+                self?.showAlert(title: "Sign Up Failed", message: error.localizedDescription)
+                self?.isSigningUp = false
+                self?.updateSignUpButtonState()
+
+                return
+            }
+
+            self?.isSigningUp = false
+            self?.performSegue(withIdentifier: "ngoToOrgDetailsSegue", sender: nil)
+        }
 
 
     }
     
+    
+    @objc private func textChanged(_ sender: UITextField) {
+        updatePasswordMatchUI()
+        updateSignUpButtonState()    }
+
+    private func updateSignUpButtonState() {
+        if isSigningUp { return }
+
+        let name = (nameTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let email = (emailTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let phone = (phoneTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let p1 = passwordTextField.text ?? ""
+        let p2 = confirmPasswordTextField.text ?? ""
+
+        let isValid =
+            isTermsChecked &&
+            !name.isEmpty &&
+            !email.isEmpty &&
+            !phone.isEmpty &&
+            !p1.isEmpty &&
+            (p1 == p2)
+
+        signUpButton.isEnabled = isValid
+        signUpButton.alpha = isValid ? 1.0 : 0.5
+    }
+
+    private func updatePasswordMatchUI() {
+        let p1 = passwordTextField.text ?? ""
+        let p2 = confirmPasswordTextField.text ?? ""
+
+        if p2.isEmpty {
+            confirmPasswordTextField.layer.borderColor = UIColor.systemGray4.cgColor
+            return
+        }
+
+        confirmPasswordTextField.layer.borderColor =
+            (p1 == p2) ? UIColor.systemGreen.cgColor : UIColor.systemRed.cgColor
+    }
+
     
     /*
     // MARK: - Navigation

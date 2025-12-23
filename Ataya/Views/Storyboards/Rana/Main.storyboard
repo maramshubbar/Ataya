@@ -388,7 +388,6 @@
                         <outlet property="streettxt" destination="v9v-gc-fIY" id="UIV-Nl-pgh"/>
                         <outlet property="twobuttonView" destination="MS0-Ro-gwe" id="1Nh-Xo-1L4"/>
                         <outlet property="viewLocationtxt" destination="9FD-cs-RWi" id="9WS-FF-zUc"/>
-                        <segue destination="6Ey-Fs-w2Y" kind="push" id="jbM-rn-Abp"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MLk-Zx-8zt" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -524,6 +523,12 @@
                                                 <buttonConfiguration key="configuration" style="plain" title="Confirm">
                                                     <fontDescription key="titleFontDescription" type="system" weight="medium" pointSize="16"/>
                                                 </buttonConfiguration>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                        <integer key="value" value="8"/>
+                                                    </userDefinedRuntimeAttribute>
+                                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                                </userDefinedRuntimeAttributes>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kcl-wR-ydx">
                                                 <rect key="frame" x="190" y="0.0" width="180" height="54"/>
@@ -537,6 +542,12 @@
                                                 <buttonConfiguration key="configuration" style="plain" title="Add New Address">
                                                     <fontDescription key="titleFontDescription" type="system" weight="medium" pointSize="16"/>
                                                 </buttonConfiguration>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                        <integer key="value" value="8"/>
+                                                    </userDefinedRuntimeAttribute>
+                                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                                </userDefinedRuntimeAttributes>
                                             </button>
                                         </subviews>
                                     </stackView>
@@ -554,7 +565,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="169" id="zWO-g3-JJg" customClass="AddressCardCell" customModule="Ataya" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="169" id="zWO-g3-JJg" customClass="AddressCell">
                                         <rect key="frame" x="0.0" y="50" width="440" height="169"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="zWO-g3-JJg" id="h5s-c9-Cdi">
@@ -564,20 +575,14 @@
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IrS-wy-AmP">
                                                     <rect key="frame" x="36" y="8" width="368" height="149"/>
                                                     <subviews>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Home Address" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Pk-Yw-AdC">
-                                                            <rect key="frame" x="18.999999999999993" y="7.9999999999999982" width="109.33333333333331" height="19.333333333333329"/>
-                                                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
-                                                            <nil key="textColor"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="Flat 24, Round 125, Block 314" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="peY-YV-Gtb">
-                                                            <rect key="frame" x="19" y="35.333333333333336" width="191" height="17"/>
+                                                            <rect key="frame" x="19" y="49.333333333333336" width="191" height="17.000000000000007"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
-                                                        <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cbg-lR-0aW">
-                                                            <rect key="frame" x="19" y="88" width="92" height="42"/>
+                                                        <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cbg-lR-0aW">
+                                                            <rect key="frame" x="14" y="93" width="92" height="42"/>
                                                             <color key="backgroundColor" name="AccentColor"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="42" id="0ln-Ij-urr"/>
@@ -590,13 +595,19 @@
                                                                 <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             </buttonConfiguration>
                                                         </button>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Home Address" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Pk-Yw-AdC">
+                                                            <rect key="frame" x="18.999999999999993" y="22" width="109.33333333333331" height="19.333333333333329"/>
+                                                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
                                                     </subviews>
                                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                     <constraints>
                                                         <constraint firstItem="peY-YV-Gtb" firstAttribute="leading" secondItem="8Pk-Yw-AdC" secondAttribute="leading" id="Mcp-45-Mx3"/>
                                                         <constraint firstAttribute="bottom" secondItem="Cbg-lR-0aW" secondAttribute="bottom" constant="19" id="aAX-W8-L6Z"/>
                                                         <constraint firstItem="peY-YV-Gtb" firstAttribute="top" secondItem="8Pk-Yw-AdC" secondAttribute="bottom" constant="8" id="d2n-fI-Jzm"/>
-                                                        <constraint firstItem="8Pk-Yw-AdC" firstAttribute="top" secondItem="IrS-wy-AmP" secondAttribute="topMargin" id="dfZ-v4-hoC"/>
+                                                        <constraint firstItem="8Pk-Yw-AdC" firstAttribute="top" secondItem="IrS-wy-AmP" secondAttribute="topMargin" constant="14" id="dfZ-v4-hoC"/>
                                                         <constraint firstAttribute="bottom" secondItem="Cbg-lR-0aW" secondAttribute="bottom" constant="19" id="orO-nd-oEw"/>
                                                         <constraint firstItem="8Pk-Yw-AdC" firstAttribute="leading" secondItem="IrS-wy-AmP" secondAttribute="leading" constant="19" id="vzh-Fw-R3b"/>
                                                     </constraints>
@@ -637,12 +648,27 @@
                     <connections>
                         <outlet property="addNewAddressButton" destination="Kcl-wR-ydx" id="SZT-on-Qen"/>
                         <outlet property="confirmButton" destination="mjN-4T-Zle" id="YcO-lc-KE3"/>
-                        <outlet property="tabelView" destination="093-qg-YgZ" id="4oN-Ue-2vk"/>
+                        <outlet property="tableView" destination="093-qg-YgZ" id="zWU-8R-sOi"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hEX-LN-5b1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3724" y="840"/>
+            <point key="canvasLocation" x="3724" y="719"/>
+        </scene>
+        <!--Popup Confim Pickup View Controller-->
+        <scene sceneID="TQ7-zK-cpi">
+            <objects>
+                <viewController storyboardIdentifier="PopupConfimPickupViewController" id="SsX-hs-7OU" customClass="PopupConfimPickupViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="jDS-0i-4st">
+                        <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="bO3-J9-hz5"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Nl1-Ka-j2q" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2823" y="719"/>
         </scene>
     </scenes>
     <resources>

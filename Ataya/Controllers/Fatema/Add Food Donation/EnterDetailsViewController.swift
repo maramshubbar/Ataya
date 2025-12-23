@@ -265,6 +265,12 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
         draft.notes = descriptionTextView.text.trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        syncDraftFromUI()
+    }
+
+    
     // Then i connect to rana's page
     //    @IBAction func nextTapped(_ sender: UIButton) {
     //        syncDraftFromUI()

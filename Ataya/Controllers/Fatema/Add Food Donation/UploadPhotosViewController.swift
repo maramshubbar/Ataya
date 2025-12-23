@@ -34,18 +34,19 @@ class UploadPhotosViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        // temporary to prevent crashes
+        if draft == nil { draft = DraftDonation() }
+        selectedImages = draft.images
+        
+        helperOriginalText = helperLabel.text ?? ""
+        helperLabel.isHidden = true
         
         styleCard()
         addTapToUploadArea()
         styleNextButtonIfNeeded()
         updateUI()
         
-        // temporary to prevent crashes
-        if draft == nil { draft = DraftDonation() }
-        selectedImages = draft.images
-        
-        helperOriginalText = helperLabel.text ?? ""
-
     }
     
     override func viewDidLayoutSubviews() {
@@ -97,12 +98,12 @@ class UploadPhotosViewController: UIViewController {
         nextButton.alpha = hasPhotos ? 1.0 : 0.5
 
         if hasPhotos {
+            helperLabel.isHidden = false
             let word = (count == 1) ? "photo" : "photos"
             helperLabel.textColor = .systemGreen
             helperLabel.text = "\(count) \(word) uploaded successfully."
         } else {
-            helperLabel.textColor = .secondaryLabel
-            helperLabel.text = helperOriginalText
+            helperLabel.isHidden = true
         }
     }
     

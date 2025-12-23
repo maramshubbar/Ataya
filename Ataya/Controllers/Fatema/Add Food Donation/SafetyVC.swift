@@ -43,7 +43,6 @@ final class SafetyVC: UIViewController {
 
     @IBAction func nextTapped(_ sender: UIButton) {
         guard isConfirmed else { return }
-        performSegue(withIdentifier: "toEnterDetails", sender: self)
     }
     
     // MARK: - Segue

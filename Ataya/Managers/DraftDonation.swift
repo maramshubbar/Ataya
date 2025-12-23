@@ -9,7 +9,7 @@ final class DraftDonation{
 
     // MARK: - Details
     var itemName: String = ""
-    var quantity: Int = 0
+    var quantity: String = ""
     var expiryDate: Date? = nil
     var category: String = ""
     var allergenInfo: String = ""

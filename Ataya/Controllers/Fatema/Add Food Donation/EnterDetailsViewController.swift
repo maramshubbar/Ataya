@@ -17,7 +17,8 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
     @IBOutlet weak var allergenTextField: UITextField!
     @IBOutlet weak var packagingTextField: UITextField!
     @IBOutlet weak var descriptionTextView: UITextView!
-    
+    @IBOutlet weak var foodItemTextField: UITextField!
+    @IBOutlet weak var quantityTextField: UITextField!
     // Expiry: UIDatePicker
     private let expiryDatePicker = UIDatePicker()
     private let expiryFormatter: DateFormatter = {
@@ -247,6 +248,10 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
     
     private func syncDraftFromUI() {
         
+        draft.itemName = (foodItemTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        draft.quantity = (quantityTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+
+    
         // Expiry
         let expiryText = (expiryTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         draft.expiryDate = expiryText.isEmpty ? nil : expiryDatePicker.date
@@ -275,28 +280,6 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
     //        }
     //    }
     
-    // For now
-    @IBAction func nextTapped(_ sender: UIButton) {
-        print("✅ Next tapped")
-        syncDraftFromUI()
-        
-        view.endEditing(true)
-        
-        let alert = UIAlertController(
-            title: "Thank You",
-            message: "Your pickup request has been scheduled successfully.",
-            preferredStyle: .alert
-        )
-        
-        alert.addAction(UIAlertAction(title: "Give Feedback", style: .default, handler: { _ in
-            // later: navigate to feedback
-        }))
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) { [weak self] in
-            guard let self = self, self.view.window != nil else { return }
-            self.present(alert, animated: true)
-        }
-    }
     
 }
     // MARK: - UIPickerView Delegate/DataSource (Dropdowns)

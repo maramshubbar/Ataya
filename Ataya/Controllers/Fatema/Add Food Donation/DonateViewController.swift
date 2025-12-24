@@ -10,6 +10,7 @@ final class DonateViewController: UIViewController {
     @IBOutlet weak var giftOfMercyCardView: UIView!
     
     var onSelect: ((DonateOption) -> Void)?
+    var onClose: (() -> Void)? 
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,8 +35,9 @@ final class DonateViewController: UIViewController {
             advocacyCardView,
             giftOfMercyCardView
         ]
-        
+
         cards.forEach { styleCard($0) }
+
         
         addTap(foodDonationCardView, action: #selector(foodTapped))
         addTap(basketDonationCardView, action: #selector(basketTapped))
@@ -67,32 +69,38 @@ final class DonateViewController: UIViewController {
     
     // MARK: - Close
     @objc private func close() {
-        // هذا بس للـ X
-        dismiss(animated: true)
+        dismiss(animated: true) { [weak self] in
+            self?.onClose?()
+        }
     }
     
-    // MARK: - Helpers
+    // MARK: - Selection
     private func didPick(_ option: DonateOption) {
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
-        
-        // ✅ لا تسوين dismiss هنا نهائياً
-        // بس رجّعي الخيار… TabBarController هو اللي بيسكر الشيت ويفتح الصفحة
         onSelect?(option)
     }
     
+    // MARK: - Helpers
     private func addTap(_ view: UIView, action: Selector) {
         view.isUserInteractionEnabled = true
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: action))
     }
     
     private func styleCard(_ card: UIView) {
-        card.layer.cornerRadius = 16
+
+        card.layer.cornerRadius = 24
         card.layer.masksToBounds = false
+
+        card.layer.borderWidth = 0.0
+        card.layer.borderColor = UIColor.clear.cgColor
+
         card.layer.shadowColor = UIColor.black.cgColor
-        card.layer.shadowOpacity = 0.08
-        card.layer.shadowOffset = CGSize(width: 0, height: 6)
-        card.layer.shadowRadius = 14
+        card.layer.shadowOpacity = 0.16
+        card.layer.shadowOffset = CGSize(width: 0, height: 3)
+        card.layer.shadowRadius = 6
     }
+
+
     
     // MARK: - Actions
     @objc private func foodTapped()      { didPick(.food) }
@@ -101,4 +109,15 @@ final class DonateViewController: UIViewController {
     @objc private func campaignsTapped() { didPick(.campaigns) }
     @objc private func advocacyTapped()  { didPick(.advocacy) }
     @objc private func giftTapped()      { didPick(.giftOfMercy) }
+}
+
+    // MARK: - Find first UIImageView inside card
+private extension UIView {
+    func findFirstImageView() -> UIImageView? {
+        if let iv = self as? UIImageView { return iv }
+        for sub in subviews {
+            if let found = sub.findFirstImageView() { return found }
+        }
+        return nil
+    }
 }

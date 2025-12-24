@@ -9,5 +9,10 @@
 import Foundation
 
 enum DonateOption {
-    case food, basket, funds, campaigns, advocacy, giftOfMercy
+    case food
+    case basket
+    case funds
+    case campaigns
+    case advocacy
+    case giftOfMercy
 }

@@ -46,7 +46,6 @@ class OTPVerificationViewController: UIViewController, UITextFieldDelegate {
         styleResendLabel()
         otp1.becomeFirstResponder()
         updateVerifyState()
-        fields.forEach { $0.translatesAutoresizingMaskIntoConstraints = true }
 
 
     }
@@ -161,10 +160,8 @@ class OTPVerificationViewController: UIViewController, UITextFieldDelegate {
     
     
     @IBAction func verifyTapped(_ sender: UIButton) {
-        guard verifyButton.isEnabled else { return }
-        let otp = fields.compactMap { $0.text }.joined()
-        // هنا تحطين تحقق الـ OTP (Firebase / API)
-        print("OTP:", otp)
+        showAlert(title: "Check Email", message: "We sent you a reset link. Open your email and reset your password, then log in.")
+
         
         
     }

@@ -26,7 +26,7 @@ class PasswordChangedViewController: UIViewController {
         view.backgroundColor = UIColor.black.withAlphaComponent(0.35)
 
         
-        cardView.layer.cornerRadius = 16
+        cardView.layer.cornerRadius = 8
         cardView.clipsToBounds = true
 
         let tap = UITapGestureRecognizer(target: self, action: #selector(backgroundTapped(_:)))

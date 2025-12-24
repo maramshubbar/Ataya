@@ -19,7 +19,7 @@ final class AddressRuntimeStore {
             addresses.append(address)
         }
     }
-    
+
     func selectedAddress() -> AddressModel? {
         guard let idx = selectedIndex, idx >= 0, idx < addresses.count else { return nil }
         return addresses[idx]
@@ -41,8 +41,13 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
     @IBOutlet weak var addNewAddressButton: UIButton!
 
     private let store = AddressRuntimeStore.shared
+
+    // Selected colors (keep your originals)
     private let yellow = UIColor(hex: "#FEC400")
     private let yellowBG = UIColor(hex: "#FFFBE7")
+
+    // Unselected border
+    private let grayBorder = UIColor(hex: "#B8B8B8")
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -61,13 +66,16 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
         addNewAddressButton.removeTarget(nil, action: nil, for: .touchUpInside)
         addNewAddressButton.addTarget(self, action: #selector(addNewProgrammatic), for: .touchUpInside)
 
+        // ✅ FORCE Confirm button to work even if storyboard IBAction not connected
+        confirmButton.removeTarget(nil, action: nil, for: .allEvents)
+        confirmButton.addTarget(self, action: #selector(confirmTappedProgrammatic), for: .touchUpInside)
+
         // ✅ Figma style: rounded yellow border around Add New Address
         styleAddNewAddressButton()
 
         updateButtons()
         tableView.reloadData()
     }
-
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -79,10 +87,9 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
         addNewAddressButton.backgroundColor = .clear
         addNewAddressButton.setTitleColor(yellow, for: .normal)
         addNewAddressButton.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
-
         addNewAddressButton.layer.borderWidth = 2
         addNewAddressButton.layer.borderColor = yellow.cgColor
-        addNewAddressButton.layer.cornerRadius = 8   // ✅ FIXED: radius = 8
+        addNewAddressButton.layer.cornerRadius = 8
         addNewAddressButton.clipsToBounds = true
     }
 
@@ -99,18 +106,18 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
     // MARK: - Actions
 
     @IBAction func confirmTapped(_ sender: UIButton) {
+        confirmTappedProgrammatic()
+    }
+
+    @objc private func confirmTappedProgrammatic() {
         guard let address = store.selectedAddress() else {
             showAlert("Select Address", "Please select an address first.")
             return
         }
 
-        // ✅ Save confirmed address for END flow
         store.confirmedAddress = address
-
-        // ✅ Go back to previous screen (Pickup Location screen)
-        navigationController?.popViewController(animated: true)
+        presentThankYouPopup()
     }
-
 
     @IBAction func addNewAddressTapped(_ sender: UIButton) {
         guard store.canAddNew() else {
@@ -126,16 +133,39 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
 
     @objc private func editTapped(_ sender: UIButton) {
         let row = sender.tag - 1000
-
-        // ✅ Select it first (so highlight updates)
         store.selectedIndex = row
         tableView.reloadData()
         updateButtons()
-
         openDetailsForEdit(row)
     }
 
-    // MARK: - Open Details (NO SEGUES — always works)
+    // MARK: - Popup
+
+    private func presentThankYouPopup() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+
+            guard let sb = self.storyboard else {
+                self.showAlert("Storyboard Error", "This screen is not inside a storyboard.")
+                return
+            }
+
+            guard let popup = sb.instantiateViewController(withIdentifier: "PopupConfirmPickupViewController")
+                    as? PopupConfirmPickupViewController else {
+                self.showAlert("Storyboard Error", "Storyboard ID must be PopupConfirmPickupViewController")
+                return
+            }
+
+            popup.isModalInPresentation = true
+            popup.modalPresentationStyle = .overFullScreen
+            popup.modalTransitionStyle = .crossDissolve
+            popup.onDone = { }
+
+            self.present(popup, animated: true)
+        }
+    }
+
+    // MARK: - Open Details
 
     private func openDetailsForAdd() {
         guard let vc = storyboard?.instantiateViewController(withIdentifier: "MyAddressDetailsViewController") as? MyAddressDetailsViewController else {
@@ -210,10 +240,28 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
         let card = UIView()
         card.tag = 999
         card.translatesAutoresizingMaskIntoConstraints = false
+
+        // ✅ Round shape
         card.layer.cornerRadius = 12
+        card.layer.masksToBounds = false   // IMPORTANT for shadow
+
+        // ✅ Border + BG depending on selected
         card.layer.borderWidth = 2
-        card.layer.borderColor = yellow.cgColor
-        card.backgroundColor = isSelected ? yellowBG : .white
+        card.layer.borderColor = (isSelected ? yellow : grayBorder).cgColor
+        card.backgroundColor = (isSelected ? yellowBG : .white)
+
+        // ✅ Drop shadow (light)
+        card.layer.shadowColor = UIColor.black.cgColor
+        card.layer.shadowOpacity = 0.10
+        card.layer.shadowRadius = 6
+        card.layer.shadowOffset = CGSize(width: 0, height: 2)
+
+        // ✅ Hover/press effect targets
+        let press = UILongPressGestureRecognizer(target: self, action: #selector(cardPressGesture(_:)))
+        press.minimumPressDuration = 0
+        press.cancelsTouchesInView = false
+        card.addGestureRecognizer(press)
+        card.isUserInteractionEnabled = true
 
         cell.contentView.addSubview(card)
 
@@ -280,19 +328,32 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
             editButton.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -14)
         ])
 
+        // ✅ Improve shadow path (performance + crisp)
+        card.layoutIfNeeded()
+        card.layer.shadowPath = UIBezierPath(roundedRect: card.bounds, cornerRadius: card.layer.cornerRadius).cgPath
+
         return cell
     }
 
-    // MARK: - Popup
+    // MARK: - Hover/Press effect for card
 
-    private func showEndPopup(for address: AddressModel) {
-        let alert = UIAlertController(
-            title: "Pickup Location Confirmed ✅",
-            message: "\(address.title)\n\(address.fullAddress)",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "Done", style: .default))
-        present(alert, animated: true)
+    @objc private func cardPressGesture(_ gr: UILongPressGestureRecognizer) {
+        guard let card = gr.view else { return }
+
+        switch gr.state {
+        case .began, .changed:
+            UIView.animate(withDuration: 0.10) {
+                card.transform = CGAffineTransform(scaleX: 0.98, y: 0.98)
+                card.alpha = 0.92
+            }
+        case .ended, .cancelled, .failed:
+            UIView.animate(withDuration: 0.10) {
+                card.transform = .identity
+                card.alpha = 1.0
+            }
+        default:
+            break
+        }
     }
 
     private func showAlert(_ title: String, _ message: String) {
@@ -317,4 +378,3 @@ private extension UIColor {
         )
     }
 }
-

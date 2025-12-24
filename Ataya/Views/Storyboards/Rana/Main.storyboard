@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Ils-NM-m5s">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Notification-->
+        <scene sceneID="Sbz-Kn-4fC">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="uu3-fq-ZFI" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <viewController title="Notification" id="VyJ-kS-ddl" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="bOV-9i-XaF">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="UgD-i4-re1">
+                                <rect key="frame" x="36" y="170" width="321" height="630"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <view key="tableFooterView" contentMode="scaleToFill" id="oxu-X7-IqD">
+                                    <rect key="frame" x="0.0" y="0.0" width="321" height="44"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QdJ-pC-Ck2">
+                                            <rect key="frame" x="3" y="3" width="85" height="39"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <state key="normal" title="Button"/>
+                                            <buttonConfiguration key="configuration" style="plain" title="Clear all"/>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lJD-y1-KNh">
+                                            <rect key="frame" x="234" y="-3" width="87" height="39"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <state key="normal" title="Button"/>
+                                            <buttonConfiguration key="configuration" style="plain" title="Settings"/>
+                                            <connections>
+                                                <segue destination="KFD-Gy-hgN" kind="push" id="PUD-gT-ZxI"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                </view>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="PgB-jw-r9J"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="UgD-i4-re1" firstAttribute="top" secondItem="PgB-jw-r9J" secondAttribute="top" constant="8" id="3K6-GS-BIU"/>
+                            <constraint firstItem="PgB-jw-r9J" firstAttribute="trailing" secondItem="UgD-i4-re1" secondAttribute="trailing" constant="36" id="CrU-t7-CbJ"/>
+                            <constraint firstItem="PgB-jw-r9J" firstAttribute="bottom" secondItem="UgD-i4-re1" secondAttribute="bottom" constant="-16" id="Dne-l9-Cnc"/>
+                            <constraint firstItem="UgD-i4-re1" firstAttribute="leading" secondItem="PgB-jw-r9J" secondAttribute="leading" constant="36" id="cfs-SQ-q7S"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Notification" style="editor" id="vbv-PS-TAW"/>
+                </viewController>
+            </objects>
+            <point key="canvasLocation" x="405" y="172"/>
+        </scene>
+        <!--Notification Settings-->
+        <scene sceneID="eGX-dM-W9W">
+            <objects>
+                <viewController title="Notification Settings" id="KFD-Gy-hgN" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="rdY-bt-Ur0">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="Ewd-HN-uTJ"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Notification Settings" style="editor" id="AvA-YR-5Qb"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Rha-0C-vqd" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1170" y="172"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="tdc-Cc-hxa">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Ils-NM-m5s" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="LCH-d9-ure">
+                        <rect key="frame" x="0.0" y="118" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="VyJ-kS-ddl" kind="relationship" relationship="rootViewController" id="br9-8P-9vo"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0IL-jj-pP1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-454.19847328244271" y="171.83098591549296"/>
+        </scene>
+    </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

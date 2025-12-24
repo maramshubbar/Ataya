@@ -122,7 +122,6 @@ final class DonorDashboardViewController: UIViewController,
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         tableView.isScrollEnabled = false
-
         tableView.register(UINib(nibName: "OngoingDonationCell", bundle: nil),
                            forCellReuseIdentifier: OngoingDonationCell.reuseId)
 

@@ -180,12 +180,11 @@ final class OngoingDonationCell: UITableViewCell {
 
         NSLayoutConstraint.activate([trailing, centerY, gap, titleTrail])
 
-        // 4) priorities (العنوان يتمدد، والبيل ما ينضغط)
         titleLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         statusContainerView.setContentHuggingPriority(.required, for: .horizontal)
         statusContainerView.setContentCompressionResistancePriority(.required, for: .horizontal)
 
-        // العنوان يصير سطرين إذا تبين (أحسن من القص)
+
         titleLabel.numberOfLines = 2
         titleLabel.lineBreakMode = .byWordWrapping
     }

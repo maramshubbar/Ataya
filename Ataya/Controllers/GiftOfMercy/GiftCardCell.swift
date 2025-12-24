@@ -153,12 +153,9 @@ final class GiftCardCell: UICollectionViewCell {
         ])
     }
 
-    func configure(item: GiftsChooseViewController.GiftItem, accent: UIColor, existingAmount: Decimal?) {
+    func configure(item: GiftItem, accent: UIColor, existingAmount: Decimal?) {
         heartImageView.image = UIImage(named: item.imageName)
         titleLabel.text = item.title
-        chooseButton.setTitleColor(accent, for: .normal)
-        chevron.tintColor = accent
-
         descLabel.text = item.description
 
         switch item.pricing {
@@ -166,21 +163,15 @@ final class GiftCardCell: UICollectionViewCell {
             priceLabel.isHidden = false
             amountField.isHidden = true
             priceLabel.textColor = accent
-            priceLabel.text = amount.moneyString()
-            descLabel.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 10).isActive = true
+            priceLabel.text = amount.moneyString
 
         case .custom:
             priceLabel.isHidden = true
             amountField.isHidden = false
-            if let existingAmount {
-                amountField.text = existingAmount.plainString()
-            } else {
-                amountField.text = nil
-            }
-            // tie description under amount field visually (like screenshot)
-            descLabel.topAnchor.constraint(equalTo: amountField.bottomAnchor, constant: 12).isActive = true
+            amountField.text = existingAmount?.moneyString ?? ""
         }
     }
+
 
     @objc private func chooseTapped() {
         onChooseTapped?()

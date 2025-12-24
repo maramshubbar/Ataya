@@ -51,7 +51,7 @@ final class AtayaGiftsIntroViewController: UIViewController {
         giveNowButton.setTitle("Give Now", for: .normal)
         giveNowButton.setTitleColor(.black, for: .normal)
         giveNowButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
-        giveNowButton.backgroundColor = .atayaYellow
+        giveNowButton.backgroundColor = AtayaPalette.yellow
         giveNowButton.layer.cornerRadius = 14
         giveNowButton.clipsToBounds = true
         giveNowButton.addTarget(self, action: #selector(giveNowTapped), for: .touchUpInside)

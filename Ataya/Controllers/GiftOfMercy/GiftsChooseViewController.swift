@@ -5,28 +5,9 @@
 //  Created by Fatema Maitham on 24/12/2025.
 //
 
-
 import UIKit
 
-final class GiftsChooseViewController: UIViewController {
-
-    // MARK: - Model
-    struct GiftItem {
-        enum Pricing {
-            case fixed(amount: Decimal)
-            case custom
-        }
-
-        let title: String
-        let imageName: String
-        let pricing: Pricing
-        let description: String
-
-        var requiresAmount: Bool {
-            if case .custom = pricing { return true }
-            return false
-        }
-    }
+final class GiftsChooseViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
 
     // MARK: - UI
     private var collectionView: UICollectionView!
@@ -38,7 +19,6 @@ final class GiftsChooseViewController: UIViewController {
     // MARK: - Data
     private let accent = UIColor(hex: "F7D44C")
     private var items: [GiftItem] = []
-
     private var enteredAmounts: [Int: Decimal] = [:]
 
     // MARK: - Lifecycle
@@ -75,13 +55,13 @@ final class GiftsChooseViewController: UIViewController {
             ),
             GiftItem(
                 title: "SADAQAH\nJARIYA",
-                imageName: "heart_sadaqah", // <- your asset
+                imageName: "heart_sadaqah",
                 pricing: .custom,
                 description: "Benefit from the\nongoing rewards of\ncontinuous charity"
             ),
             GiftItem(
                 title: "Orphan Care",
-                imageName: "heart_orphan_care", // <- your asset
+                imageName: "heart_orphan_care",
                 pricing: .custom,
                 description: "Give orphans in need\na brighter future"
             )
@@ -107,24 +87,24 @@ final class GiftsChooseViewController: UIViewController {
 
     private func makeTwoColumnLayout() -> UICollectionViewLayout {
         let spacing: CGFloat = 16
+        let cardHeight: CGFloat = 380
 
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(0.5),
-            heightDimension: .estimated(320)
+            heightDimension: .fractionalHeight(1.0)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
-        item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
 
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
-            heightDimension: .estimated(320)
+            heightDimension: .absolute(cardHeight)
         )
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item, item])
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 2)
         group.interItemSpacing = .fixed(spacing)
 
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = spacing
-        section.contentInsets = NSDirectionalEdgeInsets(top: 18, leading: 16, bottom: 24, trailing: 16)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 18, leading: 16, bottom: 18, trailing: 16)
 
         return UICollectionViewCompositionalLayout(section: section)
     }
@@ -181,19 +161,7 @@ final class GiftsChooseViewController: UIViewController {
         view.endEditing(true)
     }
 
-    // MARK: - Validation + Actions
-    private func validateAmount(for index: Int) -> Bool {
-        guard items.indices.contains(index) else { return false }
-
-        switch items[index].pricing {
-        case .fixed:
-            return true
-        case .custom:
-            guard let amount = enteredAmounts[index], amount > 0 else { return false }
-            return true
-        }
-    }
-
+    // MARK: - Banner
     private func showErrorBanner() {
         errorBanner.isHidden = false
         errorBottomConstraint?.constant = -18
@@ -206,7 +174,6 @@ final class GiftsChooseViewController: UIViewController {
             self.errorBanner.transform = .identity
         }
 
-        // Auto hide
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) { [weak self] in
             self?.hideErrorBanner()
         }
@@ -227,24 +194,36 @@ final class GiftsChooseViewController: UIViewController {
         }
     }
 
+    // MARK: - Navigation Action
     private func didTapChooseGift(at index: Int) {
         dismissKeyboard()
+        guard items.indices.contains(index) else { return }
 
-        if validateAmount(for: index) {
-            // let vc = Step2GiftCardViewController()
-            // navigationController?.pushViewController(vc, animated: true)
+        let gift = items[index]
+        let amount: Decimal
 
-            print("✅ Proceed with gift:", items[index].title, "amount:", enteredAmounts[index] ?? 0)
-        } else {
-            showErrorBanner()
+        switch gift.pricing {
+        case .fixed(let fixedAmount):
+            amount = fixedAmount
+        case .custom:
+            guard let a = enteredAmounts[index], a > 0 else {
+                showErrorBanner()
+                return
+            }
+            amount = a
         }
-    }
-}
 
-// MARK: - UICollectionViewDataSource
-extension GiftsChooseViewController: UICollectionViewDataSource {
+        let selection = GiftSelection(gift: gift, amount: amount)
+
+        let sb = UIStoryboard(name: "Main", bundle: nil)
+        let vc = sb.instantiateViewController(withIdentifier: "GiftsCertificateFormViewController") as! GiftsCertificateFormViewController
+        vc.selection = selection
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    // MARK: - UICollectionViewDataSource
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        items.count
+        return items.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -256,13 +235,9 @@ extension GiftsChooseViewController: UICollectionViewDataSource {
         }
 
         let item = items[indexPath.item]
-
         let existingAmount = enteredAmounts[indexPath.item]
-        cell.configure(
-            item: item,
-            accent: accent,
-            existingAmount: existingAmount
-        )
+
+        cell.configure(item: item, accent: accent, existingAmount: existingAmount)
 
         cell.onAmountChanged = { [weak self] newText in
             guard let self else { return }
@@ -280,10 +255,8 @@ extension GiftsChooseViewController: UICollectionViewDataSource {
 
         return cell
     }
-}
 
-// MARK: - UICollectionViewDelegate (optional tap to dismiss)
-extension GiftsChooseViewController: UICollectionViewDelegate {
+    // MARK: - UICollectionViewDelegate
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         dismissKeyboard()
     }

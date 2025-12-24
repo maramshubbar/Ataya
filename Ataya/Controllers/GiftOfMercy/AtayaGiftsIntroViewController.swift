@@ -51,7 +51,7 @@ final class AtayaGiftsIntroViewController: UIViewController {
         giveNowButton.setTitle("Give Now", for: .normal)
         giveNowButton.setTitleColor(.black, for: .normal)
         giveNowButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
-        giveNowButton.backgroundColor = UIColor(hex: "F7D44C")
+        giveNowButton.backgroundColor = .atayaYellow
         giveNowButton.layer.cornerRadius = 14
         giveNowButton.clipsToBounds = true
         giveNowButton.addTarget(self, action: #selector(giveNowTapped), for: .touchUpInside)
@@ -100,26 +100,7 @@ final class AtayaGiftsIntroViewController: UIViewController {
 
     // MARK: - Actions
     @objc private func giveNowTapped() {
-        // إذا عندج segue:
-        // performSegue(withIdentifier: "toGiftsList", sender: nil)
-
-        print("Give Now tapped")
-    }
-}
-
-// MARK: - UIColor Hex
-private extension UIColor {
-    convenience init(hex: String, alpha: CGFloat = 1.0) {
-        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
-        hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
-
-        var rgb: UInt64 = 0
-        Scanner(string: hexSanitized).scanHexInt64(&rgb)
-
-        let r = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
-        let g = CGFloat((rgb & 0x00FF00) >> 8) / 255.0
-        let b = CGFloat(rgb & 0x0000FF) / 255.0
-
-        self.init(red: r, green: g, blue: b, alpha: alpha)
+        let vc = GiftsChooseViewController()
+        navigationController?.pushViewController(vc, animated: true)
     }
 }

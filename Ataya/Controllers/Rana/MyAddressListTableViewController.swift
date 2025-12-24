@@ -43,7 +43,7 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
     private let store = AddressRuntimeStore.shared
 
     // Selected colors (keep your originals)
-    private let yellow = UIColor(hex: "#FEC400")
+    private let yellow = UIColor(hex: "#F7D44C")
     private let yellowBG = UIColor(hex: "#FFFBE7")
 
     // Unselected border

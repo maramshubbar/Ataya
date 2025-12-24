@@ -19,8 +19,9 @@ final class MyAddressDetailsViewController: UIViewController {
     @IBOutlet weak var houseNumbertxt: UITextField!
     @IBOutlet weak var addressLabeltxt: UITextField!
 
-    private let yellow = UIColor(hex: "#FEC400")
-    private let yellowBG = UIColor(hex: "#FFFBE7")
+    private let yellow = UIColor(hex: "#F7D44C")
+    private let yellowBG = UIColor(hex: "#FFFBE7") 
+
 
     // from List (edit/add)
     var editIndex: Int?

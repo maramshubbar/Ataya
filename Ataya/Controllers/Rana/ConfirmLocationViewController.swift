@@ -28,7 +28,7 @@ final class ConfirmLocationViewController: UIViewController {
         private var lastAddress: String = "Move map to pick location..."
         private var lastCoordinate: CLLocationCoordinate2D?
 
-        private let yellow = UIColor(hex: "#FEC400")
+        private let yellow = UIColor(hex: "#F7D44C")
 
         override func viewDidLoad() {
             super.viewDidLoad()

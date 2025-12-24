@@ -36,7 +36,7 @@ final class GiftsChooseViewController: UIViewController {
     private var errorBottomConstraint: NSLayoutConstraint?
 
     // MARK: - Data
-    private let accent = UIColor(hex: "F7D44C")
+    private let accent = UIColor(atayaHex: "#F7D44C")
     private var items: [GiftItem] = []
 
     private var enteredAmounts: [Int: Decimal] = [:]

@@ -221,7 +221,7 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
         messageLimitHint.textColor = .secondaryLabel
 
         // Recipient card
-        recipientCard.backgroundColor = UIColor(atayaHex: "FFF6D6")
+        recipientCard.backgroundColor = UIColor(atayaHex: "FFF8E8")
         recipientCard.layer.cornerRadius = 16
         recipientCard.clipsToBounds = true
 

@@ -5,7 +5,6 @@
 //  Created by Fatema Maitham on 24/12/2025.
 //
 
-
 import UIKit
 
 final class GiftCardCell: UICollectionViewCell {
@@ -28,6 +27,10 @@ final class GiftCardCell: UICollectionViewCell {
     private let chooseButton = UIButton(type: .system)
     private let chevron = UIImageView(image: UIImage(systemName: "chevron.right"))
 
+    // قيود نبدّل بينها حسب النوع (fixed / custom)
+    private var descTopToPrice: NSLayoutConstraint!
+    private var descTopToAmount: NSLayoutConstraint!
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         buildUI()
@@ -48,6 +51,8 @@ final class GiftCardCell: UICollectionViewCell {
         onAmountChanged = nil
     }
 
+    // MARK: - UI Setup
+
     private func buildUI() {
         contentView.backgroundColor = .clear
 
@@ -58,7 +63,7 @@ final class GiftCardCell: UICollectionViewCell {
         cardView.layer.borderColor = UIColor.black.withAlphaComponent(0.06).cgColor
         cardView.clipsToBounds = true
 
-        // Shadow like screenshot
+        // Shadow
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOpacity = 0.08
         layer.shadowRadius = 10
@@ -80,19 +85,21 @@ final class GiftCardCell: UICollectionViewCell {
         amountField.backgroundColor = UIColor.systemGray6
         amountField.layer.cornerRadius = 10
         amountField.clipsToBounds = true
-        amountField.font = .systemFont(ofSize: 16, weight: .semibold)
+        amountField.font = .systemFont(ofSize: 14, weight: .semibold)
         amountField.textColor = .label
         amountField.keyboardType = .decimalPad
         amountField.setLeftPadding(14)
         amountField.addTarget(self, action: #selector(amountChanged), for: .editingChanged)
         amountField.addDoneToolbar()
+        
+        
 
         // Description
         descLabel.numberOfLines = 0
         descLabel.font = .systemFont(ofSize: 17, weight: .regular)
         descLabel.textColor = UIColor.label.withAlphaComponent(0.7)
 
-        // Choose button (text + chevron)
+        // Choose button
         chooseButton.setTitle("Choose Gift", for: .normal)
         chooseButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
         chooseButton.contentHorizontalAlignment = .leading
@@ -125,7 +132,6 @@ final class GiftCardCell: UICollectionViewCell {
             titleLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 16),
             titleLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -16),
 
-            // Price / Field area (same place)
             priceLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
             priceLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 16),
             priceLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -16),
@@ -135,30 +141,39 @@ final class GiftCardCell: UICollectionViewCell {
             amountField.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -16),
             amountField.heightAnchor.constraint(equalToConstant: 44),
 
-            descLabel.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 10),
             descLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 16),
             descLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -16),
 
-            // Choose button bottom
             chooseButton.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 16),
-            chooseButton.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -14),
 
             chevron.centerYAnchor.constraint(equalTo: chooseButton.centerYAnchor),
             chevron.leadingAnchor.constraint(equalTo: chooseButton.trailingAnchor, constant: 8),
             chevron.widthAnchor.constraint(equalToConstant: 14),
-            chevron.heightAnchor.constraint(equalToConstant: 14),
-
-            // Description must not overlap button
-            descLabel.bottomAnchor.constraint(lessThanOrEqualTo: chooseButton.topAnchor, constant: -14)
+            chevron.heightAnchor.constraint(equalToConstant: 14)
         ])
+
+        descTopToPrice = descLabel.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 10)
+        descTopToAmount = descLabel.topAnchor.constraint(equalTo: amountField.bottomAnchor, constant: 12)
+
+        descTopToPrice.isActive = true
+        descTopToAmount.isActive = false
+
+        let descBottom = descLabel.bottomAnchor.constraint(lessThanOrEqualTo: chooseButton.topAnchor, constant: -14)
+        let chooseBottom = chooseButton.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -18)
+
+        NSLayoutConstraint.activate([descBottom, chooseBottom])
     }
 
-    func configure(item: GiftsChooseViewController.GiftItem, accent: UIColor, existingAmount: Decimal?) {
+    // MARK: - Configure
+
+    func configure(item: GiftsChooseViewController.GiftItem,
+                   accent: UIColor,
+                   existingAmount: Decimal?) {
+
         heartImageView.image = UIImage(named: item.imageName)
         titleLabel.text = item.title
         chooseButton.setTitleColor(accent, for: .normal)
         chevron.tintColor = accent
-
         descLabel.text = item.description
 
         switch item.pricing {
@@ -167,20 +182,26 @@ final class GiftCardCell: UICollectionViewCell {
             amountField.isHidden = true
             priceLabel.textColor = accent
             priceLabel.text = amount.moneyString()
-            descLabel.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 10).isActive = true
+
+            descTopToPrice.isActive = true
+            descTopToAmount.isActive = false
 
         case .custom:
             priceLabel.isHidden = true
             amountField.isHidden = false
+
             if let existingAmount {
                 amountField.text = existingAmount.plainString()
             } else {
                 amountField.text = nil
             }
-            // tie description under amount field visually (like screenshot)
-            descLabel.topAnchor.constraint(equalTo: amountField.bottomAnchor, constant: 12).isActive = true
+
+            descTopToPrice.isActive = false
+            descTopToAmount.isActive = true
         }
     }
+
+    // MARK: - Actions
 
     @objc private func chooseTapped() {
         onChooseTapped?()

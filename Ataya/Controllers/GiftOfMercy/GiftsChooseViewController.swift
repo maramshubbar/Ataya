@@ -71,17 +71,17 @@ final class GiftsChooseViewController: UIViewController {
                 title: "Restore Eyesight\nin Africa",
                 imageName: "heart_restore_eyesight",
                 pricing: .custom,
-                description: "Help cure blindness\nand bring joy to\nthose who cannot\nsee"
+                description: "Help bring joy to\nthose who cannot\nsee"
             ),
             GiftItem(
                 title: "SADAQAH\nJARIYA",
-                imageName: "heart_sadaqah", // <- your asset
+                imageName: "heart_sadaqah",
                 pricing: .custom,
                 description: "Benefit from the\nongoing rewards of\ncontinuous charity"
             ),
             GiftItem(
                 title: "Orphan Care",
-                imageName: "heart_orphan_care", // <- your asset
+                imageName: "heart_orphan_care",
                 pricing: .custom,
                 description: "Give orphans in need\na brighter future"
             )
@@ -105,26 +105,35 @@ final class GiftsChooseViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
     }
 
+
     private func makeTwoColumnLayout() -> UICollectionViewLayout {
         let spacing: CGFloat = 16
 
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(0.5),
-            heightDimension: .estimated(320)
+            heightDimension: .fractionalHeight(1.0)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
-        item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
+        item.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
 
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
-            heightDimension: .estimated(320)
+            heightDimension: .absolute(400)
         )
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item, item])
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: groupSize,
+            subitems: [item, item]
+        )
         group.interItemSpacing = .fixed(spacing)
 
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = spacing
-        section.contentInsets = NSDirectionalEdgeInsets(top: 18, leading: 16, bottom: 24, trailing: 16)
+        section.contentInsets = NSDirectionalEdgeInsets(
+            top: 18,
+            leading: 16,
+            bottom: 24,
+            trailing: 16
+        )
 
         return UICollectionViewCompositionalLayout(section: section)
     }
@@ -193,6 +202,10 @@ final class GiftsChooseViewController: UIViewController {
             return true
         }
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.navigationBar.tintColor = .black
+    }
 
     private func showErrorBanner() {
         errorBanner.isHidden = false
@@ -231,10 +244,10 @@ final class GiftsChooseViewController: UIViewController {
         dismissKeyboard()
 
         if validateAmount(for: index) {
-            // let vc = Step2GiftCardViewController()
-            // navigationController?.pushViewController(vc, animated: true)
+             let vc = ChooseCardViewController()
+             navigationController?.pushViewController(vc, animated: true)
 
-            print("✅ Proceed with gift:", items[index].title, "amount:", enteredAmounts[index] ?? 0)
+            print("Proceed with gift:", items[index].title, "amount:", enteredAmounts[index] ?? 0)
         } else {
             showErrorBanner()
         }

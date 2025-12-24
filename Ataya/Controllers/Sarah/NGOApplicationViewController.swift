@@ -6,29 +6,40 @@
 //
 
 import UIKit
-// MARK: - Status Enum (controls the whole screen)
-enum ApplicationStatus {
-    case pending
-    case approved
-    case rejected
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class NGOApplicationViewController: UIViewController {
+    //ngo info
+    @IBOutlet weak var ngoInfoCard: UIView!
+    @IBOutlet weak var profile: UIImageView!
+    @IBOutlet weak var titleValueLabel: UILabel!
+    @IBOutlet weak var TypeTitle: UILabel!
+    @IBOutlet weak var TypeValueTitle: UILabel!
+    @IBOutlet weak var EmailTitle: UILabel!
+    @IBOutlet weak var EmailValueTitle: UILabel!
+    @IBOutlet weak var PhoneTitle: UILabel!
+    @IBOutlet weak var PhoneUserValue: UILabel!
+    @IBOutlet weak var DateTitle: UILabel!
+    @IBOutlet weak var Status: UIView!
+    @IBOutlet weak var StatusValueLabel: UILabel!
+    @IBOutlet weak var DateUserValue: UILabel!
     
-    @IBOutlet weak var statusLabel: UILabel!
     
-    
-    @IBOutlet weak var uploadedDocumentsContainerView: UIView!
-    
-    @IBOutlet weak var documentsStackView: UIStackView!
-    
-    @IBOutlet weak var notesLabel: UILabel!
-    @IBOutlet weak var notesContainerView: UIView!
-    
-    @IBOutlet weak var actionButtonsContainerView: UIView!
-    
-    
+    //uploaded documents section
     
     // MARK: - Lifecycle
     override func viewDidLoad() {

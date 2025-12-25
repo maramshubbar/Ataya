@@ -5,12 +5,6 @@
 //  Created by Fatema Maitham on 25/12/2025.
 //
 
-
-//
-//  ManageGiftsListViewController.swift
-//  Ataya
-//
-
 import UIKit
 
 struct GiftDefinition {
@@ -26,14 +20,12 @@ struct GiftDefinition {
     }
 }
 
-// MARK: - VC
 
 final class ManageGiftsListViewController: UIViewController {
 
     private let addButton = UIButton(type: .system)
     private let tableView = UITableView(frame: .zero, style: .plain)
 
-    // بيانات تجريبية
     private var gifts: [GiftDefinition] = [
         .init(
             id: "g1",
@@ -66,12 +58,10 @@ final class ManageGiftsListViewController: UIViewController {
 
     private func setupNav() {
         title = "Manage Gifts"
-//        view.backgroundColor = .systemGroupedBackground
         navigationItem.largeTitleDisplayMode = .never
     }
 
     private func setupUI() {
-        // زر + Add Gift (نفس Create Campaign تقريبا)
         addButton.translatesAutoresizingMaskIntoConstraints = false
         addButton.setTitle("Add Gift", for: .normal)
         addButton.setTitleColor(.black, for: .normal)
@@ -80,7 +70,6 @@ final class ManageGiftsListViewController: UIViewController {
         addButton.layer.cornerRadius = 14
         addButton.addTarget(self, action: #selector(addGiftTapped), for: .touchUpInside)
 
-        // TableView
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.backgroundColor = .clear
         tableView.separatorStyle = .none
@@ -108,24 +97,56 @@ final class ManageGiftsListViewController: UIViewController {
         ])
     }
 
+    // MARK: - Actions
+
     @objc private func addGiftTapped() {
-        // بعدين تربطينه مع AddEditGiftViewController
-        let alert = UIAlertController(
-            title: "Add Gift",
-            message: "Here you will open AddEditGiftViewController.",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
+        let sb = UIStoryboard(name: "Main", bundle: nil)
+        guard let vc = sb.instantiateViewController(
+            withIdentifier: "AddEditGiftViewController"
+        ) as? AddEditGiftViewController else {
+            assertionFailure("AddEditGiftViewController not found in storyboard")
+            return
+        }
+
+        // ✅ لو عندك مود داخل AddEditGiftViewController خليه create
+        // مثال:
+        // vc.mode = .create
+
+        navigationController?.pushViewController(vc, animated: true)
     }
 
     private func handleEditGift(_ gift: GiftDefinition) {
         let alert = UIAlertController(
             title: "Edit Gift",
-            message: "Edit \(gift.name) (connect to AddEditGift VC later).",
+            message: "Edit \(gift.name)?",
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
+
+        let editAction = UIAlertAction(title: "Edit", style: .default) { [weak self] _ in
+            guard let self = self else { return }
+
+            let sb = UIStoryboard(name: "Main", bundle: nil)
+            guard let vc = sb.instantiateViewController(
+                withIdentifier: "AddEditGiftViewController"
+            ) as? AddEditGiftViewController else {
+                assertionFailure("AddEditGiftViewController not found in storyboard")
+                return
+            }
+
+            // ✅ مرري البيانات عشان التعديل
+            // على حسب البروبرتي اللي عندك هناك:
+            // vc.giftToEdit = gift
+            // أو:
+            // vc.mode = .edit(existing: gift)
+
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+
+        alert.addAction(editAction)
+        alert.addAction(cancelAction)
+
         present(alert, animated: true)
     }
 
@@ -141,7 +162,6 @@ final class ManageGiftsListViewController: UIViewController {
 
     private func handleToggleActive(at index: Int, isOn: Bool) {
         gifts[index].isActive = isOn
-        // بعدين: تحديث في Firestore
     }
 
     // لون hex بسيط
@@ -161,30 +181,34 @@ final class ManageGiftsListViewController: UIViewController {
 // MARK: - Table DataSource / Delegate
 
 extension ManageGiftsListViewController: UITableViewDataSource, UITableViewDelegate {
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         gifts.count
     }
+
     func tableView(_ tableView: UITableView,
                    cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
+
         let gift = gifts[indexPath.row]
         let cell = tableView.dequeueReusableCell(
             withIdentifier: GiftManagementCell.reuseID,
             for: indexPath
         ) as! GiftManagementCell
-        
+
         cell.configure(with: gift)
+
         cell.onEdit = { [weak self] in
             self?.handleEditGift(gift)
         }
+
         cell.onView = { [weak self] in
             self?.handleViewGift(gift)
         }
+
         cell.onToggleActive = { [weak self] isOn in
             self?.handleToggleActive(at: indexPath.row, isOn: isOn)
         }
-        
+
         return cell
     }
 }

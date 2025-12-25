@@ -196,7 +196,7 @@ final class AddEditGiftViewController: UIViewController {
             name: trimmedName,
             imageName: image,
             isActive: activeSwitch.isOn,
-            isDefault: existingDesign?.isDefault ?? false   // نتركه مثل ما هو لو تعديــل
+            isDefault: existingDesign?.isDefault ?? false
         )
 
         onSave?(newDesign)

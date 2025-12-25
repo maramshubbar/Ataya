@@ -14,13 +14,13 @@ final class ManageCardDesignsListViewController: UIViewController {
     private let addButton = UIButton(type: .system)
     private let tableView = UITableView(frame: .zero, style: .plain)
 
+    // مبدئياً: داتا ثابتة
     private var designs: [CardDesign] = [
         CardDesign(id: "d1", name: "Kaaba",             imageName: "c1", isActive: true,  isDefault: true),
         CardDesign(id: "d2", name: "Palestine Al Aqsa", imageName: "c2", isActive: true,  isDefault: false),
         CardDesign(id: "d3", name: "Floral",            imageName: "c3", isActive: false, isDefault: false),
         CardDesign(id: "d4", name: "Water",             imageName: "c4", isActive: true,  isDefault: false)
     ]
-
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,7 +30,6 @@ final class ManageCardDesignsListViewController: UIViewController {
 
     private func setupNav() {
         title = "Card Designs"
-//        view.backgroundColor = .systemGroupedBackground
         navigationItem.largeTitleDisplayMode = .never
     }
 
@@ -70,41 +69,41 @@ final class ManageCardDesignsListViewController: UIViewController {
         ])
     }
 
-    @objc private func addDesignTapped() {
-        // افتحي شاشة إضافة كرت جديد
-        let vc = AddEditGiftViewController(existingDesign: nil)
+    // MARK: - Actions
 
-        // لما المستخدم يضغط Save في شاشة الإضافة
+    @objc private func addDesignTapped() {
+        // ✅ نفتح شاشة Add/Edit الصحيحة (مو AddEditGiftViewController)
+        let vc = AddEditCardDesignViewController(existingDesign: nil)
+
         vc.onSave = { [weak self] newDesign in
             guard let self = self else { return }
-
-            // أضفي التصميم الجديد للّستة
             self.designs.append(newDesign)
-
+            self.tableView.reloadData()
+            // بعدين: هنا تسوين save في Firestore
         }
 
         navigationController?.pushViewController(vc, animated: true)
     }
 
+    private func handleEdit(at index: Int) {
+        let design = designs[index]
 
-    private func handleEdit(_ design: CardDesign) {
-        let alert = UIAlertController(
-            title: "Edit Design",
-            message: "Edit \(design.name) (connect to AddEditCardDesign VC later).",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
+        let vc = AddEditCardDesignViewController(existingDesign: design)
+
+        vc.onSave = { [weak self] updated in
+            guard let self = self else { return }
+            self.designs[index] = updated
+            self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+            // بعدين: update Firestore
+        }
+
+        navigationController?.pushViewController(vc, animated: true)
     }
 
-    private func handlePreview(_ design: CardDesign) {
-        let alert = UIAlertController(
-            title: design.name,
-            message: "Full preview screen can go here.",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "Close", style: .cancel))
-        present(alert, animated: true)
+    private func handlePreview(at index: Int) {
+        let design = designs[index]
+        let vc = CardDesignPreviewViewController(design: design)
+        navigationController?.pushViewController(vc, animated: true)
     }
 
     private func handleToggleActive(at index: Int, isOn: Bool) {
@@ -112,6 +111,7 @@ final class ManageCardDesignsListViewController: UIViewController {
         // بعدين: update Firestore
     }
 
+    // نفس الهيلبر المعتاد
     private func color(hex: String, alpha: CGFloat = 1) -> UIColor {
         var h = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
         if h.hasPrefix("#") { h.removeFirst() }
@@ -144,17 +144,14 @@ extension ManageCardDesignsListViewController: UITableViewDataSource, UITableVie
         ) as! CardDesignManagementCell
 
         cell.configure(with: design)
+
         cell.onEdit = { [weak self] in
-            self?.handleEdit(design)
+            self?.handleEdit(at: indexPath.row)
         }
         cell.onPreview = { [weak self] in
-            self?.handlePreview(design)
-        }
-        cell.onToggleActive = { [weak self] isOn in
-            self?.handleToggleActive(at: indexPath.row, isOn: isOn)
+            self?.handlePreview(at: indexPath.row)
         }
 
         return cell
     }
 }
-

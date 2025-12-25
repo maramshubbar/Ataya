@@ -115,7 +115,7 @@ final class CardDesignManagementCell: UITableViewCell {
         ])
     }
 
-    private func styleOutlinedButton(_ button: UIButton, title: String) {
+    pprivate func styleYellowButton(_ button: UIButton, title: String) {
         button.setTitle(title, for: .normal)
         button.setTitleColor(accentYellow, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
@@ -123,7 +123,14 @@ final class CardDesignManagementCell: UITableViewCell {
         button.layer.cornerRadius = 8
         button.layer.borderWidth = 1.2
         button.layer.borderColor = accentYellow.cgColor
-        button.contentEdgeInsets = .zero
+
+        if #available(iOS 15.0, *) {
+            var config = button.configuration ?? .plain()
+            config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
+            button.configuration = config
+        } else {
+            button.contentEdgeInsets = .zero
+        }
     }
 
     private func styleFilledButton(_ button: UIButton, title: String) {
@@ -132,8 +139,16 @@ final class CardDesignManagementCell: UITableViewCell {
         button.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
         button.backgroundColor = accentYellow
         button.layer.cornerRadius = 8
-        button.contentEdgeInsets = .zero
+
+        if #available(iOS 15.0, *) {
+            var config = button.configuration ?? .plain()
+            config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0,)
+            button.configuration = config
+        } else {
+            button.contentEdgeInsets = .zero
+        }
     }
+
 
     // MARK: - Configure
 

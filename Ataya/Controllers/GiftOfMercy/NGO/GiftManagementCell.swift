@@ -127,7 +127,6 @@ final class GiftManagementCell: UITableViewCell {
         ])
     }
 
-    // زر Edit أصفر مثل السابق
     private func styleYellowButton(_ button: UIButton, title: String) {
         button.configuration = nil
         button.setTitle(title, for: .normal)
@@ -135,7 +134,13 @@ final class GiftManagementCell: UITableViewCell {
         button.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
         button.backgroundColor = accentYellow
         button.layer.cornerRadius = 8
-        button.contentEdgeInsets = .zero
+        if #available(iOS 15.0, *) {
+            var config = button.configuration ?? .plain()
+            config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
+            button.configuration = config
+        } else {
+            button.contentEdgeInsets = .zero
+        }
     }
 
     // MARK: - ViewModel

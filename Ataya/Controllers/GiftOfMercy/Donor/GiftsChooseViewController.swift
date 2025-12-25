@@ -246,7 +246,7 @@ final class GiftsChooseViewController: UIViewController {
         if validateAmount(for: index) {
              let vc = ChooseCardViewController()
              navigationController?.pushViewController(vc, animated: true)
-
+kkn
             print("Proceed with gift:", items[index].title, "amount:", enteredAmounts[index] ?? 0)
         } else {
             showErrorBanner()
@@ -293,6 +293,27 @@ extension GiftsChooseViewController: UICollectionViewDataSource {
 
         return cell
     }
+    
+    private func certificateGiftText(for index: Int) -> String {
+        let title = items[index].title.replacingOccurrences(of: "\n", with: " ")
+
+        // ✅ جيب المبلغ (fixed أو custom)
+        let amount: Decimal
+        switch items[index].pricing {
+        case .fixed(let a): amount = a
+        case .custom: amount = enteredAmounts[index] ?? 0
+        }
+
+        // ✅ تنسيق حلو (بدون .0 إذا رقم صحيح)
+        let nf = NumberFormatter()
+        nf.numberStyle = .decimal
+        nf.minimumFractionDigits = 0
+        nf.maximumFractionDigits = 2
+
+        let amountString = nf.string(from: amount as NSDecimalNumber) ?? "\(amount)"
+        return "\(title) $\(amountString)"
+    }
+
 }
 
 // MARK: - UICollectionViewDelegate (optional tap to dismiss)

@@ -46,13 +46,12 @@ final class CardDesignManagementCell: UITableViewCell {
         backgroundColor = .clear
         contentView.backgroundColor = .clear
 
+        // الكرت: بوردر خفيف، بدون شادو قوي
         cardView.translatesAutoresizingMaskIntoConstraints = false
         cardView.backgroundColor = .white
         cardView.layer.cornerRadius = 18
-        cardView.layer.shadowColor = UIColor.black.cgColor
-        cardView.layer.shadowOpacity = 0.06
-        cardView.layer.shadowRadius = 10
-        cardView.layer.shadowOffset = CGSize(width: 0, height: 3)
+        cardView.layer.borderWidth = 1
+        cardView.layer.borderColor = UIColor.systemGray4.cgColor
 
         contentView.addSubview(cardView)
 
@@ -71,12 +70,13 @@ final class CardDesignManagementCell: UITableViewCell {
         thumbImageView.backgroundColor = .systemGray5
 
         // labels
-        nameLabel.font = .systemFont(ofSize: 15, weight: .semibold)
-        statusLabel.font = .systemFont(ofSize: 12, weight: .medium)
+        nameLabel.font = .systemFont(ofSize: 16, weight: .semibold)
+        statusLabel.font = .systemFont(ofSize: 13, weight: .medium)
 
-        // buttons
+        // buttons stack
         buttonsStack.axis = .horizontal
-        buttonsStack.spacing = 12
+        buttonsStack.spacing = 16
+        buttonsStack.alignment = .center
         buttonsStack.distribution = .fillEqually
         buttonsStack.translatesAutoresizingMaskIntoConstraints = false
 
@@ -101,34 +101,38 @@ final class CardDesignManagementCell: UITableViewCell {
         NSLayoutConstraint.activate([
             thumbImageView.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 16),
             thumbImageView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 16),
-            thumbImageView.widthAnchor.constraint(equalToConstant: 72),
-            thumbImageView.heightAnchor.constraint(equalToConstant: 72),
+            thumbImageView.widthAnchor.constraint(equalToConstant: 80),
+            thumbImageView.heightAnchor.constraint(equalToConstant: 80),
 
             textStack.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 16),
             textStack.leadingAnchor.constraint(equalTo: thumbImageView.trailingAnchor, constant: 12),
             textStack.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -16),
-            textStack.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -14)
+            textStack.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -16),
+
+            // ارتفاع ثابت للأزرار عشان يكونوا مثل الويب
+            editButton.heightAnchor.constraint(equalToConstant: 44),
+            previewButton.heightAnchor.constraint(equalToConstant: 44)
         ])
     }
 
     private func styleOutlinedButton(_ button: UIButton, title: String) {
         button.setTitle(title, for: .normal)
-        button.setTitleColor(.black, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
+        button.setTitleColor(accentYellow, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
         button.backgroundColor = .white
-        button.layer.cornerRadius = 14
-        button.layer.borderWidth = 1
+        button.layer.cornerRadius = 8
+        button.layer.borderWidth = 1.2
         button.layer.borderColor = accentYellow.cgColor
-        button.contentEdgeInsets = UIEdgeInsets(top: 6, left: 16, bottom: 6, right: 16)
+        button.contentEdgeInsets = .zero
     }
 
     private func styleFilledButton(_ button: UIButton, title: String) {
         button.setTitle(title, for: .normal)
         button.setTitleColor(.black, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
+        button.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
         button.backgroundColor = accentYellow
-        button.layer.cornerRadius = 14
-        button.contentEdgeInsets = UIEdgeInsets(top: 6, left: 16, bottom: 6, right: 16)
+        button.layer.cornerRadius = 8
+        button.contentEdgeInsets = .zero
     }
 
     // MARK: - Configure

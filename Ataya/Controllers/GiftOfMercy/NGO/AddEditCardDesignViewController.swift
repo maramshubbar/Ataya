@@ -119,7 +119,8 @@ final class AddEditCardDesignViewController: UIViewController {
         // helper: labeled section مع error label تحت
         func addFieldSection(title: String, fieldView: UIView, errorLabel: UILabel?) {
             let titleLabel = UILabel()
-            titleLabel.text = title
+            // ⭐️ النجمة قبل الاسم
+            titleLabel.text = "* " + title
             titleLabel.font = .systemFont(ofSize: 14, weight: .semibold)
 
             let stack = UIStackView(arrangedSubviews: [titleLabel, fieldView])
@@ -136,12 +137,12 @@ final class AddEditCardDesignViewController: UIViewController {
             }
         }
 
-        // Design Name *
+        // Design Name
         nameField.borderStyle = .roundedRect
-        addFieldSection(title: "Design Name *", fieldView: nameField, errorLabel: nameErrorLabel)
+        addFieldSection(title: "Design Name", fieldView: nameField, errorLabel: nameErrorLabel)
 
         // Upload box section
-        addFieldSection(title: "Card Artwork *", fieldView: uploadContainer, errorLabel: artworkErrorLabel)
+        addFieldSection(title: "Card Artwork", fieldView: uploadContainer, errorLabel: artworkErrorLabel)
 
         // Active row
         let activeLabel = UILabel()
@@ -169,7 +170,7 @@ final class AddEditCardDesignViewController: UIViewController {
             label.font = .systemFont(ofSize: 13, weight: .regular)
             label.textColor = .systemRed
             label.numberOfLines = 0
-            label.isHidden = true
+            label.isHidden = true   // تبقى موجودة لكن فاضية لين يصير إيرور
         }
     }
 
@@ -180,75 +181,83 @@ final class AddEditCardDesignViewController: UIViewController {
         artworkErrorLabel.text = nil
     }
 
-    // MARK: - Upload Box
+    // MARK: - Upload Box (style مثل التصميم)
 
     private func setupUploadBox() {
         uploadContainer.translatesAutoresizingMaskIntoConstraints = false
-        uploadContainer.heightAnchor.constraint(equalToConstant: 220).isActive = true
-        uploadContainer.backgroundColor = UIColor.systemGray6.withAlphaComponent(0.7)
-        uploadContainer.layer.cornerRadius = 16
+        uploadContainer.heightAnchor.constraint(equalToConstant: 210).isActive = true
+        uploadContainer.backgroundColor = .white
+        uploadContainer.layer.cornerRadius = 18
         uploadContainer.clipsToBounds = true
-
+        
         // placeholder stack (icon + text)
         uploadPlaceholderStack.axis = .vertical
         uploadPlaceholderStack.alignment = .center
         uploadPlaceholderStack.spacing = 8
         uploadPlaceholderStack.translatesAutoresizingMaskIntoConstraints = false
-
-        // ⚠️ نستخدم الأست "camera" بدل SF Symbol
+        
+        // أيقونة من الأست "camera"
         uploadIconView.image = UIImage(named: "camera")
         uploadIconView.contentMode = .scaleAspectFit
         uploadIconView.translatesAutoresizingMaskIntoConstraints = false
-        uploadIconView.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        uploadIconView.widthAnchor.constraint(equalToConstant: 40).isActive = true
-
+        uploadIconView.heightAnchor.constraint(equalToConstant: 56).isActive = true
+        uploadIconView.widthAnchor.constraint(equalToConstant: 56).isActive = true
+        
         uploadTitleLabel.text = "Tap to Upload or Take a Photo"
-        uploadTitleLabel.font = .systemFont(ofSize: 15, weight: .medium)
-
-        uploadSubtitleLabel.text = "Upload image in (JPG or PNG)"
-        uploadSubtitleLabel.font = .systemFont(ofSize: 13, weight: .regular)
-        uploadSubtitleLabel.textColor = .secondaryLabel
-
+        uploadTitleLabel.font = .systemFont(ofSize: 15, weight: .semibold)
+        uploadTitleLabel.textAlignment = .center
+        
+        uploadSubtitleLabel.text = "Upload image in  (JPG or PNG)"
+        uploadSubtitleLabel.font = .systemFont(ofSize: 13, weight: .semibold)
+        uploadSubtitleLabel.textColor = .systemGray2
+        uploadSubtitleLabel.textAlignment = .center
+        
         uploadPlaceholderStack.addArrangedSubview(uploadIconView)
         uploadPlaceholderStack.addArrangedSubview(uploadTitleLabel)
         uploadPlaceholderStack.addArrangedSubview(uploadSubtitleLabel)
-
+        
         uploadContainer.addSubview(uploadPlaceholderStack)
-
+        
         // preview image (تغطي الصندوق لما نختار صورة)
         previewImageView.translatesAutoresizingMaskIntoConstraints = false
         previewImageView.contentMode = .scaleAspectFill
         previewImageView.clipsToBounds = true
         previewImageView.isHidden = true
         uploadContainer.addSubview(previewImageView)
-
+        
         NSLayoutConstraint.activate([
             uploadPlaceholderStack.centerXAnchor.constraint(equalTo: uploadContainer.centerXAnchor),
             uploadPlaceholderStack.centerYAnchor.constraint(equalTo: uploadContainer.centerYAnchor),
-
+            
             previewImageView.topAnchor.constraint(equalTo: uploadContainer.topAnchor),
             previewImageView.leadingAnchor.constraint(equalTo: uploadContainer.leadingAnchor),
             previewImageView.trailingAnchor.constraint(equalTo: uploadContainer.trailingAnchor),
             previewImageView.bottomAnchor.constraint(equalTo: uploadContainer.bottomAnchor)
         ])
-
+        
         // Tap gesture
         let tap = UITapGestureRecognizer(target: self, action: #selector(uploadTapped))
         uploadContainer.addGestureRecognizer(tap)
         uploadContainer.isUserInteractionEnabled = true
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.updateDashedBorder()
+        }
     }
-
+    /// نرسم الداش حوالين الصندوق (دايماً)
     private func updateDashedBorder() {
         dashedBorderLayer?.removeFromSuperlayer()
 
         let shape = CAShapeLayer()
         shape.strokeColor = borderGray.cgColor
-        shape.lineDashPattern = [5, 4]           // داش أقرب للتصميم
-        shape.lineWidth = 1.2
+        shape.lineDashPattern = [10, 6]    // طويل/قصير مثل التصميم
+        shape.lineWidth = 1
         shape.fillColor = UIColor.clear.cgColor
 
-        let path = UIBezierPath(roundedRect: uploadContainer.bounds.insetBy(dx: 2, dy: 2),
-                                cornerRadius: 16)
+        let path = UIBezierPath(
+            roundedRect: uploadContainer.bounds.insetBy(dx: 1.5, dy: 1.5),
+            cornerRadius: 18
+        )
         shape.path = path.cgPath
 
         uploadContainer.layer.addSublayer(shape)
@@ -278,6 +287,36 @@ final class AddEditCardDesignViewController: UIViewController {
     @objc private func uploadTapped() {
         clearErrors()
 
+        // 📸 شيت فيه خيار Camera + Library
+        let sheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+
+        sheet.addAction(UIAlertAction(title: "Take Photo", style: .default, handler: { _ in
+            self.presentCamera()
+        }))
+
+        sheet.addAction(UIAlertAction(title: "Choose from Library", style: .default, handler: { _ in
+            self.presentPhotoPicker()
+        }))
+
+        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+
+        present(sheet, animated: true)
+    }
+
+    private func presentCamera() {
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
+
+            presentPhotoPicker()
+            return
+        }
+
+        let picker = UIImagePickerController()
+        picker.sourceType = .camera
+        picker.delegate = self
+        present(picker, animated: true)
+    }
+
+    private func presentPhotoPicker() {
         var config = PHPickerConfiguration(photoLibrary: .shared())
         config.selectionLimit = 1
         config.filter = .images
@@ -325,9 +364,26 @@ final class AddEditCardDesignViewController: UIViewController {
     }
 }
 
-// MARK: - PHPicker Delegate
+// MARK: - Common image handling
 
-extension AddEditCardDesignViewController: PHPickerViewControllerDelegate {
+private extension AddEditCardDesignViewController {
+    func handlePicked(image: UIImage) {
+        previewImageView.image = image
+        previewImageView.isHidden = false
+        uploadPlaceholderStack.isHidden = true
+        artworkErrorLabel.isHidden = true
+
+        // TODO: هنا بعدين تحطين رفع Cloudinary / Storage وترجعين ID الحقيقي
+        storedImageId = "uploaded_\(UUID().uuidString)"
+    }
+}
+
+// MARK: - Delegates
+
+extension AddEditCardDesignViewController: PHPickerViewControllerDelegate,
+                                           UIImagePickerControllerDelegate,
+                                           UINavigationControllerDelegate {
+
     func picker(_ picker: PHPickerViewController,
                 didFinishPicking results: [PHPickerResult]) {
 
@@ -341,14 +397,21 @@ extension AddEditCardDesignViewController: PHPickerViewControllerDelegate {
                   let image = object as? UIImage else { return }
 
             DispatchQueue.main.async {
-                self.previewImageView.image = image
-                self.previewImageView.isHidden = false
-                self.uploadPlaceholderStack.isHidden = true
-                self.artworkErrorLabel.isHidden = true
-
-                // TODO: بعدين: ارفعي الصورة إلى Cloudinary / Storage ورجعي ال ID الحقيقي
-                self.storedImageId = "uploaded_\(UUID().uuidString)"
+                self.handlePicked(image: image)
             }
         }
+    }
+
+    func imagePickerController(_ picker: UIImagePickerController,
+                               didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true)
+
+        if let image = info[.originalImage] as? UIImage {
+            handlePicked(image: image)
+        }
+    }
+
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true)
     }
 }

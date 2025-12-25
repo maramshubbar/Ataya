@@ -433,10 +433,12 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
         setError(for: rNameField, label: rNameError, message: nil)
         setError(for: rEmailField, label: rEmailError, message: nil)
 
-        if (giftNameText ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            giftTitleLabel.isHidden = true
-            giftValueLabel.isHidden = true
-        }
+        let gift = (giftNameText ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+
+        giftTitleLabel.isHidden = false
+        giftValueLabel.isHidden = false
+        giftValueLabel.text = gift.isEmpty ? "—" : gift
+
     }
 
     // MARK: - Validation

@@ -99,7 +99,7 @@ final class NotificationViewController: UIViewController {
         settingsButton.layer.cornerRadius = 8
         settingsButton.layer.masksToBounds = true
         settingsButton.layer.borderWidth = 1
-        settingsButton.layer.borderColor = borderGray.cgColor
+        settingsButton.layer.borderColor = yellow.cgColor
     }
 
     private func setupEmptyLabel() {

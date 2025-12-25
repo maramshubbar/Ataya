@@ -80,7 +80,9 @@ final class CardDesignManagementCell: UITableViewCell {
         buttonsStack.distribution = .fillEqually
         buttonsStack.translatesAutoresizingMaskIntoConstraints = false
 
+        // 🔹 Edit = Outline أصفر
         styleOutlinedButton(editButton, title: "Edit")
+        // 🔹 Preview = أصفر فل
         styleFilledButton(previewButton, title: "Preview")
 
         editButton.addTarget(self, action: #selector(editTapped), for: .touchUpInside)
@@ -115,7 +117,10 @@ final class CardDesignManagementCell: UITableViewCell {
         ])
     }
 
-    pprivate func styleYellowButton(_ button: UIButton, title: String) {
+    // MARK: - Button Styles
+
+    /// زر أبيض بحد أصفر ونص أصفر (Edit)
+    private func styleOutlinedButton(_ button: UIButton, title: String) {
         button.setTitle(title, for: .normal)
         button.setTitleColor(accentYellow, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
@@ -133,6 +138,7 @@ final class CardDesignManagementCell: UITableViewCell {
         }
     }
 
+    /// زر أصفر فل بنص أسود (Preview)
     private func styleFilledButton(_ button: UIButton, title: String) {
         button.setTitle(title, for: .normal)
         button.setTitleColor(.black, for: .normal)
@@ -142,13 +148,12 @@ final class CardDesignManagementCell: UITableViewCell {
 
         if #available(iOS 15.0, *) {
             var config = button.configuration ?? .plain()
-            config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0,)
+            config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
             button.configuration = config
         } else {
             button.contentEdgeInsets = .zero
         }
     }
-
 
     // MARK: - Configure
 
@@ -158,10 +163,10 @@ final class CardDesignManagementCell: UITableViewCell {
 
         if design.isActive {
             statusLabel.text = design.isDefault ? "Active · Default" : "Active"
-            statusLabel.textColor = UIColor.systemGreen
+            statusLabel.textColor = .systemGreen
         } else {
             statusLabel.text = "Inactive"
-            statusLabel.textColor = UIColor.systemGray
+            statusLabel.textColor = .systemGray
         }
     }
 

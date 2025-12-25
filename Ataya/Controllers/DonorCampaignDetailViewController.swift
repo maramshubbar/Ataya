@@ -1,5 +1,5 @@
 //
-//  CampaignDetailViewController.swift
+//  DonorCampaignDetailViewController.swift
 //  Ataya
 //
 //  Created by Maram on 25/12/2025.
@@ -7,71 +7,12 @@
 
 import UIKit
 
-// MARK: - Category (from Firestore field: "category")
-enum Category: Equatable {
-    case climateChange
-    case emergency
-    case critical
-    case unknown(String)
-
-    init(from raw: String?) {
-        let s = (raw ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-        let lower = s.lowercased()
-
-        if lower == "emergency" { self = .emergency; return }
-        if lower == "critical" { self = .critical; return }
-        if lower == "climate change" || lower == "climatechange" { self = .climateChange; return }
-
-        self = s.isEmpty ? .unknown("") : .unknown(s)
-    }
-
-    var titleText: String {
-        switch self {
-        case .climateChange: return "Climate change"
-        case .emergency:     return "Emergency"
-        case .critical:      return "Critical"
-        case .unknown(let s): return s
-        }
-    }
-
-    var shouldShow: Bool {
-        switch self {
-        case .unknown(let s): return !s.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        default: return true
-        }
-    }
-
-    var pillColor: UIColor {
-        switch self {
-        case .emergency:     return UIColor.systemRed.withAlphaComponent(0.88)
-        case .critical:      return UIColor.systemOrange.withAlphaComponent(0.88)
-        case .climateChange: return UIColor.systemBlue.withAlphaComponent(0.85)
-        case .unknown:       return UIColor.clear
-        }
-    }
-}
-
-// MARK: - Label with padding (badge look)
-final class PaddedLabel: UILabel {
-    var insets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
-
-    override func drawText(in rect: CGRect) {
-        super.drawText(in: rect.inset(by: insets))
-    }
-
-    override var intrinsicContentSize: CGSize {
-        let s = super.intrinsicContentSize
-        return CGSize(width: s.width + insets.left + insets.right,
-                      height: s.height + insets.top + insets.bottom)
-    }
-}
-
-final class CampaignDetailViewController: UIViewController {
+final class DonorCampaignDetailViewController: UIViewController {
 
     // MARK: - ViewModel
     struct ViewModel {
         let title: String
-        let category: Category
+        let category: String     // ✅ من Firestore: "Climate change" / "Emergency" / "Critical"
         let imageURL: String?
 
         let goalAmount: Double
@@ -89,16 +30,18 @@ final class CampaignDetailViewController: UIViewController {
 
     // MARK: - Public
     private var model: ViewModel
+    private var onDonate: (() -> Void)?
 
-    init(model: ViewModel) {
+    init(model: ViewModel, onDonate: (() -> Void)? = nil) {
         self.model = model
+        self.onDonate = onDonate
         super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
         self.model = ViewModel(
             title: "Campaign",
-            category: .unknown(""),
+            category: "",
             imageURL: nil,
             goalAmount: 0,
             raisedAmount: 0,
@@ -109,13 +52,28 @@ final class CampaignDetailViewController: UIViewController {
             orgName: "—",
             orgAbout: "—"
         )
+        self.onDonate = nil
         super.init(coder: coder)
     }
 
+    // MARK: - Local Hex Color Helper
+    private func color(hex: String, alpha: CGFloat = 1) -> UIColor {
+        var h = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        if h.hasPrefix("#") { h.removeFirst() }
+        guard h.count == 6 else { return UIColor.systemYellow.withAlphaComponent(alpha) }
+
+        var rgb: UInt64 = 0
+        Scanner(string: h).scanHexInt64(&rgb)
+        let r = CGFloat((rgb & 0xFF0000) >> 16) / 255
+        let g = CGFloat((rgb & 0x00FF00) >> 8) / 255
+        let b = CGFloat(rgb & 0x0000FF) / 255
+        return UIColor(red: r, green: g, blue: b, alpha: alpha)
+    }
+
     // MARK: - Colors
-    private let brandYellow = UIColor(hex: "F7D44C")
-    private let borderGray  = UIColor(hex: "E6E6E6")
-    private let cardCream   = UIColor(hex: "FFF7E6")
+    private lazy var brandYellow = color(hex: "#F7D44C")
+    private lazy var borderGray  = color(hex: "#E6E6E6")
+    private lazy var cardCream   = color(hex: "#FFF7E6")
 
     // MARK: - UI
     private let scrollView = UIScrollView()
@@ -125,13 +83,13 @@ final class CampaignDetailViewController: UIViewController {
     private let heroImageView = UIImageView()
 
     // ✅ Status badge فوق يسار (لاصق + مربع)
-    private let statusPill = PaddedLabel()
+    private let statusPill = DonorPaddedLabel()
 
-    private let heroOverlay = UIView()   // للعنوان + gradient
+    private let heroOverlay = UIView()
     private let heroTitleLabel = UILabel()
     private let heroGradient = CAGradientLayer()
 
-    // Progress (تحت داخل الصورة)
+    // ✅ Progress (تحت داخل الصورة)
     private let progressTrack = UIView()
     private let progressFill  = UIView()
     private var progressWidthC: NSLayoutConstraint?
@@ -155,6 +113,9 @@ final class CampaignDetailViewController: UIViewController {
     private let aboutTitle = UILabel()
     private let aboutBody  = UILabel()
 
+    // ✅ Donate Now
+    private let donateButton = UIButton(type: .system)
+
     private var imageTask: URLSessionDataTask?
 
     // MARK: - Lifecycle
@@ -172,6 +133,7 @@ final class CampaignDetailViewController: UIViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+
         heroGradient.frame = heroOverlay.bounds
 
         if let p = pendingProgress {
@@ -243,7 +205,7 @@ final class CampaignDetailViewController: UIViewController {
 
     // MARK: - Hero
     private func setupHero() {
-        heroImageView.backgroundColor = UIColor(hex: "F2F2F7")
+        heroImageView.backgroundColor = color(hex: "#F2F2F7")
         heroImageView.contentMode = .scaleAspectFill
         heroImageView.clipsToBounds = true
         heroImageView.image = UIImage(systemName: "photo")
@@ -251,18 +213,19 @@ final class CampaignDetailViewController: UIViewController {
         contentView.addSubview(heroImageView)
         heroImageView.translatesAutoresizingMaskIntoConstraints = false
 
-        // ✅ Status pill (لاصق فوق يسار + مربع)
+        // ✅ Status pill
         statusPill.font = .systemFont(ofSize: 13, weight: .semibold)
         statusPill.textColor = .white
         statusPill.textAlignment = .left
         statusPill.layer.cornerRadius = 0
         statusPill.layer.masksToBounds = true
         statusPill.isHidden = true
+        statusPill.layer.zPosition = 50
 
         heroImageView.addSubview(statusPill)
         statusPill.translatesAutoresizingMaskIntoConstraints = false
 
-        // Overlay + gradient
+        // Overlay + Gradient
         heroOverlay.backgroundColor = .clear
         heroImageView.addSubview(heroOverlay)
         heroOverlay.translatesAutoresizingMaskIntoConstraints = false
@@ -311,7 +274,7 @@ final class CampaignDetailViewController: UIViewController {
             heroImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             heroImageView.heightAnchor.constraint(equalToConstant: 366),
 
-            // ✅ status top-left stuck
+            // ✅ status stuck top-left
             statusPill.topAnchor.constraint(equalTo: heroImageView.topAnchor, constant: 0),
             statusPill.leadingAnchor.constraint(equalTo: heroImageView.leadingAnchor, constant: 0),
             statusPill.heightAnchor.constraint(equalToConstant: 32),
@@ -322,14 +285,14 @@ final class CampaignDetailViewController: UIViewController {
             heroOverlay.bottomAnchor.constraint(equalTo: heroImageView.bottomAnchor),
             heroOverlay.heightAnchor.constraint(equalToConstant: 170),
 
-            // ✅ progress + info row near bottom (inside image)
+            // ✅ progress near bottom
             progressInfoRow.bottomAnchor.constraint(equalTo: heroImageView.bottomAnchor, constant: -18),
-            progressInfoRow.leadingAnchor.constraint(equalTo: heroImageView.leadingAnchor, constant: 24),
-            progressInfoRow.trailingAnchor.constraint(equalTo: heroImageView.trailingAnchor, constant: -24),
+            progressInfoRow.leadingAnchor.constraint(equalTo: progressTrack.leadingAnchor),
+            progressInfoRow.trailingAnchor.constraint(equalTo: progressTrack.trailingAnchor),
 
             progressTrack.bottomAnchor.constraint(equalTo: progressInfoRow.topAnchor, constant: -8),
-            progressTrack.leadingAnchor.constraint(equalTo: heroImageView.leadingAnchor, constant: 24),
-            progressTrack.trailingAnchor.constraint(equalTo: heroImageView.trailingAnchor, constant: -24),
+            progressTrack.centerXAnchor.constraint(equalTo: heroImageView.centerXAnchor),
+            progressTrack.widthAnchor.constraint(equalToConstant: 392),
             progressTrack.heightAnchor.constraint(equalToConstant: 28),
 
             // ✅ title فوق progress
@@ -451,11 +414,20 @@ final class CampaignDetailViewController: UIViewController {
         aboutBody.numberOfLines = 0
         aboutBody.textAlignment = .left
 
+        // ✅ Donate Button
+        donateButton.setTitle("Donate Now", for: .normal)
+        donateButton.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
+        donateButton.backgroundColor = brandYellow
+        donateButton.setTitleColor(.black, for: .normal)
+        donateButton.layer.cornerRadius = 8
+        donateButton.layer.masksToBounds = true
+        donateButton.addTarget(self, action: #selector(didTapDonateNow), for: .touchUpInside)
+
         let wrap = UIView()
         contentView.addSubview(wrap)
         wrap.translatesAutoresizingMaskIntoConstraints = false
 
-        [statsRow, overviewTitle, overviewBody, quoteCard, aboutTitle, aboutBody].forEach {
+        [statsRow, overviewTitle, overviewBody, quoteCard, aboutTitle, aboutBody, donateButton].forEach {
             wrap.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
@@ -489,7 +461,12 @@ final class CampaignDetailViewController: UIViewController {
             aboutBody.topAnchor.constraint(equalTo: aboutTitle.bottomAnchor, constant: 10),
             aboutBody.leadingAnchor.constraint(equalTo: wrap.leadingAnchor),
             aboutBody.trailingAnchor.constraint(equalTo: wrap.trailingAnchor),
-            aboutBody.bottomAnchor.constraint(equalTo: wrap.bottomAnchor, constant: -6)
+
+            donateButton.topAnchor.constraint(equalTo: aboutBody.bottomAnchor, constant: 24),
+            donateButton.centerXAnchor.constraint(equalTo: wrap.centerXAnchor),
+            donateButton.widthAnchor.constraint(equalToConstant: 362),
+            donateButton.heightAnchor.constraint(equalToConstant: 54),
+            donateButton.bottomAnchor.constraint(equalTo: wrap.bottomAnchor, constant: -6),
         ])
     }
 
@@ -507,35 +484,44 @@ final class CampaignDetailViewController: UIViewController {
         rightPercentLabel.text = "\(Int(max(0, min(1, p)) * 100)) %"
 
         statsRow.arrangedSubviews.forEach { $0.removeFromSuperview() }
-//        statsRow.addArrangedSubview(statItem(icon: "heart.fill", title: "Goal",  value: "\(money(model.goalAmount)) $"))
-//        statsRow.addArrangedSubview(statItem(icon: "moon.fill",  title: "Raised", value: "\(money(model.raisedAmount)) $"))
-//        statsRow.addArrangedSubview(statItem(icon: "calendar",   title: "Days",  value: model.daysLeftText))
-//        
-        
+
+        // ✅ غيرت أيقونة الوسط (بدال الهلال)
         statsRow.addArrangedSubview(statItem(icon: "target", title: "Goal",  value: "\(money(model.goalAmount)) $"))
         statsRow.addArrangedSubview(statItem(icon: "chart.line.uptrend.xyaxis", title: "Raised", value: "\(money(model.raisedAmount)) $"))
         statsRow.addArrangedSubview(statItem(icon: "clock", title: "Days",  value: model.daysLeftText))
 
 
-        overviewBody.text = model.overviewText
+        overviewBody.text = model.overviewText.isEmpty ? "—" : model.overviewText
 
-        quoteLabel.text = model.quoteText
-        quoteAuthorLabel.text = model.quoteAuthor
+        quoteLabel.text = model.quoteText.isEmpty ? "—" : model.quoteText
+        quoteAuthorLabel.text = model.quoteAuthor.isEmpty ? "—" : model.quoteAuthor
 
-        aboutTitle.text = "About \(model.orgName)"
-        aboutBody.text = model.orgAbout
+        aboutTitle.text = "About \(model.orgName.isEmpty ? "Organization" : model.orgName)"
+        aboutBody.text = model.orgAbout.isEmpty ? "—" : model.orgAbout
 
         loadHeroImage(urlString: model.imageURL)
     }
 
-    private func applyCategoryPill(_ category: Category) {
-        guard category.shouldShow else {
+    private func applyCategoryPill(_ raw: String) {
+        let s = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !s.isEmpty else {
             statusPill.isHidden = true
             return
         }
+
+        let lower = s.lowercased()
         statusPill.isHidden = false
-        statusPill.text = category.titleText
-        statusPill.backgroundColor = category.pillColor
+        statusPill.text = s
+
+        if lower == "emergency" {
+            statusPill.backgroundColor = UIColor.systemRed.withAlphaComponent(0.88)
+        } else if lower == "critical" {
+            statusPill.backgroundColor = UIColor.systemOrange.withAlphaComponent(0.88)
+        } else if lower == "climate change" || lower == "climatechange" {
+            statusPill.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.85)
+        } else {
+            statusPill.backgroundColor = UIColor.black.withAlphaComponent(0.55)
+        }
     }
 
     private func statItem(icon: String, title: String, value: String) -> UIView {
@@ -566,14 +552,16 @@ final class CampaignDetailViewController: UIViewController {
         stack.translatesAutoresizingMaskIntoConstraints = false
         iconView.translatesAutoresizingMaskIntoConstraints = false
 
+        // ✅ Command+F: iconSize (هني تغيرين حجم الأيقونات)
+        let iconSize: CGFloat = 24
         NSLayoutConstraint.activate([
             stack.topAnchor.constraint(equalTo: v.topAnchor),
             stack.leadingAnchor.constraint(equalTo: v.leadingAnchor),
             stack.trailingAnchor.constraint(equalTo: v.trailingAnchor),
             stack.bottomAnchor.constraint(equalTo: v.bottomAnchor),
 
-            iconView.widthAnchor.constraint(equalToConstant: 24),
-            iconView.heightAnchor.constraint(equalToConstant: 30)
+            iconView.widthAnchor.constraint(equalToConstant: iconSize),
+            iconView.heightAnchor.constraint(equalToConstant: iconSize)
         ])
 
         return v
@@ -598,5 +586,32 @@ final class CampaignDetailViewController: UIViewController {
         f.numberStyle = .decimal
         f.maximumFractionDigits = 0
         return f.string(from: NSNumber(value: value)) ?? "\(Int(value))"
+    }
+
+    @objc private func didTapDonateNow() {
+        if let onDonate = onDonate {
+            onDonate()
+            return
+        }
+        let a = UIAlertController(title: "Donate", message: "Hook your donate flow here ✅", preferredStyle: .alert)
+        a.addAction(UIAlertAction(title: "OK", style: .default))
+        present(a, animated: true)
+    }
+}
+
+// MARK: - Padded Badge
+final class DonorPaddedLabel: UILabel {
+    var insets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
+
+    override func drawText(in rect: CGRect) {
+        super.drawText(in: rect.inset(by: insets))
+    }
+
+    override var intrinsicContentSize: CGSize {
+        let s = super.intrinsicContentSize
+        return CGSize(
+            width: s.width + insets.left + insets.right,
+            height: s.height + insets.top + insets.bottom
+        )
     }
 }

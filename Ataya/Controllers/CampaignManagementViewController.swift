@@ -5,19 +5,6 @@
 //  Created by Maram on 24/12/2025.
 //
 
-//
-//  CampaignManagementViewController.swift
-//  Ataya
-//
-//  Created by Maram on 24/12/2025.
-//
-//
-//  CampaignManagementViewController.swift
-//  Ataya
-//
-//  Created by Maram on 24/12/2025.
-//
-
 import UIKit
 import FirebaseFirestore
 
@@ -35,8 +22,8 @@ final class CampaignManagementViewController: UIViewController {
     private var campaigns: [CampaignItem] = []
 
     // MARK: Colors
-    private let brandYellow = UIColor(atayaHexSafe: "#F7D44C")
-    private let borderGray  = UIColor(atayaHexSafe: "#E6E6E6")
+    private let brandYellow = UIColor(hex: "F7D44C")
+    private let borderGray  = UIColor(hex: "E6E6E6")
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,6 +40,20 @@ final class CampaignManagementViewController: UIViewController {
     }
 
     deinit { listener?.remove() }
+
+    private func openScreen(_ vc: UIViewController) {
+        DispatchQueue.main.async {
+            vc.hidesBottomBarWhenPushed = true
+
+            if let nav = self.navigationController {
+                nav.pushViewController(vc, animated: true)
+            } else {
+                let nav = UINavigationController(rootViewController: vc)
+                nav.modalPresentationStyle = .fullScreen
+                self.present(nav, animated: true)
+            }
+        }
+    }
 
     // MARK: Create Button
     private func setupCreateButton() {
@@ -71,15 +72,7 @@ final class CampaignManagementViewController: UIViewController {
     @objc private func didTapCreate() {
         let vc = CreateCampaignViewController()
         vc.mode = .create
-        vc.hidesBottomBarWhenPushed = true
-
-        if let nav = navigationController {
-            nav.pushViewController(vc, animated: true)
-        } else {
-            let nav = UINavigationController(rootViewController: vc)
-            nav.modalPresentationStyle = .fullScreen
-            present(nav, animated: true)
-        }
+        openScreen(vc)
     }
 
     // MARK: Table
@@ -149,8 +142,8 @@ final class CampaignManagementViewController: UIViewController {
         listener = db.collection("campaigns")
             .order(by: "createdAt", descending: true)
             .addSnapshotListener { [weak self] snap, err in
-                guard let self else { return }
-                if let err {
+                guard let self = self else { return }
+                if let err = err {
                     print("❌ Firestore listen error:", err)
                     return
                 }
@@ -160,7 +153,8 @@ final class CampaignManagementViewController: UIViewController {
                     let d = doc.data()
 
                     let title = self.readString(d["title"]) ?? "—"
-                    let category = self.readString(d["category"]) ?? ""
+                    let categoryRaw = (self.readString(d["category"]) ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+
                     let location = self.readString(d["location"]) ?? "—"
                     let overview = self.readString(d["overview"]) ?? "—"
                     let story = self.readString(d["story"]) ?? ""
@@ -180,7 +174,7 @@ final class CampaignManagementViewController: UIViewController {
                     return CampaignItem(
                         id: doc.documentID,
                         title: title,
-                        category: category,
+                        categoryRaw: categoryRaw,
                         goalAmount: goalAmount,
                         raisedAmount: raisedAmount,
                         startDate: startDate,
@@ -196,8 +190,10 @@ final class CampaignManagementViewController: UIViewController {
                     )
                 }
 
-                self.tableView.reloadData()
-                self.updateEmptyState()
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                    self.updateEmptyState()
+                }
             }
     }
 
@@ -254,14 +250,13 @@ extension CampaignManagementViewController: UITableViewDataSource, UITableViewDe
 
         // ✅ EDIT
         cell.onEdit = { [weak self] in
-            guard let self else { return }
+            guard let self = self else { return }
 
             let vc = CreateCampaignViewController()
-            vc.hidesBottomBarWhenPushed = true
 
             let existing = CreateCampaignViewController.CampaignFormData(
                 title: item.title,
-                category: item.category,
+                category: item.categoryRaw,
                 goalAmount: "\(self.money(item.goalAmount)) $",
                 startDate: item.startDate,
                 endDate: item.endDate,
@@ -279,49 +274,33 @@ extension CampaignManagementViewController: UITableViewDataSource, UITableViewDe
             vc.editingExistingImageUrl = item.imageUrl
             vc.editingExistingPublicId = item.imagePublicId
 
-            if let nav = self.navigationController {
-                nav.pushViewController(vc, animated: true)
-            } else {
-                let nav = UINavigationController(rootViewController: vc)
-                nav.modalPresentationStyle = .fullScreen
-                self.present(nav, animated: true)
-            }
+            self.openScreen(vc)
         }
 
+        // ✅ VIEW -> CampaignDetailViewController
         cell.onView = { [weak self] in
-            guard let self else { return }
+            guard let self = self else { return }
 
-            // Days left
             let days = Calendar.current.dateComponents([.day], from: Date(), to: item.endDate).day ?? 0
             let daysText = "\(max(days, 0)) days Left"
 
-            // ✅ ViewModel حق صفحة التفاصيل
             let vm = CampaignDetailViewController.ViewModel(
                 title: item.title,
-                isEmergency: false,                 // تقدرين تغيرينه إذا عندج شرط
+                category: Category(from: item.categoryRaw),
                 imageURL: item.imageUrl,
                 goalAmount: item.goalAmount,
                 raisedAmount: item.raisedAmount,
                 daysLeftText: daysText,
                 overviewText: item.overview,
-                quoteText: item.story,              // نخلي الـ story داخل quote card
+                quoteText: item.story,
                 quoteAuthor: item.from.isEmpty ? "—" : item.from,
                 orgName: item.organization,
                 orgAbout: "LifeReach is a humanitarian organization dedicated to helping families in crisis rebuild their lives with dignity. We deliver urgent medical aid, food, water, and long-term recovery support to those affected by conflict and disaster. Guided by compassion and transparency, we work to restore hope where it’s needed most."
             )
 
-            let vc = CampaignDetailViewController(model: vm)
-            vc.hidesBottomBarWhenPushed = true
-
-            if let nav = self.navigationController {
-                nav.pushViewController(vc, animated: true)      // ✅ بيطلع Back button تلقائي
-            } else {
-                let nav = UINavigationController(rootViewController: vc)
-                nav.modalPresentationStyle = .fullScreen
-                self.present(nav, animated: true)
-            }
+            let detailVC = CampaignDetailViewController(model: vm)
+            self.openScreen(detailVC)
         }
-
 
         return cell
     }
@@ -334,7 +313,7 @@ extension CampaignManagementViewController: UITableViewDataSource, UITableViewDe
 private struct CampaignItem {
     let id: String
     let title: String
-    let category: String
+    let categoryRaw: String
     let goalAmount: Double
     let raisedAmount: Double
     let startDate: Date
@@ -357,10 +336,10 @@ private final class CampaignCell: UITableViewCell {
     var onEdit: (() -> Void)?
     var onView: (() -> Void)?
 
-    private let brandYellow = UIColor(atayaHexSafe: "#F7D44C")
-    private let borderGray  = UIColor(atayaHexSafe: "#E6E6E6")
-    private let thumbBG     = UIColor(atayaHexSafe: "#F2F2F7")
-    private let editText    = UIColor(atayaHexSafe: "#C28A00")
+    private let brandYellow = UIColor(hex: "F7D44C")
+    private let borderGray  = UIColor(hex: "E6E6E6")
+    private let thumbBG     = UIColor(hex: "F2F2F7")
+    private let editText    = UIColor(hex: "C28A00")
 
     private let cardView = UIView()
 
@@ -416,7 +395,6 @@ private final class CampaignCell: UITableViewCell {
     }
 
     private func setupTopRow() {
-        // ✅ صورة مربعة + بدون ريديس
         thumb.backgroundColor = thumbBG
         thumb.layer.cornerRadius = 0
         thumb.layer.masksToBounds = true
@@ -475,7 +453,6 @@ private final class CampaignCell: UITableViewCell {
     }
 
     private func setupButtons() {
-        // ✅ radius 4.6
         editButton.setTitle("Edit", for: .normal)
         editButton.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
         editButton.setTitleColor(editText, for: .normal)
@@ -483,7 +460,6 @@ private final class CampaignCell: UITableViewCell {
         editButton.layer.cornerRadius = 4.6
         editButton.layer.borderWidth = 1
         editButton.layer.borderColor = brandYellow.cgColor
-        editButton.contentHorizontalAlignment = .center
         editButton.addTarget(self, action: #selector(tapEdit), for: .touchUpInside)
 
         viewButton.setTitle("View", for: .normal)
@@ -492,26 +468,22 @@ private final class CampaignCell: UITableViewCell {
         viewButton.backgroundColor = brandYellow
         viewButton.layer.cornerRadius = 4.6
         viewButton.layer.masksToBounds = true
-        viewButton.contentHorizontalAlignment = .center
         viewButton.addTarget(self, action: #selector(tapView), for: .touchUpInside)
 
         buttonsRow = UIStackView(arrangedSubviews: [editButton, viewButton])
         buttonsRow.axis = .horizontal
         buttonsRow.spacing = 14
         buttonsRow.distribution = .fillEqually
-        buttonsRow.alignment = .fill
 
         cardView.addSubview(buttonsRow)
         buttonsRow.translatesAutoresizingMaskIntoConstraints = false
 
-        // ✅ هذا هو الارتفاع الوحيد للأزرار
         NSLayoutConstraint.activate([
             buttonsRow.heightAnchor.constraint(equalToConstant: 48)
         ])
     }
 
     private func layoutAll() {
-        // ✅ نفس عرض زر Create Campaign (362) + وسط
         let preferredW = cardView.widthAnchor.constraint(equalToConstant: 362)
         preferredW.priority = .defaultHigh
         let maxW = cardView.widthAnchor.constraint(lessThanOrEqualTo: contentView.widthAnchor, constant: -32)
@@ -531,7 +503,6 @@ private final class CampaignCell: UITableViewCell {
             descLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 16),
             descLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -16),
 
-            // ✅ الأزرار تبدأ من اليسار وتاخذ عرض الكارد كله
             buttonsRow.topAnchor.constraint(equalTo: descLabel.bottomAnchor, constant: 14),
             buttonsRow.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 16),
             buttonsRow.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -16),
@@ -546,10 +517,12 @@ private final class CampaignCell: UITableViewCell {
         descLabel.text = desc
 
         thumb.image = UIImage(systemName: "photo")
-        guard let s = imageURL, let url = URL(string: s) else { return }
+        imageTask?.cancel()
+        imageTask = nil
 
+        guard let s = imageURL, let url = URL(string: s) else { return }
         imageTask = URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
-            guard let self, let data, let img = UIImage(data: data) else { return }
+            guard let self = self, let data = data, let img = UIImage(data: data) else { return }
             DispatchQueue.main.async { self.thumb.image = img }
         }
         imageTask?.resume()
@@ -557,30 +530,4 @@ private final class CampaignCell: UITableViewCell {
 
     @objc private func tapEdit() { onEdit?() }
     @objc private func tapView() { onView?() }
-}
-
-// MARK: - Hex Helper
-private extension UIColor {
-    convenience init(atayaHexSafe hex: String, alpha: CGFloat = 1.0) {
-        var s = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-        if s.hasPrefix("#") { s.removeFirst() }
-
-        var value: UInt64 = 0
-        Scanner(string: s).scanHexInt64(&value)
-
-        let r, g, b: CGFloat
-        if s.count == 6 {
-            r = CGFloat((value & 0xFF0000) >> 16) / 255.0
-            g = CGFloat((value & 0x00FF00) >> 8)  / 255.0
-            b = CGFloat(value & 0x0000FF) / 255.0
-        } else if s.count == 8 {
-            r = CGFloat((value & 0x00FF0000) >> 16) / 255.0
-            g = CGFloat((value & 0x0000FF00) >> 8)  / 255.0
-            b = CGFloat(value & 0x000000FF) / 255.0
-        } else {
-            r = 0; g = 0; b = 0
-        }
-
-        self.init(red: r, green: g, blue: b, alpha: alpha)
-    }
 }

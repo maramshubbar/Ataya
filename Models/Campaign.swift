@@ -88,3 +88,26 @@ struct Campaign: Identifiable, Codable {
     }
 }
 
+extension Campaign {
+
+    var startDateValue: Date { startDate.dateValue() }
+    var endDateValue: Date { endDate.dateValue() }
+
+    // يجهز الفورم حق CreateCampaignViewController (Edit)
+    func toFormData() -> CreateCampaignViewController.CampaignFormData {
+        return CreateCampaignViewController.CampaignFormData(
+            title: title,
+            category: category,
+            goalAmount: goalAmountText, // "80000 $"
+            startDate: startDateValue,
+            endDate: endDateValue,
+            location: location,
+            overview: overview,
+            story: story,
+            from: from,
+            organization: organization,
+            showOnHome: showOnHome,
+            image: nil
+        )
+    }
+}

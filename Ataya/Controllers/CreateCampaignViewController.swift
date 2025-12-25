@@ -6,6 +6,12 @@
 ////
 
 
+//
+//  CreateCampaignViewController.swift
+//  Ataya
+//
+//  Created by Maram on 24/12/2025.
+//
 
 import UIKit
 import PhotosUI
@@ -47,7 +53,7 @@ final class CreateCampaignViewController: UIViewController {
 
     // ✅ Cloudinary
     private let cloudName = "duzj3sbkb"
-    private let uploadPreset = "duzj3sbkb"
+    private let uploadPreset = "duzj3sbkb"   // ⚠️ تأكدي هذا فعلاً upload preset
     private let cloudFolder = "campaigns"
 
     // MARK: UI
@@ -74,7 +80,7 @@ final class CreateCampaignViewController: UIViewController {
     private let orgField = LabeledMenuField(title: "Organization / NGO", initial: "LifeReach", items: [
         "LifeReach", "HopeAid", "MercyHands", "ReliefBridge", "CarePath"
     ])
-    
+
     private let showHomeRow = UIView()
     private let showHomeLabel = UILabel()
     private let showHomeSwitch = UISwitch()
@@ -110,7 +116,7 @@ final class CreateCampaignViewController: UIViewController {
         uploadView.onTap = { [weak self] in
             self?.presentImagePicker()
         }
-        
+
         switch mode {
         case .create:
             title = "Create Campaign"
@@ -129,9 +135,11 @@ final class CreateCampaignViewController: UIViewController {
                 downloadImage(url: url) { [weak self] img in
                     guard let self else { return }
                     // ✅ this is ONLY for preview (not considered "new pick")
-                    if self.selectedImage == nil {
-                        self.selectedImage = img
-                        self.didPickNewImage = false
+                    DispatchQueue.main.async {
+                        if self.selectedImage == nil {
+                            self.selectedImage = img
+                            self.didPickNewImage = false
+                        }
                     }
                 }
             }
@@ -280,9 +288,7 @@ final class CreateCampaignViewController: UIViewController {
         createButton.layer.cornerRadius = 8
         createButton.layer.masksToBounds = true
         createButton.addTarget(self, action: #selector(didTapCreate), for: .touchUpInside)
-        
-        
-        
+
         savingSpinner.hidesWhenStopped = true
         savingSpinner.translatesAutoresizingMaskIntoConstraints = false
         createButton.addSubview(savingSpinner)
@@ -292,8 +298,6 @@ final class CreateCampaignViewController: UIViewController {
             savingSpinner.trailingAnchor.constraint(equalTo: createButton.trailingAnchor, constant: -16)
         ])
 
-        
-        
         let buttons = UIStackView(arrangedSubviews: [cancelButton, createButton])
         buttons.axis = .vertical
         buttons.spacing = 12
@@ -425,111 +429,122 @@ final class CreateCampaignViewController: UIViewController {
         }
     }
 
-    private func saveToFirestore(form: CampaignFormData, imageURL: String?, publicId: String?) {
-
-        let goalDouble = CampaignAmountParser.parse(form.goalAmount)
-
-        // ✅ Decide create vs edit safely
-        let isEdit: Bool
-        let docRef: DocumentReference
-
-        switch mode {
-        case .create:
-            isEdit = false
-            docRef = db.collection("campaigns").document()
-
-        case .edit:
-            if let id = editingDocumentId, !id.atayaTrimmed.isEmpty {
-                isEdit = true
-                docRef = db.collection("campaigns").document(id)
-            } else {
-                // fallback: create new if no id
-                isEdit = false
-                docRef = db.collection("campaigns").document()
-            }
+    // ✅ أهم جزء: يضمن تسجيل دخول (anonymous) عشان Firestore ما يرفض
+    private func ensureSignedIn(completion: @escaping (Result<String, Error>) -> Void) {
+        if let uid = Auth.auth().currentUser?.uid {
+            completion(.success(uid))
+            return
         }
 
-        var data: [String: Any] = [
-            "title": form.title,
-            "category": form.category,
-            "goalAmount": goalDouble,
-            "startDate": Timestamp(date: form.startDate),
-            "endDate": Timestamp(date: form.endDate),
-            "location": form.location,
-            "overview": form.overview,
-            "story": form.story,
-            "from": form.from,
-            "organization": form.organization,
-            "showOnHome": form.showOnHome,
-            "updatedAt": FieldValue.serverTimestamp()
-        ]
-
-        // ✅ Save image keys in BOTH forms to avoid mismatches across files
-        if let imageURL {
-            data["imageUrl"] = imageURL
-            data["imageURL"] = imageURL
-        } else {
-            data["imageUrl"] = NSNull()
-            data["imageURL"] = NSNull()
-        }
-
-        if let publicId {
-            data["imagePublicId"] = publicId
-        } else {
-            data["imagePublicId"] = NSNull()
-        }
-
-        if !isEdit {
-            data["raisedAmount"] = 0.0
-            data["createdAt"] = FieldValue.serverTimestamp()
-        }
-        
-//        guard let uid = Auth.auth().currentUser?.uid else {
-//            DispatchQueue.main.async {
-//                self.setSaving(false)
-//                self.showError("Please sign in first.")
-//            }
-//            return
-//        }
-//
-//        if !isEdit {
-//            data["createdBy"] = uid
-//        }
-//        data["lastUpdatedBy"] = uid
-
-        
-        let uid = Auth.auth().currentUser?.uid ?? "anonymous"
-
-        if !isEdit {
-            data["createdBy"] = uid
-        }
-        data["lastUpdatedBy"] = uid
-
-        
-
-        docRef.setData(data, merge: true) { [weak self] err in
-            guard let self else { return }
-
-            DispatchQueue.main.async { self.setSaving(false) }
-
-            if let err {
-                print("❌ Firestore save error:", err)
-                DispatchQueue.main.async { self.showError("Save failed.\n\(err.localizedDescription)") }
+        Auth.auth().signInAnonymously { result, error in
+            if let error {
+                completion(.failure(error))
                 return
             }
+            if let uid = result?.user.uid {
+                completion(.success(uid))
+            } else {
+                completion(.failure(NSError(domain: "auth", code: -1)))
+            }
+        }
+    }
 
-            // ✅ Popup title based on mode
-            let isEditMode: Bool = {
-                if case .edit = self.mode { return true }
-                return false
-            }()
+    private func saveToFirestore(form: CampaignFormData, imageURL: String?, publicId: String?) {
 
-            DispatchQueue.main.async {
-                self.showCreatedPopup(isEdit: isEditMode) {
-                    if let nav = self.navigationController, nav.viewControllers.count > 1 {
-                        nav.popViewController(animated: true)
+        ensureSignedIn { [weak self] authResult in
+            guard let self else { return }
+
+            switch authResult {
+            case .failure(let err):
+                DispatchQueue.main.async {
+                    self.setSaving(false)
+                    self.showError("Sign-in failed.\n\(err.localizedDescription)")
+                }
+                return
+
+            case .success(let uid):
+                let goalDouble = CampaignAmountParser.parse(form.goalAmount)
+
+                // ✅ Decide create vs edit safely
+                let isEdit: Bool
+                let docRef: DocumentReference
+
+                switch self.mode {
+                case .create:
+                    isEdit = false
+                    docRef = self.db.collection("campaigns").document()
+
+                case .edit:
+                    if let id = self.editingDocumentId, !id.atayaTrimmed.isEmpty {
+                        isEdit = true
+                        docRef = self.db.collection("campaigns").document(id)
                     } else {
-                        self.dismiss(animated: true)
+                        isEdit = false
+                        docRef = self.db.collection("campaigns").document()
+                    }
+                }
+
+                var data: [String: Any] = [
+                    "title": form.title,
+                    "category": form.category,
+                    "goalAmount": goalDouble,
+                    "startDate": Timestamp(date: form.startDate),
+                    "endDate": Timestamp(date: form.endDate),
+                    "location": form.location,
+                    "overview": form.overview,
+                    "story": form.story,
+                    "from": form.from,
+                    "organization": form.organization,
+                    "showOnHome": form.showOnHome,
+                    "updatedAt": FieldValue.serverTimestamp(),
+                    "lastUpdatedBy": uid
+                ]
+
+                if !isEdit {
+                    data["raisedAmount"] = 0.0
+                    data["createdAt"] = FieldValue.serverTimestamp()
+                    data["createdBy"] = uid
+                }
+
+                // ✅ Save image keys in BOTH forms to avoid mismatches
+                if let imageURL {
+                    data["imageUrl"] = imageURL
+                    data["imageURL"] = imageURL
+                } else {
+                    data["imageUrl"] = NSNull()
+                    data["imageURL"] = NSNull()
+                }
+
+                if let publicId {
+                    data["imagePublicId"] = publicId
+                } else {
+                    data["imagePublicId"] = NSNull()
+                }
+
+                docRef.setData(data, merge: true) { [weak self] err in
+                    guard let self else { return }
+
+                    DispatchQueue.main.async { self.setSaving(false) }
+
+                    if let err {
+                        print("❌ Firestore save error:", err)
+                        DispatchQueue.main.async { self.showError("Save failed.\n\(err.localizedDescription)") }
+                        return
+                    }
+
+                    let isEditMode: Bool = {
+                        if case .edit = self.mode { return true }
+                        return false
+                    }()
+
+                    DispatchQueue.main.async {
+                        self.showCreatedPopup(isEdit: isEditMode) {
+                            if let nav = self.navigationController, nav.viewControllers.count > 1 {
+                                nav.popViewController(animated: true)
+                            } else {
+                                self.dismiss(animated: true)
+                            }
+                        }
                     }
                 }
             }
@@ -548,7 +563,6 @@ final class CreateCampaignViewController: UIViewController {
             savingSpinner.stopAnimating()
         }
     }
-
 
     private func showError(_ msg: String) {
         let a = UIAlertController(title: "Error", message: msg, preferredStyle: .alert)
@@ -578,13 +592,11 @@ final class CreateCampaignViewController: UIViewController {
         present(pop, animated: true)
     }
 
-
     // MARK: Cloudinary Upload (Unsigned)
     private func uploadToCloudinary(
         image: UIImage,
         completion: @escaping (Result<(url: String, publicId: String), Error>) -> Void
     ) {
-
         guard let jpg = image.jpegData(compressionQuality: 0.85) else {
             completion(.failure(NSError(domain: "img", code: 0)))
             return
@@ -738,7 +750,10 @@ private final class CampaignCreatedPopupViewController: UIViewController {
     private let dim = UIView()
     private let card = UIView()
 
-    private let icon = UIImageView()
+    // ✅ icon layers (to FORCE the exact green like your screenshot)
+    private let iconWrap = UIView()
+    private let sealImg = UIImageView()
+    private let checkImg = UIImageView()
 
     private let titleLbl = UILabel()
     private let subLbl = UILabel()
@@ -762,19 +777,27 @@ private final class CampaignCreatedPopupViewController: UIViewController {
         view.addSubview(card)
         card.translatesAutoresizingMaskIntoConstraints = false
 
-        // ✅ EXACT green like your screenshot (2-tone)
-        let checkGreen = UIColor.atayaHex("#4F8E4F")   // الغامق (الصح)
-        let fillGreen  = UIColor.atayaHex("#CFE6CF")   // الفاتح (الخلفية)
+        // ✅ EXACT green like screenshot
+        let checkGreen = UIColor.atayaHex("#4F8E4F")   // dark check
+        let fillGreen  = UIColor.atayaHex("#CFE6CF")   // light seal
 
-        let config = UIImage.SymbolConfiguration(pointSize: 120, weight: .regular)
-            .applying(UIImage.SymbolConfiguration(paletteColors: [checkGreen, fillGreen]))
+        sealImg.image = UIImage(systemName: "seal.fill")
+        sealImg.tintColor = fillGreen
+        sealImg.contentMode = .scaleAspectFit
 
-        icon.image = UIImage(systemName: "checkmark.seal.fill", withConfiguration: config)?
-            .withRenderingMode(.alwaysOriginal)
+        checkImg.image = UIImage(systemName: "checkmark")
+        checkImg.tintColor = checkGreen
+        checkImg.contentMode = .scaleAspectFit
 
-        icon.contentMode = .scaleAspectFit
-        icon.tintColor = nil // ✅ مهم جدًا
+        // give them matching weights/sizes
+        sealImg.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 150, weight: .regular)
+        checkImg.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 85, weight: .bold)
 
+        iconWrap.addSubview(sealImg)
+        iconWrap.addSubview(checkImg)
+        sealImg.translatesAutoresizingMaskIntoConstraints = false
+        checkImg.translatesAutoresizingMaskIntoConstraints = false
+        iconWrap.translatesAutoresizingMaskIntoConstraints = false
 
         // title/sub
         titleLbl.text = titleText
@@ -798,10 +821,14 @@ private final class CampaignCreatedPopupViewController: UIViewController {
         viewButton.layer.masksToBounds = true
         viewButton.addTarget(self, action: #selector(tapView), for: .touchUpInside)
 
-        [icon, titleLbl, subLbl, viewButton].forEach {
+        [iconWrap, titleLbl, subLbl, viewButton].forEach {
             card.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
+
+        // ✅ responsive width like screenshot
+        let maxW = card.widthAnchor.constraint(lessThanOrEqualToConstant: 360)
+        maxW.priority = .required
 
         NSLayoutConstraint.activate([
             dim.topAnchor.constraint(equalTo: view.topAnchor),
@@ -811,15 +838,27 @@ private final class CampaignCreatedPopupViewController: UIViewController {
 
             card.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             card.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            card.widthAnchor.constraint(equalToConstant: 330),
+            card.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: 22),
+            card.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -22),
+            maxW,
             card.heightAnchor.constraint(greaterThanOrEqualToConstant: 420),
 
-            icon.topAnchor.constraint(equalTo: card.topAnchor, constant: 56),
-            icon.centerXAnchor.constraint(equalTo: card.centerXAnchor),
-            icon.widthAnchor.constraint(equalToConstant: 140),
-            icon.heightAnchor.constraint(equalToConstant: 140),
+            iconWrap.topAnchor.constraint(equalTo: card.topAnchor, constant: 56),
+            iconWrap.centerXAnchor.constraint(equalTo: card.centerXAnchor),
+            iconWrap.widthAnchor.constraint(equalToConstant: 160),
+            iconWrap.heightAnchor.constraint(equalToConstant: 160),
 
-            titleLbl.topAnchor.constraint(equalTo: icon.bottomAnchor, constant: 18),
+            sealImg.topAnchor.constraint(equalTo: iconWrap.topAnchor),
+            sealImg.leadingAnchor.constraint(equalTo: iconWrap.leadingAnchor),
+            sealImg.trailingAnchor.constraint(equalTo: iconWrap.trailingAnchor),
+            sealImg.bottomAnchor.constraint(equalTo: iconWrap.bottomAnchor),
+
+            checkImg.centerXAnchor.constraint(equalTo: iconWrap.centerXAnchor),
+            checkImg.centerYAnchor.constraint(equalTo: iconWrap.centerYAnchor),
+            checkImg.widthAnchor.constraint(equalToConstant: 90),
+            checkImg.heightAnchor.constraint(equalToConstant: 90),
+
+            titleLbl.topAnchor.constraint(equalTo: iconWrap.bottomAnchor, constant: 18),
             titleLbl.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 24),
             titleLbl.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -24),
 
@@ -839,7 +878,6 @@ private final class CampaignCreatedPopupViewController: UIViewController {
         onViewCampaign?()
     }
 }
-
 
 // MARK: - UI Components (same file)
 private final class LabeledTextField: UIView {
@@ -1324,4 +1362,3 @@ private extension UIColor {
         return UIColor(red: r, green: g, blue: b, alpha: 1)
     }
 }
-

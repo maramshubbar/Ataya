@@ -5,6 +5,19 @@
 //  Created by Maram on 24/12/2025.
 //
 
+//
+//  CampaignManagementViewController.swift
+//  Ataya
+//
+//  Created by Maram on 24/12/2025.
+//
+//
+//  CampaignManagementViewController.swift
+//  Ataya
+//
+//  Created by Maram on 24/12/2025.
+//
+
 import UIKit
 import FirebaseFirestore
 
@@ -22,9 +35,8 @@ final class CampaignManagementViewController: UIViewController {
     private var campaigns: [CampaignItem] = []
 
     // MARK: Colors
-    private let brandYellow = UIColor.atayaHex("#F7D44C")
-    private let borderGray  = UIColor.atayaHex("#E6E6E6")
-    private let thumbBG     = UIColor.atayaHex("#F2F2F7")
+    private let brandYellow = UIColor(atayaHexSafe: "#F7D44C")
+    private let borderGray  = UIColor(atayaHexSafe: "#E6E6E6")
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -88,7 +100,6 @@ final class CampaignManagementViewController: UIViewController {
     // MARK: Layout
     private func layoutUI() {
         NSLayoutConstraint.activate([
-            // ✅ 362 * 54
             createButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             createButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             createButton.widthAnchor.constraint(equalToConstant: 362),
@@ -100,7 +111,6 @@ final class CampaignManagementViewController: UIViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
 
-        // احتياط: لو أي شي غطّى على الزر
         view.bringSubviewToFront(createButton)
     }
 
@@ -164,7 +174,6 @@ final class CampaignManagementViewController: UIViewController {
                     let startDate = self.readDate(d["startDate"]) ?? Date()
                     let endDate = self.readDate(d["endDate"]) ?? Date()
 
-                    // ✅ يدعم key القديم/الجديد
                     let imageUrl = self.readString(d["imageUrl"]) ?? self.readString(d["imageURL"])
                     let imagePublicId = self.readString(d["imagePublicId"])
 
@@ -200,10 +209,7 @@ final class CampaignManagementViewController: UIViewController {
         return f.string(from: NSNumber(value: value)) ?? "\(Int(value))"
     }
 
-    private func readString(_ any: Any?) -> String? {
-        if let s = any as? String { return s }
-        return nil
-    }
+    private func readString(_ any: Any?) -> String? { any as? String }
 
     private func readDouble(_ any: Any?) -> Double {
         if let d = any as? Double { return d }
@@ -246,7 +252,7 @@ extension CampaignManagementViewController: UITableViewDataSource, UITableViewDe
             imageURL: item.imageUrl
         )
 
-        // ✅ EDIT (بدون campaignId الغلط)
+        // ✅ EDIT
         cell.onEdit = { [weak self] in
             guard let self else { return }
 
@@ -269,20 +275,53 @@ extension CampaignManagementViewController: UITableViewDataSource, UITableViewDe
             )
 
             vc.mode = .edit(existing: existing)
-
-            // ✅ هذا الصحيح
             vc.editingDocumentId = item.id
             vc.editingExistingImageUrl = item.imageUrl
             vc.editingExistingPublicId = item.imagePublicId
 
-            self.navigationController?.pushViewController(vc, animated: true)
+            if let nav = self.navigationController {
+                nav.pushViewController(vc, animated: true)
+            } else {
+                let nav = UINavigationController(rootViewController: vc)
+                nav.modalPresentationStyle = .fullScreen
+                self.present(nav, animated: true)
+            }
         }
 
         cell.onView = { [weak self] in
-            let a = UIAlertController(title: "View", message: "Later ✨", preferredStyle: .alert)
-            a.addAction(UIAlertAction(title: "OK", style: .default))
-            self?.present(a, animated: true)
+            guard let self else { return }
+
+            // Days left
+            let days = Calendar.current.dateComponents([.day], from: Date(), to: item.endDate).day ?? 0
+            let daysText = "\(max(days, 0)) days Left"
+
+            // ✅ ViewModel حق صفحة التفاصيل
+            let vm = CampaignDetailViewController.ViewModel(
+                title: item.title,
+                isEmergency: false,                 // تقدرين تغيرينه إذا عندج شرط
+                imageURL: item.imageUrl,
+                goalAmount: item.goalAmount,
+                raisedAmount: item.raisedAmount,
+                daysLeftText: daysText,
+                overviewText: item.overview,
+                quoteText: item.story,              // نخلي الـ story داخل quote card
+                quoteAuthor: item.from.isEmpty ? "—" : item.from,
+                orgName: item.organization,
+                orgAbout: "LifeReach is a humanitarian organization dedicated to helping families in crisis rebuild their lives with dignity. We deliver urgent medical aid, food, water, and long-term recovery support to those affected by conflict and disaster. Guided by compassion and transparency, we work to restore hope where it’s needed most."
+            )
+
+            let vc = CampaignDetailViewController(model: vm)
+            vc.hidesBottomBarWhenPushed = true
+
+            if let nav = self.navigationController {
+                nav.pushViewController(vc, animated: true)      // ✅ بيطلع Back button تلقائي
+            } else {
+                let nav = UINavigationController(rootViewController: vc)
+                nav.modalPresentationStyle = .fullScreen
+                self.present(nav, animated: true)
+            }
         }
+
 
         return cell
     }
@@ -318,9 +357,10 @@ private final class CampaignCell: UITableViewCell {
     var onEdit: (() -> Void)?
     var onView: (() -> Void)?
 
-    private let brandYellow = UIColor.atayaHex("#F7D44C")
-    private let borderGray  = UIColor.atayaHex("#E6E6E6")
-    private let thumbBG     = UIColor.atayaHex("#F2F2F7")
+    private let brandYellow = UIColor(atayaHexSafe: "#F7D44C")
+    private let borderGray  = UIColor(atayaHexSafe: "#E6E6E6")
+    private let thumbBG     = UIColor(atayaHexSafe: "#F2F2F7")
+    private let editText    = UIColor(atayaHexSafe: "#C28A00")
 
     private let cardView = UIView()
 
@@ -376,6 +416,7 @@ private final class CampaignCell: UITableViewCell {
     }
 
     private func setupTopRow() {
+        // ✅ صورة مربعة + بدون ريديس
         thumb.backgroundColor = thumbBG
         thumb.layer.cornerRadius = 0
         thumb.layer.masksToBounds = true
@@ -418,8 +459,8 @@ private final class CampaignCell: UITableViewCell {
         pinIcon.translatesAutoresizingMaskIntoConstraints = false
         thumb.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            thumb.widthAnchor.constraint(equalToConstant: 86),
-            thumb.heightAnchor.constraint(equalToConstant: 62),
+            thumb.widthAnchor.constraint(equalToConstant: 90),
+            thumb.heightAnchor.constraint(equalToConstant: 90),
             pinIcon.widthAnchor.constraint(equalToConstant: 14),
             pinIcon.heightAnchor.constraint(equalToConstant: 14)
         ])
@@ -434,13 +475,15 @@ private final class CampaignCell: UITableViewCell {
     }
 
     private func setupButtons() {
+        // ✅ radius 4.6
         editButton.setTitle("Edit", for: .normal)
         editButton.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
-        editButton.setTitleColor(UIColor.atayaHex("#C28A00"), for: .normal)
+        editButton.setTitleColor(editText, for: .normal)
         editButton.backgroundColor = .white
         editButton.layer.cornerRadius = 4.6
         editButton.layer.borderWidth = 1
         editButton.layer.borderColor = brandYellow.cgColor
+        editButton.contentHorizontalAlignment = .center
         editButton.addTarget(self, action: #selector(tapEdit), for: .touchUpInside)
 
         viewButton.setTitle("View", for: .normal)
@@ -449,58 +492,52 @@ private final class CampaignCell: UITableViewCell {
         viewButton.backgroundColor = brandYellow
         viewButton.layer.cornerRadius = 4.6
         viewButton.layer.masksToBounds = true
+        viewButton.contentHorizontalAlignment = .center
         viewButton.addTarget(self, action: #selector(tapView), for: .touchUpInside)
 
         buttonsRow = UIStackView(arrangedSubviews: [editButton, viewButton])
         buttonsRow.axis = .horizontal
-        buttonsRow.spacing = 18
+        buttonsRow.spacing = 14
         buttonsRow.distribution = .fillEqually
         buttonsRow.alignment = .fill
+
         cardView.addSubview(buttonsRow)
         buttonsRow.translatesAutoresizingMaskIntoConstraints = false
 
+        // ✅ هذا هو الارتفاع الوحيد للأزرار
         NSLayoutConstraint.activate([
-            buttonsRow.heightAnchor.constraint(equalToConstant: 44)
+            buttonsRow.heightAnchor.constraint(equalToConstant: 48)
         ])
     }
 
     private func layoutAll() {
-
-        // ✅ نفس عرض زر Create Campaign
-        let fixedWidth = cardView.widthAnchor.constraint(equalToConstant: 362)
-        fixedWidth.priority = .required
-
-        // ✅ احتياط لو جهاز صغير (عشان ما يصير constraint crash)
-        let maxWidth = cardView.widthAnchor.constraint(lessThanOrEqualTo: contentView.widthAnchor, constant: -32)
-        maxWidth.priority = .required
+        // ✅ نفس عرض زر Create Campaign (362) + وسط
+        let preferredW = cardView.widthAnchor.constraint(equalToConstant: 362)
+        preferredW.priority = .defaultHigh
+        let maxW = cardView.widthAnchor.constraint(lessThanOrEqualTo: contentView.widthAnchor, constant: -32)
 
         NSLayoutConstraint.activate([
-            // ✅ Card: centered + same width as top button
             cardView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
             cardView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            fixedWidth,
-            maxWidth,
+            preferredW,
+            maxW,
             cardView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
 
-            // Top row
             topRow.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 16),
             topRow.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 16),
             topRow.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -16),
 
-            // Description
             descLabel.topAnchor.constraint(equalTo: topRow.bottomAnchor, constant: 12),
             descLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 16),
             descLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -16),
 
-            // Buttons
+            // ✅ الأزرار تبدأ من اليسار وتاخذ عرض الكارد كله
             buttonsRow.topAnchor.constraint(equalTo: descLabel.bottomAnchor, constant: 14),
             buttonsRow.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 16),
-            buttonsRow.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -16), // ✅ مو lessThanOrEqual
+            buttonsRow.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -16),
             buttonsRow.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -16),
-
         ])
     }
-
 
     func configure(title: String, raised: String, location: String, desc: String, imageURL: String?) {
         titleLabel.text = title
@@ -522,16 +559,28 @@ private final class CampaignCell: UITableViewCell {
     @objc private func tapView() { onView?() }
 }
 
-// MARK: - Safe Hex Helper (اسم مختلف عشان ما يتعارض مع Extensions ثانية عندج)
+// MARK: - Hex Helper
 private extension UIColor {
-    static func atayaHex(_ hex: String) -> UIColor {
-        var h = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-        if h.hasPrefix("#") { h.removeFirst() }
-        var rgb: UInt64 = 0
-        Scanner(string: h).scanHexInt64(&rgb)
-        let r = CGFloat((rgb & 0xFF0000) >> 16) / 255
-        let g = CGFloat((rgb & 0x00FF00) >> 8) / 255
-        let b = CGFloat(rgb & 0x0000FF) / 255
-        return UIColor(red: r, green: g, blue: b, alpha: 1)
+    convenience init(atayaHexSafe hex: String, alpha: CGFloat = 1.0) {
+        var s = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        if s.hasPrefix("#") { s.removeFirst() }
+
+        var value: UInt64 = 0
+        Scanner(string: s).scanHexInt64(&value)
+
+        let r, g, b: CGFloat
+        if s.count == 6 {
+            r = CGFloat((value & 0xFF0000) >> 16) / 255.0
+            g = CGFloat((value & 0x00FF00) >> 8)  / 255.0
+            b = CGFloat(value & 0x0000FF) / 255.0
+        } else if s.count == 8 {
+            r = CGFloat((value & 0x00FF0000) >> 16) / 255.0
+            g = CGFloat((value & 0x0000FF00) >> 8)  / 255.0
+            b = CGFloat(value & 0x000000FF) / 255.0
+        } else {
+            r = 0; g = 0; b = 0
+        }
+
+        self.init(red: r, green: g, blue: b, alpha: alpha)
     }
 }

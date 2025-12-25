@@ -45,7 +45,7 @@ final class GiftManagementCell: UITableViewCell {
         backgroundColor = .clear
         contentView.backgroundColor = .clear
 
-        // الكرت
+        // الكرت الخارجي
         cardView.translatesAutoresizingMaskIntoConstraints = false
         cardView.backgroundColor = .white
         cardView.layer.cornerRadius = 18
@@ -62,7 +62,7 @@ final class GiftManagementCell: UITableViewCell {
 
         // الصورة
         thumbImageView.translatesAutoresizingMaskIntoConstraints = false
-        thumbImageView.contentMode = .scaleAspectFill
+        thumbImageView.contentMode = .scaleAspectFit
         thumbImageView.clipsToBounds = true
         thumbImageView.layer.cornerRadius = 10
 
@@ -72,11 +72,11 @@ final class GiftManagementCell: UITableViewCell {
         ])
 
         // النصوص
-        titleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
+        titleLabel.font = .systemFont(ofSize: 18, weight: .semibold)   // عنوان أكبر
         titleLabel.numberOfLines = 2
 
         priceLabel.font = .systemFont(ofSize: 14, weight: .semibold)
-        priceLabel.textColor = accentYellow
+        priceLabel.textColor = .black                                  // 👈 السعر أسود
         priceLabel.numberOfLines = 1
 
         descriptionLabel.font = .systemFont(ofSize: 13)
@@ -95,21 +95,20 @@ final class GiftManagementCell: UITableViewCell {
         topRow.spacing = 12
         topRow.translatesAutoresizingMaskIntoConstraints = false
 
-        // زر Edit فقط (نفس ستايل View الأصفر)
+        // Stack للأزرار
         buttonsStack.axis = .horizontal
         buttonsStack.alignment = .center
         buttonsStack.spacing = 0
         buttonsStack.translatesAutoresizingMaskIntoConstraints = false
 
-        styleFilledButton(editButton, title: "Edit")
+        styleYellowButton(editButton, title: "Edit")
         editButton.addTarget(self, action: #selector(editTapped), for: .touchUpInside)
 
-        // نخلي الزر على اليسار وفضاء على اليمين
         let spacer = UIView()
         buttonsStack.addArrangedSubview(editButton)
         buttonsStack.addArrangedSubview(spacer)
 
-        // الـ Stack الأساسي داخل الكرت
+        // الـ Stack الرئيسي داخل الكرت
         let mainStack = UIStackView(arrangedSubviews: [topRow, buttonsStack])
         mainStack.axis = .vertical
         mainStack.spacing = 12
@@ -123,36 +122,21 @@ final class GiftManagementCell: UITableViewCell {
             mainStack.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -16),
             mainStack.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -16),
 
-            editButton.heightAnchor.constraint(equalToConstant: 44)
+            editButton.heightAnchor.constraint(equalToConstant: 44),
+            editButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 110)
         ])
     }
 
-    private func styleFilledButton(_ button: UIButton, title: String) {
-        var config = button.configuration ?? .filled()
-
-        config.title = title
-        config.baseBackgroundColor = accentYellow
-        config.baseForegroundColor = .black
-        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
-            var outgoing = incoming
-            outgoing.font = .systemFont(ofSize: 15, weight: .semibold)
-            return outgoing
-        }
-
-        config.contentInsets = NSDirectionalEdgeInsets(
-            top: 0,
-            leading: 0,
-            bottom: 0,
-            trailing: 0
-        )
-
-        button.configuration = config
-
-        // لو تبين نفس الستايل حق الزوايا
+    // زر Edit أصفر مثل السابق
+    private func styleYellowButton(_ button: UIButton, title: String) {
+        button.configuration = nil
+        button.setTitle(title, for: .normal)
+        button.setTitleColor(.black, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
+        button.backgroundColor = accentYellow
         button.layer.cornerRadius = 8
-        button.layer.masksToBounds = true
+        button.contentEdgeInsets = .zero
     }
-
 
     // MARK: - ViewModel
 

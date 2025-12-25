@@ -50,21 +50,21 @@ final class ManageGiftsListViewController: UIViewController {
             title: "Water Well",
             pricing: .fixed(amount: 500),
             description: "Provide clean water to communities in need.",
-            imageName: "c4",      // غيّريها لأسم صورتك
+            imageName: "water_well_heart", 
             isActive: true
         ),
         Gift(
             title: "Sadaqah Jariya",
             pricing: .custom,
             description: "Ongoing charity with continuous rewards.",
-            imageName: "c3",
+            imageName: "heart_sadaqah",
             isActive: true
         ),
         Gift(
             title: "Orphan Care",
             pricing: .custom,
             description: "Support orphans with education and essentials.",
-            imageName: "c2",
+            imageName: "heart_orphan_care",
             isActive: false
         )
     ]

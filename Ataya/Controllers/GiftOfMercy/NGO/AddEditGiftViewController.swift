@@ -2,19 +2,26 @@
 //  AddEditGiftViewController.swift
 //  Ataya
 //
-//  Created by Maram on 25/12/2025.
-//
 
 import UIKit
+import PhotosUI
 
 final class AddEditGiftViewController: UIViewController {
 
-    // MARK: - Callback
+    // MARK: - Callbacks
 
     var onSave: ((Gift) -> Void)?
 
-    // لو جايين من Edit
     private var existingGift: Gift?
+
+    private var storedImageId: String?
+
+    private enum PricingMode {
+        case fixed
+        case custom
+    }
+
+    private var pricingMode: PricingMode = .fixed
 
     // MARK: - UI
 
@@ -24,22 +31,35 @@ final class AddEditGiftViewController: UIViewController {
     private let nameField = UITextField()
     private let nameErrorLabel = UILabel()
 
-    private let pricingSegment = UISegmentedControl(items: ["Fixed amount", "Custom amount"])
-    private let amountField = UITextField()
-    private let amountErrorLabel = UILabel()
+    private let pricingSegmented = UISegmentedControl(items: ["Fixed amount", "Custom amount"])
+    private let fixedAmountContainer = UIStackView()
+    private let fixedAmountField = UITextField()
+    private let pricingErrorLabel = UILabel()
 
+    // upload box
+    private let uploadContainer = UIView()
+    private let uploadPlaceholderStack = UIStackView()
+    private let uploadIconView = UIImageView()
+    private let uploadTitleLabel = UILabel()
+    private let uploadSubtitleLabel = UILabel()
+    private let artworkErrorLabel = UILabel()
+    private let previewImageView = UIImageView()
+
+    // description
     private let descriptionTextView = UITextView()
-    private let descriptionPlaceholder = UILabel()
+    private let descriptionPlaceholderLabel = UILabel()
 
     private let activeSwitch = UISwitch()
 
     private let saveButton = UIButton(type: .system)
 
     private let brandYellow = UIColor(atayaHex: "F7D44C")
+    private let borderGray = UIColor.systemGray3
+    private var dashedBorderLayer: CAShapeLayer?
 
     // MARK: - Init
 
-    init(existingGift: Gift?) {
+    init(existingGift: Gift? = nil) {
         self.existingGift = existingGift
         super.init(nibName: nil, bundle: nil)
     }
@@ -54,8 +74,14 @@ final class AddEditGiftViewController: UIViewController {
         super.viewDidLoad()
         setupNav()
         setupLayout()
+        setupUploadBox()
         setupErrorLabels()
         bindExisting()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateDashedBorder()
     }
 
     // MARK: - Nav
@@ -69,6 +95,7 @@ final class AddEditGiftViewController: UIViewController {
     // MARK: - Layout
 
     private func setupLayout() {
+        // scroll
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
 
@@ -77,7 +104,7 @@ final class AddEditGiftViewController: UIViewController {
         contentStack.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(contentStack)
 
-        // زر Save تحت
+        // Save button
         saveButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(saveButton)
 
@@ -98,9 +125,10 @@ final class AddEditGiftViewController: UIViewController {
             saveButton.heightAnchor.constraint(equalToConstant: 50)
         ])
 
-        func addFieldSection(title: String, fieldView: UIView, errorLabel: UILabel?) {
+        // helper: labeled section
+        func addFieldSection(title: String, fieldView: UIView, errorLabel: UILabel? = nil) {
             let titleLabel = UILabel()
-            titleLabel.text = "* " + title
+            titleLabel.text = title        // مرري العنوان مع * اذا تبين
             titleLabel.font = .systemFont(ofSize: 14, weight: .semibold)
 
             let stack = UIStackView(arrangedSubviews: [titleLabel, fieldView])
@@ -117,20 +145,36 @@ final class AddEditGiftViewController: UIViewController {
             }
         }
 
-        // Name
+        // Gift Name
         nameField.borderStyle = .roundedRect
-        addFieldSection(title: "Gift Name", fieldView: nameField, errorLabel: nameErrorLabel)
+        addFieldSection(title: "* Gift Name", fieldView: nameField, errorLabel: nameErrorLabel)
 
         // Pricing
-        pricingSegment.selectedSegmentIndex = 0
-        pricingSegment.addTarget(self, action: #selector(pricingChanged), for: .valueChanged)
-        addFieldSection(title: "Pricing", fieldView: pricingSegment, errorLabel: nil)
+        pricingSegmented.selectedSegmentIndex = 0
+        pricingSegmented.addTarget(self, action: #selector(pricingChanged), for: .valueChanged)
 
-        // Amount (for fixed)
-        amountField.borderStyle = .roundedRect
-        amountField.keyboardType = .decimalPad
-        amountField.placeholder = "Enter amount e.g. 500"
-        addFieldSection(title: "Amount", fieldView: amountField, errorLabel: amountErrorLabel)
+        fixedAmountContainer.axis = .vertical
+        fixedAmountContainer.spacing = 4
+
+        let amountLabel = UILabel()
+        amountLabel.text = "Amount in BHD"
+        amountLabel.font = .systemFont(ofSize: 13, weight: .regular)
+
+        fixedAmountField.borderStyle = .roundedRect
+        fixedAmountField.placeholder = "e.g. 500"
+        fixedAmountField.keyboardType = .decimalPad
+
+        fixedAmountContainer.addArrangedSubview(amountLabel)
+        fixedAmountContainer.addArrangedSubview(fixedAmountField)
+
+        let pricingStack = UIStackView(arrangedSubviews: [pricingSegmented, fixedAmountContainer])
+        pricingStack.axis = .vertical
+        pricingStack.spacing = 8
+
+        addFieldSection(title: "* Pricing", fieldView: pricingStack, errorLabel: pricingErrorLabel)
+
+        // Upload section
+        addFieldSection(title: "* Gift Artwork", fieldView: uploadContainer, errorLabel: artworkErrorLabel)
 
         // Description
         descriptionTextView.layer.cornerRadius = 10
@@ -138,38 +182,20 @@ final class AddEditGiftViewController: UIViewController {
         descriptionTextView.layer.borderColor = UIColor.systemGray4.cgColor
         descriptionTextView.font = .systemFont(ofSize: 14)
         descriptionTextView.delegate = self
-        descriptionTextView.heightAnchor.constraint(equalToConstant: 120).isActive = true
+        descriptionTextView.heightAnchor.constraint(equalToConstant: 140).isActive = true
 
-        descriptionPlaceholder.text = "Gift description (optional)"
-        descriptionPlaceholder.font = .systemFont(ofSize: 14)
-        descriptionPlaceholder.textColor = .placeholderText
-        descriptionPlaceholder.translatesAutoresizingMaskIntoConstraints = false
+        descriptionPlaceholderLabel.text = "Gift description (optional)"
+        descriptionPlaceholderLabel.font = .systemFont(ofSize: 14)
+        descriptionPlaceholderLabel.textColor = .placeholderText
+        descriptionPlaceholderLabel.translatesAutoresizingMaskIntoConstraints = false
 
-        let descriptionContainer = UIView()
-        descriptionContainer.translatesAutoresizingMaskIntoConstraints = false
-        descriptionContainer.addSubview(descriptionTextView)
-        descriptionContainer.addSubview(descriptionPlaceholder)
-
-        descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
-
+        descriptionTextView.addSubview(descriptionPlaceholderLabel)
         NSLayoutConstraint.activate([
-            descriptionTextView.topAnchor.constraint(equalTo: descriptionContainer.topAnchor),
-            descriptionTextView.leadingAnchor.constraint(equalTo: descriptionContainer.leadingAnchor),
-            descriptionTextView.trailingAnchor.constraint(equalTo: descriptionContainer.trailingAnchor),
-            descriptionTextView.bottomAnchor.constraint(equalTo: descriptionContainer.bottomAnchor),
-
-            descriptionPlaceholder.topAnchor.constraint(equalTo: descriptionTextView.topAnchor, constant: 8),
-            descriptionPlaceholder.leadingAnchor.constraint(equalTo: descriptionTextView.leadingAnchor, constant: 6)
+            descriptionPlaceholderLabel.leadingAnchor.constraint(equalTo: descriptionTextView.leadingAnchor, constant: 6),
+            descriptionPlaceholderLabel.topAnchor.constraint(equalTo: descriptionTextView.topAnchor, constant: 8)
         ])
 
-        let descTitle = UILabel()
-        descTitle.text = "Description"
-        descTitle.font = .systemFont(ofSize: 14, weight: .semibold)
-
-        let descStack = UIStackView(arrangedSubviews: [descTitle, descriptionContainer])
-        descStack.axis = .vertical
-        descStack.spacing = 8
-        contentStack.addArrangedSubview(descStack)
+        addFieldSection(title: "Description", fieldView: descriptionTextView, errorLabel: nil)
 
         // Active row
         let activeLabel = UILabel()
@@ -188,15 +214,12 @@ final class AddEditGiftViewController: UIViewController {
         saveButton.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
         saveButton.layer.cornerRadius = 14
         saveButton.addTarget(self, action: #selector(saveTapped), for: .touchUpInside)
-
-        // default visibility
-        updateAmountVisibility()
     }
 
     // MARK: - Error labels
 
     private func setupErrorLabels() {
-        [nameErrorLabel, amountErrorLabel].forEach { label in
+        [nameErrorLabel, pricingErrorLabel, artworkErrorLabel].forEach { label in
             label.font = .systemFont(ofSize: 13)
             label.textColor = .systemRed
             label.numberOfLines = 0
@@ -205,53 +228,157 @@ final class AddEditGiftViewController: UIViewController {
     }
 
     private func clearErrors() {
-        nameErrorLabel.isHidden = true
-        nameErrorLabel.text = nil
-        amountErrorLabel.isHidden = true
-        amountErrorLabel.text = nil
+        [nameErrorLabel, pricingErrorLabel, artworkErrorLabel].forEach { label in
+            label.isHidden = true
+            label.text = nil
+        }
+    }
+
+    // MARK: - Upload Box
+
+    private func setupUploadBox() {
+        uploadContainer.translatesAutoresizingMaskIntoConstraints = false
+        uploadContainer.heightAnchor.constraint(equalToConstant: 210).isActive = true
+        uploadContainer.backgroundColor = .white
+        uploadContainer.layer.cornerRadius = 18
+        uploadContainer.clipsToBounds = true
+
+        // placeholder stack
+        uploadPlaceholderStack.axis = .vertical
+        uploadPlaceholderStack.alignment = .center
+        uploadPlaceholderStack.spacing = 8
+        uploadPlaceholderStack.translatesAutoresizingMaskIntoConstraints = false
+
+        uploadIconView.image = UIImage(named: "camera")
+        uploadIconView.contentMode = .scaleAspectFit
+        uploadIconView.translatesAutoresizingMaskIntoConstraints = false
+        uploadIconView.heightAnchor.constraint(equalToConstant: 56).isActive = true
+        uploadIconView.widthAnchor.constraint(equalToConstant: 56).isActive = true
+
+        uploadTitleLabel.text = "Tap to Upload or Take a Photo"
+        uploadTitleLabel.font = .systemFont(ofSize: 15, weight: .semibold)
+        uploadTitleLabel.textAlignment = .center
+
+        uploadSubtitleLabel.text = "Upload image in  (JPG or PNG)"
+        uploadSubtitleLabel.font = .systemFont(ofSize: 13, weight: .semibold)
+        uploadSubtitleLabel.textColor = .systemGray2
+        uploadSubtitleLabel.textAlignment = .center
+
+        uploadPlaceholderStack.addArrangedSubview(uploadIconView)
+        uploadPlaceholderStack.addArrangedSubview(uploadTitleLabel)
+        uploadPlaceholderStack.addArrangedSubview(uploadSubtitleLabel)
+
+        uploadContainer.addSubview(uploadPlaceholderStack)
+
+        // preview (normal مستطيل مو قلب)
+        previewImageView.translatesAutoresizingMaskIntoConstraints = false
+        previewImageView.contentMode = .scaleAspectFit
+        previewImageView.clipsToBounds = true
+        previewImageView.isHidden = true
+        uploadContainer.addSubview(previewImageView)
+
+        NSLayoutConstraint.activate([
+            uploadPlaceholderStack.centerXAnchor.constraint(equalTo: uploadContainer.centerXAnchor),
+            uploadPlaceholderStack.centerYAnchor.constraint(equalTo: uploadContainer.centerYAnchor),
+
+            previewImageView.topAnchor.constraint(equalTo: uploadContainer.topAnchor),
+            previewImageView.leadingAnchor.constraint(equalTo: uploadContainer.leadingAnchor),
+            previewImageView.trailingAnchor.constraint(equalTo: uploadContainer.trailingAnchor),
+            previewImageView.bottomAnchor.constraint(equalTo: uploadContainer.bottomAnchor)
+        ])
+
+        // tap gesture
+        let tap = UITapGestureRecognizer(target: self, action: #selector(uploadTapped))
+        uploadContainer.addGestureRecognizer(tap)
+        uploadContainer.isUserInteractionEnabled = true
+    }
+
+    private func updateDashedBorder() {
+        dashedBorderLayer?.removeFromSuperlayer()
+
+        let shape = CAShapeLayer()
+        shape.strokeColor = borderGray.cgColor
+        shape.lineDashPattern = [10, 6]
+        shape.lineWidth = 1
+        shape.fillColor = UIColor.clear.cgColor
+
+        let path = UIBezierPath(
+            roundedRect: uploadContainer.bounds.insetBy(dx: 1.5, dy: 1.5),
+            cornerRadius: 18
+        )
+        shape.path = path.cgPath
+
+        uploadContainer.layer.addSublayer(shape)
+        dashedBorderLayer = shape
     }
 
     // MARK: - Bind existing
 
     private func bindExisting() {
-        guard let gift = existingGift else {
+        if let gift = existingGift {
+            nameField.text = gift.title
+            descriptionTextView.text = gift.description
+            descriptionPlaceholderLabel.isHidden = !gift.description
+                .trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            activeSwitch.isOn = gift.isActive
+
+            let imgName = gift.imageName
+            if let img = UIImage(named: imgName) {
+                previewImageView.image = img
+                previewImageView.isHidden = false
+                uploadPlaceholderStack.isHidden = true
+                storedImageId = imgName
+            }
+
+        } else {
             activeSwitch.isOn = true
-            pricingSegment.selectedSegmentIndex = 0
-            updateAmountVisibility()
+        }
+    }
+
+
+    // MARK: - Actions
+
+    @objc private func pricingChanged() {
+        pricingMode = pricingSegmented.selectedSegmentIndex == 0 ? .fixed : .custom
+        fixedAmountContainer.isHidden = (pricingMode == .custom)
+    }
+
+    @objc private func uploadTapped() {
+        clearErrors()
+
+        let sheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        sheet.addAction(UIAlertAction(title: "Take Photo", style: .default, handler: { _ in
+            self.presentCamera()
+        }))
+        sheet.addAction(UIAlertAction(title: "Choose from Library", style: .default, handler: { _ in
+            self.presentPhotoPicker()
+        }))
+        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+
+        present(sheet, animated: true)
+    }
+
+    private func presentCamera() {
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
+            presentPhotoPicker()
             return
         }
 
-        nameField.text = gift.title
-        descriptionTextView.text = gift.description
-        descriptionPlaceholder.isHidden = !gift.description.isEmpty
-        activeSwitch.isOn = gift.isActive
-
-        switch gift.pricing {
-        case .custom:
-            pricingSegment.selectedSegmentIndex = 1
-            amountField.text = nil
-        case .fixed(let amount):
-            pricingSegment.selectedSegmentIndex = 0
-            amountField.text = "\(amount)"
-        }
-
-        updateAmountVisibility()
+        let picker = UIImagePickerController()
+        picker.sourceType = .camera
+        picker.delegate = self
+        present(picker, animated: true)
     }
 
-    // MARK: - Helpers
+    private func presentPhotoPicker() {
+        var config = PHPickerConfiguration(photoLibrary: .shared())
+        config.selectionLimit = 1
+        config.filter = .images
 
-    @objc private func pricingChanged() {
-        updateAmountVisibility()
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = self
+        present(picker, animated: true)
     }
-
-    private func updateAmountVisibility() {
-        let isFixed = pricingSegment.selectedSegmentIndex == 0
-        amountField.superview?.isHidden = !isFixed
-        amountErrorLabel.isHidden = true
-        amountErrorLabel.text = nil
-    }
-
-    // MARK: - Save
 
     @objc private func saveTapped() {
         clearErrors()
@@ -265,54 +392,103 @@ final class AddEditGiftViewController: UIViewController {
             hasError = true
         }
 
-        // pricing
-        let isFixed = pricingSegment.selectedSegmentIndex == 0
         var pricing: Gift.Pricing = .custom
 
-        if isFixed {
-            let raw = (amountField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-            if raw.isEmpty {
-                amountErrorLabel.text = "Please enter an amount."
-                amountErrorLabel.isHidden = false
-                hasError = true
-            } else if let dec = Decimal(string: raw.replacingOccurrences(of: ",", with: "")), dec > 0 {
-                pricing = .fixed(amount: dec)
+        if pricingMode == .fixed {
+            let text = (fixedAmountField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            if let value = Decimal(string: text), value > 0 {
+                pricing = .fixed(amount: value)
             } else {
-                amountErrorLabel.text = "Amount must be a positive number."
-                amountErrorLabel.isHidden = false
+                pricingErrorLabel.text = "Enter a valid fixed amount."
+                pricingErrorLabel.isHidden = false
                 hasError = true
             }
         } else {
             pricing = .custom
         }
 
+        if storedImageId == nil {
+            artworkErrorLabel.text = "Please upload the gift artwork."
+            artworkErrorLabel.isHidden = false
+            hasError = true
+        }
+
         if hasError { return }
+        guard let imageId = storedImageId else { return }
 
         let desc = descriptionTextView.text ?? ""
         let id = existingGift?.id ?? UUID().uuidString
-
-
-        let imageName = existingGift?.imageName ?? "c4"
 
         let gift = Gift(
             id: id,
             title: trimmedName,
             pricing: pricing,
             description: desc,
-            imageName: imageName,
+            imageName: imageId,
             isActive: activeSwitch.isOn
         )
 
         onSave?(gift)
         navigationController?.popViewController(animated: true)
     }
-
 }
 
 // MARK: - UITextViewDelegate
 
 extension AddEditGiftViewController: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
-        descriptionPlaceholder.isHidden = !textView.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        descriptionPlaceholderLabel.isHidden =
+            !textView.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+}
+
+// MARK: - Image handling
+
+private extension AddEditGiftViewController {
+    func handlePicked(image: UIImage) {
+        previewImageView.image = image
+        previewImageView.isHidden = false
+        uploadPlaceholderStack.isHidden = true
+        artworkErrorLabel.isHidden = true
+
+        storedImageId = "uploaded_\(UUID().uuidString)"
+    }
+}
+
+// MARK: - Delegates
+
+extension AddEditGiftViewController: PHPickerViewControllerDelegate,
+                                     UIImagePickerControllerDelegate,
+                                     UINavigationControllerDelegate {
+
+    func picker(_ picker: PHPickerViewController,
+                didFinishPicking results: [PHPickerResult]) {
+
+        dismiss(animated: true)
+
+        guard let itemProvider = results.first?.itemProvider,
+              itemProvider.canLoadObject(ofClass: UIImage.self) else { return }
+
+        itemProvider.loadObject(ofClass: UIImage.self) { [weak self] object, _ in
+            guard let self = self,
+                  let image = object as? UIImage else { return }
+
+            DispatchQueue.main.async {
+                self.handlePicked(image: image)
+            }
+        }
+    }
+
+    func imagePickerController(_ picker: UIImagePickerController,
+                               didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true)
+
+        if let image = info[.originalImage] as? UIImage {
+            handlePicked(image: image)
+        }
+    }
+
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true)
     }
 }

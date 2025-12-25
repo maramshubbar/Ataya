@@ -4,8 +4,21 @@ final class ImpactDetailsViewController: UIViewController {
 
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var mainStackView: UIStackView!
-    
+
     private let atayaYellow = UIColor(red: 0xF7/255, green: 0xD4/255, blue: 0x4C/255, alpha: 1)
+
+    private enum ChartType { case bar, line, pie }
+    private enum Period: Int { case daily = 0, monthly = 1, yearly = 2 }
+
+    private var currentPeriod: Period = .daily
+
+    private lazy var periodControl: UISegmentedControl = {
+        let sc = UISegmentedControl(items: ["Daily", "Monthly", "Yearly"])
+        sc.selectedSegmentIndex = Period.daily.rawValue
+        sc.selectedSegmentTintColor = atayaYellow
+        sc.addTarget(self, action: #selector(periodChanged(_:)), for: .valueChanged)
+        return sc
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -16,12 +29,14 @@ final class ImpactDetailsViewController: UIViewController {
 
         configureScrollBehavior()
         configureStackView()
-        buildCards()
-    }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        view.layoutIfNeeded()
+        scrollView.contentInset.bottom = 24
+        scrollView.verticalScrollIndicatorInsets.bottom = 24
+
+        mainStackView.addArrangedSubview(periodControl)
+        periodControl.heightAnchor.constraint(equalToConstant: 36).isActive = true
+
+        buildCards(for: currentPeriod)
     }
 
     private func configureScrollBehavior() {
@@ -39,24 +54,39 @@ final class ImpactDetailsViewController: UIViewController {
         mainStackView.distribution = .fill
     }
 
-    private func buildCards() {
-        mainStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+    @objc private func periodChanged(_ sender: UISegmentedControl) {
+        currentPeriod = Period(rawValue: sender.selectedSegmentIndex) ?? .daily
+        buildCards(for: currentPeriod)
+        scrollView.setContentOffset(.zero, animated: true)
+    }
+
+    private func buildCards(for period: Period) {
+        mainStackView.arrangedSubviews
+            .filter { $0 !== periodControl }
+            .forEach {
+                mainStackView.removeArrangedSubview($0)
+                $0.removeFromSuperview()
+            }
+
+        let meals = contentMeals(for: period)
+        let waste = contentWaste(for: period)
+        let env = contentEnv(for: period)
 
         let mealsCard = makeBigCard(
             title: "Meals Provided",
-            description: "You have shared 145 meals with people in need ……",
+            description: meals.description,
             chartType: .bar
         )
 
         let wasteCard = makeBigCard(
             title: "Food Waste Prevented",
-            description: "Your consistent donations have prevented 32% of food ……",
+            description: waste.description,
             chartType: .line
         )
 
         let envCard = makeBigCard(
             title: "Environmental Equivalent",
-            description: "Your donations didn’t just help people — they helped the environment too……",
+            description: env.description,
             chartType: .pie
         )
 
@@ -65,9 +95,33 @@ final class ImpactDetailsViewController: UIViewController {
         mainStackView.addArrangedSubview(envCard)
     }
 
-    // MARK: - Card Factory
+    // MARK: - Period content (replace with your real calculations)
 
-    private enum ChartType { case bar, line, pie }
+    private func contentMeals(for period: Period) -> (description: String, value: Int) {
+        switch period {
+        case .daily:   return ("You have shared 5 meals with people in need ……", 5)
+        case .monthly: return ("You have shared 145 meals with people in need ……", 145)
+        case .yearly:  return ("You have shared 1,420 meals with people in need ……", 1420)
+        }
+    }
+
+    private func contentWaste(for period: Period) -> (description: String, value: Int) {
+        switch period {
+        case .daily:   return ("Your consistent donations have prevented 2% of food ……", 2)
+        case .monthly: return ("Your consistent donations have prevented 32% of food ……", 32)
+        case .yearly:  return ("Your consistent donations have prevented 58% of food ……", 58)
+        }
+    }
+
+    private func contentEnv(for period: Period) -> (description: String, value: Int) {
+        switch period {
+        case .daily:   return ("Your donations helped reduce emissions equivalent to 1 short trip ……", 1)
+        case .monthly: return ("Your donations helped reduce emissions equivalent to 12 short trips ……", 12)
+        case .yearly:  return ("Your donations helped reduce emissions equivalent to 140 short trips ……", 140)
+        }
+    }
+
+    // MARK: - Card Factory
 
     private func makeBigCard(title: String, description: String, chartType: ChartType) -> UIView {
 
@@ -145,10 +199,6 @@ final class ImpactDetailsViewController: UIViewController {
     }
 
     @objc private func readMoreTapped(_ sender: UIButton) {
-        // 1 = meals, 2 = waste, 3 = env
         print("Read More tapped for card:", sender.tag)
-
-        // If you want to force-scroll to top before pushing a details screen:
-        // scrollView.setContentOffset(.zero, animated: true)
     }
 }

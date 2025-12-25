@@ -12,29 +12,24 @@
         <!--ImapctDashboard-->
         <scene sceneID="s0d-6b-0kx">
             <objects>
-                <viewController title="ImapctDashboard" id="Y6W-OH-hqX" customClass="ImpactSummaryViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
+                <viewController title="ImapctDashboard" id="Y6W-OH-hqX" customClass="SharePreviewViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" ambiguous="YES" id="5EZ-qb-Rvc">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Okm-gE-BCh" userLabel="Chart" customClass="ImpactBarChartView" customModule="Ataya" customModuleProvider="target">
-                                <rect key="frame" x="24" y="252" width="345" height="211"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Okm-gE-BCh" userLabel="Chart">
+                                <rect key="frame" x="20" y="142" width="353" height="360"/>
                                 <color key="backgroundColor" systemColor="tertiarySystemGroupedBackgroundColor"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="211" id="mXu-TK-cJF"/>
+                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="420" id="lEj-A7-T7t"/>
+                                    <constraint firstAttribute="height" constant="360" id="mXu-TK-cJF"/>
                                 </constraints>
                             </view>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0QL-lZ-SOA">
-                                <rect key="frame" x="33" y="206" width="327" height="16"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yEk-aF-CiW" userLabel="Description">
-                                <rect key="frame" x="24" y="487" width="345" height="100"/>
+                                <rect key="frame" x="20" y="526" width="353" height="180"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CDa-4g-bad">
-                                        <rect key="frame" x="16" y="16" width="313" height="21"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CDa-4g-bad">
+                                        <rect key="frame" x="16" y="16" width="321" height="180"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -42,16 +37,20 @@
                                 </subviews>
                                 <color key="backgroundColor" red="1" green="0.96862745098039216" blue="0.8784313725490196" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="100" id="0HG-Uf-ViD"/>
+                                    <constraint firstAttribute="height" constant="180" id="0HG-Uf-ViD"/>
+                                    <constraint firstAttribute="bottom" secondItem="CDa-4g-bad" secondAttribute="bottom" constant="-16" id="3Jd-dI-LA8"/>
                                     <constraint firstItem="CDa-4g-bad" firstAttribute="leading" secondItem="yEk-aF-CiW" secondAttribute="leading" constant="16" id="6rY-Yc-iIv"/>
                                     <constraint firstItem="CDa-4g-bad" firstAttribute="top" secondItem="yEk-aF-CiW" secondAttribute="top" constant="16" id="IDu-se-Sem"/>
+                                    <constraint firstItem="CDa-4g-bad" firstAttribute="centerX" secondItem="yEk-aF-CiW" secondAttribute="centerX" id="ir8-R5-oic"/>
+                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="420" id="l99-xX-4is"/>
                                     <constraint firstAttribute="trailing" secondItem="CDa-4g-bad" secondAttribute="trailing" constant="16" id="wWj-1f-zVI"/>
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="haJ-kW-Vg4">
-                                <rect key="frame" x="24" y="706" width="345" height="54"/>
+                                <rect key="frame" x="20" y="730" width="353" height="54"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="54" id="RZN-hw-9ad"/>
+                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="420" id="fgS-W2-84m"/>
                                 </constraints>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Share Imapct">
@@ -65,37 +64,50 @@
                                     <action selector="shareImpactTapped:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="wOu-V1-X2q"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4m7-pO-rPX">
+                                <rect key="frame" x="20" y="134" width="393" height="28"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="28" id="QkF-JX-sFU"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="Okm-gE-BCh" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="24" id="7z5-xb-acw"/>
-                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="haJ-kW-Vg4" secondAttribute="trailing" constant="24" id="8Lo-h8-OA7"/>
-                            <constraint firstItem="haJ-kW-Vg4" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="24" id="8Wq-gB-mAB"/>
-                            <constraint firstItem="yEk-aF-CiW" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="24" id="Fvp-4b-3ih"/>
-                            <constraint firstAttribute="trailing" secondItem="0QL-lZ-SOA" secondAttribute="trailing" constant="33" id="Meh-yX-47x"/>
-                            <constraint firstItem="Okm-gE-BCh" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="134" id="a8K-cg-cFh"/>
-                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="yEk-aF-CiW" secondAttribute="trailing" constant="24" id="aWh-4k-3vm"/>
-                            <constraint firstItem="Okm-gE-BCh" firstAttribute="top" secondItem="0QL-lZ-SOA" secondAttribute="bottom" constant="30" id="cbb-HL-8HZ"/>
-                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="Okm-gE-BCh" secondAttribute="trailing" constant="24" id="hJc-gQ-L1Q"/>
+                            <constraint firstItem="4m7-pO-rPX" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="20" id="30t-zY-o3c"/>
+                            <constraint firstItem="Okm-gE-BCh" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="20" id="7z5-xb-acw"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="haJ-kW-Vg4" secondAttribute="trailing" constant="20" id="8Lo-h8-OA7"/>
+                            <constraint firstItem="haJ-kW-Vg4" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="20" id="8Wq-gB-mAB"/>
+                            <constraint firstItem="haJ-kW-Vg4" firstAttribute="top" secondItem="yEk-aF-CiW" secondAttribute="bottom" constant="24" id="DW4-iB-dPm"/>
+                            <constraint firstItem="yEk-aF-CiW" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="20" id="Fvp-4b-3ih"/>
+                            <constraint firstItem="4m7-pO-rPX" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="16" id="OlO-87-N2L"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="4m7-pO-rPX" secondAttribute="trailing" constant="-20" id="OzT-DA-yAn"/>
+                            <constraint firstItem="Okm-gE-BCh" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="24" id="a8K-cg-cFh"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="yEk-aF-CiW" secondAttribute="trailing" constant="20" id="aWh-4k-3vm"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="Okm-gE-BCh" secondAttribute="trailing" constant="20" id="hJc-gQ-L1Q"/>
                             <constraint firstItem="yEk-aF-CiW" firstAttribute="top" secondItem="Okm-gE-BCh" secondAttribute="bottom" constant="24" id="itd-uf-FMl"/>
-                            <constraint firstItem="0QL-lZ-SOA" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="88" id="nQz-sr-x2Z"/>
-                            <constraint firstItem="0QL-lZ-SOA" firstAttribute="leading" secondItem="5EZ-qb-Rvc" secondAttribute="leading" constant="33" id="uMF-mS-7Mz"/>
-                            <constraint firstAttribute="bottomMargin" secondItem="haJ-kW-Vg4" secondAttribute="bottom" constant="24" id="uqU-UU-yKc"/>
+                            <constraint firstAttribute="bottomMargin" secondItem="haJ-kW-Vg4" secondAttribute="bottom" constant="16" id="uqU-UU-yKc"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Impact Dashboard" id="zIe-xf-k0C"/>
                     <connections>
                         <outlet property="chart" destination="Okm-gE-BCh" id="1B9-zT-IcB"/>
+                        <outlet property="chartContainerView" destination="Okm-gE-BCh" id="C2B-bL-eJQ"/>
                         <outlet property="descriptionCard" destination="yEk-aF-CiW" id="0C8-7O-QQJ"/>
                         <outlet property="descriptionLabel" destination="CDa-4g-bad" id="4lh-Q3-rNH"/>
+                        <outlet property="messageContainerView" destination="yEk-aF-CiW" id="lu8-EH-nSH"/>
+                        <outlet property="messageLabel" destination="CDa-4g-bad" id="VVU-bP-h0q"/>
+                        <outlet property="shareButton" destination="haJ-kW-Vg4" id="DVi-9S-2hO"/>
                         <outlet property="shareImpactButton" destination="haJ-kW-Vg4" id="6PT-dD-tFs"/>
-                        <outlet property="titleLabel" destination="0QL-lZ-SOA" id="AIy-7v-1JZ"/>
+                        <outlet property="titleLabel" destination="4m7-pO-rPX" id="ysl-5E-dxA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="951.90839694656484" y="-2.1126760563380285"/>
+            <point key="canvasLocation" x="6954.961832061068" y="-39.436619718309863"/>
         </scene>
         <!--Impact Dashboard-->
         <scene sceneID="ANK-W7-A5q">
@@ -678,7 +690,7 @@
                     <navigationItem key="navigationItem" title="Impact Dashboard" style="editor" id="X5y-Lh-dXs"/>
                     <connections>
                         <outlet property="mainStackView" destination="EMw-bx-3z4" id="ZsI-Mg-kkC"/>
-                        <outlet property="scrollView" destination="nHh-ov-bAF" id="lWd-k8-Yno"/>
+                        <outlet property="scrollView" destination="nHh-ov-bAF" id="psB-su-B3A"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9wf-3q-DBm" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

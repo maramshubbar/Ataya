@@ -77,6 +77,8 @@ final class AddEditGiftViewController: UIViewController {
         setupUploadBox()
         setupErrorLabels()
         bindExisting()
+        
+       updateDashedBorder()
     }
 
     override func viewDidLayoutSubviews() {
@@ -294,7 +296,14 @@ final class AddEditGiftViewController: UIViewController {
     }
 
     private func updateDashedBorder() {
+        uploadContainer.layoutIfNeeded()
+
         dashedBorderLayer?.removeFromSuperlayer()
+
+        guard uploadContainer.bounds.width > 0,
+              uploadContainer.bounds.height > 0 else {
+            return
+        }
 
         let shape = CAShapeLayer()
         shape.strokeColor = borderGray.cgColor

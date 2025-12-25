@@ -4,12 +4,27 @@
 //
 //  Created by Maram on 02/12/2025.
 //
+//
+//  AnalyticsViewController.swift
+//  Ataya
+//
+//  Created by Maram on 02/12/2025.
+//
+//
+//  AnalyticsViewController.swift
+//  Ataya
+//
+//  Created by Maram on 02/12/2025.
+//
 
 import UIKit
 import FirebaseFirestore
 import DGCharts   // إذا ما اشتغل عندج، بدليه إلى: import Charts
 
 final class AnalyticsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+
+    // ✅ ScrollView اللي فيه كل الشاشة (من الكروت لحد قبل زر Export)
+    @IBOutlet weak var analyticsScrollView: UIScrollView?
 
     // ✅ جدول الدول (منفصل)
     @IBOutlet weak var tblCountries: UITableView?
@@ -18,14 +33,14 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     @IBOutlet weak var tblList: UITableView?
     @IBOutlet weak var segListFilter: UISegmentedControl?
 
-    // ✅ SegmentedControl حق 7 Days / 6 Months / 1 Year (اربطية من storyboard)
+    // ✅ SegmentedControl حق 7 Days / 6 Months / 1 Year
     @IBOutlet weak var segTimeRange: UISegmentedControl?
 
     @IBOutlet weak var lblRegisteredUsers: UILabel?
     @IBOutlet weak var lblTotalDonations: UILabel?
     @IBOutlet weak var lblVerifiedNGOs: UILabel?
 
-    // ✅ chart container (اربطية من storyboard)
+    // ✅ chart container
     @IBOutlet weak var cardVerified: UIView?
     @IBOutlet weak var chartContainer: UIView?
 
@@ -36,38 +51,36 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     // ✅ Donation Categories SECTION + Export PDF
     // ==========================================================
 
-    // اربطي هذا بالـ container view حق "Donation Categories"
+    // Container حق "Donation Categories"
     @IBOutlet weak var donationCategoriesSectionView: UIView?
 
-    // (اختياري) إذا سويتي UI بالـ Storyboard مثل placeholder:
-    // اربطي Labels (النسب) يمين البارات
+    // Labels (النسب) يمين البارات – إذا مستخدمه Storyboard
     @IBOutlet weak var lblFoodPct: UILabel?
     @IBOutlet weak var lblBasketsPct: UILabel?
     @IBOutlet weak var lblCampaignPct: UILabel?
 
-    // اربطي الـ bar views نفسها (الملونة)
+    // bar views الملونة – لو مسوية UI بالـ Storyboard
     @IBOutlet weak var barFoodView: UIView?
     @IBOutlet weak var barBasketsView: UIView?
     @IBOutlet weak var barCampaignView: UIView?
 
-    // اربطي Constraints عرض البارات (Width)
+    // Constraints لعرض البارات
     @IBOutlet weak var barFoodWidth: NSLayoutConstraint?
     @IBOutlet weak var barBasketsWidth: NSLayoutConstraint?
     @IBOutlet weak var barCampaignWidth: NSLayoutConstraint?
 
-    // زر Export PDF (اربطيه بالـ button)
+    // زر Export Report
     @IBAction func exportCategoriesPDFTapped(_ sender: UIButton) {
-        guard let section = donationCategoriesSectionView else {
-            print("⚠️ donationCategoriesSectionView not connected")
-            return
-        }
-        exportViewAsPDF(section, fileName: "Donation_Categories", anchor: sender)
+        // نخفي الزر قبل التصدير عشان ما يطلع بالـ PDF
+        sender.isHidden = true
+        exportAnalyticsScreenPDF(anchor: sender)
+        sender.isHidden = false
     }
 
     // نخزن آخر نسب عشان نعيد رسم البارات بعد layout
     private var lastCategoryPct: (food: Double, baskets: Double, campaign: Double) = (0, 0, 0)
 
-    // ✅ إذا ما عندج UI بالـ Storyboard، هذا يبنيه داخل donationCategoriesSectionView
+    // ✅ إذا ما عندج UI بالـ Storyboard، هذا يبني الـ rows للكاتيجوريز
     private struct CategoryRowUI {
         let nameLabel: UILabel
         let percentLabel: UILabel
@@ -88,7 +101,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         let type: RowType
     }
 
-    // ✅ Countries = amountUSD + percent (مثل الجدول القديم)
+    // ✅ Countries = amountUSD + percent
     struct CountryRow {
         let name: String
         let amountUSD: Double
@@ -104,7 +117,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         UIColor(red: 221/255, green: 203/255, blue: 242/255, alpha: 1)
     ]
 
-    // ✅ Placeholder list (shows names حتى لو Firestore لسى ما رجّع شي)
+    // ✅ Placeholder list (لو ما رجع شيء من Firestore لسه)
     private let placeholderAllRows: [ListRow] = [
         .init(imageName: "hopPal",     name: "HopPal",        countryText: "🇧🇭 Bahrain",         type: .ngo),
         .init(imageName: "kindWave",   name: "KindWave",      countryText: "🇱🇧 Lebanon",         type: .ngo),
@@ -145,10 +158,10 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         warnIfMissingOutlets()
 
-        // ✅ Donation Categories (Only this part)
+        // ✅ Donation Categories
         setupDonationCategoriesUI()
         updateDonationCategoriesUI(food: 0, baskets: 0, campaign: 0, animated: false)
 
@@ -166,7 +179,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         segTimeRange?.selectedSegmentIndex = 1
         segTimeRange?.addTarget(self, action: #selector(timeRangeChanged), for: .valueChanged)
 
-        // ✅ Show placeholder immediately
+        // ✅ placeholder لليست
         allRows = placeholderAllRows
         applyListFilterAndReload()
 
@@ -182,11 +195,20 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
+        // نخلي الدوت دائرية حسب حجمها في السيل
+        if let table = tblCountries {
+            for cell in table.visibleCells {
+                let dot = cell.contentView.viewWithTag(1)
+                dot?.layer.cornerRadius = (dot?.bounds.height ?? 0) / 2
+                dot?.clipsToBounds = true
+            }
+        }
+
         cardRegistered?.applyCardShadow(cornerRadius: 20)
         cardTotal?.applyCardShadow(cornerRadius: 20)
         cardVerified?.applyCardShadow(cornerRadius: 20)
 
-        // ✅ Donation Categories: re-apply widths after layout
+        // ✅ Donation Categories: re-apply widths بعد ما تنتهي الـ layout
         applyCategoryBarsFromLastPct(animated: false)
     }
 
@@ -205,7 +227,6 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         if cardTotal == nil { print("⚠️ Outlet not connected: cardTotal") }
         if cardVerified == nil { print("⚠️ Outlet not connected: cardVerified") }
 
-        // Donation Categories
         if donationCategoriesSectionView == nil { print("⚠️ Outlet not connected: donationCategoriesSectionView") }
     }
 
@@ -214,7 +235,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     // ==========================================================
 
     private func setupDonationCategoriesUI() {
-        // إذا عندج placeholder UI في storyboard (labels/bars/constraints) → نستخدمه
+        // إذا عندج placeholder UI في storyboard (labels/bars/constraints)
         let storyboardBarsConnected =
             (lblFoodPct != nil || lblBasketsPct != nil || lblCampaignPct != nil) ||
             (barFoodView != nil || barBasketsView != nil || barCampaignView != nil) ||
@@ -235,27 +256,49 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         host.subviews.forEach { $0.removeFromSuperview() }
         builtCategoryRows.removeAll()
 
-        // rows
+        // Stack عمودي لكل الصفوف
+        let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .vertical
+        stack.spacing = 12
+        stack.alignment = .fill
+        stack.distribution = .fillEqually
+
+        host.addSubview(stack)
+
+        NSLayoutConstraint.activate([
+            stack.leadingAnchor.constraint(equalTo: host.leadingAnchor),
+            stack.trailingAnchor.constraint(equalTo: host.trailingAnchor),
+            stack.topAnchor.constraint(equalTo: host.topAnchor),
+            stack.bottomAnchor.constraint(equalTo: host.bottomAnchor)
+        ])
+
+        // عرض ثابت لعمود الأسماء
+        let nameColumnWidth: CGFloat = 80
+
+        // بيانات الصفوف
         let items: [(key: String, title: String, color: UIColor)] = [
             ("food", "Food", UIColor(red: 245/255, green: 226/255, blue: 196/255, alpha: 1)),
             ("baskets", "Baskets", UIColor(red: 236/255, green: 248/255, blue: 183/255, alpha: 1)),
             ("campaign", "Campaign", UIColor(red: 210/255, green: 242/255, blue: 200/255, alpha: 1))
         ]
 
-        var previousBottom: NSLayoutConstraint?
-
-        for (idx, it) in items.enumerated() {
+        for it in items {
+            let row = UIView()
+            row.translatesAutoresizingMaskIntoConstraints = false
+            stack.addArrangedSubview(row)
 
             let name = UILabel()
             name.translatesAutoresizingMaskIntoConstraints = false
             name.text = it.title
-            name.font = UIFont.systemFont(ofSize: 18, weight: .regular)
+            name.font = UIFont.systemFont(ofSize: 16, weight: .regular)
             name.textColor = .black
+            name.textAlignment = .left
 
             let pct = UILabel()
             pct.translatesAutoresizingMaskIntoConstraints = false
             pct.text = "0.0%"
-            pct.font = UIFont.systemFont(ofSize: 22, weight: .regular)
+            pct.font = UIFont.systemFont(ofSize: 18, weight: .regular)
             pct.textColor = .black
             pct.textAlignment = .right
             pct.setContentHuggingPriority(.required, for: .horizontal)
@@ -265,6 +308,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
             track.backgroundColor = .clear
             track.layer.borderWidth = 1
             track.layer.borderColor = UIColor(white: 0.45, alpha: 0.6).cgColor
+            track.layer.cornerRadius = 0
             track.clipsToBounds = true
 
             let fill = UIView()
@@ -274,6 +318,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
             track.addSubview(fill)
 
             let fillW = fill.widthAnchor.constraint(equalToConstant: 10)
+
             NSLayoutConstraint.activate([
                 fill.leadingAnchor.constraint(equalTo: track.leadingAnchor),
                 fill.topAnchor.constraint(equalTo: track.topAnchor),
@@ -281,35 +326,24 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
                 fillW
             ])
 
-            host.addSubview(name)
-            host.addSubview(track)
-            host.addSubview(pct)
+            row.addSubview(name)
+            row.addSubview(track)
+            row.addSubview(pct)
 
             NSLayoutConstraint.activate([
-                name.leadingAnchor.constraint(equalTo: host.leadingAnchor),
-                name.centerYAnchor.constraint(equalTo: track.centerYAnchor),
+                name.leadingAnchor.constraint(equalTo: row.leadingAnchor),
+                name.centerYAnchor.constraint(equalTo: row.centerYAnchor),
+                name.widthAnchor.constraint(equalToConstant: nameColumnWidth),
 
-                pct.trailingAnchor.constraint(equalTo: host.trailingAnchor),
-                pct.centerYAnchor.constraint(equalTo: track.centerYAnchor),
-                pct.widthAnchor.constraint(greaterThanOrEqualToConstant: 70),
+                pct.trailingAnchor.constraint(equalTo: row.trailingAnchor),
+                pct.centerYAnchor.constraint(equalTo: row.centerYAnchor),
+                pct.widthAnchor.constraint(greaterThanOrEqualToConstant: 60),
 
                 track.leadingAnchor.constraint(equalTo: name.trailingAnchor, constant: 18),
                 track.trailingAnchor.constraint(equalTo: pct.leadingAnchor, constant: -18),
-                track.heightAnchor.constraint(equalToConstant: 44),
+                track.heightAnchor.constraint(equalToConstant: 36),
+                track.centerYAnchor.constraint(equalTo: row.centerYAnchor)
             ])
-
-            if let prev = previousBottom {
-                track.topAnchor.constraint(equalTo: prev, constant: 16).isActive = true
-            } else {
-                track.topAnchor.constraint(equalTo: host.topAnchor).isActive = true
-            }
-
-            // last row pins to bottom
-            if idx == items.count - 1 {
-                track.bottomAnchor.constraint(equalTo: host.bottomAnchor).isActive = true
-            }
-
-            previousBottom = track.bottomAnchor
 
             builtCategoryRows[it.key] = CategoryRowUI(
                 nameLabel: name,
@@ -319,6 +353,8 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
                 fillWidth: fillW
             )
         }
+
+        host.layoutIfNeeded()
     }
 
     private func updateDonationCategoriesUI(food: Int, baskets: Int, campaign: Int, animated: Bool) {
@@ -330,12 +366,10 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
 
         lastCategoryPct = (foodPct, basketsPct, campaignPct)
 
-        // إذا labels موجودة (storyboard)
         lblFoodPct?.text = percentText(foodPct)
         lblBasketsPct?.text = percentText(basketsPct)
         lblCampaignPct?.text = percentText(campaignPct)
 
-        // إذا built labels (programmatic)
         builtCategoryRows["food"]?.percentLabel.text = percentText(foodPct)
         builtCategoryRows["baskets"]?.percentLabel.text = percentText(basketsPct)
         builtCategoryRows["campaign"]?.percentLabel.text = percentText(campaignPct)
@@ -426,7 +460,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         table.contentInset = UIEdgeInsets(top: 6, left: 0, bottom: 12, right: 0)
     }
 
-    // ✅ Countries table UI (منفصل)
+    // ✅ Countries table UI
     private func setupCountriesTableUI() {
         guard let table = tblCountries else { return }
 
@@ -617,18 +651,18 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
 
                 let docs = snap?.documents ?? []
 
-                // ✅ Total Donations = عدد الدوكومنتس
+                // Total Donations = عدد الدوكومنتس
                 let totalDonationsCount = docs.count
 
-                // ✅ Countries = مجموع amountUSD لكل دولة
+                // Countries = مجموع amountUSD لكل دولة
                 var byCountryUSD: [String: Double] = [:]
                 var totalUSD: Double = 0
 
-                // ✅ fallback Registered Users = unique donors
+                // fallback Registered Users = unique donors
                 var uniqueDonors = Set<String>()
                 var donorRowsDict: [String: ListRow] = [:]
 
-                // ✅ Donation Categories counts (ONLY USED FOR DRAWING THIS SECTION)
+                // Donation Categories counts
                 var foodCount = 0
                 var basketsCount = 0
                 var campaignCount = 0
@@ -665,8 +699,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
                         )
                     }
 
-                    // ✅ Category counting
-                    // IMPORTANT: عدّلي keys حسب اسم الحقل الحقيقي عندج إذا مو "category"
+                    // Category counting
                     let catRaw = self.stringValue(data, keys: ["category", "donationCategory", "donationType", "type"]).lowercased()
 
                     if catRaw == "food" {
@@ -678,7 +711,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
                     }
                 }
 
-                // ✅ Countries rows (amount + %)
+                // Countries rows (amount + %)
                 let safeTotal = max(totalUSD, 0.000001)
                 let cRows = byCountryUSD
                     .map { (name: $0.key, amountUSD: $0.value) }
@@ -694,14 +727,11 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
                     self.usersCountFallback = uniqueDonors.count
                     self.updateRegisteredUsersLabel()
 
-                    // ✅ Countries top 4 (غيري الرقم إذا تبين أكثر)
                     self.countriesRows = Array(cRows.prefix(4))
                     self.tblCountries?.reloadData()
 
-                    // ✅ Update chart
                     self.updateMonthlyChart(from: docs)
 
-                    // ✅ Update Donation Categories (THIS IS THE ONLY NEW OUTPUT)
                     self.updateDonationCategoriesUI(
                         food: foodCount,
                         baskets: basketsCount,
@@ -746,6 +776,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     }
 
     // MARK: - UITableView
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let c = tblCountries, tableView === c { return countriesRows.count }
         if let l = tblList, tableView === l { return rows.count }
@@ -759,7 +790,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        // ✅ Countries table cell (SAFE – ما يطيّح إذا CountryCell مو موجودة)
+        // ✅ Countries table cell
         if let c = tblCountries, tableView === c {
 
             let cell = tableView.dequeueReusableCell(withIdentifier: "CountryCell")
@@ -790,7 +821,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
             return cell
         }
 
-        // ✅ Leaderboard table cell (SAFE – ما يطيّح إذا ListCell مو موجودة)
+        // ✅ Leaderboard table cell
         let cell = tableView.dequeueReusableCell(withIdentifier: "ListCell")
             ?? UITableViewCell(style: .subtitle, reuseIdentifier: nil)
 
@@ -830,6 +861,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     }
 
     // MARK: - Helpers
+
     private func stringValue(_ data: [String: Any], keys: [String]) -> String {
         for k in keys {
             if let s = data[k] as? String, !s.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -884,8 +916,19 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     }
 
     // ==========================================================
-    // ✅ PDF Export helper
+    // ✅ PDF Export helpers
     // ==========================================================
+
+    /// يقرر من ياخذ PDF: الـ ScrollView (من غير زر Export) أو كل الـ view إذا ما في ScrollView
+    private func exportAnalyticsScreenPDF(anchor: UIView?) {
+        if let scroll = analyticsScrollView {
+            exportScrollContentViewAsPDF(scroll, fileName: "Analytics_Report", anchor: anchor)
+        } else {
+            exportViewAsPDF(self.view, fileName: "Analytics_Report", anchor: anchor)
+        }
+    }
+
+    /// PDF من أي UIView عادي
     private func exportViewAsPDF(_ viewToExport: UIView, fileName: String, anchor: UIView?) {
         viewToExport.layoutIfNeeded()
 
@@ -901,6 +944,50 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
             viewToExport.drawHierarchy(in: bounds, afterScreenUpdates: true)
         }
 
+        sharePDFData(data, fileName: fileName, anchor: anchor)
+    }
+
+    /// PDF لكل محتوى ScrollView (من أول محتوى لآخره) بدون زر Export
+    private func exportScrollContentViewAsPDF(_ scrollView: UIScrollView, fileName: String, anchor: UIView?) {
+
+        scrollView.layoutIfNeeded()
+
+        // غالباً أول subview هو الـ contentView اللي فيه كل الكروت والجراف والليست
+        let contentView = scrollView.subviews.first ?? scrollView
+
+        contentView.layoutIfNeeded()
+
+        let targetWidth = max(contentView.bounds.width, scrollView.bounds.width)
+        let targetHeight = max(contentView.bounds.height, scrollView.contentSize.height)
+        let targetSize = CGSize(width: targetWidth, height: targetHeight)
+
+        guard targetWidth > 0, targetHeight > 0 else {
+            print("⚠️ exportScrollContentViewAsPDF: size is zero")
+            return
+        }
+
+        let previousFrame = contentView.frame
+
+        // نخليه يبدأ من (0,0) وبحجم كامل المحتوى عشان كله يطلع في صفحة وحده طويلة
+        contentView.frame = CGRect(origin: .zero, size: targetSize)
+        contentView.layoutIfNeeded()
+
+        let bounds = CGRect(origin: .zero, size: targetSize)
+        let renderer = UIGraphicsPDFRenderer(bounds: bounds)
+
+        let data = renderer.pdfData { ctx in
+            ctx.beginPage()
+            contentView.layer.render(in: ctx.cgContext)
+        }
+
+        // نرجّع الفريم القديم بعد ما انتهينا
+        contentView.frame = previousFrame
+
+        sharePDFData(data, fileName: fileName, anchor: anchor)
+    }
+
+    /// مشاركة الـ PDF
+    private func sharePDFData(_ data: Data, fileName: String, anchor: UIView?) {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(fileName).pdf")
         do {
             try data.write(to: url)
@@ -908,7 +995,10 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
             let vc = UIActivityViewController(activityItems: [url], applicationActivities: nil)
             if let pop = vc.popoverPresentationController {
                 pop.sourceView = anchor ?? self.view
-                pop.sourceRect = anchor?.bounds ?? CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 1, height: 1)
+                pop.sourceRect = anchor?.bounds ?? CGRect(x: self.view.bounds.midX,
+                                                          y: self.view.bounds.midY,
+                                                          width: 1,
+                                                          height: 1)
             }
             present(vc, animated: true)
         } catch {
@@ -916,6 +1006,8 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         }
     }
 }
+
+// MARK: - Extensions
 
 private extension String {
     func ifEmpty(_ fallback: String) -> String {
@@ -941,7 +1033,7 @@ final class DollarAxisFormatter: AxisValueFormatter {
 private extension UIView {
     func applyCardShadow(cornerRadius: CGFloat) {
         layer.cornerRadius = cornerRadius
-        layer.masksToBounds = false   // مهم عشان الشادو يبان
+        layer.masksToBounds = false
 
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOpacity = 0.09

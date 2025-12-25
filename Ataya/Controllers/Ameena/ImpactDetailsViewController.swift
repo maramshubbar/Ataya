@@ -2,8 +2,9 @@ import UIKit
 
 final class ImpactDetailsViewController: UIViewController {
 
+    @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var mainStackView: UIStackView!
-
+    
     private let atayaYellow = UIColor(red: 0xF7/255, green: 0xD4/255, blue: 0x4C/255, alpha: 1)
 
     override func viewDidLoad() {
@@ -13,15 +14,34 @@ final class ImpactDetailsViewController: UIViewController {
         navigationItem.largeTitleDisplayMode = .never
         view.backgroundColor = .systemBackground
 
+        configureScrollBehavior()
+        configureStackView()
+        buildCards()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        view.layoutIfNeeded()
+    }
+
+    private func configureScrollBehavior() {
+        if #available(iOS 11.0, *) {
+            scrollView.contentInsetAdjustmentBehavior = .automatic
+        }
+        scrollView.alwaysBounceVertical = true
+        scrollView.keyboardDismissMode = .onDrag
+    }
+
+    private func configureStackView() {
         mainStackView.axis = .vertical
         mainStackView.spacing = 24
         mainStackView.alignment = .fill
         mainStackView.distribution = .fill
-
-        buildCards()
     }
 
     private func buildCards() {
+        mainStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+
         let mealsCard = makeBigCard(
             title: "Meals Provided",
             description: "You have shared 145 meals with people in need ……",
@@ -52,7 +72,7 @@ final class ImpactDetailsViewController: UIViewController {
     private func makeBigCard(title: String, description: String, chartType: ChartType) -> UIView {
 
         let card = UIView()
-        card.backgroundColor = .white
+        card.backgroundColor = .secondarySystemBackground
         card.layer.cornerRadius = 16
         card.layer.shadowColor = UIColor.black.cgColor
         card.layer.shadowOpacity = 0.10
@@ -65,13 +85,12 @@ final class ImpactDetailsViewController: UIViewController {
         vStack.alignment = .fill
         vStack.translatesAutoresizingMaskIntoConstraints = false
 
-        // Title label (top inside card)
         let titleLabel = UILabel()
         titleLabel.text = title
         titleLabel.textAlignment = .center
         titleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
+        titleLabel.numberOfLines = 1
 
-        // Chart placeholder (replace later with real chart view)
         let chartContainer = UIView()
         chartContainer.backgroundColor = UIColor.systemGray6
         chartContainer.layer.cornerRadius = 12
@@ -80,40 +99,34 @@ final class ImpactDetailsViewController: UIViewController {
             chartContainer.heightAnchor.constraint(equalToConstant: 220)
         ])
 
-        // Description title (bold bottom title)
         let bottomTitle = UILabel()
         bottomTitle.text = title
         bottomTitle.font = .systemFont(ofSize: 18, weight: .bold)
         bottomTitle.numberOfLines = 1
 
-        // Description body
         let body = UILabel()
         body.text = description
         body.font = .systemFont(ofSize: 14, weight: .regular)
-        body.textColor = .darkGray
+        body.textColor = .secondaryLabel
         body.numberOfLines = 0
 
-        // Read More
         let readMore = UIButton(type: .system)
         readMore.setTitle("Read More", for: .normal)
         readMore.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
         readMore.contentHorizontalAlignment = .right
         readMore.addTarget(self, action: #selector(readMoreTapped(_:)), for: .touchUpInside)
 
-        // Keep info in tag
         readMore.tag = (chartType == .bar ? 1 : chartType == .line ? 2 : 3)
 
-        // Put “body + read more” in a horizontal row
         let bottomRow = UIStackView(arrangedSubviews: [body, readMore])
         bottomRow.axis = .horizontal
         bottomRow.alignment = .bottom
         bottomRow.spacing = 12
 
-        // Make the label take space and button stick right
         body.setContentHuggingPriority(.defaultLow, for: .horizontal)
         readMore.setContentHuggingPriority(.required, for: .horizontal)
+        readMore.setContentCompressionResistancePriority(.required, for: .horizontal)
 
-        // Add views
         vStack.addArrangedSubview(titleLabel)
         vStack.addArrangedSubview(chartContainer)
         vStack.addArrangedSubview(bottomTitle)
@@ -134,5 +147,8 @@ final class ImpactDetailsViewController: UIViewController {
     @objc private func readMoreTapped(_ sender: UIButton) {
         // 1 = meals, 2 = waste, 3 = env
         print("Read More tapped for card:", sender.tag)
+
+        // If you want to force-scroll to top before pushing a details screen:
+        // scrollView.setContentOffset(.zero, animated: true)
     }
 }

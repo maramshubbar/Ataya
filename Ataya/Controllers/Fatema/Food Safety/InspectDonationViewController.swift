@@ -67,31 +67,31 @@ class InspectDonationViewController: UIViewController {
     }
     
     private func configure(button: UIButton) {
-            // ✅ Keep storyboard title (do NOT set config.title)
 
-            var config = UIButton.Configuration.plain()
+        var config = UIButton.Configuration.plain()
 
-            // keep your existing title color/font from storyboard if you want,
-            // but this makes it consistent:
-            config.baseForegroundColor = .label
+        // نفس ستايل النص
+        config.baseForegroundColor = .label
 
-            // ✅ spacing between circle and text
-            config.imagePadding = 10
+        // نخلي الأيقونة والنص على نفس الخط تمامًا
+        config.contentInsets = .zero
+        config.titlePadding = 8
 
-            // Keep content left
-            config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
-            config.titleAlignment = .leading
+        // نخلي المحاذاة يسار
+        config.titleAlignment = .leading
 
-            // ✅ Important: preserve storyboard title
-            if let storyboardTitle = button.title(for: .normal) {
-                config.title = storyboardTitle
-            }
+        // نثبت ارتفاع موحد للزر
+        button.heightAnchor.constraint(equalToConstant: 32).isActive = true
 
-            button.configuration = config
-            button.contentHorizontalAlignment = .left
-            button.contentVerticalAlignment = .center
-            button.imageView?.contentMode = .scaleAspectFit
+        // نحتفظ بعنوان الستوريبورد
+        if let t = button.title(for: .normal) {
+            config.title = t
         }
+
+        button.configuration = config
+        button.contentHorizontalAlignment = .left
+    }
+
 
     private func updateRadioUI() {
         setRadio(rejectButton, selected: decision == .reject)
@@ -178,8 +178,9 @@ class InspectDonationViewController: UIViewController {
 
         // ✅ Fixed-size image (never shrinks)
         private func radioImage(isSelected: Bool) -> UIImage? {
-            let size = CGSize(width: 30, height: 30)
-            let renderer = UIGraphicsImageRenderer(size: size)
+                let size = CGSize(width: 24, height: 24)
+                let renderer = UIGraphicsImageRenderer(size: size)
+
 
             return renderer.image { _ in
                 let ringConfig = UIImage.SymbolConfiguration(pointSize: 30, weight: .regular)
@@ -188,7 +189,7 @@ class InspectDonationViewController: UIViewController {
                 ring?.draw(in: CGRect(origin: .zero, size: size))
 
                 if isSelected {
-                    let dotSize: CGFloat = 14
+                    let dotSize: CGFloat = 10
                     let dotConfig = UIImage.SymbolConfiguration(pointSize: dotSize, weight: .regular)
                     let dot = UIImage(systemName: "circle.fill", withConfiguration: dotConfig)?
                         .withTintColor(yellow, renderingMode: .alwaysOriginal)

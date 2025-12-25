@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="aYd-b9-nkn">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="M2m-4K-S9L">
     <device id="retina6_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
@@ -11,7 +11,7 @@
         <!--Inspect Donation-->
         <scene sceneID="LJj-UV-1LL">
             <objects>
-                <viewController storyboardIdentifier="InspectDonationViewController" id="hr0-gq-OOY" customClass="InspectDonationViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="InspectDonationViewController" title="Inspect Donation" id="hr0-gq-OOY" customClass="InspectDonationViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="EX4-xW-F0J">
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -23,7 +23,7 @@
                                         <rect key="frame" x="0.0" y="0.0" width="440" height="720"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="n5x-JF-fPt">
-                                                <rect key="frame" x="16" y="16" width="408" height="686"/>
+                                                <rect key="frame" x="16" y="16" width="408" height="620"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sPb-PD-IVM" userLabel="photoCardView">
                                                         <rect key="frame" x="0.0" y="0.0" width="408" height="220"/>
@@ -54,11 +54,11 @@
                                                             <constraint firstItem="hUy-gk-XTQ" firstAttribute="top" secondItem="sPb-PD-IVM" secondAttribute="top" constant="12" id="c6b-tS-Ezc"/>
                                                         </constraints>
                                                     </view>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="R2a-G4-aKf" userLabel="inspect stack">
+                                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="R2a-G4-aKf" userLabel="inspect stack">
                                                         <rect key="frame" x="0.0" y="232" width="408" height="124"/>
                                                         <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Inspection Result" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eBt-hX-Mfc">
-                                                                <rect key="frame" x="0.0" y="0.0" width="408" height="66"/>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="*Inspection Result" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eBt-hX-Mfc">
+                                                                <rect key="frame" x="0.0" y="0.0" width="408" height="74"/>
                                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="19"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
@@ -67,7 +67,7 @@
                                                                 <rect key="frame" x="0.0" y="74" width="408" height="50"/>
                                                                 <subviews>
                                                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" spacing="40" translatesAutoresizingMaskIntoConstraints="NO" id="gtV-Xh-iiA" userLabel="resultStack">
-                                                                        <rect key="frame" x="20" y="16" width="368" height="24"/>
+                                                                        <rect key="frame" x="20" y="0.0" width="368" height="24"/>
                                                                         <subviews>
                                                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="4xq-KR-uCV">
                                                                                 <rect key="frame" x="0.0" y="0.0" width="164" height="24"/>
@@ -120,10 +120,10 @@
                                                                 </subviews>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                                 <constraints>
-                                                                    <constraint firstItem="gtV-Xh-iiA" firstAttribute="top" secondItem="rgC-5i-fcr" secondAttribute="top" constant="16" id="0mS-vx-xvf"/>
                                                                     <constraint firstAttribute="height" constant="50" id="3yl-Y3-G8X"/>
                                                                     <constraint firstAttribute="trailing" secondItem="gtV-Xh-iiA" secondAttribute="trailing" constant="20" id="3zP-Os-9oH"/>
                                                                     <constraint firstItem="gtV-Xh-iiA" firstAttribute="leading" secondItem="rgC-5i-fcr" secondAttribute="leading" constant="20" id="CQk-kG-bCx"/>
+                                                                    <constraint firstItem="gtV-Xh-iiA" firstAttribute="top" secondItem="rgC-5i-fcr" secondAttribute="top" id="uSh-1H-AEz"/>
                                                                 </constraints>
                                                             </view>
                                                         </subviews>
@@ -162,7 +162,7 @@
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="a5j-OV-a6q" userLabel="desc stack">
                                                         <rect key="frame" x="0.0" y="469" width="408" height="151"/>
                                                         <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Description" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bxT-oc-490">
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Description (Optional)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bxT-oc-490">
                                                                 <rect key="frame" x="0.0" y="0.0" width="408" height="23"/>
                                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="19"/>
                                                                 <nil key="textColor"/>
@@ -197,23 +197,6 @@
                                                             <constraint firstAttribute="bottom" secondItem="WNx-ca-FiL" secondAttribute="bottom" id="k2O-Ig-cWM"/>
                                                         </constraints>
                                                     </stackView>
-                                                    <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Sxp-2U-YdK" userLabel="Next Button">
-                                                        <rect key="frame" x="0.0" y="632" width="408" height="54"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" constant="54" id="dZk-gQ-sWL"/>
-                                                        </constraints>
-                                                        <state key="normal" title="Button"/>
-                                                        <buttonConfiguration key="configuration" style="plain" title="Confirm Inspection">
-                                                            <backgroundConfiguration key="background">
-                                                                <color key="backgroundColor" red="0.96862745100000003" green="0.83137254900000002" blue="0.29803921570000003" alpha="1" colorSpace="calibratedRGB"/>
-                                                            </backgroundConfiguration>
-                                                            <fontDescription key="titleFontDescription" type="system" pointSize="18"/>
-                                                            <color key="baseForegroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                                        </buttonConfiguration>
-                                                        <connections>
-                                                            <segue destination="TZd-2K-qkm" kind="show" id="sk8-yc-8aU"/>
-                                                        </connections>
-                                                    </button>
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstItem="Lkh-bs-Zbf" firstAttribute="top" secondItem="R2a-G4-aKf" secondAttribute="bottom" constant="12" id="11V-tm-QC6"/>
@@ -245,12 +228,29 @@
                                 <viewLayoutGuide key="contentLayoutGuide" id="hjj-GZ-Uw7"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="bhA-aI-3Fx"/>
                             </scrollView>
+                            <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Sxp-2U-YdK" userLabel="Next Button">
+                                <rect key="frame" x="16" y="862" width="408" height="54"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="54" id="dZk-gQ-sWL"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Confirm Inspection">
+                                    <backgroundConfiguration key="background">
+                                        <color key="backgroundColor" red="0.96862745100000003" green="0.83137254900000002" blue="0.29803921570000003" alpha="1" colorSpace="calibratedRGB"/>
+                                    </backgroundConfiguration>
+                                    <fontDescription key="titleFontDescription" type="system" pointSize="18"/>
+                                    <color key="baseForegroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                </buttonConfiguration>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="ZGa-fn-mab"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="YD4-0s-k4W" firstAttribute="leading" secondItem="ZGa-fn-mab" secondAttribute="leading" id="AiD-HS-Ywg"/>
+                            <constraint firstAttribute="bottom" secondItem="Sxp-2U-YdK" secondAttribute="bottom" constant="40" id="Fon-XN-nVK"/>
+                            <constraint firstItem="Sxp-2U-YdK" firstAttribute="leading" secondItem="ZGa-fn-mab" secondAttribute="leading" constant="16" id="I23-fa-idB"/>
                             <constraint firstItem="ZGa-fn-mab" firstAttribute="trailing" secondItem="YD4-0s-k4W" secondAttribute="trailing" id="NFT-E9-vS3"/>
+                            <constraint firstItem="ZGa-fn-mab" firstAttribute="trailing" secondItem="Sxp-2U-YdK" secondAttribute="trailing" constant="16" id="cOJ-yu-vX6"/>
                             <constraint firstItem="YD4-0s-k4W" firstAttribute="bottom" secondItem="ZGa-fn-mab" secondAttribute="bottom" id="qwa-gD-Lsd"/>
                             <constraint firstItem="YD4-0s-k4W" firstAttribute="top" secondItem="ZGa-fn-mab" secondAttribute="top" id="s5Q-FX-unS"/>
                         </constraints>
@@ -270,12 +270,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aBs-fF-WvJ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="746" y="-20"/>
+            <point key="canvasLocation" x="2496.818181818182" y="-23.221757322175733"/>
         </scene>
         <!--NGO Donation Overview-->
         <scene sceneID="nu7-Wb-TXy">
             <objects>
-                <viewController title="NGO Donation Overview" id="gFE-xo-Esv" customClass="NGODonationOverviewViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NGODonationOverviewViewController" title="NGO Donation Overview" id="gFE-xo-Esv" customClass="NGODonationOverviewViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="LBK-de-n1K">
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -355,12 +355,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uAA-A1-GqC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2467" y="-24"/>
+            <point key="canvasLocation" x="3358.636363636364" y="-24.476987447698747"/>
         </scene>
         <!--NGO Donation Details-->
         <scene sceneID="h4M-Lx-9sO">
             <objects>
-                <viewController title="NGO Donation Details" id="TZd-2K-qkm" customClass="NGODonationDetailsViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NGODonationDetailsViewController" title="NGO Donation Details" id="TZd-2K-qkm" customClass="NGODonationDetailsViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="uiU-by-bYk">
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -923,6 +923,10 @@
                                                             <fontDescription key="titleFontDescription" type="system" pointSize="18"/>
                                                             <color key="baseForegroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                         </buttonConfiguration>
+                                                        <connections>
+                                                            <action selector="proceedToInspectionTapped:" destination="TZd-2K-qkm" eventType="touchUpInside" id="dge-i6-EG9"/>
+                                                            <segue destination="hr0-gq-OOY" kind="show" id="sZ5-4R-MlQ"/>
+                                                        </connections>
                                                     </button>
                                                 </subviews>
                                                 <constraints>
@@ -965,32 +969,30 @@
                         <outlet property="collectorCardView" destination="Kta-y9-dM5" id="sR9-tF-hxu"/>
                         <outlet property="donationCardView" destination="gBo-VH-zrI" id="2j3-fy-rdA"/>
                         <outlet property="donorCardView" destination="wc6-S2-QZa" id="1Nr-3R-29R"/>
+                        <outlet property="proceedToInspectionTapped" destination="VG1-Ny-qBB" id="etU-y3-mwe"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ViG-GU-psY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1608" y="-19"/>
+            <point key="canvasLocation" x="1678.6363636363637" y="-21.338912133891213"/>
         </scene>
         <!--Navigation Controller-->
-        <scene sceneID="s1M-eL-XDp">
+        <scene sceneID="1Z1-bh-RhL">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="aYd-b9-nkn" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="M2m-4K-S9L" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="cea-X4-6zT">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Bp0-oU-l8s">
                         <rect key="frame" x="0.0" y="124" width="440" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <textAttributes key="titleTextAttributes">
-                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="20"/>
-                        </textAttributes>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="hr0-gq-OOY" kind="relationship" relationship="rootViewController" id="mkr-y5-jhU"/>
+                        <segue destination="TZd-2K-qkm" kind="relationship" relationship="rootViewController" id="CAI-qA-nPL"/>
                     </connections>
                 </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="tcy-ts-eap" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0fP-Al-I6R" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-53" y="-22"/>
+            <point key="canvasLocation" x="786.81818181818187" y="-21.338912133891213"/>
         </scene>
     </scenes>
     <resources>

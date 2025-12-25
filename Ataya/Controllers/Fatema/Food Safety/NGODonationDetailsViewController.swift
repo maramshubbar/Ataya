@@ -11,6 +11,7 @@ class NGODonationDetailsViewController: UIViewController {
     @IBOutlet weak var donationCardView: UIView!
     @IBOutlet weak var donorCardView: UIView!
     @IBOutlet weak var collectorCardView: UIView!
+    @IBOutlet weak var proceedToInspectionTapped: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,18 +19,17 @@ class NGODonationDetailsViewController: UIViewController {
         donorCardView.applyCardStyle()
         collectorCardView.applyCardStyle()
 
-        // Do any additional setup after loading the view.
     }
-    
+    @IBAction func proceedToInspectionTapped(_ sender: UIButton) {
 
-    /*
-    // MARK: - Navigation
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        if let vc = storyboard.instantiateViewController(
+            withIdentifier: "InspectDonationViewController"
+        ) as? NGODonationDetailsViewController {
+
+
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
-    */
-
 }

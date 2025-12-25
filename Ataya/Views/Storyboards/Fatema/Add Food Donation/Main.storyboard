@@ -406,13 +406,13 @@ History</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="Ib8-u2-pZl">
-                                <rect key="frame" x="24" y="148" width="392" height="620"/>
+                                <rect key="frame" x="24" y="148" width="392" height="560"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KSx-JY-0a7" userLabel="card1" customClass="DonateViewController">
-                                        <rect key="frame" x="0.0" y="0.0" width="392" height="90"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="392" height="80"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="fork.knife" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="k6E-B7-F0Z">
-                                                <rect key="frame" x="16" y="29" width="30" height="31"/>
+                                                <rect key="frame" x="16" y="24" width="30" height="31"/>
                                                 <color key="tintColor" red="1" green="0.54117647059999996" blue="0.54117647059999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="30" id="IB9-Kn-uZT"/>
@@ -426,9 +426,9 @@ History</string>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Support fresh meals for families" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ftZ-RP-H1Q">
-                                                <rect key="frame" x="58" y="39.333333333333343" width="318" height="30.666666666666671"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                <color key="textColor" red="0.46666666670000001" green="0.46666666670000001" blue="0.46666666670000001" alpha="1" colorSpace="calibratedRGB"/>
+                                                <rect key="frame" x="58" y="39.333333333333343" width="318" height="20.666666666666671"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <color key="textColor" red="0.37254901960784315" green="0.38823529411764707" blue="0.40784313725490196" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                         </subviews>
@@ -442,7 +442,7 @@ History</string>
                                             <constraint firstAttribute="trailing" secondItem="ftZ-RP-H1Q" secondAttribute="trailing" constant="16" id="ljb-Ou-DM4"/>
                                             <constraint firstAttribute="bottom" secondItem="ftZ-RP-H1Q" secondAttribute="bottom" constant="20" id="mIt-1I-IBv"/>
                                             <constraint firstAttribute="trailing" secondItem="61S-Jh-2yM" secondAttribute="trailing" constant="16" id="mhO-HT-9iI"/>
-                                            <constraint firstAttribute="height" constant="90" id="oz5-R2-aFQ"/>
+                                            <constraint firstAttribute="height" constant="80" id="oz5-R2-aFQ"/>
                                             <constraint firstItem="k6E-B7-F0Z" firstAttribute="centerY" secondItem="KSx-JY-0a7" secondAttribute="centerY" id="szR-UV-DdL"/>
                                         </constraints>
                                         <userDefinedRuntimeAttributes>
@@ -464,10 +464,10 @@ History</string>
                                         </userDefinedRuntimeAttributes>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eFd-Bl-x0m" userLabel="card2">
-                                        <rect key="frame" x="0.0" y="106" width="392" height="90"/>
+                                        <rect key="frame" x="0.0" y="96" width="392" height="80"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="basket.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="bzB-py-kC9">
-                                                <rect key="frame" x="16" y="29.999999999999993" width="30" height="29.666666666666671"/>
+                                                <rect key="frame" x="16" y="24.999999999999993" width="30" height="29.666666666666671"/>
                                                 <color key="tintColor" red="0.45098039220000002" green="0.86274509799999999" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="30" id="Hyo-vn-Lqz"/>
@@ -475,15 +475,15 @@ History</string>
                                                 </constraints>
                                             </imageView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Basket Donation" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ybU-UX-gKs">
-                                                <rect key="frame" x="58" y="20.000000000000004" width="318" height="34.333333333333343"/>
+                                                <rect key="frame" x="58" y="20" width="318" height="23"/>
                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Provide essential supplies" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hRY-Cv-QNS">
-                                                <rect key="frame" x="58" y="54.333333333333314" width="318" height="15.666666666666671"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                <color key="textColor" red="0.46666666670000001" green="0.46666666670000001" blue="0.46666666670000001" alpha="1" colorSpace="calibratedRGB"/>
+                                                <rect key="frame" x="58" y="43" width="318" height="17"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <color key="textColor" red="0.37254901960784315" green="0.38823529411764707" blue="0.40784313725490196" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                         </subviews>
@@ -496,7 +496,7 @@ History</string>
                                             <constraint firstItem="ybU-UX-gKs" firstAttribute="top" secondItem="eFd-Bl-x0m" secondAttribute="top" constant="20" id="LFj-r7-Dx7"/>
                                             <constraint firstAttribute="trailing" secondItem="hRY-Cv-QNS" secondAttribute="trailing" constant="16" id="V19-uP-82E"/>
                                             <constraint firstItem="bzB-py-kC9" firstAttribute="centerY" secondItem="eFd-Bl-x0m" secondAttribute="centerY" id="YU7-cm-BN6"/>
-                                            <constraint firstAttribute="height" constant="90" id="ePY-ko-UXs"/>
+                                            <constraint firstAttribute="height" constant="80" id="ePY-ko-UXs"/>
                                             <constraint firstItem="hRY-Cv-QNS" firstAttribute="top" secondItem="ybU-UX-gKs" secondAttribute="bottom" id="gZ7-7N-LrK"/>
                                             <constraint firstItem="bzB-py-kC9" firstAttribute="leading" secondItem="eFd-Bl-x0m" secondAttribute="leading" constant="16" id="o56-vF-C3r"/>
                                         </constraints>
@@ -508,10 +508,10 @@ History</string>
                                         </userDefinedRuntimeAttributes>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="L0S-6g-27x" userLabel="card3">
-                                        <rect key="frame" x="0.0" y="212" width="392" height="90"/>
+                                        <rect key="frame" x="0.0" y="192" width="392" height="80"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dollarsign.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="qjV-TQ-i9Q">
-                                                <rect key="frame" x="16" y="30.666666666666664" width="30" height="28.666666666666664"/>
+                                                <rect key="frame" x="16" y="25.666666666666664" width="30" height="28.666666666666664"/>
                                                 <color key="tintColor" red="0.2666666667" green="0.85098039219999999" blue="0.30588235289999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="30" id="tRi-Ct-oRk"/>
@@ -525,9 +525,9 @@ History</string>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Contribute Monetarily" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mW7-mx-uWj">
-                                                <rect key="frame" x="58" y="39.333333333333314" width="318" height="30.666666666666671"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                <color key="textColor" red="0.46666666670000001" green="0.46666666670000001" blue="0.46666666670000001" alpha="1" colorSpace="calibratedRGB"/>
+                                                <rect key="frame" x="58" y="39.333333333333314" width="318" height="20.666666666666671"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <color key="textColor" red="0.37254901960784315" green="0.38823529411764707" blue="0.40784313725490196" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                         </subviews>
@@ -540,7 +540,7 @@ History</string>
                                             <constraint firstItem="mW7-mx-uWj" firstAttribute="leading" secondItem="qjV-TQ-i9Q" secondAttribute="trailing" constant="12" id="NG3-x1-aKb"/>
                                             <constraint firstItem="gJm-gZ-8RR" firstAttribute="leading" secondItem="qjV-TQ-i9Q" secondAttribute="trailing" constant="12" id="bJ8-fL-749"/>
                                             <constraint firstAttribute="trailing" secondItem="gJm-gZ-8RR" secondAttribute="trailing" constant="16" id="ija-50-obQ"/>
-                                            <constraint firstAttribute="height" constant="90" id="mIm-4M-tIO"/>
+                                            <constraint firstAttribute="height" constant="80" id="mIm-4M-tIO"/>
                                             <constraint firstItem="gJm-gZ-8RR" firstAttribute="top" secondItem="L0S-6g-27x" secondAttribute="top" constant="20" id="tZH-bQ-D66"/>
                                             <constraint firstItem="qjV-TQ-i9Q" firstAttribute="leading" secondItem="L0S-6g-27x" secondAttribute="leading" constant="16" id="vTd-F3-TO7"/>
                                         </constraints>
@@ -552,10 +552,10 @@ History</string>
                                         </userDefinedRuntimeAttributes>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9f7-pL-eak" userLabel="card4">
-                                        <rect key="frame" x="0.0" y="318" width="392" height="90"/>
+                                        <rect key="frame" x="0.0" y="288" width="392" height="80"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="flag.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="Yqo-Ve-MCc">
-                                                <rect key="frame" x="16" y="31" width="30" height="28"/>
+                                                <rect key="frame" x="16" y="26" width="30" height="28"/>
                                                 <color key="tintColor" red="0.96862745100000003" green="0.6588235294" blue="0.3921568627" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="30" id="XsQ-gB-oAn"/>
@@ -568,10 +568,10 @@ History</string>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Support ongoing relief projects" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xAI-Ze-H7I">
-                                                <rect key="frame" x="58" y="39.333333333333314" width="318" height="30.666666666666671"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Support ongoing relief projects" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xAI-Ze-H7I">
+                                                <rect key="frame" x="58" y="39.333333333333314" width="318" height="20.666666666666671"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                <color key="textColor" red="0.46666666670000001" green="0.46666666670000001" blue="0.46666666670000001" alpha="1" colorSpace="calibratedRGB"/>
+                                                <color key="textColor" red="0.37254901960784315" green="0.38823529411764707" blue="0.40784313725490196" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                         </subviews>
@@ -584,7 +584,7 @@ History</string>
                                             <constraint firstItem="qW5-nh-yfE" firstAttribute="leading" secondItem="Yqo-Ve-MCc" secondAttribute="trailing" constant="12" id="WWY-Az-vFp"/>
                                             <constraint firstAttribute="trailing" secondItem="qW5-nh-yfE" secondAttribute="trailing" constant="16" id="ZCg-6Q-Su6"/>
                                             <constraint firstAttribute="bottom" secondItem="xAI-Ze-H7I" secondAttribute="bottom" constant="20" id="m1f-3a-Cyf"/>
-                                            <constraint firstAttribute="height" constant="90" id="osw-cs-GIx"/>
+                                            <constraint firstAttribute="height" constant="80" id="osw-cs-GIx"/>
                                             <constraint firstItem="qW5-nh-yfE" firstAttribute="top" secondItem="9f7-pL-eak" secondAttribute="top" constant="20" id="plG-dG-YmD"/>
                                             <constraint firstItem="Yqo-Ve-MCc" firstAttribute="leading" secondItem="9f7-pL-eak" secondAttribute="leading" constant="16" id="v2w-O9-0ZF"/>
                                         </constraints>
@@ -596,10 +596,10 @@ History</string>
                                         </userDefinedRuntimeAttributes>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iRI-Wb-bOd" userLabel="card5">
-                                        <rect key="frame" x="0.0" y="424" width="392" height="90"/>
+                                        <rect key="frame" x="0.0" y="384" width="392" height="80"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="hand.raised.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="vTB-5Y-EW8">
-                                                <rect key="frame" x="16" y="29.999999999999993" width="30" height="29.666666666666671"/>
+                                                <rect key="frame" x="16" y="24.999999999999993" width="30" height="29.666666666666671"/>
                                                 <color key="tintColor" red="1" green="0.4941176471" blue="0.4941176471" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="30" id="Zi0-8n-wCa"/>
@@ -613,9 +613,9 @@ History</string>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Raise awareness for causes" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jCT-QY-4YJ">
-                                                <rect key="frame" x="58" y="39.333333333333371" width="318" height="30.666666666666671"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                <color key="textColor" red="0.46666666670000001" green="0.46666666670000001" blue="0.46666666670000001" alpha="1" colorSpace="calibratedRGB"/>
+                                                <rect key="frame" x="58" y="39.333333333333371" width="318" height="20.666666666666671"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <color key="textColor" red="0.37254901960784315" green="0.38823529411764707" blue="0.40784313725490196" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                         </subviews>
@@ -623,7 +623,7 @@ History</string>
                                         <constraints>
                                             <constraint firstItem="2Np-19-kXH" firstAttribute="leading" secondItem="vTB-5Y-EW8" secondAttribute="trailing" constant="12" id="Fw9-Mp-wjG"/>
                                             <constraint firstItem="vTB-5Y-EW8" firstAttribute="centerY" secondItem="iRI-Wb-bOd" secondAttribute="centerY" id="Imh-5h-LNA"/>
-                                            <constraint firstAttribute="height" constant="90" id="PLd-sv-U8o"/>
+                                            <constraint firstAttribute="height" constant="80" id="PLd-sv-U8o"/>
                                             <constraint firstItem="jCT-QY-4YJ" firstAttribute="leading" secondItem="vTB-5Y-EW8" secondAttribute="trailing" constant="12" id="WMR-fx-QwO"/>
                                             <constraint firstAttribute="trailing" secondItem="2Np-19-kXH" secondAttribute="trailing" constant="16" id="X2x-C7-gBq"/>
                                             <constraint firstItem="jCT-QY-4YJ" firstAttribute="top" secondItem="2Np-19-kXH" secondAttribute="bottom" id="Z8k-as-vZ8"/>
@@ -640,11 +640,11 @@ History</string>
                                         </userDefinedRuntimeAttributes>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ob5-Dr-aZJ" userLabel="card6">
-                                        <rect key="frame" x="0.0" y="530" width="392" height="90"/>
+                                        <rect key="frame" x="0.0" y="480" width="392" height="80"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gift.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="Vqh-p7-Tri">
-                                                <rect key="frame" x="16" y="29.999999999999996" width="30" height="29.333333333333332"/>
-                                                <color key="tintColor" red="0.63808626703197402" green="0.44670369790187142" blue="0.71880859374999995" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                                <rect key="frame" x="16" y="24.999999999999996" width="30" height="29.333333333333332"/>
+                                                <color key="tintColor" red="0.63921568627450975" green="0.44705882352941173" blue="0.71764705882352942" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="30" id="NU8-lt-TIT"/>
                                                     <constraint firstAttribute="width" constant="30" id="jgg-jl-EIz"/>
@@ -657,19 +657,19 @@ History</string>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="A gift that keeps on giving" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Vnm-ey-fcN">
-                                                <rect key="frame" x="58" y="39.333333333333371" width="318" height="30.666666666666671"/>
+                                                <rect key="frame" x="58" y="39.333333333333371" width="318" height="20.666666666666671"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                <color key="textColor" red="0.46666666670000001" green="0.46666666670000001" blue="0.46666666670000001" alpha="1" colorSpace="calibratedRGB"/>
+                                                <color key="textColor" red="0.37254901960784315" green="0.38823529411764707" blue="0.40784313725490196" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                         </subviews>
-                                        <color key="backgroundColor" red="0.99607843139999996" green="0.98039215690000003" blue="0.98039215690000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="backgroundColor" red="0.99607843137254903" green="0.98039215686274506" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="bottom" secondItem="Vnm-ey-fcN" secondAttribute="bottom" constant="20" id="2Uy-P8-aMM"/>
                                             <constraint firstAttribute="trailing" secondItem="Vnm-ey-fcN" secondAttribute="trailing" constant="16" id="2bH-JW-IRn"/>
                                             <constraint firstItem="Vnm-ey-fcN" firstAttribute="top" secondItem="ChJ-uA-xPH" secondAttribute="bottom" id="2t4-1E-Whg"/>
                                             <constraint firstItem="ChJ-uA-xPH" firstAttribute="leading" secondItem="Vqh-p7-Tri" secondAttribute="trailing" constant="12" id="8NQ-eu-Aks"/>
-                                            <constraint firstAttribute="height" constant="90" id="SCh-2T-sKo"/>
+                                            <constraint firstAttribute="height" constant="80" id="SCh-2T-sKo"/>
                                             <constraint firstItem="Vqh-p7-Tri" firstAttribute="leading" secondItem="ob5-Dr-aZJ" secondAttribute="leading" constant="16" id="Yi4-DK-En2"/>
                                             <constraint firstItem="Vqh-p7-Tri" firstAttribute="centerY" secondItem="ob5-Dr-aZJ" secondAttribute="centerY" id="caE-uQ-bA3"/>
                                             <constraint firstAttribute="trailing" secondItem="ChJ-uA-xPH" secondAttribute="trailing" constant="16" id="iOK-zh-8vv"/>

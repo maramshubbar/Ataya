@@ -115,7 +115,6 @@ final class DonorTabBarController: UITabBarController, UITabBarControllerDelegat
             sheet.prefersGrabberVisible = true
             sheet.preferredCornerRadius = 28
 
-            // detents (custom إذا iOS 16+ وإلا medium/large)
             if #available(iOS 16.0, *) {
                 let midID = UISheetPresentationController.Detent.Identifier("donateMedium")
                 sheet.detents = [
@@ -124,10 +123,10 @@ final class DonorTabBarController: UITabBarController, UITabBarControllerDelegat
                     },
                     .large()
                 ]
-                sheet.selectedDetentIdentifier = midID
+                sheet.selectedDetentIdentifier = .large
             } else {
                 sheet.detents = [.medium(), .large()]
-                sheet.selectedDetentIdentifier = .medium
+                sheet.selectedDetentIdentifier = .large
             }
 
             sheet.largestUndimmedDetentIdentifier = nil

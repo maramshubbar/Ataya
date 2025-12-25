@@ -112,21 +112,31 @@ final class DonorTabBarController: UITabBarController, UITabBarControllerDelegat
         donateNavController = nav
 
         if let sheet = nav.sheetPresentationController {
-            sheet.prefersGrabberVisible = true
-            sheet.preferredCornerRadius = 28
+            if let sheet = nav.sheetPresentationController {
+                sheet.prefersGrabberVisible = true
+                sheet.preferredCornerRadius = 28
+                sheet.largestUndimmedDetentIdentifier = nil
 
-            if #available(iOS 16.0, *) {
-                let midID = UISheetPresentationController.Detent.Identifier("donateMedium")
-                sheet.detents = [
-                    .custom(identifier: midID) { ctx in
-                        return min(560, ctx.maximumDetentValue * 0.62)
-                    },
-                    .large()
-                ]
-                sheet.selectedDetentIdentifier = .large
-            } else {
-                sheet.detents = [.medium(), .large()]
-                sheet.selectedDetentIdentifier = .large
+                if #available(iOS 16.0, *) {
+                    let midID = UISheetPresentationController.Detent.Identifier("donateMedium")
+
+                    sheet.detents = [
+                        .custom(identifier: midID) { ctx in
+                            min(800, ctx.maximumDetentValue * 0.85)
+                        },
+                        .large()
+                    ]
+
+                    sheet.selectedDetentIdentifier = midID
+                    sheet.prefersScrollingExpandsWhenScrolledToEdge = true
+
+                    sheet.prefersEdgeAttachedInCompactHeight = true
+                    sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true
+                } else {
+                    sheet.detents = [.medium(), .large()]
+                    sheet.selectedDetentIdentifier = .medium
+                    sheet.prefersScrollingExpandsWhenScrolledToEdge = true
+                }
             }
 
             sheet.largestUndimmedDetentIdentifier = nil

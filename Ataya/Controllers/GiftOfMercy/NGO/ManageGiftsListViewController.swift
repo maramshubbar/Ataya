@@ -2,53 +2,84 @@
 //  ManageGiftsListViewController.swift
 //  Ataya
 //
-//  Created by Fatema Maitham on 25/12/2025.
+//  Created by Maram on 25/12/2025.
 //
 
 import UIKit
 
-struct GiftDefinition {
-    var id: String
-    var name: String
-    var description: String
-    var pricingType: PricingType
-    var isActive: Bool
+// MARK: - Model
 
-    enum PricingType {
-        case fixed(amount: Double)
+struct Gift {
+    enum Pricing {
+        case fixed(amount: Decimal)
         case custom
+    }
+
+    var id: String
+    var title: String
+    var pricing: Pricing
+    var description: String
+    var imageName: String       // اسم الصورة من الـ Assets
+    var isActive: Bool          // نستخدمه في شاشة Add/Edit فقط
+
+    init(id: String = UUID().uuidString,
+         title: String,
+         pricing: Pricing,
+         description: String,
+         imageName: String,
+         isActive: Bool = true) {
+        self.id = id
+        self.title = title
+        self.pricing = pricing
+        self.description = description
+        self.imageName = imageName
+        self.isActive = isActive
     }
 }
 
+// MARK: - VC
 
 final class ManageGiftsListViewController: UIViewController {
 
     private let addButton = UIButton(type: .system)
     private let tableView = UITableView(frame: .zero, style: .plain)
 
-    private var gifts: [GiftDefinition] = [
-        .init(
-            id: "g1",
-            name: "Water Well",
+    // مؤقتاً: داتا تجريبية (لاحقاً من Firestore)
+    private var gifts: [Gift] = [
+        Gift(
+            title: "Water Well",
+            pricing: .fixed(amount: 500),
             description: "Provide clean water to communities in need.",
-            pricingType: .fixed(amount: 500),
+            imageName: "c4",      // غيّريها لأسم صورتك
             isActive: true
         ),
-        .init(
-            id: "g2",
-            name: "Sadaqah Jariya",
+        Gift(
+            title: "Sadaqah Jariya",
+            pricing: .custom,
             description: "Ongoing charity with continuous rewards.",
-            pricingType: .custom,
+            imageName: "c3",
             isActive: true
         ),
-        .init(
-            id: "g3",
-            name: "Orphan Care",
+        Gift(
+            title: "Orphan Care",
+            pricing: .custom,
             description: "Support orphans with education and essentials.",
-            pricingType: .custom,
+            imageName: "c2",
             isActive: false
         )
     ]
+
+    // لكتابة المبلغ بصيغة عملة
+    private let amountFormatter: NumberFormatter = {
+        let f = NumberFormatter()
+        f.numberStyle = .currency
+        f.maximumFractionDigits = 2
+        // لو تبين دايماً BHD:
+        f.currencyCode = "BHD"
+        return f
+    }()
+
+    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,28 +87,35 @@ final class ManageGiftsListViewController: UIViewController {
         setupUI()
     }
 
+    // MARK: - Nav
+
     private func setupNav() {
         title = "Manage Gifts"
         navigationItem.largeTitleDisplayMode = .never
+        view.backgroundColor = .systemBackground
     }
 
+    // MARK: - UI
+
     private func setupUI() {
+        // زر Add Gift
         addButton.translatesAutoresizingMaskIntoConstraints = false
         addButton.setTitle("Add Gift", for: .normal)
         addButton.setTitleColor(.black, for: .normal)
-        addButton.backgroundColor = color(hex: "F7D44C")
+        addButton.backgroundColor = UIColor(atayaHex: "F7D44C")
         addButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
         addButton.layer.cornerRadius = 14
         addButton.addTarget(self, action: #selector(addGiftTapped), for: .touchUpInside)
 
+        // الجدول
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.backgroundColor = .clear
         tableView.separatorStyle = .none
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 150
+        tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 16, right: 0)
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 140
-        tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 16, right: 0)
         tableView.register(GiftManagementCell.self,
                            forCellReuseIdentifier: GiftManagementCell.reuseID)
 
@@ -100,89 +138,52 @@ final class ManageGiftsListViewController: UIViewController {
     // MARK: - Actions
 
     @objc private func addGiftTapped() {
-        let sb = UIStoryboard(name: "Main", bundle: nil)
-        guard let vc = sb.instantiateViewController(
-            withIdentifier: "AddEditGiftViewController"
-        ) as? AddEditGiftViewController else {
-            assertionFailure("AddEditGiftViewController not found in storyboard")
-            return
-        }
+        let vc = AddEditGiftViewController(existingGift: nil)
 
-        // ✅ لو عندك مود داخل AddEditGiftViewController خليه create
-        // مثال:
-        // vc.mode = .create
+        vc.onSave = { [weak self] newGift in
+            guard let self = self else { return }
+            self.gifts.append(newGift)
+            self.tableView.reloadData()
+        }
 
         navigationController?.pushViewController(vc, animated: true)
     }
 
-    private func handleEditGift(_ gift: GiftDefinition) {
-        let alert = UIAlertController(
-            title: "Edit Gift",
-            message: "Edit \(gift.name)?",
-            preferredStyle: .alert
-        )
+    private func handleEdit(_ gift: Gift) {
+        let vc = AddEditGiftViewController(existingGift: gift)
 
-        let editAction = UIAlertAction(title: "Edit", style: .default) { [weak self] _ in
+        vc.onSave = { [weak self] updated in
             guard let self = self else { return }
 
-            let sb = UIStoryboard(name: "Main", bundle: nil)
-            guard let vc = sb.instantiateViewController(
-                withIdentifier: "AddEditGiftViewController"
-            ) as? AddEditGiftViewController else {
-                assertionFailure("AddEditGiftViewController not found in storyboard")
-                return
+            if let idx = self.gifts.firstIndex(where: { $0.id == updated.id }) {
+                self.gifts[idx] = updated
+                self.tableView.reloadRows(at: [IndexPath(row: idx, section: 0)], with: .automatic)
             }
-
-            // ✅ مرري البيانات عشان التعديل
-            // على حسب البروبرتي اللي عندك هناك:
-            // vc.giftToEdit = gift
-            // أو:
-            // vc.mode = .edit(existing: gift)
-
-            self.navigationController?.pushViewController(vc, animated: true)
         }
 
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
-
-        alert.addAction(editAction)
-        alert.addAction(cancelAction)
-
-        present(alert, animated: true)
+        navigationController?.pushViewController(vc, animated: true)
     }
 
-    private func handleViewGift(_ gift: GiftDefinition) {
-        let alert = UIAlertController(
-            title: gift.name,
-            message: gift.description,
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "Close", style: .cancel))
-        present(alert, animated: true)
-    }
-
-    private func handleToggleActive(at index: Int, isOn: Bool) {
-        gifts[index].isActive = isOn
-    }
-
-    // لون hex بسيط
-    private func color(hex: String, alpha: CGFloat = 1) -> UIColor {
-        var h = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-        if h.hasPrefix("#") { h.removeFirst() }
-        guard h.count == 6 else { return .gray }
-        var rgb: UInt64 = 0
-        Scanner(string: h).scanHexInt64(&rgb)
-        let r = CGFloat((rgb & 0xFF0000) >> 16) / 255
-        let g = CGFloat((rgb & 0x00FF00) >> 8) / 255
-        let b = CGFloat(rgb & 0x0000FF) / 255
-        return UIColor(red: r, green: g, blue: b, alpha: alpha)
+    // يكتب سطر السعر مثل:
+    // "BHD 500.00 (Fixed)" أو "Custom amount"
+    private func priceLine(for gift: Gift) -> String {
+        switch gift.pricing {
+        case .custom:
+            return "Custom amount"
+        case .fixed(let amount):
+            let ns = amount as NSDecimalNumber
+            let text = amountFormatter.string(from: ns) ?? "BHD \(ns)"
+            return "\(text) (Fixed)"
+        }
     }
 }
 
-// MARK: - Table DataSource / Delegate
+// MARK: - Table
 
 extension ManageGiftsListViewController: UITableViewDataSource, UITableViewDelegate {
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView,
+                   numberOfRowsInSection section: Int) -> Int {
         gifts.count
     }
 
@@ -195,18 +196,17 @@ extension ManageGiftsListViewController: UITableViewDataSource, UITableViewDeleg
             for: indexPath
         ) as! GiftManagementCell
 
-        cell.configure(with: gift)
+        let vm = GiftManagementCell.ViewModel(
+            title: gift.title,
+            priceLine: priceLine(for: gift),
+            description: gift.description,
+            imageName: gift.imageName
+        )
+
+        cell.configure(with: vm)
 
         cell.onEdit = { [weak self] in
-            self?.handleEditGift(gift)
-        }
-
-        cell.onView = { [weak self] in
-            self?.handleViewGift(gift)
-        }
-
-        cell.onToggleActive = { [weak self] isOn in
-            self?.handleToggleActive(at: indexPath.row, isOn: isOn)
+            self?.handleEdit(gift)
         }
 
         return cell

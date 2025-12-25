@@ -2,39 +2,45 @@
 //  AddEditGiftViewController.swift
 //  Ataya
 //
-//  Created by Fatema Maitham on 25/12/2025.
+//  Created by Maram on 25/12/2025.
 //
 
 import UIKit
 
 final class AddEditGiftViewController: UIViewController {
 
-    var onSave: ((CardDesign) -> Void)?
+    // MARK: - Callback
 
-    private var existingDesign: CardDesign?
+    var onSave: ((Gift) -> Void)?
+
+    // لو جايين من Edit
+    private var existingGift: Gift?
 
     // MARK: - UI
 
     private let scrollView = UIScrollView()
-    private let stack = UIStackView()
+    private let contentStack = UIStackView()
 
     private let nameField = UITextField()
-    private let descriptionView = UITextView()    
-    private let pricingControl = UISegmentedControl(items: ["Fixed amount", "Custom"])
-    private let amountField = UITextField()
+    private let nameErrorLabel = UILabel()
 
-    private let imageNameField = UITextField()
-    private let previewImageView = UIImageView()
+    private let pricingSegment = UISegmentedControl(items: ["Fixed amount", "Custom amount"])
+    private let amountField = UITextField()
+    private let amountErrorLabel = UILabel()
+
+    private let descriptionTextView = UITextView()
+    private let descriptionPlaceholder = UILabel()
 
     private let activeSwitch = UISwitch()
+
     private let saveButton = UIButton(type: .system)
 
     private let brandYellow = UIColor(atayaHex: "F7D44C")
 
     // MARK: - Init
 
-    init(existingDesign: CardDesign? = nil) {
-        self.existingDesign = existingDesign
+    init(existingGift: Gift?) {
+        self.existingGift = existingGift
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -47,165 +53,266 @@ final class AddEditGiftViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNav()
-        setupUI()
+        setupLayout()
+        setupErrorLabels()
         bindExisting()
     }
 
-    // MARK: - Setup
+    // MARK: - Nav
 
     private func setupNav() {
         view.backgroundColor = .systemBackground
-        title = existingDesign == nil ? "Add Card Design" : "Edit Card Design"
+        title = existingGift == nil ? "Add Gift" : "Edit Gift"
         navigationItem.largeTitleDisplayMode = .never
     }
 
-    private func setupUI() {
-        // scroll
+    // MARK: - Layout
+
+    private func setupLayout() {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
 
-        stack.axis = .vertical
-        stack.spacing = 14
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(stack)
+        contentStack.axis = .vertical
+        contentStack.spacing = 16
+        contentStack.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(contentStack)
+
+        // زر Save تحت
+        saveButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(saveButton)
 
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: saveButton.topAnchor, constant: -12),
 
-            stack.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 16),
-            stack.leadingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.leadingAnchor, constant: 16),
-            stack.trailingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.trailingAnchor, constant: -16),
-            stack.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -30)
+            contentStack.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 16),
+            contentStack.leadingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.leadingAnchor, constant: 16),
+            contentStack.trailingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.trailingAnchor, constant: -16),
+            contentStack.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -24),
+
+            saveButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            saveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            saveButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -12),
+            saveButton.heightAnchor.constraint(equalToConstant: 50)
         ])
 
-        func addLabeled(_ text: String, view v: UIView) {
-            let label = UILabel()
-            label.text = text
-            label.font = .systemFont(ofSize: 14, weight: .semibold)
+        func addFieldSection(title: String, fieldView: UIView, errorLabel: UILabel?) {
+            let titleLabel = UILabel()
+            titleLabel.text = "* " + title
+            titleLabel.font = .systemFont(ofSize: 14, weight: .semibold)
 
-            let container = UIStackView(arrangedSubviews: [label, v])
-            container.axis = .vertical
-            container.spacing = 6
-            stack.addArrangedSubview(container)
+            let stack = UIStackView(arrangedSubviews: [titleLabel, fieldView])
+            stack.axis = .vertical
+            stack.spacing = 8
+
+            if let errorLabel {
+                let outer = UIStackView(arrangedSubviews: [stack, errorLabel])
+                outer.axis = .vertical
+                outer.spacing = 4
+                contentStack.addArrangedSubview(outer)
+            } else {
+                contentStack.addArrangedSubview(stack)
+            }
         }
 
         // Name
         nameField.borderStyle = .roundedRect
-        nameField.placeholder = "Card name *"
-        addLabeled("Card Name *", view: nameField)
+        addFieldSection(title: "Gift Name", fieldView: nameField, errorLabel: nameErrorLabel)
 
-        // Description (اختياري، مو محفوظ في CardDesign حالياً)
-        descriptionView.font = .systemFont(ofSize: 14)
-        descriptionView.layer.cornerRadius = 8
-        descriptionView.layer.borderWidth = 0.5
-        descriptionView.layer.borderColor = UIColor.systemGray4.cgColor
-        descriptionView.heightAnchor.constraint(equalToConstant: 120).isActive = true
-        addLabeled("Description (optional)", view: descriptionView)
+        // Pricing
+        pricingSegment.selectedSegmentIndex = 0
+        pricingSegment.addTarget(self, action: #selector(pricingChanged), for: .valueChanged)
+        addFieldSection(title: "Pricing", fieldView: pricingSegment, errorLabel: nil)
 
-        // Pricing controls غير مستخدمة في CardDesign → نخفيها لكن نخليها لو حبيتي تستخدمينها بعدين
-        pricingControl.selectedSegmentIndex = 0
-        pricingControl.isHidden = true
-        addLabeled("Pricing Type (not used)", view: pricingControl)
-
+        // Amount (for fixed)
         amountField.borderStyle = .roundedRect
         amountField.keyboardType = .decimalPad
-        amountField.placeholder = "Amount"
-        amountField.isHidden = true
-        addLabeled("Fixed Amount (not used)", view: amountField)
+        amountField.placeholder = "Enter amount e.g. 500"
+        addFieldSection(title: "Amount", fieldView: amountField, errorLabel: amountErrorLabel)
 
-        // Image asset name
-        imageNameField.borderStyle = .roundedRect
-        imageNameField.placeholder = "Image asset name (e.g. c1, c2...)"
-        imageNameField.addTarget(self, action: #selector(imageNameChanged), for: .editingChanged)
-        addLabeled("Image Asset", view: imageNameField)
+        // Description
+        descriptionTextView.layer.cornerRadius = 10
+        descriptionTextView.layer.borderWidth = 1
+        descriptionTextView.layer.borderColor = UIColor.systemGray4.cgColor
+        descriptionTextView.font = .systemFont(ofSize: 14)
+        descriptionTextView.delegate = self
+        descriptionTextView.heightAnchor.constraint(equalToConstant: 120).isActive = true
 
-        // Preview
-        previewImageView.translatesAutoresizingMaskIntoConstraints = false
-        previewImageView.contentMode = .scaleAspectFit
-        previewImageView.clipsToBounds = true
-        previewImageView.layer.cornerRadius = 12
-        previewImageView.backgroundColor = UIColor.systemGray6
-        previewImageView.heightAnchor.constraint(equalToConstant: 200).isActive = true
-        addLabeled("Preview", view: previewImageView)
+        descriptionPlaceholder.text = "Gift description (optional)"
+        descriptionPlaceholder.font = .systemFont(ofSize: 14)
+        descriptionPlaceholder.textColor = .placeholderText
+        descriptionPlaceholder.translatesAutoresizingMaskIntoConstraints = false
 
-        // Active switch
-        let activeRow = UIStackView()
-        activeRow.axis = .horizontal
-        activeRow.distribution = .equalSpacing
+        let descriptionContainer = UIView()
+        descriptionContainer.translatesAutoresizingMaskIntoConstraints = false
+        descriptionContainer.addSubview(descriptionTextView)
+        descriptionContainer.addSubview(descriptionPlaceholder)
 
+        descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            descriptionTextView.topAnchor.constraint(equalTo: descriptionContainer.topAnchor),
+            descriptionTextView.leadingAnchor.constraint(equalTo: descriptionContainer.leadingAnchor),
+            descriptionTextView.trailingAnchor.constraint(equalTo: descriptionContainer.trailingAnchor),
+            descriptionTextView.bottomAnchor.constraint(equalTo: descriptionContainer.bottomAnchor),
+
+            descriptionPlaceholder.topAnchor.constraint(equalTo: descriptionTextView.topAnchor, constant: 8),
+            descriptionPlaceholder.leadingAnchor.constraint(equalTo: descriptionTextView.leadingAnchor, constant: 6)
+        ])
+
+        let descTitle = UILabel()
+        descTitle.text = "Description"
+        descTitle.font = .systemFont(ofSize: 14, weight: .semibold)
+
+        let descStack = UIStackView(arrangedSubviews: [descTitle, descriptionContainer])
+        descStack.axis = .vertical
+        descStack.spacing = 8
+        contentStack.addArrangedSubview(descStack)
+
+        // Active row
         let activeLabel = UILabel()
         activeLabel.text = "Active"
         activeLabel.font = .systemFont(ofSize: 14, weight: .semibold)
 
-        activeRow.addArrangedSubview(activeLabel)
-        activeRow.addArrangedSubview(activeSwitch)
-        stack.addArrangedSubview(activeRow)
+        let activeRow = UIStackView(arrangedSubviews: [activeLabel, activeSwitch])
+        activeRow.axis = .horizontal
+        activeRow.distribution = .equalSpacing
+        contentStack.addArrangedSubview(activeRow)
 
-        // Save button
+        // Save button style
         saveButton.setTitle("Save", for: .normal)
         saveButton.backgroundColor = brandYellow
         saveButton.setTitleColor(.black, for: .normal)
-        saveButton.layer.cornerRadius = 12
-        saveButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        saveButton.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
+        saveButton.layer.cornerRadius = 14
         saveButton.addTarget(self, action: #selector(saveTapped), for: .touchUpInside)
-        stack.addArrangedSubview(saveButton)
+
+        // default visibility
+        updateAmountVisibility()
     }
 
-    // MARK: - Existing values
+    // MARK: - Error labels
+
+    private func setupErrorLabels() {
+        [nameErrorLabel, amountErrorLabel].forEach { label in
+            label.font = .systemFont(ofSize: 13)
+            label.textColor = .systemRed
+            label.numberOfLines = 0
+            label.isHidden = true
+        }
+    }
+
+    private func clearErrors() {
+        nameErrorLabel.isHidden = true
+        nameErrorLabel.text = nil
+        amountErrorLabel.isHidden = true
+        amountErrorLabel.text = nil
+    }
+
+    // MARK: - Bind existing
 
     private func bindExisting() {
-        guard let design = existingDesign else {
+        guard let gift = existingGift else {
             activeSwitch.isOn = true
+            pricingSegment.selectedSegmentIndex = 0
+            updateAmountVisibility()
             return
         }
 
-        nameField.text = design.name
-        activeSwitch.isOn = design.isActive
-        imageNameField.text = design.imageName
-        previewImageView.image = UIImage(named: design.imageName)
+        nameField.text = gift.title
+        descriptionTextView.text = gift.description
+        descriptionPlaceholder.isHidden = !gift.description.isEmpty
+        activeSwitch.isOn = gift.isActive
+
+        switch gift.pricing {
+        case .custom:
+            pricingSegment.selectedSegmentIndex = 1
+            amountField.text = nil
+        case .fixed(let amount):
+            pricingSegment.selectedSegmentIndex = 0
+            amountField.text = "\(amount)"
+        }
+
+        updateAmountVisibility()
     }
 
-    // MARK: - Actions
+    // MARK: - Helpers
 
-    @objc private func imageNameChanged() {
-        let name = imageNameField.text ?? ""
-        previewImageView.image = UIImage(named: name)
+    @objc private func pricingChanged() {
+        updateAmountVisibility()
     }
+
+    private func updateAmountVisibility() {
+        let isFixed = pricingSegment.selectedSegmentIndex == 0
+        amountField.superview?.isHidden = !isFixed
+        amountErrorLabel.isHidden = true
+        amountErrorLabel.text = nil
+    }
+
+    // MARK: - Save
 
     @objc private func saveTapped() {
-        // Validation
+        clearErrors()
+
         let trimmedName = (nameField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        var hasError = false
+
         if trimmedName.isEmpty {
-            showError("Card name is required.")
-            return
+            nameErrorLabel.text = "Gift name is required."
+            nameErrorLabel.isHidden = false
+            hasError = true
         }
 
-        let image = (imageNameField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-        if image.isEmpty {
-            showError("Please enter an image asset name.")
-            return
+        // pricing
+        let isFixed = pricingSegment.selectedSegmentIndex == 0
+        var pricing: Gift.Pricing = .custom
+
+        if isFixed {
+            let raw = (amountField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            if raw.isEmpty {
+                amountErrorLabel.text = "Please enter an amount."
+                amountErrorLabel.isHidden = false
+                hasError = true
+            } else if let dec = Decimal(string: raw.replacingOccurrences(of: ",", with: "")), dec > 0 {
+                pricing = .fixed(amount: dec)
+            } else {
+                amountErrorLabel.text = "Amount must be a positive number."
+                amountErrorLabel.isHidden = false
+                hasError = true
+            }
+        } else {
+            pricing = .custom
         }
 
-        let id = existingDesign?.id ?? UUID().uuidString
+        if hasError { return }
 
-        let newDesign = CardDesign(
+        let desc = descriptionTextView.text ?? ""
+        let id = existingGift?.id ?? UUID().uuidString
+
+
+        let imageName = existingGift?.imageName ?? "c4"
+
+        let gift = Gift(
             id: id,
-            name: trimmedName,
-            imageName: image,
-            isActive: activeSwitch.isOn,
-            isDefault: existingDesign?.isDefault ?? false
+            title: trimmedName,
+            pricing: pricing,
+            description: desc,
+            imageName: imageName,
+            isActive: activeSwitch.isOn
         )
 
-        onSave?(newDesign)
+        onSave?(gift)
         navigationController?.popViewController(animated: true)
     }
 
-    private func showError(_ msg: String) {
-        let alert = UIAlertController(title: "Validation", message: msg, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
+}
+
+// MARK: - UITextViewDelegate
+
+extension AddEditGiftViewController: UITextViewDelegate {
+    func textViewDidChange(_ textView: UITextView) {
+        descriptionPlaceholder.isHidden = !textView.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 }

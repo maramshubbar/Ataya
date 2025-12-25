@@ -2,9 +2,6 @@
 //  GiftManagementCell.swift
 //  Ataya
 //
-//  Created by Fatema Maitham on 25/12/2025.
-//
-
 
 import UIKit
 
@@ -12,164 +9,170 @@ final class GiftManagementCell: UITableViewCell {
 
     static let reuseID = "GiftManagementCell"
 
-    // MARK: - Callbacks
+    // MARK: - Callback
     var onEdit: (() -> Void)?
-    var onView: (() -> Void)?
-    var onToggleActive: ((Bool) -> Void)?
 
     // MARK: - UI
-    private let card = UIView()
-    private let giftNameLabel = UILabel()
-    private let pricingLabel = UILabel()
+
+    private let cardView = UIView()
+
+    private let thumbImageView = UIImageView()
+    private let titleLabel = UILabel()
+    private let priceLabel = UILabel()
     private let descriptionLabel = UILabel()
-    private let statusSwitch = UISwitch()
-    private let activeLabel = UILabel()
 
+    private let buttonsStack = UIStackView()
     private let editButton = UIButton(type: .system)
-    private let viewButton = UIButton(type: .system)
 
-    private let yellow = UIColor(red: 247/255, green: 212/255, blue: 76/255, alpha: 1)
+    private let accentYellow = UIColor(atayaHex: "F7D44C")
 
     // MARK: - Init
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setup()
+        setupUI()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        setup()
+        setupUI()
     }
 
     // MARK: - Setup
-    private func setup() {
+
+    private func setupUI() {
         selectionStyle = .none
         backgroundColor = .clear
         contentView.backgroundColor = .clear
 
-        // Card
-        card.translatesAutoresizingMaskIntoConstraints = false
-        card.backgroundColor = .systemBackground
-        card.layer.cornerRadius = 16
-        card.layer.shadowColor = UIColor.black.cgColor
-        card.layer.shadowOpacity = 0.06
-        card.layer.shadowRadius = 8
-        card.layer.shadowOffset = CGSize(width: 0, height: 4)
-        contentView.addSubview(card)
+        // الكرت
+        cardView.translatesAutoresizingMaskIntoConstraints = false
+        cardView.backgroundColor = .white
+        cardView.layer.cornerRadius = 18
+        cardView.layer.borderWidth = 1
+        cardView.layer.borderColor = UIColor.systemGray4.cgColor
+        contentView.addSubview(cardView)
 
-        // Labels
-        giftNameLabel.font = .systemFont(ofSize: 15, weight: .semibold)
-        giftNameLabel.numberOfLines = 2
+        NSLayoutConstraint.activate([
+            cardView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+            cardView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            cardView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            cardView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
+        ])
 
-        pricingLabel.font = .systemFont(ofSize: 13, weight: .semibold)
-        pricingLabel.textColor = .systemYellow
+        // الصورة
+        thumbImageView.translatesAutoresizingMaskIntoConstraints = false
+        thumbImageView.contentMode = .scaleAspectFill
+        thumbImageView.clipsToBounds = true
+        thumbImageView.layer.cornerRadius = 10
+
+        NSLayoutConstraint.activate([
+            thumbImageView.widthAnchor.constraint(equalToConstant: 80),
+            thumbImageView.heightAnchor.constraint(equalToConstant: 80)
+        ])
+
+        // النصوص
+        titleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
+        titleLabel.numberOfLines = 2
+
+        priceLabel.font = .systemFont(ofSize: 14, weight: .semibold)
+        priceLabel.textColor = accentYellow
+        priceLabel.numberOfLines = 1
 
         descriptionLabel.font = .systemFont(ofSize: 13)
         descriptionLabel.textColor = .secondaryLabel
         descriptionLabel.numberOfLines = 2
 
-        [giftNameLabel, pricingLabel, descriptionLabel].forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            card.addSubview($0)
-        }
+        let textStack = UIStackView(arrangedSubviews: [titleLabel, priceLabel, descriptionLabel])
+        textStack.axis = .vertical
+        textStack.spacing = 4
+        textStack.translatesAutoresizingMaskIntoConstraints = false
 
-        // Switch
-        statusSwitch.translatesAutoresizingMaskIntoConstraints = false
-        statusSwitch.addTarget(self, action: #selector(switchChanged(_:)), for: .valueChanged)
-        card.addSubview(statusSwitch)
+        // الصف العلوي: صورة + نص
+        let topRow = UIStackView(arrangedSubviews: [thumbImageView, textStack])
+        topRow.axis = .horizontal
+        topRow.alignment = .top
+        topRow.spacing = 12
+        topRow.translatesAutoresizingMaskIntoConstraints = false
 
-        activeLabel.translatesAutoresizingMaskIntoConstraints = false
-        activeLabel.font = .systemFont(ofSize: 12)
-        activeLabel.textColor = .secondaryLabel
-        activeLabel.text = "Active"
-        card.addSubview(activeLabel)
+        // زر Edit فقط (نفس ستايل View الأصفر)
+        buttonsStack.axis = .horizontal
+        buttonsStack.alignment = .center
+        buttonsStack.spacing = 0
+        buttonsStack.translatesAutoresizingMaskIntoConstraints = false
 
-        // Buttons
-        editButton.translatesAutoresizingMaskIntoConstraints = false
-        viewButton.translatesAutoresizingMaskIntoConstraints = false
-
-        editButton.setTitle("Edit", for: .normal)
-        editButton.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
-        editButton.setTitleColor(yellow, for: .normal)
-        editButton.layer.borderWidth = 1
-        editButton.layer.borderColor = yellow.cgColor
-        editButton.layer.cornerRadius = 12
+        styleFilledButton(editButton, title: "Edit")
         editButton.addTarget(self, action: #selector(editTapped), for: .touchUpInside)
 
-        viewButton.setTitle("View", for: .normal)
-        viewButton.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
-        viewButton.setTitleColor(.black, for: .normal)
-        viewButton.backgroundColor = yellow
-        viewButton.layer.cornerRadius = 12
-        viewButton.addTarget(self, action: #selector(viewTapped), for: .touchUpInside)
+        // نخلي الزر على اليسار وفضاء على اليمين
+        let spacer = UIView()
+        buttonsStack.addArrangedSubview(editButton)
+        buttonsStack.addArrangedSubview(spacer)
 
-        card.addSubview(editButton)
-        card.addSubview(viewButton)
+        // الـ Stack الأساسي داخل الكرت
+        let mainStack = UIStackView(arrangedSubviews: [topRow, buttonsStack])
+        mainStack.axis = .vertical
+        mainStack.spacing = 12
+        mainStack.translatesAutoresizingMaskIntoConstraints = false
 
-        // Constraints
+        cardView.addSubview(mainStack)
+
         NSLayoutConstraint.activate([
-            card.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            card.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            card.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            card.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
+            mainStack.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 16),
+            mainStack.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 16),
+            mainStack.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -16),
+            mainStack.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -16),
 
-            giftNameLabel.topAnchor.constraint(equalTo: card.topAnchor, constant: 12),
-            giftNameLabel.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 12),
-            giftNameLabel.trailingAnchor.constraint(lessThanOrEqualTo: statusSwitch.leadingAnchor, constant: -8),
-
-            statusSwitch.topAnchor.constraint(equalTo: card.topAnchor, constant: 12),
-            statusSwitch.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -12),
-
-            activeLabel.topAnchor.constraint(equalTo: statusSwitch.bottomAnchor, constant: 2),
-            activeLabel.centerXAnchor.constraint(equalTo: statusSwitch.centerXAnchor),
-
-            pricingLabel.topAnchor.constraint(equalTo: giftNameLabel.bottomAnchor, constant: 4),
-            pricingLabel.leadingAnchor.constraint(equalTo: giftNameLabel.leadingAnchor),
-
-            descriptionLabel.topAnchor.constraint(equalTo: pricingLabel.bottomAnchor, constant: 4),
-            descriptionLabel.leadingAnchor.constraint(equalTo: giftNameLabel.leadingAnchor),
-            descriptionLabel.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -12),
-
-            editButton.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 10),
-            editButton.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 12),
-            editButton.widthAnchor.constraint(equalToConstant: 80),
-            editButton.heightAnchor.constraint(equalToConstant: 34),
-            editButton.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -10),
-
-            viewButton.centerYAnchor.constraint(equalTo: editButton.centerYAnchor),
-            viewButton.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -12),
-            viewButton.widthAnchor.constraint(equalToConstant: 80),
-            viewButton.heightAnchor.constraint(equalToConstant: 34)
+            editButton.heightAnchor.constraint(equalToConstant: 44)
         ])
     }
 
-    // MARK: - Public
-    func configure(with gift: GiftDefinition) {
-        giftNameLabel.text = gift.name
-        descriptionLabel.text = gift.description
+    private func styleFilledButton(_ button: UIButton, title: String) {
+        var config = button.configuration ?? .filled()
 
-        switch gift.pricingType {
-        case .fixed(let amount):
-            pricingLabel.text = String(format: "$%.2f (Fixed)", amount)
-        case .custom:
-            pricingLabel.text = "Custom amount"
+        config.title = title
+        config.baseBackgroundColor = accentYellow
+        config.baseForegroundColor = .black
+        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+            var outgoing = incoming
+            outgoing.font = .systemFont(ofSize: 15, weight: .semibold)
+            return outgoing
         }
 
-        statusSwitch.isOn = gift.isActive
-        activeLabel.text = gift.isActive ? "Active" : "Inactive"
+        config.contentInsets = NSDirectionalEdgeInsets(
+            top: 0,
+            leading: 0,
+            bottom: 0,
+            trailing: 0
+        )
+
+        button.configuration = config
+
+        // لو تبين نفس الستايل حق الزوايا
+        button.layer.cornerRadius = 8
+        button.layer.masksToBounds = true
+    }
+
+
+    // MARK: - ViewModel
+
+    struct ViewModel {
+        let title: String
+        let priceLine: String
+        let description: String
+        let imageName: String
+    }
+
+    func configure(with model: ViewModel) {
+        titleLabel.text = model.title
+        priceLabel.text = model.priceLine
+        descriptionLabel.text = model.description
+        thumbImageView.image = UIImage(named: model.imageName)
     }
 
     // MARK: - Actions
-    @objc private func switchChanged(_ sender: UISwitch) {
-        activeLabel.text = sender.isOn ? "Active" : "Inactive"
-        onToggleActive?(sender.isOn)
-    }
 
     @objc private func editTapped() {
         onEdit?()
-    }
-
-    @objc private func viewTapped() {
-        onView?()
     }
 }

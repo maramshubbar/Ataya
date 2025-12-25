@@ -214,9 +214,9 @@ extension GiftOrdersListViewController: UITableViewDataSource, UITableViewDelega
     }
 
     private func openDetails(order: GiftOrder) {
-        let vc = GiftOrderDetailsViewController()
-        vc.order = order
-        navigationController?.pushViewController(vc, animated: true)
+//        let vc = GiftOrderDetailsViewController()
+//        vc.order = order
+//        navigationController?.pushViewController(vc, animated: true)
     }
 
 }

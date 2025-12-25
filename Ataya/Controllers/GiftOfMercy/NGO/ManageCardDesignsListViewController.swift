@@ -30,7 +30,7 @@ final class ManageCardDesignsListViewController: UIViewController {
 
     private func setupNav() {
         title = "Card Designs"
-        view.backgroundColor = .systemGroupedBackground
+//        view.backgroundColor = .systemGroupedBackground
         navigationItem.largeTitleDisplayMode = .never
     }
 

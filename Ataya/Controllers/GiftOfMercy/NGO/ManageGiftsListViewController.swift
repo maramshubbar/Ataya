@@ -66,7 +66,7 @@ final class ManageGiftsListViewController: UIViewController {
 
     private func setupNav() {
         title = "Manage Gifts"
-        view.backgroundColor = .systemGroupedBackground
+//        view.backgroundColor = .systemGroupedBackground
         navigationItem.largeTitleDisplayMode = .never
     }
 

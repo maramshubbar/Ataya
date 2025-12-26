@@ -10,104 +10,50 @@ import PhotosUI
 
 class UploadPhotosViewController: UIViewController {
     var draft: DraftDonation!
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "toSafety",
-           let vc = segue.destination as? SafetyVC {
-            vc.draft = draft
-        }
-    }
 
     @IBOutlet weak var uploadCardView: UIView!
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var helperLabel: UILabel!
     
     private let maxImages = 3
-    private var helperOriginalText: String = ""
+        private var helperOriginalText: String = ""
 
-    private var selectedImages: [UIImage] = [] {
-        didSet {
-            draft.images = selectedImages
+        private var selectedImages: [UIImage] = [] {
+            didSet {
+                draft.images = selectedImages
+                updateUI()
+            }
+        }
+
+        override func viewDidLoad() {
+            super.viewDidLoad()
+
+            if draft == nil { draft = DraftDonation() }
+            selectedImages = draft.images
+
+            helperOriginalText = helperLabel.text ?? ""
+            helperLabel.isHidden = true
+
+            styleCard()
+            addTapToUploadArea()
+            styleNextButtonIfNeeded()
             updateUI()
         }
-    }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // temporary to prevent crashes
-        if draft == nil { draft = DraftDonation() }
-        selectedImages = draft.images
-        
-        helperOriginalText = helperLabel.text ?? ""
-        helperLabel.isHidden = true
-        
-        styleCard()
-        addTapToUploadArea()
-        styleNextButtonIfNeeded()
-        updateUI()
-        
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        addDashedBorder()
-    }
-    
-    private func styleCard() {
-        uploadCardView.backgroundColor = .white
-        uploadCardView.layer.cornerRadius = 12
-        uploadCardView.clipsToBounds = true
-        uploadCardView.isUserInteractionEnabled = true
-    }
-    
-    private func addDashedBorder() {
-        // Remove old dashed border
-        uploadCardView.layer.sublayers?.removeAll(where: { $0.name == "dashedBorder" })
-        
-        let dashed = CAShapeLayer()
-        dashed.name = "dashedBorder"
-        dashed.path = UIBezierPath(
-            roundedRect: uploadCardView.bounds,
-            cornerRadius: 12
-        ).cgPath
-        dashed.strokeColor = UIColor.systemGray3.cgColor
-        dashed.fillColor = UIColor.clear.cgColor
-        dashed.lineWidth = 1
-        dashed.lineDashPattern = [6, 4]
-        
-        uploadCardView.layer.addSublayer(dashed)
-    }
-    
-    private func addTapToUploadArea() {
-        let tap = UITapGestureRecognizer(target: self, action: #selector(uploadAreaTapped))
-        uploadCardView.addGestureRecognizer(tap)
-    }
-    
-    private func styleNextButtonIfNeeded() {
-        // Optional: keep your UI, just make sure disabled looks disabled
-        nextButton.layer.cornerRadius = 12
-        nextButton.clipsToBounds = true
-    }
-    
-    private func updateUI() {
-        let count = selectedImages.count
-        let hasPhotos = count > 0
-
-        nextButton.isEnabled = hasPhotos
-        nextButton.alpha = hasPhotos ? 1.0 : 0.5
-
-        if hasPhotos {
-            helperLabel.isHidden = false
-            let word = (count == 1) ? "photo" : "photos"
-            helperLabel.textColor = .systemGreen
-            helperLabel.text = "\(count) \(word) uploaded successfully."
-        } else {
-            helperLabel.isHidden = true
+        override func viewDidLayoutSubviews() {
+            super.viewDidLayoutSubviews()
+            addDashedBorder()
         }
-    }
-    
-    @objc private func uploadAreaTapped() {
+
+        // MARK: - Navigation
+        override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+            if segue.identifier == "toSafety",
+               let vc = segue.destination as? SafetyVC {
+                vc.draft = draft
+            }
+        }
+
+        @objc private func uploadAreaTapped() {
             let remaining = maxImages - selectedImages.count
             guard remaining > 0 else {
                 showAlert(title: "Max reached", message: "You can upload up to \(maxImages) images.")
@@ -126,7 +72,6 @@ class UploadPhotosViewController: UIViewController {
 
             sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
 
-            // iPad safety
             if let pop = sheet.popoverPresentationController {
                 pop.sourceView = uploadCardView
                 pop.sourceRect = uploadCardView.bounds
@@ -135,39 +80,56 @@ class UploadPhotosViewController: UIViewController {
             present(sheet, animated: true)
         }
 
-//        // MARK: - Next
-//        @IBAction func nextTapped(_ sender: UIButton) {
-//            guard !selectedImages.isEmpty else { return }
-//
-//            Task {
-//                do {
-//                    // 1) Ensure signed-in (anonymous)
-//                    try await AuthManager.shared.ensureSignedIn()
-//
-//                    // 2) Make sure draft has an id
-//                    if draft.id.isEmpty {
-//                        draft.id = UUID().uuidString
-//                    }
-//
-//                    // 3) Upload photos -> URLs
-//                    let urls = try await uploadSelectedImagesToFirebase()
-//                    draft.photoURLs = urls
-//
-//                    print("✅ Uploaded photo URLs:", urls)
-//
-//                    // 4) Go next screen (use your segue / push)
-//                    await MainActor.run {
-//                        self.performSegue(withIdentifier: "toSafety", sender: nil)
-//                    }
-//
-//
-//                } catch {
-//                    showAlert(title: "Upload Failed", message: error.localizedDescription)
-//                }
-//            }
-//        }
+        // MARK: - UI
+        private func styleCard() {
+            uploadCardView.backgroundColor = .white
+            uploadCardView.layer.cornerRadius = 12
+            uploadCardView.clipsToBounds = true
+            uploadCardView.isUserInteractionEnabled = true
+        }
 
-        // MARK: - Photo Picker
+        private func addDashedBorder() {
+            uploadCardView.layer.sublayers?.removeAll(where: { $0.name == "dashedBorder" })
+
+            let dashed = CAShapeLayer()
+            dashed.name = "dashedBorder"
+            dashed.path = UIBezierPath(roundedRect: uploadCardView.bounds, cornerRadius: 12).cgPath
+            dashed.strokeColor = UIColor.systemGray3.cgColor
+            dashed.fillColor = UIColor.clear.cgColor
+            dashed.lineWidth = 1
+            dashed.lineDashPattern = [6, 4]
+
+            uploadCardView.layer.addSublayer(dashed)
+        }
+
+        private func addTapToUploadArea() {
+            let tap = UITapGestureRecognizer(target: self, action: #selector(uploadAreaTapped))
+            uploadCardView.addGestureRecognizer(tap)
+        }
+
+        private func styleNextButtonIfNeeded() {
+            nextButton.layer.cornerRadius = 12
+            nextButton.clipsToBounds = true
+        }
+
+        private func updateUI() {
+            let count = selectedImages.count
+            let hasPhotos = count > 0
+
+            nextButton.isEnabled = hasPhotos
+            nextButton.alpha = hasPhotos ? 1.0 : 0.5
+
+            if hasPhotos {
+                helperLabel.isHidden = false
+                let word = (count == 1) ? "photo" : "photos"
+                helperLabel.textColor = .systemGreen
+                helperLabel.text = "\(count) \(word) uploaded successfully."
+            } else {
+                helperLabel.isHidden = true
+            }
+        }
+
+        // MARK: - Photo Picker / Camera
         private func presentPhotoPicker(selectionLimit: Int) {
             var config = PHPickerConfiguration(photoLibrary: .shared())
             config.filter = .images
@@ -178,48 +140,20 @@ class UploadPhotosViewController: UIViewController {
             present(picker, animated: true)
         }
 
-    private func presentCamera() {
-        // Put the guard HERE (first line inside the function)
-        guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
-            showAlert(title: "Camera not available", message: "Use a real iPhone for camera testing.")
-            return
+        private func presentCamera() {
+            guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
+                showAlert(title: "Camera not available", message: "Use a real iPhone for camera testing.")
+                return
+            }
+
+            let picker = UIImagePickerController()
+            picker.sourceType = .camera
+            picker.delegate = self
+            picker.allowsEditing = false
+            present(picker, animated: true)
         }
 
-        let picker = UIImagePickerController()
-        picker.sourceType = .camera
-        picker.delegate = self
-        picker.allowsEditing = false
-        present(picker, animated: true)
-    }
-
-
-//        // MARK: - Firebase Storage Upload
-//        private func uploadSelectedImagesToFirebase() async throws -> [String] {
-//            let uid = AuthManager.shared.uid
-//            let storage = Storage.storage()
-//
-//            var urls: [String] = []
-//            urls.reserveCapacity(selectedImages.count)
-//
-//            for (index, image) in selectedImages.enumerated() {
-//                guard let data = image.jpegData(compressionQuality: 0.85) else { continue }
-//
-//                let filename = "photo_\(index+1)_\(UUID().uuidString).jpg"
-//                let path = "donations/\(uid)/\(draft.id)/\(filename)"
-//                let ref = storage.reference().child(path)
-//
-//                let meta = StorageMetadata()
-//                meta.contentType = "image/jpeg"
-//
-//                _ = try await ref.putDataAsync(data, metadata: meta)
-//                let url = try await ref.downloadURL()
-//                urls.append(url.absoluteString)
-//            }
-//
-//            return urls
-//        }
-
-        // MARK: - Helpers
+        // MARK: - Alert
         private func showAlert(title: String, message: String) {
             let a = UIAlertController(title: title, message: message, preferredStyle: .alert)
             a.addAction(UIAlertAction(title: "OK", style: .default))

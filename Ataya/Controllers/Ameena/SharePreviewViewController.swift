@@ -10,8 +10,11 @@ final class SharePreviewViewController: UIViewController {
 
     @IBOutlet weak var shareButton: UIButton!
 
-    var selectedSection: Int = 1   // 1 meals, 2 waste, 3 env
-    var selectedPeriod: Int = 0    // 0 daily, 1 monthly, 2 yearly
+    var selectedSection: Int = 1
+    var selectedPeriod: Int = 0
+    
+    var imageToShare: UIImage?
+    var shareText: String?
 
     private let atayaYellow = UIColor(red: 0xF7/255, green: 0xD4/255, blue: 0x4C/255, alpha: 1)
     private let cardBeige = UIColor(red: 0xF6/255, green: 0xF2/255, blue: 0xD8/255, alpha: 1)
@@ -105,8 +108,20 @@ final class SharePreviewViewController: UIViewController {
     }
 
     @IBAction func shareTapped(_ sender: UIButton) {
-        let shareText = "\(titleLabel.text ?? "")\n\n\(messageLabel.text ?? "")"
-        let vc = UIActivityViewController(activityItems: [shareText], applicationActivities: nil)
+        var items: [Any] = []
+
+        if let text = shareText, !text.isEmpty {
+            items.append(text)
+        } else {
+            let fallback = "\(titleLabel.text ?? "")\n\n\(messageLabel.text ?? "")"
+            items.append(fallback)
+        }
+
+        if let img = imageToShare {
+            items.append(img)
+        }
+
+        let vc = UIActivityViewController(activityItems: items, applicationActivities: nil)
         present(vc, animated: true)
     }
 }

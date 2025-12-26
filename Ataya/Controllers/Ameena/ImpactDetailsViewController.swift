@@ -1,16 +1,18 @@
 import UIKit
 
 final class ImpactDetailsViewController: UIViewController {
-
+    
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var mainStackView: UIStackView!
-
+    
     private let atayaYellow = UIColor(red: 0xF7/255, green: 0xD4/255, blue: 0x4C/255, alpha: 1)
 
     private enum ChartType { case bar, line, pie }
+
     private enum Period: Int { case daily = 0, monthly = 1, yearly = 2 }
 
     private var currentPeriod: Period = .daily
+    private var pendingSection: Int = 1
 
     private lazy var periodControl: UISegmentedControl = {
         let sc = UISegmentedControl(items: ["Daily", "Monthly", "Yearly"])
@@ -27,27 +29,28 @@ final class ImpactDetailsViewController: UIViewController {
         navigationItem.largeTitleDisplayMode = .never
         view.backgroundColor = .systemBackground
 
-        configureScrollBehavior()
-        configureStackView()
+        configureScroll()
+        configureStack()
 
-        scrollView.contentInset.bottom = 24
-        scrollView.verticalScrollIndicatorInsets.bottom = 24
-
-        mainStackView.addArrangedSubview(periodControl)
-        periodControl.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        if periodControl.superview == nil {
+            mainStackView.insertArrangedSubview(periodControl, at: 0)
+            periodControl.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        }
 
         buildCards(for: currentPeriod)
     }
 
-    private func configureScrollBehavior() {
+    private func configureScroll() {
         if #available(iOS 11.0, *) {
             scrollView.contentInsetAdjustmentBehavior = .automatic
         }
         scrollView.alwaysBounceVertical = true
         scrollView.keyboardDismissMode = .onDrag
+        scrollView.contentInset.bottom = 24
+        scrollView.verticalScrollIndicatorInsets.bottom = 24
     }
 
-    private func configureStackView() {
+    private func configureStack() {
         mainStackView.axis = .vertical
         mainStackView.spacing = 24
         mainStackView.alignment = .fill
@@ -68,25 +71,21 @@ final class ImpactDetailsViewController: UIViewController {
                 $0.removeFromSuperview()
             }
 
-        let meals = contentMeals(for: period)
-        let waste = contentWaste(for: period)
-        let env = contentEnv(for: period)
-
         let mealsCard = makeBigCard(
             title: "Meals Provided",
-            description: meals.description,
+            description: mealsDescription(for: period),
             chartType: .bar
         )
 
         let wasteCard = makeBigCard(
             title: "Food Waste Prevented",
-            description: waste.description,
+            description: wasteDescription(for: period),
             chartType: .line
         )
 
         let envCard = makeBigCard(
             title: "Environmental Equivalent",
-            description: env.description,
+            description: envDescription(for: period),
             chartType: .pie
         )
 
@@ -95,33 +94,29 @@ final class ImpactDetailsViewController: UIViewController {
         mainStackView.addArrangedSubview(envCard)
     }
 
-    // MARK: - Period content (replace with your real calculations)
-
-    private func contentMeals(for period: Period) -> (description: String, value: Int) {
+    private func mealsDescription(for period: Period) -> String {
         switch period {
-        case .daily:   return ("You have shared 5 meals with people in need ……", 5)
-        case .monthly: return ("You have shared 145 meals with people in need ……", 145)
-        case .yearly:  return ("You have shared 1,420 meals with people in need ……", 1420)
+        case .daily: return "You have shared 5 meals with people in need ……"
+        case .monthly: return "You have shared 145 meals with people in need ……"
+        case .yearly: return "You have shared 1,420 meals with people in need ……"
         }
     }
 
-    private func contentWaste(for period: Period) -> (description: String, value: Int) {
+    private func wasteDescription(for period: Period) -> String {
         switch period {
-        case .daily:   return ("Your consistent donations have prevented 2% of food ……", 2)
-        case .monthly: return ("Your consistent donations have prevented 32% of food ……", 32)
-        case .yearly:  return ("Your consistent donations have prevented 58% of food ……", 58)
+        case .daily: return "Your consistent donations have prevented 2% of food ……"
+        case .monthly: return "Your consistent donations have prevented 32% of food ……"
+        case .yearly: return "Your consistent donations have prevented 58% of food ……"
         }
     }
 
-    private func contentEnv(for period: Period) -> (description: String, value: Int) {
+    private func envDescription(for period: Period) -> String {
         switch period {
-        case .daily:   return ("Your donations helped reduce emissions equivalent to 1 short trip ……", 1)
-        case .monthly: return ("Your donations helped reduce emissions equivalent to 12 short trips ……", 12)
-        case .yearly:  return ("Your donations helped reduce emissions equivalent to 140 short trips ……", 140)
+        case .daily: return "Your donations helped the environment too ……"
+        case .monthly: return "Your donations helped the environment too ……"
+        case .yearly: return "Your donations helped the environment too ……"
         }
     }
-
-    // MARK: - Card Factory
 
     private func makeBigCard(title: String, description: String, chartType: ChartType) -> UIView {
 
@@ -139,19 +134,16 @@ final class ImpactDetailsViewController: UIViewController {
         vStack.alignment = .fill
         vStack.translatesAutoresizingMaskIntoConstraints = false
 
-        let titleLabel = UILabel()
-        titleLabel.text = title
-        titleLabel.textAlignment = .center
-        titleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
-        titleLabel.numberOfLines = 1
+        let topTitle = UILabel()
+        topTitle.text = title
+        topTitle.textAlignment = .center
+        topTitle.font = .systemFont(ofSize: 16, weight: .semibold)
 
         let chartContainer = UIView()
         chartContainer.backgroundColor = UIColor.systemGray6
         chartContainer.layer.cornerRadius = 12
         chartContainer.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            chartContainer.heightAnchor.constraint(equalToConstant: 220)
-        ])
+        chartContainer.heightAnchor.constraint(equalToConstant: 220).isActive = true
 
         let bottomTitle = UILabel()
         bottomTitle.text = title
@@ -170,7 +162,13 @@ final class ImpactDetailsViewController: UIViewController {
         readMore.contentHorizontalAlignment = .right
         readMore.addTarget(self, action: #selector(readMoreTapped(_:)), for: .touchUpInside)
 
-        readMore.tag = (chartType == .bar ? 1 : chartType == .line ? 2 : 3)
+        let tag: Int
+        switch chartType {
+        case .bar: tag = 1
+        case .line: tag = 2
+        case .pie: tag = 3
+        }
+        readMore.tag = tag
 
         let bottomRow = UIStackView(arrangedSubviews: [body, readMore])
         bottomRow.axis = .horizontal
@@ -181,7 +179,7 @@ final class ImpactDetailsViewController: UIViewController {
         readMore.setContentHuggingPriority(.required, for: .horizontal)
         readMore.setContentCompressionResistancePriority(.required, for: .horizontal)
 
-        vStack.addArrangedSubview(titleLabel)
+        vStack.addArrangedSubview(topTitle)
         vStack.addArrangedSubview(chartContainer)
         vStack.addArrangedSubview(bottomTitle)
         vStack.addArrangedSubview(bottomRow)
@@ -199,6 +197,19 @@ final class ImpactDetailsViewController: UIViewController {
     }
 
     @objc private func readMoreTapped(_ sender: UIButton) {
-        print("Read More tapped for card:", sender.tag)
+        let sb = UIStoryboard(name: "Main", bundle: nil)
+
+        let rawVC = sb.instantiateViewController(withIdentifier: "SharePreviewViewController")
+
+        guard let vc = rawVC as? SharePreviewViewController else {
+            assertionFailure("Storyboard ID exists but class is not SharePreviewViewController. Check Identity Inspector (Class/Module).")
+            return
+        }
+
+        vc.selectedSection = sender.tag
+        vc.selectedPeriod = currentPeriod.rawValue
+
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
+            

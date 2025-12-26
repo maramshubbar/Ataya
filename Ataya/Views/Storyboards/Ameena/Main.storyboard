@@ -60,7 +60,7 @@
                                     <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </buttonConfiguration>
                                 <connections>
-                                    <action selector="shareImpactTapped:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="wOu-V1-X2q"/>
+                                    <action selector="shareTapped:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="SxR-sm-X6E"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4m7-pO-rPX">
@@ -93,14 +93,10 @@
                     </view>
                     <navigationItem key="navigationItem" title="Impact Dashboard" id="zIe-xf-k0C"/>
                     <connections>
-                        <outlet property="chart" destination="Okm-gE-BCh" id="1B9-zT-IcB"/>
                         <outlet property="chartContainerView" destination="Okm-gE-BCh" id="C2B-bL-eJQ"/>
-                        <outlet property="descriptionCard" destination="yEk-aF-CiW" id="0C8-7O-QQJ"/>
-                        <outlet property="descriptionLabel" destination="CDa-4g-bad" id="4lh-Q3-rNH"/>
                         <outlet property="messageContainerView" destination="yEk-aF-CiW" id="lu8-EH-nSH"/>
-                        <outlet property="messageLabel" destination="CDa-4g-bad" id="VVU-bP-h0q"/>
+                        <outlet property="messageLabel" destination="CDa-4g-bad" id="Ng0-TM-hQS"/>
                         <outlet property="shareButton" destination="haJ-kW-Vg4" id="DVi-9S-2hO"/>
-                        <outlet property="shareImpactButton" destination="haJ-kW-Vg4" id="6PT-dD-tFs"/>
                         <outlet property="titleLabel" destination="4m7-pO-rPX" id="ysl-5E-dxA"/>
                     </connections>
                 </viewController>

@@ -7,7 +7,7 @@ final class SharePreviewViewController: UIViewController {
 
     @IBOutlet weak var messageContainerView: UIView!
     @IBOutlet weak var messageLabel: UILabel!
-
+    
     @IBOutlet weak var shareButton: UIButton!
 
     var selectedSection: Int = 1

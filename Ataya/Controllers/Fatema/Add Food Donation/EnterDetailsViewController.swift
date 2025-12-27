@@ -334,61 +334,48 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
     }
     
     
-    // Then i connect to rana's page
-    //    @IBAction func nextTapped(_ sender: UIButton) {
-    //        syncDraftFromUI()
-    //        performSegue(withIdentifier: "toSafety", sender: self)
-    //    }
-    //
-    //    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    //        syncDraftFromUI()
-    //
-    //        if segue.identifier == "toSafety",
-    //           let vc = segue.destination as? SafetyVC {
-    //            vc.draft = draft
-    //        }
-    //    }
     
     @IBAction func nextTapped(_ sender: UIButton) {
         view.endEditing(true)
         syncDraftFromUI()
         
         guard validateAndShowInlineErrors() else { return }
-
+        
         nextButton.isEnabled = false
         saveToFirestore()
     }
-
-
+    
+    
     private func saveToFirestore() {
         let db = Firestore.firestore()
-
+        
         // reuse same doc if already created
         let docId = draft.id ?? db.collection("donations").document().documentID
-        let ref = db.collection("donations").document(docId)
         draft.id = docId
-
+        
         var data = draft.toFirestoreDict()
-        data["photoURLs"] = []
-        data["status"] = "pending_media"
+        data["status"] = "pending"
         data["createdAt"] = FieldValue.serverTimestamp()
-
-        ref.setData(data, merge: true) { [weak self] error in
+        data["updatedAt"] = FieldValue.serverTimestamp()
+        
+        print("✅ Saving donation docId:", docId)
+        print("✅ Data keys:", Array(data.keys))
+        
+        db.collection("donations").document(docId).setData(data, merge: true) { [weak self] error in
             guard let self else { return }
             self.nextButton.isEnabled = true
-
+            
             if let error {
-                print("Firestore error:", error.localizedDescription)
-
+                print("❌ Firestore error:", error.localizedDescription)
+                self.showAlert("Save failed", error.localizedDescription)
                 return
             }
-
-            // self.performSegue(withIdentifier: "toNextPage", sender: self)
+            
+            self.showAlert("Saved ✅", "Donation saved to Firebase.")
         }
     }
-
-
 }
+
     // MARK: - UIPickerView Delegate/DataSource (Dropdowns)
 extension EnterDetailsViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     
@@ -405,6 +392,12 @@ extension EnterDetailsViewController: UIPickerViewDelegate, UIPickerViewDataSour
         if pickerView == packagingPicker { return packagings[row] }
         return allergens[row]
     }
+    private func showAlert(_ title: String, _ message: String) {
+        let ac = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .default))
+        present(ac, animated: true)
+    }
+
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if pickerView == categoryPicker {

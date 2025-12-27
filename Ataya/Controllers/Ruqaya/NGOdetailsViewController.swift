@@ -1,6 +1,6 @@
 //
 //  NGOdetailsViewController.swift
-//  AtayaTest
+//  Ataya
 //
 //  Created by Ruqaya Habib on 18/12/2025.
 //

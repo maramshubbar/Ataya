@@ -108,28 +108,32 @@ final class ForgotPasswordViewController: UIViewController {
 
     @IBAction func sendLinkPressed(_ sender: UIButton) {
         let email = (emailTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-        guard isValidEmail(email) else {
-            showAlert(title: "Invalid Email", message: "Please enter a valid email.")
-            return
-        }
+           guard isValidEmail(email) else {
+               showAlert(title: "Invalid Email", message: "Please enter a valid email.")
+               return
+           }
 
-        UserDefaults.standard.set(email, forKey: "reset_email")
+           UserDefaults.standard.set(email, forKey: "reset_email")
 
-        sendLinkButton.isEnabled = false
-        sendLinkButton.alpha = 0.5
+           sendLinkButton.isEnabled = false
+           sendLinkButton.alpha = 0.5
 
-        Auth.auth().sendPasswordReset(withEmail: email) { [weak self] error in
-            guard let self else { return }
+           Auth.auth().sendPasswordReset(withEmail: email) { [weak self] error in
+               guard let self else { return }
 
-            if let error = error {
-                self.showAlert(title: "Error", message: error.localizedDescription)
-                self.updateButtonState()
-                return
-            }
+               if let error = error {
+                   self.showAlert(title: "Error", message: error.localizedDescription)
+                   // خليه يرجع يتفعل عادي إذا فشل
+                   self.updateButtonState()
+                   return
+               }
 
-            self.showAlert(title: "Email Sent", message: "Check your email to reset your password.")
-            self.updateButtonState()
-        }
+               self.showAlert(title: "Email Sent", message: "Check your email to reset your password.")
+
+               DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
+                   self?.updateButtonState()
+               }
+           }
     }
 
     @objc private func resendTapped() {
@@ -140,17 +144,21 @@ final class ForgotPasswordViewController: UIViewController {
         }
 
         Auth.auth().sendPasswordReset(withEmail: email) { [weak self] error in
+            guard let self else { return }
+
             if let error = error {
-                self?.showAlert(title: "Resend Failed", message: error.localizedDescription)
+                self.showAlert(title: "Resend Failed", message: error.localizedDescription)
                 return
             }
-            self?.showAlert(title: "Email Resent", message: "We sent the reset link again. Check your email.")
+
+            self.showAlert(title: "Email Resent", message: "We sent the reset link again. Check your email.")
         }
     }
-
+    
     @objc private func backToLoginTapped() {
         navigationController?.popViewController(animated: true)
     }
+
     
   
     /*

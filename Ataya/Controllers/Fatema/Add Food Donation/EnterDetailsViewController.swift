@@ -371,7 +371,7 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
                 return
             }
             
-            self.showAlert("Saved ✅", "Donation saved to Firebase.")
+//            self.showAlert("Saved ✅", "Donation saved to Firebase.")
         }
     }
 }

@@ -13,7 +13,6 @@ final class GiftManagementCell: UITableViewCell {
     var onEdit: (() -> Void)?
 
     // MARK: - UI
-
     private let cardView = UIView()
 
     private let thumbImageView = UIImageView()
@@ -27,7 +26,6 @@ final class GiftManagementCell: UITableViewCell {
     private let accentYellow = UIColor(atayaHex: "F7D44C")
 
     // MARK: - Init
-
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
@@ -46,13 +44,12 @@ final class GiftManagementCell: UITableViewCell {
     }
 
     // MARK: - Setup
-
     private func setupUI() {
         selectionStyle = .none
         backgroundColor = .clear
         contentView.backgroundColor = .clear
 
-        // card
+        // Outer card
         cardView.translatesAutoresizingMaskIntoConstraints = false
         cardView.backgroundColor = .white
         cardView.layer.cornerRadius = 18
@@ -67,7 +64,7 @@ final class GiftManagementCell: UITableViewCell {
             cardView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
         ])
 
-        // image
+        // Image
         thumbImageView.translatesAutoresizingMaskIntoConstraints = false
         thumbImageView.contentMode = .scaleAspectFit
         thumbImageView.clipsToBounds = true
@@ -78,7 +75,7 @@ final class GiftManagementCell: UITableViewCell {
             thumbImageView.heightAnchor.constraint(equalToConstant: 80)
         ])
 
-        // labels
+        // Labels
         titleLabel.font = .systemFont(ofSize: 18, weight: .semibold)
         titleLabel.numberOfLines = 2
 
@@ -101,7 +98,7 @@ final class GiftManagementCell: UITableViewCell {
         topRow.spacing = 12
         topRow.translatesAutoresizingMaskIntoConstraints = false
 
-        // buttons
+        // Buttons row
         buttonsStack.axis = .horizontal
         buttonsStack.alignment = .center
         buttonsStack.spacing = 0
@@ -114,6 +111,7 @@ final class GiftManagementCell: UITableViewCell {
         buttonsStack.addArrangedSubview(editButton)
         buttonsStack.addArrangedSubview(spacer)
 
+        // Main stack inside card
         let mainStack = UIStackView(arrangedSubviews: [topRow, buttonsStack])
         mainStack.axis = .vertical
         mainStack.spacing = 12
@@ -149,14 +147,13 @@ final class GiftManagementCell: UITableViewCell {
     }
 
     // MARK: - ViewModel
-
     struct ViewModel {
         let title: String
         let priceLine: String
         let description: String
 
-        /// ✅ we keep the same name to not break your ManageGiftsListViewController
-        /// now it contains a URL string (Cloudinary)
+        /// ✅ Keep the name so your other files don’t break.
+        /// Now this should contain the Cloudinary URL string.
         let imageName: String
     }
 
@@ -170,7 +167,6 @@ final class GiftManagementCell: UITableViewCell {
     }
 
     // MARK: - Actions
-
     @objc private func editTapped() {
         onEdit?()
     }

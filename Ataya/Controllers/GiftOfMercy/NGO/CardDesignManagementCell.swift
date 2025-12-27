@@ -39,6 +39,14 @@ final class CardDesignManagementCell: UITableViewCell {
         setupUI()
     }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        thumbImageView.image = nil
+        thumbImageView.accessibilityIdentifier = nil
+        nameLabel.text = nil
+        statusLabel.text = nil
+    }
+
     // MARK: - Setup
 
     private func setupUI() {
@@ -46,13 +54,12 @@ final class CardDesignManagementCell: UITableViewCell {
         backgroundColor = .clear
         contentView.backgroundColor = .clear
 
-        // الكرت: بوردر خفيف، بدون شادو قوي
+        // card
         cardView.translatesAutoresizingMaskIntoConstraints = false
         cardView.backgroundColor = .white
         cardView.layer.cornerRadius = 18
         cardView.layer.borderWidth = 1
         cardView.layer.borderColor = UIColor.systemGray4.cgColor
-
         contentView.addSubview(cardView)
 
         NSLayoutConstraint.activate([
@@ -80,9 +87,9 @@ final class CardDesignManagementCell: UITableViewCell {
         buttonsStack.distribution = .fillEqually
         buttonsStack.translatesAutoresizingMaskIntoConstraints = false
 
-        // 🔹 Edit = Outline أصفر
+        // Edit outlined
         styleOutlinedButton(editButton, title: "Edit")
-        // 🔹 Preview = أصفر فل
+        // Preview filled
         styleFilledButton(previewButton, title: "Preview")
 
         editButton.addTarget(self, action: #selector(editTapped), for: .touchUpInside)
@@ -91,7 +98,7 @@ final class CardDesignManagementCell: UITableViewCell {
         buttonsStack.addArrangedSubview(editButton)
         buttonsStack.addArrangedSubview(previewButton)
 
-        // vertical stack (name + status + buttons)
+        // vertical stack
         let textStack = UIStackView(arrangedSubviews: [nameLabel, statusLabel, buttonsStack])
         textStack.axis = .vertical
         textStack.spacing = 6
@@ -111,7 +118,6 @@ final class CardDesignManagementCell: UITableViewCell {
             textStack.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -16),
             textStack.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -16),
 
-            // ارتفاع ثابت للأزرار عشان يكونوا مثل الويب
             editButton.heightAnchor.constraint(equalToConstant: 44),
             previewButton.heightAnchor.constraint(equalToConstant: 44)
         ])
@@ -119,7 +125,6 @@ final class CardDesignManagementCell: UITableViewCell {
 
     // MARK: - Button Styles
 
-    /// زر أبيض بحد أصفر ونص أصفر (Edit)
     private func styleOutlinedButton(_ button: UIButton, title: String) {
         button.setTitle(title, for: .normal)
         button.setTitleColor(accentYellow, for: .normal)
@@ -138,7 +143,6 @@ final class CardDesignManagementCell: UITableViewCell {
         }
     }
 
-    /// زر أصفر فل بنص أسود (Preview)
     private func styleFilledButton(_ button: UIButton, title: String) {
         button.setTitle(title, for: .normal)
         button.setTitleColor(.black, for: .normal)
@@ -159,7 +163,16 @@ final class CardDesignManagementCell: UITableViewCell {
 
     func configure(with design: CardDesign) {
         nameLabel.text = design.name
-        thumbImageView.image = UIImage(named: design.imageName)
+
+        // ✅ placeholder = asset imageName (fallback)
+        let placeholder = UIImage(named: design.imageName)
+
+        // ✅ Cloudinary if available, otherwise asset
+        if let url = design.imageURL, !url.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            ImageLoader.shared.setImage(on: thumbImageView, from: url, placeholder: placeholder)
+        } else {
+            thumbImageView.image = placeholder
+        }
 
         if design.isActive {
             statusLabel.text = design.isDefault ? "Active · Default" : "Active"
@@ -172,11 +185,6 @@ final class CardDesignManagementCell: UITableViewCell {
 
     // MARK: - Actions
 
-    @objc private func editTapped() {
-        onEdit?()
-    }
-
-    @objc private func previewTapped() {
-        onPreview?()
-    }
+    @objc private func editTapped() { onEdit?() }
+    @objc private func previewTapped() { onPreview?() }
 }

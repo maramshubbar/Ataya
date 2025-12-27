@@ -28,7 +28,7 @@ final class ManageCardDesignsListViewController: UIViewController {
         addButton.translatesAutoresizingMaskIntoConstraints = false
         addButton.setTitle("Add Design", for: .normal)
         addButton.setTitleColor(.black, for: .normal)
-        addButton.backgroundColor = color(hex: "F7D44C")
+        addButton.backgroundColor = UIColor(atayaHex: "F7D44C")
         addButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
         addButton.layer.cornerRadius = 14
         addButton.addTarget(self, action: #selector(addDesignTapped), for: .touchUpInside)
@@ -85,7 +85,6 @@ final class ManageCardDesignsListViewController: UIViewController {
             CardDesignService.shared.upsertDesign(newDesign) { err in
                 if let err { print("❌ Save design error:", err.localizedDescription); return }
 
-                // إذا المستخدم اختار Default = true
                 if newDesign.isDefault {
                     CardDesignService.shared.setDefault(designId: newDesign.id) { err in
                         if let err { print("❌ Set default error:", err.localizedDescription) }
@@ -97,8 +96,7 @@ final class ManageCardDesignsListViewController: UIViewController {
         navigationController?.pushViewController(vc, animated: true)
     }
 
-    private func handleEdit(at index: Int) {
-        let design = designs[index]
+    private func handleEdit(_ design: CardDesign) {
         let vc = AddEditCardDesignViewController(existingDesign: design)
 
         vc.onSave = { updated in
@@ -116,23 +114,9 @@ final class ManageCardDesignsListViewController: UIViewController {
         navigationController?.pushViewController(vc, animated: true)
     }
 
-    private func handlePreview(at index: Int) {
-        let design = designs[index]
+    private func handlePreview(_ design: CardDesign) {
         let vc = CardDesignPreviewViewController(design: design)
         navigationController?.pushViewController(vc, animated: true)
-    }
-
-    // helper
-    private func color(hex: String, alpha: CGFloat = 1) -> UIColor {
-        var h = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-        if h.hasPrefix("#") { h.removeFirst() }
-        guard h.count == 6 else { return .gray }
-        var rgb: UInt64 = 0
-        Scanner(string: h).scanHexInt64(&rgb)
-        let r = CGFloat((rgb & 0xFF0000) >> 16) / 255
-        let g = CGFloat((rgb & 0x00FF00) >> 8) / 255
-        let b = CGFloat(rgb & 0x0000FF) / 255
-        return UIColor(red: r, green: g, blue: b, alpha: alpha)
     }
 }
 
@@ -152,14 +136,15 @@ extension ManageCardDesignsListViewController: UITableViewDataSource, UITableVie
             for: indexPath
         ) as! CardDesignManagementCell
 
+        // خلي configure مثل ما هو عندك
         cell.configure(with: design)
 
+        // ✅ خليه يفتح Edit/Preview على نفس design (بدون indexPath عشان ما يغلط لو صار reload)
         cell.onEdit = { [weak self] in
-            self?.handleEdit(at: indexPath.row)
+            self?.handleEdit(design)
         }
-
         cell.onPreview = { [weak self] in
-            self?.handlePreview(at: indexPath.row)
+            self?.handlePreview(design)
         }
 
         return cell

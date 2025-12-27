@@ -2,34 +2,158 @@
 //  GiftOrdersListViewController.swift
 //  Ataya
 //
-//  Created by Fatema Maitham on 25/12/2025.
-//
 
 import UIKit
+import FirebaseAuth
+import Foundation
+import FirebaseFirestore
+
+enum GiftOrderStatus: String, CaseIterable {
+    case pending
+    case processing
+    case sent
+    case failed
+    case cancelled
+
+    var title: String {
+        switch self {
+        case .pending: return "Pending"
+        case .processing: return "Processing"
+        case .sent: return "Sent"
+        case .failed: return "Failed"
+        case .cancelled: return "Cancelled"
+        }
+    }
+
+    static func fromFirestore(_ value: String) -> GiftOrderStatus {
+        let v = value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        return GiftOrderStatus(rawValue: v) ?? .pending
+    }
+}
+
+struct GiftOrder {
+    let id: String
+    let ngoId: String
+    let giftName: String
+    let donorName: String
+    let amount: Double?
+    let currency: String
+    let createdAt: Date
+    let status: GiftOrderStatus
+    let cardDesignName: String
+    let recipientsCount: Int
+
+    // Optional details
+    let message: String?
+    let notesForNGO: String?
+
+    // ✅ ADD THIS initializer (fixes your error)
+    init(
+        id: String,
+        ngoId: String,
+        giftName: String,
+        donorName: String,
+        amount: Double?,
+        currency: String,
+        createdAt: Date,
+        status: GiftOrderStatus,
+        cardDesignName: String,
+        recipientsCount: Int,
+        message: String?,
+        notesForNGO: String?
+    ) {
+        self.id = id
+        self.ngoId = ngoId
+        self.giftName = giftName
+        self.donorName = donorName
+        self.amount = amount
+        self.currency = currency
+        self.createdAt = createdAt
+        self.status = status
+        self.cardDesignName = cardDesignName
+        self.recipientsCount = recipientsCount
+        self.message = message
+        self.notesForNGO = notesForNGO
+    }
+
+    // ✅ Firestore init
+    init?(doc: DocumentSnapshot) {
+        let d = doc.data() ?? [:]
+
+        guard
+            let ngoId = d["ngoId"] as? String,
+            let giftName = d["giftName"] as? String
+        else { return nil }
+
+        self.id = doc.documentID
+        self.ngoId = ngoId
+        self.giftName = giftName
+
+        self.donorName = d["donorName"] as? String ?? "—"
+
+        if let v = d["amount"] as? Double { self.amount = v }
+        else if let v = d["amount"] as? Int { self.amount = Double(v) }
+        else { self.amount = nil }
+
+        self.currency = d["currency"] as? String ?? "BHD"
+
+        if let ts = d["createdAt"] as? Timestamp {
+            self.createdAt = ts.dateValue()
+        } else {
+            self.createdAt = Date()
+        }
+
+        let statusRaw = d["status"] as? String ?? "pending"
+        self.status = GiftOrderStatus.fromFirestore(statusRaw)
+
+        self.cardDesignName = d["cardDesignName"] as? String ?? "—"
+
+        if let v = d["recipientsCount"] as? Int { self.recipientsCount = v }
+        else if let v = d["recipientsCount"] as? Double { self.recipientsCount = Int(v) }
+        else { self.recipientsCount = 0 }
+
+        self.message = d["message"] as? String
+        self.notesForNGO = d["notesForNGO"] as? String
+    }
+}
+
+
+// MARK: - Service (Firestore)
+
+final class GiftOrderService {
+
+    static let shared = GiftOrderService()
+    private init() {}
+
+    private let db = Firestore.firestore()
+
+    // ✅ change if your collection name is different
+    private var ordersRef: CollectionReference { db.collection("giftOrders") }
+
+    func listenOrders(ngoId: String, completion: @escaping (Result<[GiftOrder], Error>) -> Void) -> ListenerRegistration {
+        return ordersRef
+            .whereField("ngoId", isEqualTo: ngoId)
+            .order(by: "createdAt", descending: true)
+            .addSnapshotListener { snap, err in
+                if let err { completion(.failure(err)); return }
+                let items = snap?.documents.compactMap { GiftOrder(doc: $0) } ?? []
+                completion(.success(items))
+            }
+    }
+
+    func updateStatus(orderId: String, status: GiftOrderStatus, completion: @escaping (Error?) -> Void) {
+        ordersRef.document(orderId).setData([
+            "status": status.rawValue, // store as "pending" etc
+            "updatedAt": FieldValue.serverTimestamp()
+        ], merge: true, completion: completion)
+    }
+}
+
+// MARK: - VC
 
 final class GiftOrdersListViewController: UIViewController {
 
-    // MARK: - Model
-    enum OrderStatus: String, CaseIterable {
-        case pending = "Pending"
-        case processing = "Processing"
-        case sent = "Sent"
-        case failed = "Failed"
-        case cancelled = "Cancelled"
-    }
-
-    struct GiftOrder {
-        let id: String
-        let giftName: String
-        let donorName: String
-        let amount: Double?
-        let date: Date
-        let status: OrderStatus
-        let cardDesignName: String
-        let recipientsCount: Int
-    }
-
-    // MARK: - UI
+    // UI
     private let filterControl: UISegmentedControl = {
         let sc = UISegmentedControl(items: ["All", "Pending", "Sent"])
         sc.selectedSegmentIndex = 0
@@ -49,22 +173,31 @@ final class GiftOrdersListViewController: UIViewController {
     }()
 
     private let refresh = UIRefreshControl()
+    private var listener: ListenerRegistration?
 
-    // MARK: - Data
+    // Data
     private var allOrders: [GiftOrder] = []
     private var filteredOrders: [GiftOrder] = []
 
-    // Brand yellow (F7D44C)
-    private let brandYellow = UIColor(red: 247/255, green: 212/255, blue: 76/255, alpha: 1)
+    private let amountFormatter: NumberFormatter = {
+        let f = NumberFormatter()
+        f.numberStyle = .currency
+        f.maximumFractionDigits = 2
+        f.currencyCode = "BHD"
+        return f
+    }()
+
+    private let brandYellow = UIColor(atayaHex: "F7D44C")
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNav()
         setupUI()
         setupActions()
-        loadMockData()
-        applyFilter()
+        startListening()
     }
+
+    deinit { listener?.remove() }
 
     private func setupNav() {
         view.backgroundColor = .systemBackground
@@ -73,11 +206,9 @@ final class GiftOrdersListViewController: UIViewController {
     }
 
     private func setupUI() {
-        // Filter
         filterControl.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(filterControl)
 
-        // Table
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
@@ -92,7 +223,6 @@ final class GiftOrdersListViewController: UIViewController {
 
         view.addSubview(tableView)
 
-        // Empty state
         emptyStateLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(emptyStateLabel)
 
@@ -109,7 +239,7 @@ final class GiftOrdersListViewController: UIViewController {
             emptyStateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             emptyStateLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             emptyStateLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-            emptyStateLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+            emptyStateLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24)
         ])
     }
 
@@ -117,13 +247,35 @@ final class GiftOrdersListViewController: UIViewController {
         filterControl.addTarget(self, action: #selector(filterChanged), for: .valueChanged)
     }
 
+    private func startListening() {
+        listener?.remove()
+
+        guard let ngoId = Auth.auth().currentUser?.uid else {
+            // not logged in -> show empty
+            allOrders = []
+            applyFilter()
+            return
+        }
+
+        listener = GiftOrderService.shared.listenOrders(ngoId: ngoId) { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .failure(let err):
+                print("❌ orders listen error:", err.localizedDescription)
+            case .success(let items):
+                self.allOrders = items
+                self.applyFilter()
+            }
+        }
+    }
+
     @objc private func filterChanged() {
         applyFilter()
     }
 
     @objc private func handleRefresh() {
-        // لاحقاً: نعمل fetch من Firestore
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+        // listening already updates automatically
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
             self.refresh.endRefreshing()
             self.applyFilter()
         }
@@ -135,7 +287,7 @@ final class GiftOrdersListViewController: UIViewController {
             filteredOrders = allOrders.filter { $0.status == .pending }
         case 2: // Sent
             filteredOrders = allOrders.filter { $0.status == .sent }
-        default: // All
+        default:
             filteredOrders = allOrders
         }
 
@@ -143,39 +295,36 @@ final class GiftOrdersListViewController: UIViewController {
         tableView.reloadData()
     }
 
-    private func loadMockData() {
-        allOrders = [
-            .init(id: "ORD-1A2B3C",
-                  giftName: "WATER WELL",
-                  donorName: "Maram",
-                  amount: 500,
-                  date: Date(),
-                  status: .pending,
-                  cardDesignName: "Kaaba",
-                  recipientsCount: 2),
-
-            .init(id: "ORD-7X9P2Q",
-                  giftName: "SADAQAH JARIYA",
-                  donorName: "Fatema",
-                  amount: 20,
-                  date: Date().addingTimeInterval(-86400 * 2),
-                  status: .sent,
-                  cardDesignName: "Floral",
-                  recipientsCount: 1),
-
-            .init(id: "ORD-ZZ5521",
-                  giftName: "Orphan Care",
-                  donorName: "Ahmed",
-                  amount: 15,
-                  date: Date().addingTimeInterval(-86400 * 6),
-                  status: .processing,
-                  cardDesignName: "Palestine Al Aqsa",
-                  recipientsCount: 3),
-        ]
+    private func openDetails(order: GiftOrder) {
+        let vc = GiftOrderDetailsViewController(order: order)
+        vc.onStatusUpdated = { [weak self] orderId, newStatus in
+            // optional: refresh filter immediately
+            guard let self else { return }
+            if let idx = self.allOrders.firstIndex(where: { $0.id == orderId }) {
+                let old = self.allOrders[idx]
+                self.allOrders[idx] = GiftOrder(
+                    id: old.id,
+                    ngoId: old.ngoId,
+                    giftName: old.giftName,
+                    donorName: old.donorName,
+                    amount: old.amount,
+                    currency: old.currency,
+                    createdAt: old.createdAt,
+                    status: newStatus,
+                    cardDesignName: old.cardDesignName,
+                    recipientsCount: old.recipientsCount,
+                    message: old.message,
+                    notesForNGO: old.notesForNGO
+                )
+                self.applyFilter()
+            }
+        }
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
 
 // MARK: - Table
+
 extension GiftOrdersListViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -187,15 +336,20 @@ extension GiftOrdersListViewController: UITableViewDataSource, UITableViewDelega
         let order = filteredOrders[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: GiftOrderCell.reuseID, for: indexPath) as! GiftOrderCell
 
-        let amountText = order.amount.map { String(format: "$%.2f", $0) } ?? "—"
-        let dateText = order.date.formatted(date: .abbreviated, time: .omitted)
+        let amountText: String = {
+            guard let amount = order.amount else { return "—" }
+            amountFormatter.currencyCode = order.currency
+            return amountFormatter.string(from: NSNumber(value: amount)) ?? "\(order.currency) \(amount)"
+        }()
+
+        let dateText = order.createdAt.formatted(date: .abbreviated, time: .omitted)
 
         cell.configure(
             giftName: order.giftName,
             donorName: order.donorName,
             amountText: amountText,
             dateText: dateText,
-            statusText: order.status.rawValue,
+            statusText: order.status.title,
             statusStyle: .init(from: order.status),
             designName: order.cardDesignName,
             recipientsText: "\(order.recipientsCount) recipient(s)"
@@ -212,20 +366,13 @@ extension GiftOrdersListViewController: UITableViewDataSource, UITableViewDelega
         tableView.deselectRow(at: indexPath, animated: true)
         openDetails(order: filteredOrders[indexPath.row])
     }
-
-    private func openDetails(order: GiftOrder) {
-//        let vc = GiftOrderDetailsViewController()
-//        vc.order = order
-//        navigationController?.pushViewController(vc, animated: true)
-    }
-
 }
 
 // MARK: - Cell
+
 private final class GiftOrderCell: UITableViewCell {
 
     static let reuseID = "GiftOrderCell"
-
     var onViewDetails: (() -> Void)?
 
     private let card = UIView()
@@ -240,7 +387,7 @@ private final class GiftOrderCell: UITableViewCell {
     private let badge = StatusBadgeView()
     private let viewButton = UIButton(type: .system)
 
-    private let brandYellow = UIColor(red: 247/255, green: 212/255, blue: 76/255, alpha: 1)
+    private let brandYellow = UIColor(atayaHex: "F7D44C")
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -252,21 +399,23 @@ private final class GiftOrderCell: UITableViewCell {
         setup()
     }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        onViewDetails = nil
+    }
+
     private func setup() {
         selectionStyle = .none
         backgroundColor = .clear
         contentView.backgroundColor = .clear
 
-        // Card مثل التصميم (بدون شادو قوي)
         card.translatesAutoresizingMaskIntoConstraints = false
         card.backgroundColor = .systemBackground
         card.layer.cornerRadius = 16
         card.layer.borderWidth = 1
         card.layer.borderColor = UIColor.systemGray4.cgColor
-
         contentView.addSubview(card)
 
-        // Labels
         [titleLabel, donorLabel, amountLabel, dateLabel, designLabel, recipientsLabel].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             $0.numberOfLines = 1
@@ -274,58 +423,42 @@ private final class GiftOrderCell: UITableViewCell {
 
         titleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
 
-        donorLabel.font = .systemFont(ofSize: 13.5, weight: .regular)
-        donorLabel.textColor = .label   // أغمق
+        donorLabel.font = .systemFont(ofSize: 13.5)
+        donorLabel.textColor = .label
 
-        amountLabel.font = .systemFont(ofSize: 13.5, weight: .regular)
+        amountLabel.font = .systemFont(ofSize: 13.5)
         amountLabel.textColor = .label
 
-        dateLabel.font = .systemFont(ofSize: 13.5, weight: .regular)
+        dateLabel.font = .systemFont(ofSize: 13.5)
         dateLabel.textColor = .label
 
-        designLabel.font = .systemFont(ofSize: 13.5, weight: .regular)
+        designLabel.font = .systemFont(ofSize: 13.5)
         designLabel.textColor = .label
 
-        recipientsLabel.font = .systemFont(ofSize: 13, weight: .regular)
-        recipientsLabel.textColor = .secondaryLabel // رمادي فاتح
+        recipientsLabel.font = .systemFont(ofSize: 13)
+        recipientsLabel.textColor = .secondaryLabel
 
         badge.translatesAutoresizingMaskIntoConstraints = false
 
         viewButton.translatesAutoresizingMaskIntoConstraints = false
         viewButton.setTitle("View Details", for: .normal)
-        viewButton.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
         viewButton.setTitleColor(.black, for: .normal)
+        viewButton.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
         viewButton.backgroundColor = brandYellow
         viewButton.layer.cornerRadius = 10
         if #available(iOS 15.0, *) {
             var config = UIButton.Configuration.filled()
-            config.baseBackgroundColor = brandYellow    // اللون الأصفر
-            config.baseForegroundColor = .black         // لون النص
-            config.cornerStyle = .medium                // تقريباً radius = 10
-            config.contentInsets = NSDirectionalEdgeInsets(top: 10,
-                                                           leading: 22,
-                                                           bottom: 10,
-                                                           trailing: 22)
+            config.baseBackgroundColor = brandYellow
+            config.baseForegroundColor = .black
+            config.cornerStyle = .medium
+            config.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 22, bottom: 10, trailing: 22)
             viewButton.configuration = config
         } else {
-            viewButton.backgroundColor = brandYellow
-            viewButton.setTitleColor(.black, for: .normal)
-            viewButton.layer.cornerRadius = 10
-            viewButton.contentEdgeInsets = UIEdgeInsets(top: 10,
-                                                        left: 22,
-                                                        bottom: 10,
-                                                        right: 22)
+            viewButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 22, bottom: 10, right: 22)
         }
         viewButton.addTarget(self, action: #selector(viewTapped), for: .touchUpInside)
 
-        card.addSubview(titleLabel)
-        card.addSubview(donorLabel)
-        card.addSubview(amountLabel)
-        card.addSubview(dateLabel)
-        card.addSubview(designLabel)
-        card.addSubview(recipientsLabel)
-        card.addSubview(badge)
-        card.addSubview(viewButton)
+        [titleLabel, donorLabel, amountLabel, dateLabel, designLabel, recipientsLabel, badge, viewButton].forEach(card.addSubview)
 
         NSLayoutConstraint.activate([
             card.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
@@ -375,29 +508,19 @@ private final class GiftOrderCell: UITableViewCell {
         let bg: UIColor
         let text: UIColor
 
-        init(from status: GiftOrdersListViewController.OrderStatus) {
-            let pendingBg   = UIColor(red: 1.0, green: 0.95, blue: 0.70, alpha: 1)  // أصفر فاتح
-            let approvedBg  = UIColor(red: 0.82, green: 0.95, blue: 0.80, alpha: 1) // أخضر فاتح
-            let blueBg      = UIColor(red: 0.82, green: 0.90, blue: 1.0, alpha: 1)  // أزرق فاتح
-            let redBg       = UIColor(red: 1.0, green: 0.85, blue: 0.85, alpha: 1)  // أحمر فاتح
-            let grayBg      = UIColor(red: 0.92, green: 0.92, blue: 0.92, alpha: 1) // رمادي فاتح
+        init(from status: GiftOrderStatus) {
+            let pendingBg   = UIColor(red: 1.0, green: 0.95, blue: 0.70, alpha: 1)
+            let approvedBg  = UIColor(red: 0.82, green: 0.95, blue: 0.80, alpha: 1)
+            let blueBg      = UIColor(red: 0.82, green: 0.90, blue: 1.0, alpha: 1)
+            let redBg       = UIColor(red: 1.0, green: 0.85, blue: 0.85, alpha: 1)
+            let grayBg      = UIColor(red: 0.92, green: 0.92, blue: 0.92, alpha: 1)
 
             switch status {
-            case .pending:
-                bg = pendingBg
-                text = .black
-            case .sent:
-                bg = approvedBg
-                text = .black
-            case .processing:
-                bg = blueBg
-                text = .black
-            case .failed:
-                bg = redBg
-                text = .black
-            case .cancelled:
-                bg = grayBg
-                text = .black
+            case .pending: bg = pendingBg; text = .black
+            case .sent: bg = approvedBg; text = .black
+            case .processing: bg = blueBg; text = .black
+            case .failed: bg = redBg; text = .black
+            case .cancelled: bg = grayBg; text = .black
             }
         }
     }
@@ -413,18 +536,15 @@ private final class GiftOrderCell: UITableViewCell {
         recipientsText: String
     ) {
         titleLabel.text = giftName
-
         donorLabel.text = "Donor: \(donorName)"
         amountLabel.text = "Amount: \(amountText)"
         dateLabel.text = dateText
         designLabel.text = "Card Design: \(designName)"
         recipientsLabel.text = recipientsText
-
         badge.apply(text: statusText, bg: statusStyle.bg, textColor: statusStyle.text)
     }
 }
 
-// MARK: - Badge View
 private final class StatusBadgeView: UIView {
 
     private let label = UILabel()
@@ -441,7 +561,7 @@ private final class StatusBadgeView: UIView {
 
     private func setup() {
         layer.cornerRadius = 15.5
-        clipsToBounds = true   // بدون border
+        clipsToBounds = true
 
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center

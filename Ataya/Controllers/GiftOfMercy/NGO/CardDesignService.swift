@@ -2,9 +2,6 @@
 //  CardDesignService.swift
 //  Ataya
 //
-//  Created by Fatema Maitham on 27/12/2025.
-//
-
 
 import Foundation
 import FirebaseFirestore
@@ -17,13 +14,17 @@ final class CardDesignService {
     private let db = Firestore.firestore()
     private var ref: CollectionReference { db.collection("cardDesigns") }
 
-    // ✅ Live listener
-    func listenDesigns(ngoId: String?, completion: @escaping (Result<[CardDesign], Error>) -> Void) -> ListenerRegistration {
+    // MARK: - Live listener
 
-        var q: Query = ref.order(by: "createdAt", descending: true)
+    func listenDesigns(
+        ngoId: String?,
+        completion: @escaping (Result<[CardDesign], Error>) -> Void
+    ) -> ListenerRegistration {
+
+        var q: Query = ref.order(by: CardDesign.Keys.createdAt, descending: true)
 
         if let ngoId, !ngoId.isEmpty {
-            q = q.whereField("ngoId", isEqualTo: ngoId)
+            q = q.whereField(CardDesign.Keys.ngoId, isEqualTo: ngoId)
         }
 
         return q.addSnapshotListener { snap, err in
@@ -33,39 +34,67 @@ final class CardDesignService {
         }
     }
 
-    // ✅ Create/Update
+    // MARK: - Create/Update (Upsert)
+
+    /// ✅ createdAt ينحط فقط لو الوثيقة "جديدة" فعلاً
     func upsertDesign(_ design: CardDesign, completion: @escaping (Error?) -> Void) {
-        var data = design.toFirestoreDict()
-        data["updatedAt"] = FieldValue.serverTimestamp()
+        let docRef = ref.document(design.id)
 
-        // createdAt only once
-        if design.createdAt == nil {
-            data["createdAt"] = FieldValue.serverTimestamp()
+        docRef.getDocument { snapshot, error in
+            if let error { completion(error); return }
+
+            var data = design.toFirestoreDict()
+            data[CardDesign.Keys.updatedAt] = FieldValue.serverTimestamp()
+
+            // createdAt only once (if doc doesn't exist yet)
+            if snapshot?.exists != true {
+                data[CardDesign.Keys.createdAt] = FieldValue.serverTimestamp()
+            }
+
+            docRef.setData(data, merge: true, completion: completion)
         }
-
-        ref.document(design.id).setData(data, merge: true, completion: completion)
     }
 
-    // ✅ Delete (اختياري)
+    // MARK: - Delete (optional)
+
     func deleteDesign(id: String, completion: @escaping (Error?) -> Void) {
         ref.document(id).delete(completion: completion)
     }
 
-    // ✅ Make ONE default only (Transaction)
-    func setDefault(designId: String, completion: @escaping (Error?) -> Void) {
-        db.runTransaction({ txn, errPtr -> Any? in
-            let all = try txn.getDocuments(self.ref)
+    // MARK: - Default (ONE default only)
 
-            // set all to false
-            for doc in all.documents {
-                txn.updateData(["isDefault": false], forDocument: doc.reference)
+    /// ✅ نسخة قديمة عشان كودك الحالي ما ينكسر
+    func setDefault(designId: String, completion: @escaping (Error?) -> Void) {
+        setDefault(designId: designId, ngoId: nil, completion: completion)
+    }
+
+    /// ✅ الأفضل: يضبط default داخل نفس الـ NGO فقط
+    func setDefault(designId: String, ngoId: String?, completion: @escaping (Error?) -> Void) {
+
+        var q: Query = ref
+        if let ngoId, !ngoId.isEmpty {
+            q = q.whereField(CardDesign.Keys.ngoId, isEqualTo: ngoId)
+        }
+
+        q.getDocuments { snap, err in
+            if let err { completion(err); return }
+
+            let docs = snap?.documents ?? []
+
+            let batch = self.db.batch()
+
+            // set all to false, and selected one to true
+            for doc in docs {
+                let isSelected = (doc.documentID == designId)
+                batch.updateData([CardDesign.Keys.isDefault: isSelected], forDocument: doc.reference)
             }
 
-            // set chosen to true
-            txn.updateData(["isDefault": true], forDocument: self.ref.document(designId))
-            return nil
-        }, completion: { _, error in
-            completion(error)
-        })
+            // safety: لو الديزاين المختار مش داخل الـ query لأي سبب، نضمنه true
+            if !docs.contains(where: { $0.documentID == designId }) {
+                batch.setData([CardDesign.Keys.isDefault: true], forDocument: self.ref.document(designId), merge: true)
+            }
+
+            batch.commit(completion: completion)
+        }
     }
 }

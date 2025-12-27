@@ -16,7 +16,7 @@ final class DraftDonation {
     var notes: String? = nil
     
     var safetyConfirmed: Bool = false
-    
+     
     // User-selected images (used during UI flow only)
     var images: [UIImage] = []
     
@@ -24,8 +24,8 @@ final class DraftDonation {
     var photoURLs: [String] = []
     var imagePublicIds: [String] = []
     
-    var photoCount: Int { images.count }
-    
+    var photoCount: Int { photoURLs.count }
+
     func toFirestoreDict() -> [String: Any] {
         var data: [String: Any] = [
             "itemName": itemName,

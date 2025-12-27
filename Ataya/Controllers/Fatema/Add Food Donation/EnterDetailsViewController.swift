@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseFirestore
+import FirebaseAuth
 
 final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
     var draft: DraftDonation!
@@ -348,32 +349,46 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
     
     private func saveToFirestore() {
         let db = Firestore.firestore()
-        
+
+        // ✅ donorId (current user UID)
+        guard let uid = Auth.auth().currentUser?.uid else {
+            showAlert("Not logged in", "Please login first.")
+            nextButton.isEnabled = true
+            return
+        }
+
+        // ✅ detect if new donation
+        let isNew = (draft.id == nil)
+
         // reuse same doc if already created
         let docId = draft.id ?? db.collection("donations").document().documentID
         draft.id = docId
-        
+
         var data = draft.toFirestoreDict()
+
+        data["donorId"] = uid              // ✅ لازم
         data["status"] = "pending"
-        data["createdAt"] = FieldValue.serverTimestamp()
         data["updatedAt"] = FieldValue.serverTimestamp()
-        
+
+        if isNew {
+            data["createdAt"] = FieldValue.serverTimestamp()   // ✅ بس أول مرة
+        }
+
         print("✅ Saving donation docId:", docId)
         print("✅ Data keys:", Array(data.keys))
-        
+
         db.collection("donations").document(docId).setData(data, merge: true) { [weak self] error in
             guard let self else { return }
             self.nextButton.isEnabled = true
-            
+
             if let error {
                 print("❌ Firestore error:", error.localizedDescription)
                 self.showAlert("Save failed", error.localizedDescription)
                 return
             }
-            
-//            self.showAlert("Saved ✅", "Donation saved to Firebase.")
         }
     }
+
 }
 
     // MARK: - UIPickerView Delegate/DataSource (Dropdowns)

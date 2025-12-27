@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="717-p3-xli">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Discover NGO-->
+        <scene sceneID="U2U-ia-Iuh">
+            <objects>
+                <viewController storyboardIdentifier="DiscoverNGOVC" id="KQP-72-LBa" customClass="DiscoverNGOViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="zlt-1S-s1W">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="3w4-5q-m0L">
+                                <rect key="frame" x="16" y="226" width="361" height="33"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="32" id="fZB-4D-1wT"/>
+                                </constraints>
+                                <segments>
+                                    <segment title="All"/>
+                                    <segment title="Category"/>
+                                    <segment title="Location"/>
+                                    <segment title="Rating"/>
+                                </segments>
+                            </segmentedControl>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Tjf-a3-GYG">
+                                <rect key="frame" x="0.0" y="266" width="393" height="469"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="NGOCell" id="KFG-u5-FWe">
+                                        <rect key="frame" x="0.0" y="50" width="393" height="47.666667938232422"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="KFG-u5-FWe" id="J0O-Lu-NeD" customClass="NGOCellTableViewCell" customModule="Ataya" customModuleProvider="target">
+                                            <rect key="frame" x="0.0" y="0.0" width="393" height="47.666667938232422"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                            <searchBar contentMode="redraw" text="" placeholder="Search" translatesAutoresizingMaskIntoConstraints="NO" id="ow5-Vj-znL">
+                                <rect key="frame" x="10" y="162" width="373" height="56"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="KQP-72-LBa" id="SO4-JW-9By"/>
+                                </connections>
+                            </searchBar>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Ab9-78-TXg"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="Ab9-78-TXg" firstAttribute="trailing" secondItem="Tjf-a3-GYG" secondAttribute="trailing" id="0Aj-jw-r39"/>
+                            <constraint firstItem="3w4-5q-m0L" firstAttribute="centerX" secondItem="Tjf-a3-GYG" secondAttribute="centerX" id="37d-br-chN"/>
+                            <constraint firstItem="3w4-5q-m0L" firstAttribute="top" secondItem="ow5-Vj-znL" secondAttribute="bottom" constant="8" id="7cS-c5-sSl"/>
+                            <constraint firstItem="ow5-Vj-znL" firstAttribute="leading" secondItem="Ab9-78-TXg" secondAttribute="leading" constant="10" id="R09-4V-8Ji"/>
+                            <constraint firstItem="Tjf-a3-GYG" firstAttribute="leading" secondItem="Ab9-78-TXg" secondAttribute="leading" id="YjL-oW-tBA"/>
+                            <constraint firstItem="Tjf-a3-GYG" firstAttribute="top" secondItem="3w4-5q-m0L" secondAttribute="bottom" constant="8" id="bda-0p-sMQ"/>
+                            <constraint firstItem="Ab9-78-TXg" firstAttribute="bottom" secondItem="Tjf-a3-GYG" secondAttribute="bottom" id="cvZ-eS-6ky"/>
+                            <constraint firstItem="ow5-Vj-znL" firstAttribute="top" secondItem="Ab9-78-TXg" secondAttribute="top" id="lpk-Di-fVq"/>
+                            <constraint firstItem="ow5-Vj-znL" firstAttribute="centerX" secondItem="3w4-5q-m0L" secondAttribute="centerX" id="pRw-t2-oZA"/>
+                            <constraint firstItem="3w4-5q-m0L" firstAttribute="leading" secondItem="Ab9-78-TXg" secondAttribute="leading" constant="16" id="vvL-EQ-lfC"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Discover NGO" style="editor" id="pKu-Cl-EAn"/>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="filterSegment" destination="3w4-5q-m0L" id="WY3-sf-VEk"/>
+                        <outlet property="searchBar" destination="ow5-Vj-znL" id="0Eq-Cj-24Q"/>
+                        <outlet property="tableView" destination="Tjf-a3-GYG" id="jkY-Ci-1Vw"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="FPk-B8-SNg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1292.3664122137404" y="-394.36619718309862"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="Rla-QZ-Xqe">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="717-p3-xli" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="W7q-Wo-yqe">
+                        <rect key="frame" x="0.0" y="118" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="KQP-72-LBa" kind="relationship" relationship="rootViewController" id="wpG-bk-WBi"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="mIn-NO-FUz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="365.64885496183206" y="-394.36619718309862"/>
+        </scene>
+    </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

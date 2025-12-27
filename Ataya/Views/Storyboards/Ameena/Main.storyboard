@@ -75,6 +75,8 @@
         <scene sceneID="3Ud-4g-Aqg">
             <objects>
                 <viewController title="DonationDetails" id="Lma-be-VoZ" customClass="RecurringDonationDetailsViewController" customModule="Ataya" sceneMemberID="viewController">
+                    <string key="storyboardIdentifier">RecurringDonationDetailsViewController
+</string>
                     <view key="view" contentMode="scaleToFill" id="Or0-5I-Aor">
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -534,7 +536,7 @@
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="7c4-ng-ma0"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" systemColor="secondarySystemFillColor"/>
                         <constraints>
                             <constraint firstItem="90j-dd-ac8" firstAttribute="centerX" secondItem="7c4-ng-ma0" secondAttribute="centerX" id="GR3-xW-e40"/>
                             <constraint firstItem="90j-dd-ac8" firstAttribute="centerY" secondItem="7c4-ng-ma0" secondAttribute="centerY" id="IFL-UG-jiT"/>
@@ -552,12 +554,15 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="lcQ-w7-fkL"/>
+        <segue reference="NFF-Yz-Nym"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="DoneIcon" width="124" height="124"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="secondarySystemFillColor">
+            <color red="0.47058823529999999" green="0.47058823529999999" blue="0.50196078430000002" alpha="0.16" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

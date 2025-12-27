@@ -2,42 +2,26 @@ import UIKit
 import FirebaseAuth
 import FirebaseFirestore
 
-
 final class HistoryViewController: UIViewController {
-    
+
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     
-    // Simple model (replace later with your Firebase model)
-    typealias HistoryItem = (title: String, category: String, date: String, status: String)
 
-    private var filteredItems: [HistoryItem] = []
-    
-    private var allItems: [HistoryItem] = [
-        HistoryItem(title: "Bread & Bakery Items",
-                    category: "Baked Goods",
-                    date: "Nov 14 2025",
-                    status: "Confirmed")
-    ]
-
-    // ✅ Save which row was tapped for Edit (for prepare segue)
-    private var selectedItemForDetails: HistoryItem?
-    
     private var listener: ListenerRegistration?
-    private var items: [RecurringDonation] = []
+    private var allItems: [RecurringDonation] = []
+    private var filteredItems: [RecurringDonation] = []
 
+    private let db = Firestore.firestore()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        startListening()
-
-        definesPresentationContext = true
 
         title = "Recurring History"
         navigationItem.largeTitleDisplayMode = .never
         navigationItem.backButtonTitle = ""
 
-        filteredItems = allItems
+        definesPresentationContext = true
 
         tableView.dataSource = self
         tableView.delegate = self
@@ -50,6 +34,12 @@ final class HistoryViewController: UIViewController {
         searchBar.placeholder = "Search"
         searchBar.autocapitalizationType = .none
         searchBar.searchTextField.clearButtonMode = .whileEditing
+
+        startListening()
+    }
+
+    deinit {
+        listener?.remove()
     }
 
     override func viewDidLayoutSubviews() {
@@ -61,13 +51,43 @@ final class HistoryViewController: UIViewController {
         tf.clipsToBounds = true
     }
 
-    // MARK: - Alerts
-    private func showAlert(_ msg: String) {
-        let a = UIAlertController(title: "Action", message: msg, preferredStyle: .alert)
-        a.addAction(UIAlertAction(title: "OK", style: .default))
-        present(a, animated: true)
+    // MARK: - Firestore
+    private func startListening() {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("No logged in user")
+            return
+        }
+
+        listener?.remove()
+        listener = db.collection("Recurring_Donations")
+            .whereField("userId", isEqualTo: uid)
+            .order(by: "createdAt", descending: true)
+            .addSnapshotListener { [weak self] snap, err in
+                guard let self else { return }
+
+                if let err = err {
+                    print("Firestore error:", err)
+                    return
+                }
+
+                let list = snap?.documents.compactMap { RecurringDonation(doc: $0) } ?? []
+                self.allItems = list
+                self.applySearchFilter(text: self.searchBar.text ?? "")
+            }
     }
 
+    private func updateDonationStatus(docId: String, newStatus: String, completion: @escaping (Bool) -> Void) {
+        db.collection("Recurring_Donations")
+            .document(docId)
+            .updateData([
+                "status": newStatus,
+                "updatedAt": FieldValue.serverTimestamp()
+            ]) { err in
+                completion(err == nil)
+            }
+    }
+
+    // MARK: - Popups / Alerts
     private func showConfirm(title: String, message: String, onYes: @escaping () -> Void) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "No", style: .cancel))
@@ -75,7 +95,6 @@ final class HistoryViewController: UIViewController {
         present(alert, animated: true)
     }
 
-    // MARK: - Popup Presenting
     private func showPopup(storyboardID: String) {
         let sb = UIStoryboard(name: "Main", bundle: nil)
         let vc = sb.instantiateViewController(withIdentifier: storyboardID)
@@ -86,142 +105,139 @@ final class HistoryViewController: UIViewController {
 
     private func showPausedPopup() { showPopup(storyboardID: "HistoryPausedPopup") }
     private func showResumedPopup() { showPopup(storyboardID: "HistoryResumedPopup") }
-    
-    private func startListening() {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            print("No logged in user")
+
+    // MARK: - Navigation (Edit)
+        private func openEdit(for item: RecurringDonation) {
+            var draft = RecurringDonationDraft()
+
+        // Keep document id for update later
+        draft.docId = item.docId
+
+        // Page 1 fields
+        draft.frequency = item.frequency
+        draft.startDate = item.startDate
+        draft.nextPickupDate = item.nextPickupDate
+
+        // Page 2 fields
+        draft.foodCategoryName = item.foodCategoryName
+        draft.foodItemName = item.foodItemName
+        draft.estimatedQuantity = item.estimatedQuantity
+        draft.unit = item.unit
+        draft.description = item.description
+
+        let sb = UIStoryboard(name: "Main", bundle: nil)
+        guard let vc = sb.instantiateViewController(withIdentifier: "RecurringDonationDetailsViewController") as? RecurringDonationDetailsViewController else {
+            assertionFailure("RecurringDonationDetailsViewController storyboard ID is missing or incorrect.")
             return
         }
 
-        listener = Firestore.firestore()
-            .collection("Recurring_Donations")
-            .whereField("userId", isEqualTo: uid)
-            .order(by: "createdAt", descending: true)
-            .addSnapshotListener { [weak self] snap, err in
-                if let err = err {
-                    print("Firestore error:", err)
-                    return
-                }
-
-                self?.items = snap?.documents.compactMap { RecurringDonation(doc: $0) } ?? []
-                self?.tableView.reloadData()
-            }
+        vc.draft = draft
+        vc.isEditingDonation = true
+        vc.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(vc, animated: true)
     }
 
-    // MARK: - Navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "goToDetails" {
-            // Example: pass data to details page later
-            // let vc = segue.destination as! RecurringDonationDetailsViewController
-            // vc.prefilledTitle = selectedItemForDetails?.title
+    // MARK: - Search
+    private func applySearchFilter(text: String) {
+        let t = text.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
 
-            // For now just confirm we have the item:
-            print("✅ going to details with item:", selectedItemForDetails?.title ?? "nil")
+        if t.isEmpty {
+            filteredItems = allItems
+        } else {
+            filteredItems = allItems.filter { item in
+                let title = item.foodItemName.lowercased()
+                let cat = item.foodCategoryName.lowercased()
+                let status = item.status.lowercased()
+                let date = formatDate(item.createdAt).lowercased()
+
+                return title.contains(t) ||
+                       cat.contains(t) ||
+                       status.contains(t) ||
+                       date.contains(t)
+            }
         }
+
+        tableView.reloadData()
+    }
+
+    private func formatDate(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.dateFormat = "MMM dd yyyy"
+        return f.string(from: date)
     }
 }
 
 // MARK: - Table
 extension HistoryViewController: UITableViewDataSource, UITableViewDelegate {
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         filteredItems.count
     }
-    
+
     func tableView(_ tableView: UITableView,
                    cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
+
         let cell = tableView.dequeueReusableCell(withIdentifier: "RecurringHistoryCell",
                                                  for: indexPath) as! RecurringHistoryCell
-        
+
         let item = filteredItems[indexPath.row]
-        
-        cell.configure(title: item.title,
-                       category: item.category,
-                       date: item.date,
-                       status: item.status)
-        
-        // ✅ Set callbacks ONCE (don’t repeat / overwrite)
-        
+
+        cell.configure(
+            title: item.foodItemName,
+            category: item.foodCategoryName,
+            date: formatDate(item.createdAt),
+            status: item.status
+        )
+
         cell.onEdit = { [weak self] in
-            guard let self else { return }
-            
-            // Save selected item (so prepare() can use it)
-            self.selectedItemForDetails = item
-            
-            // Go to details
-            self.performSegue(withIdentifier: "goToDetails", sender: self)
+            self?.openEdit(for: item)
         }
-        
+
         cell.onPause = { [weak self] in
             guard let self else { return }
 
             self.showConfirm(title: "Pause Donation",
                              message: "Are you sure you want to pause this donation?") {
 
-                // ✅ Update status
-                self.filteredItems[indexPath.row].status = "Paused"
-
-                // ✅ Reload only this row (smooth)
-                self.tableView.reloadRows(at: [indexPath], with: .automatic)
-
-                // ✅ Show popup
-                self.showPausedPopup()
+                self.updateDonationStatus(docId: item.docId, newStatus: "paused") { ok in
+                    if ok { self.showPausedPopup() }
+                    else { print("Failed to update status") }
+                }
             }
         }
-        
+
         cell.onResume = { [weak self] in
             guard let self else { return }
 
             self.showConfirm(title: "Resume Donation",
                              message: "Are you sure you want to resume this donation?") {
 
-                // ✅ Update status
-                self.filteredItems[indexPath.row].status = "Resumed"
-
-                // ✅ Reload only this row
-                self.tableView.reloadRows(at: [indexPath], with: .automatic)
-
-                // ✅ Show popup
-                self.showResumedPopup()
-            }
-        }
-
-        
-        return cell
-        
-    }
-}
-    // MARK: - Search
-    extension HistoryViewController: UISearchBarDelegate {
-        
-        func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-            searchBar.setShowsCancelButton(true, animated: true)
-        }
-        
-        func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-            searchBar.text = ""
-            filteredItems = allItems
-            tableView.reloadData()
-            searchBar.resignFirstResponder()
-            searchBar.setShowsCancelButton(false, animated: true)
-        }
-        
-        func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-            let t = searchText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-            
-            if t.isEmpty {
-                filteredItems = allItems
-            } else {
-                filteredItems = allItems.filter {
-                    $0.title.lowercased().contains(t) ||
-                    $0.category.lowercased().contains(t) ||
-                    $0.status.lowercased().contains(t) ||
-                    $0.date.lowercased().contains(t)
+                self.updateDonationStatus(docId: item.docId, newStatus: "confirmed") { ok in
+                    if ok { self.showResumedPopup() }
+                    else { print("Failed to update status") }
                 }
             }
-            
-            tableView.reloadData()
         }
+
+        return cell
+    }
+}
+
+// MARK: - UISearchBarDelegate
+extension HistoryViewController: UISearchBarDelegate {
+
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.setShowsCancelButton(true, animated: true)
     }
 
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.text = ""
+        applySearchFilter(text: "")
+        searchBar.resignFirstResponder()
+        searchBar.setShowsCancelButton(false, animated: true)
+    }
+
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        applySearchFilter(text: searchText)
+    }
+}

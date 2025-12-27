@@ -5,23 +5,20 @@
 
 import UIKit
 import PhotosUI
+import FirebaseAuth
 
 final class AddEditGiftViewController: UIViewController {
 
     // MARK: - Callbacks
-
     var onSave: ((Gift) -> Void)?
 
     private var existingGift: Gift?
 
-    private var storedImageId: String?
+    // ✅ New: keep picked image (for upload)
+    private var pickedImage: UIImage?
 
-    private enum PricingMode {
-        case fixed
-        case custom
-    }
-
-    private var pricingMode: PricingMode = .fixed
+    // ✅ Use Gift.PricingMode مباشرة
+    private var pricingMode: Gift.PricingMode = .fixed
 
     // MARK: - UI
 
@@ -52,6 +49,7 @@ final class AddEditGiftViewController: UIViewController {
     private let activeSwitch = UISwitch()
 
     private let saveButton = UIButton(type: .system)
+    private let savingSpinner = UIActivityIndicatorView(style: .medium)
 
     private let brandYellow = UIColor(atayaHex: "F7D44C")
     private let borderGray = UIColor.systemGray3
@@ -77,8 +75,8 @@ final class AddEditGiftViewController: UIViewController {
         setupUploadBox()
         setupErrorLabels()
         bindExisting()
-        
-       updateDashedBorder()
+        updateDashedBorder()
+        pricingChanged() // ✅ apply initial state
     }
 
     override func viewDidLayoutSubviews() {
@@ -130,7 +128,7 @@ final class AddEditGiftViewController: UIViewController {
         // helper: labeled section
         func addFieldSection(title: String, fieldView: UIView, errorLabel: UILabel? = nil) {
             let titleLabel = UILabel()
-            titleLabel.text = title        // مرري العنوان مع * اذا تبين
+            titleLabel.text = title
             titleLabel.font = .systemFont(ofSize: 14, weight: .semibold)
 
             let stack = UIStackView(arrangedSubviews: [titleLabel, fieldView])
@@ -163,7 +161,7 @@ final class AddEditGiftViewController: UIViewController {
         amountLabel.font = .systemFont(ofSize: 13, weight: .regular)
 
         fixedAmountField.borderStyle = .roundedRect
-        fixedAmountField.placeholder = "e.g. 500"
+        fixedAmountField.placeholder = "e.g. 5"
         fixedAmountField.keyboardType = .decimalPad
 
         fixedAmountContainer.addArrangedSubview(amountLabel)
@@ -216,6 +214,15 @@ final class AddEditGiftViewController: UIViewController {
         saveButton.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
         saveButton.layer.cornerRadius = 14
         saveButton.addTarget(self, action: #selector(saveTapped), for: .touchUpInside)
+
+        // Spinner inside save button
+        savingSpinner.hidesWhenStopped = true
+        savingSpinner.translatesAutoresizingMaskIntoConstraints = false
+        saveButton.addSubview(savingSpinner)
+        NSLayoutConstraint.activate([
+            savingSpinner.centerYAnchor.constraint(equalTo: saveButton.centerYAnchor),
+            savingSpinner.trailingAnchor.constraint(equalTo: saveButton.trailingAnchor, constant: -16)
+        ])
     }
 
     // MARK: - Error labels
@@ -261,7 +268,7 @@ final class AddEditGiftViewController: UIViewController {
         uploadTitleLabel.font = .systemFont(ofSize: 15, weight: .semibold)
         uploadTitleLabel.textAlignment = .center
 
-        uploadSubtitleLabel.text = "Upload image in  (JPG or PNG)"
+        uploadSubtitleLabel.text = "Upload image (JPG or PNG)"
         uploadSubtitleLabel.font = .systemFont(ofSize: 13, weight: .semibold)
         uploadSubtitleLabel.textColor = .systemGray2
         uploadSubtitleLabel.textAlignment = .center
@@ -272,7 +279,7 @@ final class AddEditGiftViewController: UIViewController {
 
         uploadContainer.addSubview(uploadPlaceholderStack)
 
-        // preview (normal مستطيل مو قلب)
+        // preview
         previewImageView.translatesAutoresizingMaskIntoConstraints = false
         previewImageView.contentMode = .scaleAspectFit
         previewImageView.clipsToBounds = true
@@ -300,10 +307,11 @@ final class AddEditGiftViewController: UIViewController {
 
         dashedBorderLayer?.removeFromSuperlayer()
 
+        // ✅ if preview shown, don’t draw dashed border over the image
+        if previewImageView.isHidden == false { return }
+
         guard uploadContainer.bounds.width > 0,
-              uploadContainer.bounds.height > 0 else {
-            return
-        }
+              uploadContainer.bounds.height > 0 else { return }
 
         let shape = CAShapeLayer()
         shape.strokeColor = borderGray.cgColor
@@ -324,26 +332,43 @@ final class AddEditGiftViewController: UIViewController {
     // MARK: - Bind existing
 
     private func bindExisting() {
-        if let gift = existingGift {
-            nameField.text = gift.title
-            descriptionTextView.text = gift.description
-            descriptionPlaceholderLabel.isHidden = !gift.description
-                .trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            activeSwitch.isOn = gift.isActive
-
-            let imgName = gift.imageName
-            if let img = UIImage(named: imgName) {
-                previewImageView.image = img
-                previewImageView.isHidden = false
-                uploadPlaceholderStack.isHidden = true
-                storedImageId = imgName
-            }
-
-        } else {
+        guard let gift = existingGift else {
             activeSwitch.isOn = true
+            return
+        }
+
+        nameField.text = gift.title
+        descriptionTextView.text = gift.description
+
+        let hasDesc = !gift.description.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        descriptionPlaceholderLabel.isHidden = hasDesc
+
+        activeSwitch.isOn = gift.isActive
+
+        // pricing mode
+        switch gift.pricingMode {
+        case .fixed:
+            pricingSegmented.selectedSegmentIndex = 0
+            pricingMode = .fixed
+            fixedAmountContainer.isHidden = false
+            if let amount = gift.fixedAmount {
+                fixedAmountField.text = String(amount)
+            }
+        case .custom:
+            pricingSegmented.selectedSegmentIndex = 1
+            pricingMode = .custom
+            fixedAmountContainer.isHidden = true
+            fixedAmountField.text = nil
+        }
+
+        // image (Cloudinary URL)
+        if let url = gift.imageURL, !url.isEmpty {
+            previewImageView.isHidden = false
+            uploadPlaceholderStack.isHidden = true
+            ImageLoader.shared.setImage(on: previewImageView, from: url, placeholder: nil)
+            updateDashedBorder()
         }
     }
-
 
     // MARK: - Actions
 
@@ -389,10 +414,18 @@ final class AddEditGiftViewController: UIViewController {
         present(picker, animated: true)
     }
 
+    private func setSaving(_ saving: Bool) {
+        saveButton.isEnabled = !saving
+        saving ? savingSpinner.startAnimating() : savingSpinner.stopAnimating()
+        saveButton.alpha = saving ? 0.85 : 1.0
+    }
+
     @objc private func saveTapped() {
         clearErrors()
 
         let trimmedName = (nameField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let desc = descriptionTextView.text ?? ""
+
         var hasError = false
 
         if trimmedName.isEmpty {
@@ -401,44 +434,111 @@ final class AddEditGiftViewController: UIViewController {
             hasError = true
         }
 
-        var pricing: Gift.Pricing = .custom
-
+        // pricing
+        var fixedAmount: Double? = nil
         if pricingMode == .fixed {
             let text = (fixedAmountField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-            if let value = Decimal(string: text), value > 0 {
-                pricing = .fixed(amount: value)
+            let normalized = text.replacingOccurrences(of: ",", with: "")
+            if let value = Double(normalized), value > 0 {
+                fixedAmount = value
             } else {
                 pricingErrorLabel.text = "Enter a valid fixed amount."
                 pricingErrorLabel.isHidden = false
                 hasError = true
             }
-        } else {
-            pricing = .custom
         }
 
-        if storedImageId == nil {
+        // image required rule:
+        // ✅ New gift must have picked image
+        // ✅ Edit gift can keep existing image if not changed
+        let hasExistingImage = (existingGift?.imageURL?.isEmpty == false)
+        let hasPickedImage = (pickedImage != nil)
+        if !hasExistingImage && !hasPickedImage {
             artworkErrorLabel.text = "Please upload the gift artwork."
             artworkErrorLabel.isHidden = false
             hasError = true
         }
 
         if hasError { return }
-        guard let imageId = storedImageId else { return }
 
-        let desc = descriptionTextView.text ?? ""
+        setSaving(true)
+
         let id = existingGift?.id ?? UUID().uuidString
 
-        let gift = Gift(
-            id: id,
-            title: trimmedName,
-            pricing: pricing,
-            description: desc,
-            imageName: imageId,
-            isActive: activeSwitch.isOn
-        )
+        // If user picked new image -> upload to Cloudinary first
+        if let picked = pickedImage {
+            CloudinaryUploader.shared.upload(image: picked) { [weak self] result in
+                guard let self else { return }
+                DispatchQueue.main.async {
+                    switch result {
+                    case .failure(let err):
+                        self.setSaving(false)
+                        self.artworkErrorLabel.text = err.localizedDescription
+                        self.artworkErrorLabel.isHidden = false
 
-        onSave?(gift)
-        navigationController?.popViewController(animated: true)
+                    case .success(let payload):
+                        let gift = self.buildGift(
+                            id: id,
+                            title: trimmedName,
+                            description: desc,
+                            pricingMode: self.pricingMode,
+                            fixedAmount: fixedAmount,
+                            imageURL: payload.url,
+                            imagePublicId: payload.publicId
+                        )
+                        self.setSaving(false)
+                        self.onSave?(gift)
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                }
+            }
+        } else {
+            // No new image, keep existing Cloudinary fields
+            let gift = buildGift(
+                id: id,
+                title: trimmedName,
+                description: desc,
+                pricingMode: pricingMode,
+                fixedAmount: fixedAmount,
+                imageURL: existingGift?.imageURL,
+                imagePublicId: existingGift?.imagePublicId
+            )
+
+            setSaving(false)
+            onSave?(gift)
+            navigationController?.popViewController(animated: true)
+        }
+    }
+
+    private func buildGift(
+        id: String,
+        title: String,
+        description: String,
+        pricingMode: Gift.PricingMode,
+        fixedAmount: Double?,
+        imageURL: String?,
+        imagePublicId: String?
+    ) -> Gift {
+
+        let preservedNgoId = existingGift?.ngoId
+        let preservedCreatedAt = existingGift?.createdAt
+        let preservedUpdatedAt = existingGift?.updatedAt
+
+        return Gift(
+            id: id,
+            title: title,
+            description: description,
+            isActive: activeSwitch.isOn,
+            pricingMode: pricingMode,
+            fixedAmount: pricingMode == .fixed ? fixedAmount : nil,
+            minAmount: nil,
+            maxAmount: nil,
+            imageURL: imageURL,
+            imagePublicId: imagePublicId,
+            ngoId: preservedNgoId ?? Auth.auth().currentUser?.uid,
+            createdAt: preservedCreatedAt,
+            updatedAt: preservedUpdatedAt
+        )
     }
 }
 
@@ -455,12 +555,14 @@ extension AddEditGiftViewController: UITextViewDelegate {
 
 private extension AddEditGiftViewController {
     func handlePicked(image: UIImage) {
+        pickedImage = image
+
         previewImageView.image = image
         previewImageView.isHidden = false
         uploadPlaceholderStack.isHidden = true
         artworkErrorLabel.isHidden = true
 
-        storedImageId = "uploaded_\(UUID().uuidString)"
+        updateDashedBorder()
     }
 }
 
@@ -479,7 +581,7 @@ extension AddEditGiftViewController: PHPickerViewControllerDelegate,
               itemProvider.canLoadObject(ofClass: UIImage.self) else { return }
 
         itemProvider.loadObject(ofClass: UIImage.self) { [weak self] object, _ in
-            guard let self = self,
+            guard let self,
                   let image = object as? UIImage else { return }
 
             DispatchQueue.main.async {

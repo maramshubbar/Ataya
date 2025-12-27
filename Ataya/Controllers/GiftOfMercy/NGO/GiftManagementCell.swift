@@ -38,6 +38,13 @@ final class GiftManagementCell: UITableViewCell {
         setupUI()
     }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        thumbImageView.image = nil
+        thumbImageView.accessibilityIdentifier = nil
+        onEdit = nil
+    }
+
     // MARK: - Setup
 
     private func setupUI() {
@@ -45,7 +52,7 @@ final class GiftManagementCell: UITableViewCell {
         backgroundColor = .clear
         contentView.backgroundColor = .clear
 
-        // الكرت الخارجي
+        // card
         cardView.translatesAutoresizingMaskIntoConstraints = false
         cardView.backgroundColor = .white
         cardView.layer.cornerRadius = 18
@@ -60,7 +67,7 @@ final class GiftManagementCell: UITableViewCell {
             cardView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
         ])
 
-        // الصورة
+        // image
         thumbImageView.translatesAutoresizingMaskIntoConstraints = false
         thumbImageView.contentMode = .scaleAspectFit
         thumbImageView.clipsToBounds = true
@@ -71,12 +78,12 @@ final class GiftManagementCell: UITableViewCell {
             thumbImageView.heightAnchor.constraint(equalToConstant: 80)
         ])
 
-        // النصوص
-        titleLabel.font = .systemFont(ofSize: 18, weight: .semibold)   // عنوان أكبر
+        // labels
+        titleLabel.font = .systemFont(ofSize: 18, weight: .semibold)
         titleLabel.numberOfLines = 2
 
         priceLabel.font = .systemFont(ofSize: 14, weight: .semibold)
-        priceLabel.textColor = .black                                  // 👈 السعر أسود
+        priceLabel.textColor = .black
         priceLabel.numberOfLines = 1
 
         descriptionLabel.font = .systemFont(ofSize: 13)
@@ -88,14 +95,13 @@ final class GiftManagementCell: UITableViewCell {
         textStack.spacing = 4
         textStack.translatesAutoresizingMaskIntoConstraints = false
 
-        // الصف العلوي: صورة + نص
         let topRow = UIStackView(arrangedSubviews: [thumbImageView, textStack])
         topRow.axis = .horizontal
         topRow.alignment = .top
         topRow.spacing = 12
         topRow.translatesAutoresizingMaskIntoConstraints = false
 
-        // Stack للأزرار
+        // buttons
         buttonsStack.axis = .horizontal
         buttonsStack.alignment = .center
         buttonsStack.spacing = 0
@@ -108,7 +114,6 @@ final class GiftManagementCell: UITableViewCell {
         buttonsStack.addArrangedSubview(editButton)
         buttonsStack.addArrangedSubview(spacer)
 
-        // الـ Stack الرئيسي داخل الكرت
         let mainStack = UIStackView(arrangedSubviews: [topRow, buttonsStack])
         mainStack.axis = .vertical
         mainStack.spacing = 12
@@ -149,6 +154,9 @@ final class GiftManagementCell: UITableViewCell {
         let title: String
         let priceLine: String
         let description: String
+
+        /// ✅ we keep the same name to not break your ManageGiftsListViewController
+        /// now it contains a URL string (Cloudinary)
         let imageName: String
     }
 
@@ -156,7 +164,9 @@ final class GiftManagementCell: UITableViewCell {
         titleLabel.text = model.title
         priceLabel.text = model.priceLine
         descriptionLabel.text = model.description
-        thumbImageView.image = UIImage(named: model.imageName)
+
+        // ✅ Load from URL (Cloudinary). No placeholder.
+        ImageLoader.shared.setImage(on: thumbImageView, from: model.imageName, placeholder: nil)
     }
 
     // MARK: - Actions

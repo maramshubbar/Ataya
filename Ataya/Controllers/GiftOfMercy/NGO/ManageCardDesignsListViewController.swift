@@ -1,36 +1,27 @@
-//
-//  ManageCardDesignsListViewController.swift
-//  Ataya
-//
-//  Created by Fatema Maitham on 25/12/2025.
-//
-
 import UIKit
-
-// MARK: - VC
+import FirebaseFirestore
 
 final class ManageCardDesignsListViewController: UIViewController {
 
     private let addButton = UIButton(type: .system)
     private let tableView = UITableView(frame: .zero, style: .plain)
 
-    // مبدئياً: داتا ثابتة
-    private var designs: [CardDesign] = [
-        CardDesign(id: "d1", name: "Kaaba",             imageName: "c1", isActive: true,  isDefault: true),
-        CardDesign(id: "d2", name: "Palestine Al Aqsa", imageName: "c2", isActive: true,  isDefault: false),
-        CardDesign(id: "d3", name: "Floral",            imageName: "c3", isActive: false, isDefault: false),
-        CardDesign(id: "d4", name: "Water",             imageName: "c4", isActive: true,  isDefault: false)
-    ]
+    private var designs: [CardDesign] = []
+    private var listener: ListenerRegistration?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNav()
         setupUI()
+        startListening()
     }
+
+    deinit { listener?.remove() }
 
     private func setupNav() {
         title = "Card Designs"
         navigationItem.largeTitleDisplayMode = .never
+        view.backgroundColor = .systemBackground
     }
 
     private func setupUI() {
@@ -69,17 +60,38 @@ final class ManageCardDesignsListViewController: UIViewController {
         ])
     }
 
+    private func startListening() {
+        listener?.remove()
+
+        // إذا تبين تربطينها بـ NGO معيّن لاحقًا: مرري ngoId
+        listener = CardDesignService.shared.listenDesigns(ngoId: nil) { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .failure(let err):
+                print("❌ Card designs listen error:", err.localizedDescription)
+            case .success(let items):
+                self.designs = items
+                self.tableView.reloadData()
+            }
+        }
+    }
+
     // MARK: - Actions
 
     @objc private func addDesignTapped() {
-        // ✅ نفتح شاشة Add/Edit الصحيحة (مو AddEditGiftViewController)
         let vc = AddEditCardDesignViewController(existingDesign: nil)
 
-        vc.onSave = { [weak self] newDesign in
-            guard let self = self else { return }
-            self.designs.append(newDesign)
-            self.tableView.reloadData()
-            // بعدين: هنا تسوين save في Firestore
+        vc.onSave = { newDesign in
+            CardDesignService.shared.upsertDesign(newDesign) { err in
+                if let err { print("❌ Save design error:", err.localizedDescription); return }
+
+                // إذا المستخدم اختار Default = true
+                if newDesign.isDefault {
+                    CardDesignService.shared.setDefault(designId: newDesign.id) { err in
+                        if let err { print("❌ Set default error:", err.localizedDescription) }
+                    }
+                }
+            }
         }
 
         navigationController?.pushViewController(vc, animated: true)
@@ -87,14 +99,18 @@ final class ManageCardDesignsListViewController: UIViewController {
 
     private func handleEdit(at index: Int) {
         let design = designs[index]
-
         let vc = AddEditCardDesignViewController(existingDesign: design)
 
-        vc.onSave = { [weak self] updated in
-            guard let self = self else { return }
-            self.designs[index] = updated
-            self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
-            // بعدين: update Firestore
+        vc.onSave = { updated in
+            CardDesignService.shared.upsertDesign(updated) { err in
+                if let err { print("❌ Update design error:", err.localizedDescription); return }
+
+                if updated.isDefault {
+                    CardDesignService.shared.setDefault(designId: updated.id) { err in
+                        if let err { print("❌ Set default error:", err.localizedDescription) }
+                    }
+                }
+            }
         }
 
         navigationController?.pushViewController(vc, animated: true)
@@ -106,12 +122,7 @@ final class ManageCardDesignsListViewController: UIViewController {
         navigationController?.pushViewController(vc, animated: true)
     }
 
-    private func handleToggleActive(at index: Int, isOn: Bool) {
-        designs[index].isActive = isOn
-        // بعدين: update Firestore
-    }
-
-    // نفس الهيلبر المعتاد
+    // helper
     private func color(hex: String, alpha: CGFloat = 1) -> UIColor {
         var h = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
         if h.hasPrefix("#") { h.removeFirst() }
@@ -126,11 +137,9 @@ final class ManageCardDesignsListViewController: UIViewController {
 }
 
 // MARK: - Table
-
 extension ManageCardDesignsListViewController: UITableViewDataSource, UITableViewDelegate {
 
-    func tableView(_ tableView: UITableView,
-                   numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         designs.count
     }
 
@@ -148,6 +157,7 @@ extension ManageCardDesignsListViewController: UITableViewDataSource, UITableVie
         cell.onEdit = { [weak self] in
             self?.handleEdit(at: indexPath.row)
         }
+
         cell.onPreview = { [weak self] in
             self?.handlePreview(at: indexPath.row)
         }

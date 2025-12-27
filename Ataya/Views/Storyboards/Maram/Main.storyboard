@@ -878,29 +878,29 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="6" translatesAutoresizingMaskIntoConstraints="NO" id="3Ue-RY-CC9" userLabel="medalInfoStack">
-                                        <rect key="frame" x="126.33333333333331" y="100" width="125.66666666666669" height="99.333333333333314"/>
+                                        <rect key="frame" x="135.66666666666666" y="100" width="106.66666666666666" height="99.333333333333314"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="749" text="donationsLabel" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NrU-yd-47d" userLabel="donationsLabel">
-                                                <rect key="frame" x="0.0" y="0.0" width="125.66666666666667" height="20.333333333333332"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="749" text="Reliable NGO" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NrU-yd-47d" userLabel="donationsLabel">
+                                                <rect key="frame" x="0.0" y="0.0" width="106.66666666666667" height="20.333333333333332"/>
                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="748" text="livesLabel" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Epx-L4-pPb" userLabel="livesLabel">
-                                                <rect key="frame" x="25.000000000000014" y="26.333333333333314" width="75.333333333333329" height="20.333333333333329"/>
+                                                <rect key="frame" x="15.666666666666686" y="26.333333333333314" width="75.333333333333329" height="20.333333333333329"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="pointsLabel" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cVU-Ey-6vr" userLabel="pointsLabel">
-                                                <rect key="frame" x="18.666666666666671" y="52.666666666666686" width="88.333333333333329" height="20.333333333333329"/>
+                                                <rect key="frame" x="9.3333333333333428" y="52.666666666666686" width="88.333333333333329" height="20.333333333333329"/>
                                                 <color key="tintColor" red="0.96862745100000003" green="0.83137254900000002" blue="0.29803921570000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="tierLabel" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8ot-OL-cZx" userLabel="tierLabel">
-                                                <rect key="frame" x="27.666666666666671" y="79" width="70" height="20.333333333333329"/>
+                                                <rect key="frame" x="18.333333333333343" y="79" width="70" height="20.333333333333329"/>
                                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                                 <color key="textColor" red="0.99607843139999996" green="0.76862745099999996" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
@@ -1017,6 +1017,9 @@
                     <navigationItem key="navigationItem" title="Rewards" id="KT3-3I-dKa"/>
                     <connections>
                         <outlet property="badgesCollectionView" destination="25W-pf-Oua" id="8fn-SX-Dai"/>
+                        <outlet property="livesLabel" destination="cVU-Ey-6vr" id="Fhd-Cv-0Fh"/>
+                        <outlet property="pickupsLabel" destination="Epx-L4-pPb" id="ciZ-fk-FgF"/>
+                        <outlet property="pointsLabel" destination="8ot-OL-cZx" id="Ou6-LX-Q0W"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Tge-FG-66T" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -1064,7 +1067,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="Gkf-LM-7om"/>
+        <segue reference="eUm-d5-g5A"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="Certificate 1" width="102" height="90"/>

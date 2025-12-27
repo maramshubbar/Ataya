@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseFirestore
 
 
 class NGOLoginViewController: UIViewController {
@@ -36,6 +37,10 @@ class NGOLoginViewController: UIViewController {
     private var isRememberChecked = false
 
 
+    private let db = Firestore.firestore()
+
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -219,14 +224,41 @@ class NGOLoginViewController: UIViewController {
                 }
 
 
+                guard let uid = result?.user.uid else {
+                    self?.showAlert(title: "Error", message: "Missing user id.")
+                    return
+                }
+                
                 if self?.isRememberChecked == true, let uid = result?.user.uid {
                     UserDefaults.standard.set(uid, forKey: "ngo_uid")
                 } else {
                     UserDefaults.standard.removeObject(forKey: "ngo_uid")
                 }
 
-                // روحي للصفحة اللي بعد اللوقن
-                self?.performSegue(withIdentifier: "toNGOHome", sender: nil)
+            
+
+                self?.db.collection("users").document(uid).getDocument { snap, err in
+                    if let err = err {
+                        self?.showAlert(title: "Firestore Error", message: err.localizedDescription)
+                        return
+                    }
+
+                    guard let data = snap?.data() else {
+                        self?.showAlert(title: "No Profile", message: "Your profile is not found in Firestore.")
+                        return
+                    }
+
+                    let role = (data["role"] as? String) ?? ""
+                    if role != "ngo" {
+                        self?.showAlert(title: "Wrong Account", message: "This account is not an NGO account.")
+                        try? Auth.auth().signOut()
+                        return
+                    }
+
+                    // ✅ هني بس توديه للـ NGO Home
+                    self?.performSegue(withIdentifier: "toNGOHome", sender: nil)
+                }
+
             }
     }
     /*

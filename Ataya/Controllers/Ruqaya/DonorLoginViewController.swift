@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseFirestore
 
 
 class DonorLoginViewController: UIViewController {
@@ -37,6 +38,7 @@ class DonorLoginViewController: UIViewController {
     
     private var isRememberChecked = false
 
+    private let db = Firestore.firestore()
 
 
 
@@ -201,7 +203,7 @@ class DonorLoginViewController: UIViewController {
     
     @IBAction func loginPressed(_ sender: UIButton) {
         let email = (emailTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-        let password = (passwordTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            let password = (passwordTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
 
             guard !email.isEmpty else {
                 showAlert(title: "Missing Email", message: "Please enter your email.")
@@ -215,22 +217,79 @@ class DonorLoginViewController: UIViewController {
 
             guard loginButton.isEnabled else { return }
 
+
+        loginButton.isEnabled = false
+            loginButton.alpha = 0.5
+
             Auth.auth().signIn(withEmail: email, password: password) { [weak self] result, error in
+                guard let self else { return }
+
                 if let error = error {
-                    self?.showAlert(title: "Login Failed", message: error.localizedDescription)
+                    self.showAlert(title: "Login Failed", message: error.localizedDescription)
+                    self.loginButton.isEnabled = true
+                    self.loginButton.alpha = 1.0
+                    return
+                }
+
+                guard let uid = result?.user.uid else {
+                    self.showAlert(title: "Error", message: "Missing user id.")
+                    self.loginButton.isEnabled = true
+                    self.loginButton.alpha = 1.0
                     return
                 }
 
 
-                if self?.isRememberChecked == true, let uid = result?.user.uid {
+                if self.isRememberChecked {
                     UserDefaults.standard.set(uid, forKey: "donor_uid")
                 } else {
                     UserDefaults.standard.removeObject(forKey: "donor_uid")
                 }
 
-                // روحي للصفحة اللي بعد اللوقن
-                self?.performSegue(withIdentifier: "toDonorHome", sender: nil)
-                // أو لو عندك push/instantiate بدل segue قولي لي
+
+                UserDefaults.standard.set(email, forKey: "current_email")
+                UserDefaults.standard.set(uid, forKey: "current_uid")
+
+
+                self.db.collection("users").document(uid).getDocument { [weak self] snap, err in
+                    guard let self else { return }
+
+                    if let err = err {
+                        self.showAlert(title: "Firestore Error", message: err.localizedDescription)
+                        self.loginButton.isEnabled = true
+                        self.loginButton.alpha = 1.0
+                        return
+                    }
+
+                    guard let data = snap?.data() else {
+
+                        self.showAlert(title: "No Profile", message: "Your profile data is missing in Firestore.")
+                        try? Auth.auth().signOut()
+                        self.loginButton.isEnabled = true
+                        self.loginButton.alpha = 1.0
+                        return
+                    }
+
+
+                    let role = (data["role"] as? String ?? "").lowercased()
+                    if role != "donor" {
+                        self.showAlert(title: "Wrong Account", message: "This email is not registered as a Donor.")
+                        try? Auth.auth().signOut()
+                        self.loginButton.isEnabled = true
+                        self.loginButton.alpha = 1.0
+                        return
+                    }
+
+
+                    let name = data["name"] as? String ?? ""
+                    let phone = data["phone"] as? String ?? ""
+
+                    UserDefaults.standard.set("donor", forKey: "current_role")
+                    UserDefaults.standard.set(name, forKey: "donor_name")
+                    UserDefaults.standard.set(phone, forKey: "donor_phone")
+
+                    // ✅ روحي للـ Donor Home
+                    self.performSegue(withIdentifier: "toDonorHome", sender: nil)
+                }
             }
     }
     

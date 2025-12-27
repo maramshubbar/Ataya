@@ -7,6 +7,9 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseFirestore
+
+
 
 class AdminLoginViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
@@ -37,6 +40,8 @@ class AdminLoginViewController: UIViewController, UIImagePickerControllerDelegat
     private var isPasswordVisible = false
     private var isConfirmPasswordVisible = false
     private var isRememberChecked = false
+
+    private let db = Firestore.firestore()
 
     
     
@@ -332,8 +337,33 @@ class AdminLoginViewController: UIViewController, UIImagePickerControllerDelegat
                         UserDefaults.standard.removeObject(forKey: "admin_uid")
                     }
 
-                    // 4) Navigation
-                    self?.performSegue(withIdentifier: "toAdminHome", sender: nil)
+                    guard let uid = result?.user.uid else {
+                        self?.showAlert(title: "Error", message: "Missing user id.")
+                        return
+                    }
+
+                    self?.db.collection("users").document(uid).getDocument { snap, err in
+                        if let err = err {
+                            self?.showAlert(title: "Firestore Error", message: err.localizedDescription)
+                            return
+                        }
+
+                        guard let data = snap?.data() else {
+                            self?.showAlert(title: "No Profile", message: "Your profile is not found in Firestore.")
+                            try? Auth.auth().signOut()
+                            return
+                        }
+
+                        let role = (data["role"] as? String) ?? ""
+                        if role != "admin" {
+                            self?.showAlert(title: "Wrong Account", message: "This account is not an Admin account.")
+                            try? Auth.auth().signOut()
+                            return
+                        }
+
+                        // ✅ خلاص أدمن
+                        self?.performSegue(withIdentifier: "toAdminHome", sender: nil)
+                    }
                 }
             }
 

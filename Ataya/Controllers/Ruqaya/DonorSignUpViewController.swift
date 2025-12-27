@@ -7,6 +7,8 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseFirestore
+
 
 class DonorSignUpViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
@@ -41,7 +43,8 @@ class DonorSignUpViewController: UIViewController, UIImagePickerControllerDelega
     private var isConfirmPasswordVisible = false
     private var isTermsChecked = false
     
-    
+    private let db = Firestore.firestore()
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -381,12 +384,33 @@ class DonorSignUpViewController: UIViewController, UIImagePickerControllerDelega
                     return
                 }
 
-                // sucess
-                self?.showAlert(title: "Success", message: "Account created successfully!")
+                
+                guard let uid = result?.user.uid else {
+                    self?.showAlert(title: "Error", message: "Missing user id.")
+                    return
+                }
 
-                // 4) Navigate (اختياري)
-                // إذا تبين تودينه للـ Donor Login:
-                // self?.navigationController?.popViewController(animated: true)
+                let donorData: [String: Any] = [
+                    "uid": uid,
+                    "role": "donor",
+                    "name": name,
+                    "email": email,
+                    "phone": phone,
+                    "createdAt": FieldValue.serverTimestamp()
+                ]
+
+                self?.db.collection("users").document(uid).setData(donorData) { err in
+                    if let err = err {
+                        self?.showAlert(title: "Firestore Error", message: err.localizedDescription)
+                        return
+                    }
+                    self?.showAlert(title: "Success", message: "Account created successfully!")
+
+
+                    // اختياري: اذا تبين تروحين للـ Home بعد ما ينحفظ
+                    // self?.performSegue(withIdentifier: "toDonorHome", sender: nil)
+                }
+
 
                 // أو تسوين segue لصفحة Donor Home إذا عندك:
                 // self?.performSegue(withIdentifier: "toDonorHome", sender: nil)

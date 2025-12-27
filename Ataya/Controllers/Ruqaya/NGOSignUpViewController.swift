@@ -7,6 +7,8 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseFirestore
+
 
 class NGOSignUpViewController: UIViewController {
 
@@ -46,7 +48,8 @@ class NGOSignUpViewController: UIViewController {
     
     private var isSigningUp = false
 
-    
+    private let db = Firestore.firestore()
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -314,8 +317,36 @@ class NGOSignUpViewController: UIViewController {
                 return
             }
 
-            self?.isSigningUp = false
-            self?.performSegue(withIdentifier: "ngoToOrgDetailsSegue", sender: nil)
+            guard let uid = result?.user.uid else {
+                self?.showAlert(title: "Error", message: "Missing user id.")
+                self?.isSigningUp = false
+                self?.updateSignUpButtonState()
+                return
+            }
+
+            let ngoData: [String: Any] = [
+                "uid": uid,
+                "role": "ngo",
+                "name": name,
+                "email": email,
+                "phone": phone,
+                "approvalStatus": "pending",
+                "createdAt": FieldValue.serverTimestamp()
+            ]
+
+            self?.db.collection("users").document(uid).setData(ngoData) { err in
+                self?.isSigningUp = false
+
+                if let err = err {
+                    self?.showAlert(title: "Firestore Error", message: err.localizedDescription)
+                    self?.updateSignUpButtonState()
+                    return
+                }
+
+                // بعد ما ينحفظ، روحي للصفحة اللي بعدها
+                self?.performSegue(withIdentifier: "ngoToOrgDetailsSegue", sender: nil)
+            }
+
         }
 
 

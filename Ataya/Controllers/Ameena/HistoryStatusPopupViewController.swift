@@ -18,7 +18,7 @@ final class HistoryStatusPopupViewController: UIViewController, UIGestureRecogni
 
         view.backgroundColor = UIColor.black.withAlphaComponent(0.35)
 
-        cardView.layer.cornerRadius = 16
+        cardView.layer.cornerRadius = 8
         cardView.clipsToBounds = true
         cardView.backgroundColor = .white
 

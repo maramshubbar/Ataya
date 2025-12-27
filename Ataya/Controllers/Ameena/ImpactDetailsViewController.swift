@@ -1,18 +1,16 @@
 import UIKit
 
 final class ImpactDetailsViewController: UIViewController {
-    
+
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var mainStackView: UIStackView!
-    
+
     private let atayaYellow = UIColor(red: 0xF7/255, green: 0xD4/255, blue: 0x4C/255, alpha: 1)
 
     private enum ChartType { case bar, line, pie }
-
     private enum Period: Int { case daily = 0, monthly = 1, yearly = 2 }
 
     private var currentPeriod: Period = .daily
-    private var pendingSection: Int = 1
 
     private lazy var periodControl: UISegmentedControl = {
         let sc = UISegmentedControl(items: ["Daily", "Monthly", "Yearly"])
@@ -34,6 +32,7 @@ final class ImpactDetailsViewController: UIViewController {
 
         if periodControl.superview == nil {
             mainStackView.insertArrangedSubview(periodControl, at: 0)
+            periodControl.translatesAutoresizingMaskIntoConstraints = false
             periodControl.heightAnchor.constraint(equalToConstant: 36).isActive = true
         }
 
@@ -74,19 +73,22 @@ final class ImpactDetailsViewController: UIViewController {
         let mealsCard = makeBigCard(
             title: "Meals Provided",
             description: mealsDescription(for: period),
-            chartType: .bar
+            chartType: .bar,
+            period: period
         )
 
         let wasteCard = makeBigCard(
             title: "Food Waste Prevented",
             description: wasteDescription(for: period),
-            chartType: .line
+            chartType: .line,
+            period: period
         )
 
         let envCard = makeBigCard(
             title: "Environmental Equivalent",
             description: envDescription(for: period),
-            chartType: .pie
+            chartType: .pie,
+            period: period
         )
 
         mainStackView.addArrangedSubview(mealsCard)
@@ -118,7 +120,60 @@ final class ImpactDetailsViewController: UIViewController {
         }
     }
 
-    private func makeBigCard(title: String, description: String, chartType: ChartType) -> UIView {
+    private func chartValues(for chart: ChartType, period: Period) -> [CGFloat] {
+        switch (chart, period) {
+
+        case (.bar, .daily):
+            return [1, 2, 1, 3, 2, 4, 2]
+        case (.bar, .monthly):
+            return [4, 23, 24, 12, 15, 40, 45, 39, 31, 30, 35, 28]
+        case (.bar, .yearly):
+            return [80, 95, 110, 120, 140, 160, 155, 170, 165, 180, 190, 210]
+
+        case (.line, .daily):
+            return [2, 3, 2, 4, 3, 5, 4]
+        case (.line, .monthly):
+            return [10, 14, 12, 18, 16, 22, 20, 25, 21, 27, 24, 30]
+        case (.line, .yearly):
+            return [20, 25, 28, 30, 35, 38, 40, 42, 45, 48, 50, 55]
+
+        case (.pie, .daily):
+            return [55, 25, 20]
+        case (.pie, .monthly):
+            return [60, 22, 18]
+        case (.pie, .yearly):
+            return [65, 20, 15]
+        }
+    }
+
+    private func makeChartView(chartType: ChartType, period: Period) -> UIView {
+        let values = chartValues(for: chartType, period: period)
+
+        switch chartType {
+        case .bar:
+            let v = ImpactBarChartView()
+            v.translatesAutoresizingMaskIntoConstraints = false
+            v.heightAnchor.constraint(equalToConstant: 220).isActive = true
+            v.values = values
+            return v
+
+        case .line:
+            let v = ImpactLineChartView()
+            v.translatesAutoresizingMaskIntoConstraints = false
+            v.heightAnchor.constraint(equalToConstant: 220).isActive = true
+            v.values = values
+            return v
+
+        case .pie:
+            let v = ImpactPieChartView()
+            v.translatesAutoresizingMaskIntoConstraints = false
+            v.heightAnchor.constraint(equalToConstant: 220).isActive = true
+            v.values = values
+            return v
+        }
+    }
+
+    private func makeBigCard(title: String, description: String, chartType: ChartType, period: Period) -> UIView {
 
         let card = UIView()
         card.backgroundColor = .secondarySystemBackground
@@ -139,11 +194,7 @@ final class ImpactDetailsViewController: UIViewController {
         topTitle.textAlignment = .center
         topTitle.font = .systemFont(ofSize: 16, weight: .semibold)
 
-        let chartContainer = UIView()
-        chartContainer.backgroundColor = UIColor.systemGray6
-        chartContainer.layer.cornerRadius = 12
-        chartContainer.translatesAutoresizingMaskIntoConstraints = false
-        chartContainer.heightAnchor.constraint(equalToConstant: 220).isActive = true
+        let chartView = makeChartView(chartType: chartType, period: period)
 
         let bottomTitle = UILabel()
         bottomTitle.text = title
@@ -180,7 +231,7 @@ final class ImpactDetailsViewController: UIViewController {
         readMore.setContentCompressionResistancePriority(.required, for: .horizontal)
 
         vStack.addArrangedSubview(topTitle)
-        vStack.addArrangedSubview(chartContainer)
+        vStack.addArrangedSubview(chartView)
         vStack.addArrangedSubview(bottomTitle)
         vStack.addArrangedSubview(bottomRow)
 
@@ -198,7 +249,6 @@ final class ImpactDetailsViewController: UIViewController {
 
     @objc private func readMoreTapped(_ sender: UIButton) {
         let sb = UIStoryboard(name: "Main", bundle: nil)
-
         let rawVC = sb.instantiateViewController(withIdentifier: "SharePreviewViewController")
 
         guard let vc = rawVC as? SharePreviewViewController else {
@@ -212,4 +262,3 @@ final class ImpactDetailsViewController: UIViewController {
         navigationController?.pushViewController(vc, animated: true)
     }
 }
-            

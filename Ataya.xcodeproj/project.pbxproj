@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		883A5C882EFFF653003C2A73 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 883A5C872EFFF653003C2A73 /* DGCharts */; };
+		883A5C8A2EFFF653003C2A73 /* DGChartsDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 883A5C892EFFF653003C2A73 /* DGChartsDynamic */; };
 		88B4AC6F2ED4A61B00D28B8F /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 88B4AC6E2ED4A61B00D28B8F /* FirebaseAuth */; };
 		88B4AC712ED4A61B00D28B8F /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 88B4AC702ED4A61B00D28B8F /* FirebaseCore */; };
 		88B4AC732ED4A61B00D28B8F /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 88B4AC722ED4A61B00D28B8F /* FirebaseFirestore */; };
@@ -48,6 +49,7 @@
 				88B4AC752ED4A61B00D28B8F /* FirebaseStorage in Frameworks */,
 				883A5C882EFFF653003C2A73 /* DGCharts in Frameworks */,
 				88B4AC6F2ED4A61B00D28B8F /* FirebaseAuth in Frameworks */,
+				883A5C8A2EFFF653003C2A73 /* DGChartsDynamic in Frameworks */,
 				88B4AC732ED4A61B00D28B8F /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -96,6 +98,7 @@
 				88B4AC722ED4A61B00D28B8F /* FirebaseFirestore */,
 				88B4AC742ED4A61B00D28B8F /* FirebaseStorage */,
 				883A5C872EFFF653003C2A73 /* DGCharts */,
+				883A5C892EFFF653003C2A73 /* DGChartsDynamic */,
 			);
 			productName = Ataya;
 			productReference = 88231D072ED47DCC0015B250 /* Ataya.app */;
@@ -380,6 +383,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 883A5C862EFFF653003C2A73 /* XCRemoteSwiftPackageReference "Charts" */;
 			productName = DGCharts;
+		};
+		883A5C892EFFF653003C2A73 /* DGChartsDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 883A5C862EFFF653003C2A73 /* XCRemoteSwiftPackageReference "Charts" */;
+			productName = DGChartsDynamic;
 		};
 		88B4AC6E2ED4A61B00D28B8F /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;

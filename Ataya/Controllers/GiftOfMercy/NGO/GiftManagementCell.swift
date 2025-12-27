@@ -66,9 +66,10 @@ final class GiftManagementCell: UITableViewCell {
 
         // Image
         thumbImageView.translatesAutoresizingMaskIntoConstraints = false
-        thumbImageView.contentMode = .scaleAspectFit
+        thumbImageView.contentMode = .scaleAspectFill
         thumbImageView.clipsToBounds = true
         thumbImageView.layer.cornerRadius = 10
+        thumbImageView.backgroundColor = UIColor.systemGray6
 
         NSLayoutConstraint.activate([
             thumbImageView.widthAnchor.constraint(equalToConstant: 80),
@@ -151,10 +152,7 @@ final class GiftManagementCell: UITableViewCell {
         let title: String
         let priceLine: String
         let description: String
-
-        /// ✅ Keep the name so your other files don’t break.
-        /// Now this should contain the Cloudinary URL string.
-        let imageName: String
+        let imageURL: String?   // ✅ Cloudinary URL
     }
 
     func configure(with model: ViewModel) {
@@ -162,12 +160,37 @@ final class GiftManagementCell: UITableViewCell {
         priceLabel.text = model.priceLine
         descriptionLabel.text = model.description
 
-        // ✅ Load from URL (Cloudinary). No placeholder.
-        ImageLoader.shared.setImage(on: thumbImageView, from: model.imageName, placeholder: nil)
+        // ✅ تحميل من رابط Cloudinary
+        thumbImageView.setRemoteImage(model.imageURL)
     }
 
     // MARK: - Actions
     @objc private func editTapped() {
         onEdit?()
+    }
+}
+
+// MARK: - Remote Image (No ImageLoader)
+private extension UIImageView {
+    func setRemoteImage(_ urlString: String?) {
+        self.image = nil
+
+        let s = (urlString ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !s.isEmpty, let url = URL(string: s) else { return }
+
+        // لمنع مشكلة reuse
+        self.accessibilityIdentifier = s
+        let current = s
+
+        URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
+            guard let self else { return }
+            guard self.accessibilityIdentifier == current else { return }
+            guard let data, let img = UIImage(data: data) else { return }
+
+            DispatchQueue.main.async {
+                guard self.accessibilityIdentifier == current else { return }
+                self.image = img
+            }
+        }.resume()
     }
 }

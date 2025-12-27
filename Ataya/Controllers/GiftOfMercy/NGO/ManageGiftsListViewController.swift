@@ -20,7 +20,6 @@ final class ManageGiftsListViewController: UIViewController {
         return f
     }()
 
-    // ✅ NGO id = current Firebase Auth user id
     private var currentNgoId: String? {
         Auth.auth().currentUser?.uid
     }
@@ -80,15 +79,19 @@ final class ManageGiftsListViewController: UIViewController {
 
         listener = GiftService.shared.listenGifts(ngoId: currentNgoId) { [weak self] result in
             guard let self else { return }
-            switch result {
-            case .failure(let err):
-                print("❌ Gifts listen error:", err.localizedDescription)
 
-            case .success(let items):
-                self.gifts = items.sorted {
-                    ($0.createdAt?.dateValue() ?? .distantPast) > ($1.createdAt?.dateValue() ?? .distantPast)
+            DispatchQueue.main.async {
+                switch result {
+                case .failure(let err):
+                    print("❌ Gifts listen error:", err.localizedDescription)
+
+                case .success(let items):
+                    self.gifts = items.sorted {
+                        ($0.createdAt?.dateValue() ?? .distantPast) >
+                        ($1.createdAt?.dateValue() ?? .distantPast)
+                    }
+                    self.tableView.reloadData()
                 }
-                self.tableView.reloadData()
             }
         }
     }
@@ -154,12 +157,11 @@ extension ManageGiftsListViewController: UITableViewDataSource, UITableViewDeleg
             for: indexPath
         ) as! GiftManagementCell
 
-        // ✅ imageName now carries the URL (no placeholder)
         let vm = GiftManagementCell.ViewModel(
             title: gift.title,
             priceLine: priceLine(for: gift),
             description: gift.description,
-            imageName: gift.displayImageName
+            imageURL: gift.imageURL
         )
 
         cell.configure(with: vm)

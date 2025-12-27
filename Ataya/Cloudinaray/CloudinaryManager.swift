@@ -16,7 +16,7 @@ final class CloudinaryManager {
     let cloudName: String = "dwdh8pxx7"
 
     let uploadPreset: String = "peyuzo8a"
-    /// Unsigned upload endpoint
+    // Unsigned upload endpoint
     var uploadEndpoint: URL? {
         URL(string: "https://api.cloudinary.com/v1_1/\(cloudName)/image/upload")
     }

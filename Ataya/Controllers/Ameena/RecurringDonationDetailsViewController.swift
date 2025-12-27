@@ -10,13 +10,16 @@ final class RecurringDonationDetailsViewController: UIViewController {
     @IBOutlet weak var descriptionTextView: UITextView!
     @IBOutlet weak var nextButton: UIButton!
 
+    // MARK: - Draft (shared across the whole flow)
+    var draft: RecurringDonationDraft!
+
     // MARK: - Colors
     private let yellow = UIColor(red: 0xF7/255.0, green: 0xD4/255.0, blue: 0x4C/255.0, alpha: 1.0)
 
-    // MARK: - Data
+    // MARK: - Options (temporary; can be replaced with Firestore later)
     private let categoryOptions = ["Dairy", "Bread & Bakery", "Fruits & Vegetables", "Meals", "Canned Food"]
     private let itemOptions = ["Milk", "Cheese", "Yogurt", "Bread", "Dates"]
-    private let unitsOptions = ["Packets", "Kg", "Pieces", "Boxes"]
+    private let unitsOptions = ["Packets", "kg", "pieces", "boxes"]
 
     // MARK: - TextView Placeholder
     private let descriptionPlaceholderLabel = UILabel()
@@ -26,12 +29,15 @@ final class RecurringDonationDetailsViewController: UIViewController {
     private let itemPlaceholder = "Tap to select"
     private let unitsPlaceholder = "Units"
 
-    // MARK: - Stored values (saved when Next tapped)
+    // MARK: - Stored values (captured when Next is tapped)
     private(set) var selectedCategory: String?
     private(set) var selectedItem: String?
     private(set) var selectedUnit: String?
     private(set) var selectedQuantity: Int?
     private(set) var donationNotes: String?
+
+    // MARK: - Sizing
+    private var sizingConstraints: [NSLayoutConstraint] = []
 
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -40,11 +46,21 @@ final class RecurringDonationDetailsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // Hide tab bar for the flow
+        self.hidesBottomBarWhenPushed = true
+
         title = "Recurring Donation"
         navigationItem.backButtonTitle = ""
         navigationItem.largeTitleDisplayMode = .never
 
-        // UI
+        setupUI()
+        setupObservers()
+        applySizingConstraints()
+        updateNextState()
+    }
+
+    // MARK: - Setup
+    private func setupUI() {
         setupDropdownButton(foodCategoryButton, placeholder: categoryPlaceholder)
         setupDropdownButton(foodItemButton, placeholder: itemPlaceholder)
         setupDropdownButton(unitsButton, placeholder: unitsPlaceholder)
@@ -57,7 +73,9 @@ final class RecurringDonationDetailsViewController: UIViewController {
         attachMenu(to: foodCategoryButton, options: categoryOptions, placeholder: categoryPlaceholder)
         attachMenu(to: foodItemButton, options: itemOptions, placeholder: itemPlaceholder)
         attachMenu(to: unitsButton, options: unitsOptions, placeholder: unitsPlaceholder)
+    }
 
+    private func setupObservers() {
         quantityTextField.addTarget(self, action: #selector(textChanged), for: .editingChanged)
         quantityTextField.delegate = self
 
@@ -65,15 +83,9 @@ final class RecurringDonationDetailsViewController: UIViewController {
                                               selector: #selector(textViewChanged),
                                               name: UITextView.textDidChangeNotification,
                                               object: descriptionTextView)
-
-        // Sizes (do AFTER outlets exist)
-        applySizingConstraints()
-
-        updateNextState()
     }
 
     // MARK: - Styling
-
     private func setupDropdownButton(_ button: UIButton, placeholder: String) {
         var config = UIButton.Configuration.plain()
         config.title = placeholder
@@ -134,26 +146,6 @@ final class RecurringDonationDetailsViewController: UIViewController {
         descriptionPlaceholderLabel.isHidden = !tv.text.isEmpty
     }
 
-    private var sizingConstraints: [NSLayoutConstraint] = []
-
-    private func applySizingConstraints() {
-        NSLayoutConstraint.deactivate(sizingConstraints)
-        sizingConstraints.removeAll()
-
-        sizingConstraints.append(foodCategoryButton.heightAnchor.constraint(equalToConstant: 60))
-        sizingConstraints.append(foodItemButton.heightAnchor.constraint(equalToConstant: 60))
-        sizingConstraints.append(unitsButton.heightAnchor.constraint(equalToConstant: 60))
-        sizingConstraints.append(quantityTextField.heightAnchor.constraint(equalToConstant: 60))
-        sizingConstraints.append(descriptionTextView.heightAnchor.constraint(equalToConstant: 140))
-        sizingConstraints.append(nextButton.heightAnchor.constraint(equalToConstant: 54))
-
-        // ❗️REMOVE this: unitsButton.widthAnchor = 60 (too small)
-        // If you really need a fixed width, use something like 140-200.
-        // sizingConstraints.append(unitsButton.widthAnchor.constraint(equalToConstant: 160))
-
-        NSLayoutConstraint.activate(sizingConstraints)
-    }
-
     private func styleNextButton() {
         nextButton.configuration = nil
         nextButton.setTitle("Next", for: .normal)
@@ -167,22 +159,36 @@ final class RecurringDonationDetailsViewController: UIViewController {
         nextButton.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
     }
 
-    // MARK: - Menus
+    private func applySizingConstraints() {
+        NSLayoutConstraint.deactivate(sizingConstraints)
+        sizingConstraints.removeAll()
 
+        sizingConstraints.append(foodCategoryButton.heightAnchor.constraint(equalToConstant: 60))
+        sizingConstraints.append(foodItemButton.heightAnchor.constraint(equalToConstant: 60))
+        sizingConstraints.append(unitsButton.heightAnchor.constraint(equalToConstant: 60))
+        sizingConstraints.append(quantityTextField.heightAnchor.constraint(equalToConstant: 60))
+        sizingConstraints.append(descriptionTextView.heightAnchor.constraint(equalToConstant: 140))
+        sizingConstraints.append(nextButton.heightAnchor.constraint(equalToConstant: 54))
+
+        NSLayoutConstraint.activate(sizingConstraints)
+    }
+
+    // MARK: - Menus
     private func attachMenu(to button: UIButton, options: [String], placeholder: String) {
         let actions = options.map { option in
             UIAction(title: option) { [weak self] _ in
                 guard let self else { return }
+
                 var c = button.configuration ?? UIButton.Configuration.plain()
                 c.title = option
                 c.baseForegroundColor = .label
                 button.configuration = c
+
                 self.updateNextState()
             }
         }
         button.menu = UIMenu(children: actions)
 
-        // keep placeholder gray
         if button.configuration?.title == placeholder {
             var c = button.configuration!
             c.baseForegroundColor = .systemGray
@@ -190,16 +196,7 @@ final class RecurringDonationDetailsViewController: UIViewController {
         }
     }
 
-    // MARK: - Alert
-
-    private func showAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
-    }
-
-    // MARK: - Validation helpers
-
+    // MARK: - Validation
     private func currentTitle(of button: UIButton) -> String {
         button.configuration?.title ?? ""
     }
@@ -213,24 +210,29 @@ final class RecurringDonationDetailsViewController: UIViewController {
     }
 
     private func updateNextState() {
-        let cat = foodCategoryButton.configuration?.title ?? ""
-        let item = foodItemButton.configuration?.title ?? ""
-        let unit = unitsButton.configuration?.title ?? ""
+        let cat = currentTitle(of: foodCategoryButton)
+        let item = currentTitle(of: foodItemButton)
+        let unit = currentTitle(of: unitsButton)
         let qty = (quantityTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
 
         let ok =
-            cat != "Tap to select" &&
-            item != "Tap to select" &&
-            unit != "Units" &&
+            cat != categoryPlaceholder &&
+            item != itemPlaceholder &&
+            unit != unitsPlaceholder &&
             !qty.isEmpty
 
-        // ✅ keep it clickable always
         nextButton.isEnabled = true
-
-        // just visual feedback
         nextButton.alpha = ok ? 1.0 : 0.6
     }
-    
+
+    // MARK: - Alerts
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+
+    // MARK: - Observers
     @objc private func textChanged() {
         updateNextState()
     }
@@ -241,12 +243,9 @@ final class RecurringDonationDetailsViewController: UIViewController {
     }
 
     // MARK: - Actions
-
     @IBAction func nextTapped(_ sender: UIButton) {
-        print("✅ nextTapped fired")
         view.endEditing(true)
 
-        // ✅ Validate again (even if button disabled, still safe)
         if isPlaceholderSelected() {
             showAlert(title: "Missing info", message: "Please select Category, Item, and Units.")
             return
@@ -258,7 +257,7 @@ final class RecurringDonationDetailsViewController: UIViewController {
             return
         }
 
-        // ✅ Save values
+        // Capture values from UI
         selectedCategory = currentTitle(of: foodCategoryButton)
         selectedItem = currentTitle(of: foodItemButton)
         selectedUnit = currentTitle(of: unitsButton)
@@ -267,37 +266,32 @@ final class RecurringDonationDetailsViewController: UIViewController {
         let notes = descriptionTextView.text.trimmingCharacters(in: .whitespacesAndNewlines)
         donationNotes = notes.isEmpty ? nil : notes
 
-        // Optional: store to UserDefaults (if you want)
-        // UserDefaults.standard.set(selectedCategory, forKey: "don_category")
-        // UserDefaults.standard.set(selectedItem, forKey: "don_item")
-        // UserDefaults.standard.set(selectedUnit, forKey: "don_unit")
-        // UserDefaults.standard.set(selectedQuantity, forKey: "don_qty")
-        // UserDefaults.standard.set(donationNotes, forKey: "don_notes")
+        // Update the shared draft (food portion)
+        draft.foodCategoryName = selectedCategory
+        draft.foodItemName = selectedItem
+        draft.unit = selectedUnit
+        draft.estimatedQuantity = Double(qty)
+        draft.description = donationNotes
 
-        // ✅ Go next (change identifier to yours)
+        // Navigate forward (Storyboard-based)
         performSegue(withIdentifier: "goToSummary", sender: self)
     }
 
-    // MARK: - Pass data forward (optional)
+    // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard segue.identifier == "goToSummary" else { return }
 
         // Example:
-        // let vc = segue.destination as! RecurringSummaryViewController
-        // vc.category = selectedCategory
-        // vc.item = selectedItem
-        // vc.unit = selectedUnit
-        // vc.quantity = selectedQuantity
-        // vc.notes = donationNotes
+        // let vc = segue.destination as! RecurringDonationSummaryViewController
+        // vc.draft = draft
     }
 }
 
-// MARK: - UITextFieldDelegate (optional: block non-numbers)
+// MARK: - UITextFieldDelegate
 extension RecurringDonationDetailsViewController: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        // Allow backspace
         if string.isEmpty { return true }
-        // Only digits
         return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: string))
     }
 }
+

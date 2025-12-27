@@ -1,4 +1,7 @@
 import UIKit
+import FirebaseAuth
+import FirebaseFirestore
+
 
 final class HistoryViewController: UIViewController {
     
@@ -19,9 +22,14 @@ final class HistoryViewController: UIViewController {
 
     // ✅ Save which row was tapped for Edit (for prepare segue)
     private var selectedItemForDetails: HistoryItem?
+    
+    private var listener: ListenerRegistration?
+    private var items: [RecurringDonation] = []
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        startListening()
 
         definesPresentationContext = true
 
@@ -78,6 +86,27 @@ final class HistoryViewController: UIViewController {
 
     private func showPausedPopup() { showPopup(storyboardID: "HistoryPausedPopup") }
     private func showResumedPopup() { showPopup(storyboardID: "HistoryResumedPopup") }
+    
+    private func startListening() {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("No logged in user")
+            return
+        }
+
+        listener = Firestore.firestore()
+            .collection("Recurring_Donations")
+            .whereField("userId", isEqualTo: uid)
+            .order(by: "createdAt", descending: true)
+            .addSnapshotListener { [weak self] snap, err in
+                if let err = err {
+                    print("Firestore error:", err)
+                    return
+                }
+
+                self?.items = snap?.documents.compactMap { RecurringDonation(doc: $0) } ?? []
+                self?.tableView.reloadData()
+            }
+    }
 
     // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -195,3 +224,4 @@ extension HistoryViewController: UITableViewDataSource, UITableViewDelegate {
             tableView.reloadData()
         }
     }
+

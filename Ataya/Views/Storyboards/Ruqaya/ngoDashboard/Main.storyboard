@@ -770,7 +770,7 @@ History</string>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="7qr-4U-FK3" userLabel="stkCardsRows">
-                                                        <rect key="frame" x="0.0" y="36.333333333333314" width="400" height="366.00000000000006"/>
+                                                        <rect key="frame" x="0.0" y="36.333333333333314" width="400" height="366"/>
                                                         <subviews>
                                                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="flJ-8B-bFv" userLabel="stkRow1">
                                                                 <rect key="frame" x="0.0" y="0.0" width="400" height="177"/>
@@ -948,13 +948,6 @@ History</string>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Pr8-Ze-EAD" userLabel="vwDonationOverviewRow">
                                                                 <rect key="frame" x="0.0" y="0.0" width="400" height="65"/>
                                                                 <subviews>
-                                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="World Markets" translatesAutoresizingMaskIntoConstraints="NO" id="BLx-1J-fth" userLabel="imgDonationIcon">
-                                                                        <rect key="frame" x="16" y="5" width="55" height="55"/>
-                                                                        <constraints>
-                                                                            <constraint firstAttribute="width" constant="55" id="HCe-hz-2bn"/>
-                                                                            <constraint firstAttribute="height" constant="55" id="L8F-1B-Nop"/>
-                                                                        </constraints>
-                                                                    </imageView>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Donation Overview" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CAd-bn-SEf" userLabel="lblDonationTitle">
                                                                         <rect key="frame" x="83" y="22.333333333333258" width="293" height="20.333333333333329"/>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -969,6 +962,13 @@ History</string>
                                                                             <constraint firstAttribute="height" constant="25" id="9xd-v0-AHV"/>
                                                                         </constraints>
                                                                     </imageView>
+                                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Screenshot 2025-12-27 at 2.47.42 PM copy" translatesAutoresizingMaskIntoConstraints="NO" id="BLx-1J-fth" userLabel="imgDonationIcon">
+                                                                        <rect key="frame" x="22" y="12.666666666666629" width="40" height="40"/>
+                                                                        <constraints>
+                                                                            <constraint firstAttribute="width" constant="40" id="HCe-hz-2bn"/>
+                                                                            <constraint firstAttribute="height" constant="40" id="L8F-1B-Nop"/>
+                                                                        </constraints>
+                                                                    </imageView>
                                                                 </subviews>
                                                                 <gestureRecognizers/>
                                                                 <constraints>
@@ -978,8 +978,8 @@ History</string>
                                                                     <constraint firstItem="BLx-1J-fth" firstAttribute="centerY" secondItem="Pr8-Ze-EAD" secondAttribute="centerY" id="V1f-7J-egB"/>
                                                                     <constraint firstItem="Ynn-2j-5Jf" firstAttribute="centerY" secondItem="Pr8-Ze-EAD" secondAttribute="centerY" id="aJD-PZ-Lhi"/>
                                                                     <constraint firstItem="Ynn-2j-5Jf" firstAttribute="leading" relation="lessThanOrEqual" secondItem="CAd-bn-SEf" secondAttribute="trailing" constant="-12" id="bRd-EP-3cL"/>
-                                                                    <constraint firstItem="CAd-bn-SEf" firstAttribute="leading" secondItem="BLx-1J-fth" secondAttribute="trailing" constant="12" id="kK8-KY-zZ1"/>
-                                                                    <constraint firstItem="BLx-1J-fth" firstAttribute="leading" secondItem="Pr8-Ze-EAD" secondAttribute="leading" constant="16" id="s69-tv-0hn"/>
+                                                                    <constraint firstItem="CAd-bn-SEf" firstAttribute="leading" secondItem="BLx-1J-fth" secondAttribute="trailing" constant="21" id="kK8-KY-zZ1"/>
+                                                                    <constraint firstItem="BLx-1J-fth" firstAttribute="leading" secondItem="Pr8-Ze-EAD" secondAttribute="leading" constant="22" id="s69-tv-0hn"/>
                                                                 </constraints>
                                                                 <connections>
                                                                     <outletCollection property="gestureRecognizers" destination="5PU-Tj-rHx" appends="YES" id="Y8H-gU-BN3"/>
@@ -994,13 +994,6 @@ History</string>
                                                                         <nil key="textColor"/>
                                                                         <nil key="highlightedColor"/>
                                                                     </label>
-                                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Edit Property" translatesAutoresizingMaskIntoConstraints="NO" id="oGK-yA-JJM">
-                                                                        <rect key="frame" x="16" y="5" width="55" height="55"/>
-                                                                        <constraints>
-                                                                            <constraint firstAttribute="width" constant="55" id="PNf-RJ-zfb"/>
-                                                                            <constraint firstAttribute="height" constant="55" id="mpt-Yi-yz9"/>
-                                                                        </constraints>
-                                                                    </imageView>
                                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chevron.right" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="eGW-v3-kc7">
                                                                         <rect key="frame" x="364" y="22" width="20" height="21.333333333333329"/>
                                                                         <color key="tintColor" systemColor="labelColor"/>
@@ -1009,14 +1002,21 @@ History</string>
                                                                             <constraint firstAttribute="height" constant="25" id="A0y-g9-QLx"/>
                                                                         </constraints>
                                                                     </imageView>
+                                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="C" translatesAutoresizingMaskIntoConstraints="NO" id="oGK-yA-JJM">
+                                                                        <rect key="frame" x="24" y="12" width="40" height="40"/>
+                                                                        <constraints>
+                                                                            <constraint firstAttribute="width" constant="40" id="PNf-RJ-zfb"/>
+                                                                            <constraint firstAttribute="height" constant="40" id="mpt-Yi-yz9"/>
+                                                                        </constraints>
+                                                                    </imageView>
                                                                 </subviews>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                                 <constraints>
                                                                     <constraint firstItem="Hh1-lQ-rre" firstAttribute="centerY" secondItem="dAe-za-vH2" secondAttribute="centerY" id="8im-u1-d6y"/>
-                                                                    <constraint firstItem="Hh1-lQ-rre" firstAttribute="leading" secondItem="oGK-yA-JJM" secondAttribute="trailing" constant="12" id="LQq-kT-a3u"/>
+                                                                    <constraint firstItem="Hh1-lQ-rre" firstAttribute="leading" secondItem="oGK-yA-JJM" secondAttribute="trailing" constant="19" id="LQq-kT-a3u"/>
                                                                     <constraint firstItem="oGK-yA-JJM" firstAttribute="centerY" secondItem="dAe-za-vH2" secondAttribute="centerY" id="XAM-iD-cOc"/>
                                                                     <constraint firstAttribute="height" constant="65" id="p7m-Wc-LLf"/>
-                                                                    <constraint firstItem="oGK-yA-JJM" firstAttribute="leading" secondItem="dAe-za-vH2" secondAttribute="leading" constant="16" id="qvX-ED-g6f"/>
+                                                                    <constraint firstItem="oGK-yA-JJM" firstAttribute="leading" secondItem="dAe-za-vH2" secondAttribute="leading" constant="24" id="qvX-ED-g6f"/>
                                                                     <constraint firstItem="eGW-v3-kc7" firstAttribute="leading" secondItem="Hh1-lQ-rre" secondAttribute="trailing" constant="-12" id="tQV-Hg-JH9"/>
                                                                     <constraint firstAttribute="trailing" secondItem="eGW-v3-kc7" secondAttribute="trailing" constant="16" id="xJs-9U-Fdp"/>
                                                                     <constraint firstItem="eGW-v3-kc7" firstAttribute="centerY" secondItem="dAe-za-vH2" secondAttribute="centerY" id="zPL-OP-gd7"/>
@@ -1090,10 +1090,10 @@ History</string>
     </scenes>
     <resources>
         <image name="Adv" width="291.33334350585938" height="244"/>
+        <image name="C" width="73" height="70"/>
         <image name="Delivery Time" width="30" height="30"/>
-        <image name="Edit Property" width="38" height="47"/>
         <image name="Logo" width="45" height="45"/>
-        <image name="World Markets" width="35" height="50"/>
+        <image name="Screenshot 2025-12-27 at 2.47.42 PM copy" width="230" height="207"/>
         <image name="agreement copy" width="512" height="512"/>
         <image name="basket.fill" catalog="system" width="128" height="108"/>
         <image name="bell.fill" catalog="system" width="123" height="128"/>

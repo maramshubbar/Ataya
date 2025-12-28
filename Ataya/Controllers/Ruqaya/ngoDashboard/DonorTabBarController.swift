@@ -44,8 +44,8 @@ final class DonorTabBarController: UITabBarController, UITabBarControllerDelegat
         items[0].image = UIImage(named: "housefillgrey")?.resized(to: size).withRenderingMode(.alwaysTemplate)
         items[0].selectedImage = UIImage(named: "housefillgrey")?.resized(to: size).withRenderingMode(.alwaysTemplate)
 
-        items[1].image = UIImage(named: "earthglobegrey")?.resized(to: size).withRenderingMode(.alwaysTemplate)
-        items[1].selectedImage = UIImage(named: "earthglobegrey")?.resized(to: size).withRenderingMode(.alwaysTemplate)
+        items[1].image = UIImage(named: "deliverytime")?.resized(to: size).withRenderingMode(.alwaysTemplate)
+        items[1].selectedImage = UIImage(named: "deliverytime")?.resized(to: size).withRenderingMode(.alwaysTemplate)
 
         // center dummy
         items[2].image = UIImage(named: "tab_empty")?.withRenderingMode(.alwaysOriginal)
@@ -60,7 +60,7 @@ final class DonorTabBarController: UITabBarController, UITabBarControllerDelegat
 
     private func setupCenterButton() {
         centerButton.setBackgroundImage(UIImage(named: "hex_report_bg"), for: .normal)
-        centerButton.setImage(UIImage(named: "ic_donate_center"), for: .normal)
+        centerButton.setImage(UIImage(named: "map"), for: .normal)
         centerButton.addTarget(self, action: #selector(centerTapped), for: .touchUpInside)
 
         if centerButton.superview == nil {

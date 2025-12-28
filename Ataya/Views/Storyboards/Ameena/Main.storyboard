@@ -22,7 +22,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Next">
                                     <backgroundConfiguration key="background">
-                                        <color key="backgroundColor" red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="backgroundColor" red="0.96862745100000003" green="0.83137254900000002" blue="0.29803921570000003" alpha="1" colorSpace="calibratedRGB"/>
                                     </backgroundConfiguration>
                                     <fontDescription key="titleFontDescription" type="system" weight="medium" pointSize="16"/>
                                     <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -34,7 +34,10 @@
                             <datePicker contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="date" style="inline" translatesAutoresizingMaskIntoConstraints="NO" id="V2O-0w-HQ3">
                                 <rect key="frame" x="16" y="356" width="320" height="326"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="tintColor" systemColor="systemYellowColor"/>
+                                <color key="tintColor" red="0.96862745100000003" green="0.83137254900000002" blue="0.29803921570000003" alpha="1" colorSpace="calibratedRGB"/>
+                                <date key="minimumDate" timeIntervalSinceReferenceDate="788313600">
+                                    <!--2025-12-25 00:00:00 +0000-->
+                                </date>
                             </datePicker>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="quk-Zf-Api"/>
@@ -42,9 +45,8 @@
                     </view>
                     <navigationItem key="navigationItem" title="Recurring Donation" id="lhF-xz-Mmx"/>
                     <connections>
-                        <outlet property="calendarView" destination="V2O-0w-HQ3" id="XcT-Oo-RWF"/>
-                        <outlet property="nextButton" destination="37d-HK-c4m" id="kmn-ll-7dg"/>
-                        <segue destination="Lma-be-VoZ" kind="push" identifier="goToRecurringDetails" id="lcQ-w7-fkL"/>
+                        <outlet property="calendarView" destination="V2O-0w-HQ3" id="nA4-je-58U"/>
+                        <outlet property="nextButton" destination="37d-HK-c4m" id="0mw-91-kUz"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ABe-EX-Xa4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -74,9 +76,7 @@
         <!--DonationDetails-->
         <scene sceneID="3Ud-4g-Aqg">
             <objects>
-                <viewController title="DonationDetails" id="Lma-be-VoZ" customClass="RecurringDonationDetailsViewController" customModule="Ataya" sceneMemberID="viewController">
-                    <string key="storyboardIdentifier">RecurringDonationDetailsViewController
-</string>
+                <viewController storyboardIdentifier="RecurringDonationDetailsViewController" title="DonationDetails" id="Lma-be-VoZ" customClass="RecurringDonationDetailsViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Or0-5I-Aor">
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -186,7 +186,7 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1zg-3w-rhW">
-                                <rect key="frame" x="16" y="846" width="408" height="39"/>
+                                <rect key="frame" x="16" y="849.66666666666663" width="408" height="38.333333333333371"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Button" cornerStyle="small">
                                     <backgroundConfiguration key="background">
@@ -198,11 +198,11 @@
                         <viewLayoutGuide key="safeArea" id="sUl-sI-hyI"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="1zg-3w-rhW" firstAttribute="top" secondItem="gNC-7E-gTh" secondAttribute="bottom" constant="24" id="7f4-hF-wwq"/>
                             <constraint firstItem="gNC-7E-gTh" firstAttribute="top" secondItem="sUl-sI-hyI" secondAttribute="top" constant="40" id="CR2-7i-C8n"/>
                             <constraint firstItem="1zg-3w-rhW" firstAttribute="leading" secondItem="sUl-sI-hyI" secondAttribute="leading" constant="16" id="IEu-Dj-JVC"/>
                             <constraint firstItem="sUl-sI-hyI" firstAttribute="trailing" secondItem="1zg-3w-rhW" secondAttribute="trailing" constant="16" id="O4d-uS-leQ"/>
                             <constraint firstItem="sUl-sI-hyI" firstAttribute="trailing" secondItem="gNC-7E-gTh" secondAttribute="trailing" constant="20" id="nM6-aw-fRQ"/>
+                            <constraint firstItem="sUl-sI-hyI" firstAttribute="bottom" secondItem="1zg-3w-rhW" secondAttribute="bottom" id="ngT-yu-W5c"/>
                             <constraint firstItem="gNC-7E-gTh" firstAttribute="leading" secondItem="sUl-sI-hyI" secondAttribute="leading" constant="12.666666666666657" id="pef-7t-kSd"/>
                             <constraint firstAttribute="bottom" secondItem="gNC-7E-gTh" secondAttribute="bottom" constant="134" id="rtT-dG-cB9"/>
                             <constraint firstItem="gNC-7E-gTh" firstAttribute="trailing" secondItem="Or0-5I-Aor" secondAttribute="trailingMargin" id="yG4-Ds-7Cb"/>
@@ -553,9 +553,6 @@
             <point key="canvasLocation" x="4301" y="1369"/>
         </scene>
     </scenes>
-    <inferredMetricsTieBreakers>
-        <segue reference="NFF-Yz-Nym"/>
-    </inferredMetricsTieBreakers>
     <resources>
         <image name="DoneIcon" width="124" height="124"/>
         <systemColor name="labelColor">
@@ -569,9 +566,6 @@
         </systemColor>
         <systemColor name="systemFillColor">
             <color red="0.47058823529999999" green="0.47058823529999999" blue="0.50196078430000002" alpha="0.20000000000000001" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="systemYellowColor">
-            <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

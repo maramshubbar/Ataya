@@ -1,10 +1,11 @@
 import UIKit
 
-final class recurringDonationViewController: UIViewController {
+final class RecurringDonationViewController: UIViewController {
     
     // MARK: - Storyboard Outlets (ONLY these)
-    @IBOutlet weak var nextButton: UIButton!
+    
     @IBOutlet weak var calendarView: UIDatePicker!
+    @IBOutlet weak var nextButton: UIButton!
     
     // MARK: - Draft (shared data for the whole flow)
     var draft = RecurringDonationDraft()
@@ -24,7 +25,7 @@ final class recurringDonationViewController: UIViewController {
         didSet { updatePeriodUI(selectedPeriod) }
     }
 
-    private let yellow = UIColor(red: 0xF7/255.0, green: 0xD4/255.0, blue: 0x4C/255.0, alpha: 1.0)
+    private let atayaYellow = UIColor(red: 247/255, green: 212/255, blue: 76/255, alpha: 1)
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -40,6 +41,8 @@ final class recurringDonationViewController: UIViewController {
         buildLabel()
         buildPeriodButtons()
         setupLayout()
+        view.bringSubviewToFront(nextButton)
+
 
         // Default selection
         selectedPeriod = .monthly
@@ -72,7 +75,7 @@ final class recurringDonationViewController: UIViewController {
     private func styleNextButton() {
         nextButton.layer.cornerRadius = 8
         nextButton.layer.masksToBounds = true
-        nextButton.backgroundColor = yellow
+        nextButton.backgroundColor = atayaYellow
         nextButton.setTitleColor(.black, for: .normal)
 
         // Wire the button tap
@@ -149,21 +152,21 @@ final class recurringDonationViewController: UIViewController {
     private func stylePeriodButton(_ button: UIButton) {
         button.layer.cornerRadius = 8
         button.layer.borderWidth = 1
-        button.layer.borderColor = yellow.cgColor
-        button.layer.masksToBounds = true
-        button.backgroundColor = .clear
+        button.layer.borderColor = atayaYellow.withAlphaComponent(0.6).cgColor
+        button.backgroundColor = .white
         button.setTitleColor(.black, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
     }
 
     private func updatePeriodUI(_ selected: Period) {
-        // Reset all buttons
+        // Reset
         [dailyButton, weeklyButton, monthlyButton].forEach {
-            $0.backgroundColor = .clear
-            $0.layer.borderColor = yellow.cgColor
+            $0.backgroundColor = .white
+            $0.layer.borderColor = atayaYellow.withAlphaComponent(0.6).cgColor
+            $0.setTitleColor(.black, for: .normal)
         }
 
-        // Highlight selected button
+        // Selected
         let target: UIButton
         switch selected {
         case .daily:
@@ -174,8 +177,9 @@ final class recurringDonationViewController: UIViewController {
             target = monthlyButton
         }
 
-        target.backgroundColor = yellow
-        target.layer.borderColor = yellow.cgColor
+        target.backgroundColor = atayaYellow
+        target.layer.borderColor = atayaYellow.cgColor
+        target.setTitleColor(.black, for: .normal)
     }
 
     // MARK: - Layout
@@ -211,7 +215,7 @@ final class recurringDonationViewController: UIViewController {
             calendarView.topAnchor.constraint(equalTo: periodStack.bottomAnchor, constant: 40),
             calendarView.leadingAnchor.constraint(equalTo: safe.leadingAnchor, constant: 20),
             calendarView.trailingAnchor.constraint(equalTo: safe.trailingAnchor, constant: -20),
-            calendarView.bottomAnchor.constraint(equalTo: nextButton.topAnchor, constant: -70)
+            calendarView.bottomAnchor.constraint(lessThanOrEqualTo: nextButton.topAnchor, constant: -20)
         ])
     }
 

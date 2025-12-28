@@ -12,6 +12,7 @@ final class RecurringDonationDetailsViewController: UIViewController {
 
     // MARK: - Draft (shared across the whole flow)
     var draft: RecurringDonationDraft!
+    var isEditingDonation: Bool = true
 
     // MARK: - Colors
     private let yellow = UIColor(red: 0xF7/255.0, green: 0xD4/255.0, blue: 0x4C/255.0, alpha: 1.0)
@@ -150,7 +151,7 @@ final class RecurringDonationDetailsViewController: UIViewController {
         nextButton.configuration = nil
         nextButton.setTitle("Next", for: .normal)
 
-        nextButton.layer.cornerRadius = 10
+        nextButton.layer.cornerRadius = 8
         nextButton.layer.masksToBounds = true
         nextButton.backgroundColor = yellow
 

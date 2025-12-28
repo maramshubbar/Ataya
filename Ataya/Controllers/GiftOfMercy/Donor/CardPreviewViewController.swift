@@ -30,7 +30,6 @@ final class CardPreviewViewController: UIViewController {
 
         imageView.image = image
         imageView.contentMode = .scaleAspectFit
-        imageView.backgroundColor = .clear
         view.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
 

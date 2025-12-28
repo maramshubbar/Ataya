@@ -11,11 +11,9 @@ final class GiftCardCell: UICollectionViewCell {
 
     static let reuseID = "GiftCardCell"
 
-    // Callbacks
     var onChooseTapped: (() -> Void)?
     var onAmountChanged: ((String) -> Void)?
 
-    // UI
     private let cardView = UIView()
     private let heartImageView = UIImageView()
 
@@ -27,7 +25,6 @@ final class GiftCardCell: UICollectionViewCell {
     private let chooseButton = UIButton(type: .system)
     private let chevron = UIImageView(image: UIImage(systemName: "chevron.right"))
 
-    // قيود نبدّل بينها حسب النوع (fixed / custom)
     private var descTopToPrice: NSLayoutConstraint!
     private var descTopToAmount: NSLayoutConstraint!
 
@@ -45,42 +42,35 @@ final class GiftCardCell: UICollectionViewCell {
 
     override func prepareForReuse() {
         super.prepareForReuse()
+        heartImageView.image = nil
         amountField.text = nil
         priceLabel.text = nil
         onChooseTapped = nil
         onAmountChanged = nil
     }
 
-    // MARK: - UI Setup
-
     private func buildUI() {
         contentView.backgroundColor = .clear
 
-        // Card
         cardView.backgroundColor = .white
         cardView.layer.cornerRadius = 16
         cardView.layer.borderWidth = 1
         cardView.layer.borderColor = UIColor.black.withAlphaComponent(0.06).cgColor
         cardView.clipsToBounds = true
 
-        // Shadow
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOpacity = 0.08
         layer.shadowRadius = 10
         layer.shadowOffset = CGSize(width: 0, height: 6)
 
-        // Image
         heartImageView.contentMode = .scaleAspectFit
 
-        // Title
         titleLabel.numberOfLines = 0
         titleLabel.font = .systemFont(ofSize: 22, weight: .heavy)
         titleLabel.textColor = .label
 
-        // Price
         priceLabel.font = .systemFont(ofSize: 20, weight: .heavy)
 
-        // Amount Field
         amountField.placeholder = "Enter donation value"
         amountField.backgroundColor = UIColor.systemGray6
         amountField.layer.cornerRadius = 10
@@ -91,22 +81,17 @@ final class GiftCardCell: UICollectionViewCell {
         amountField.setLeftPadding(14)
         amountField.addTarget(self, action: #selector(amountChanged), for: .editingChanged)
         amountField.addDoneToolbar()
-        
-        
 
-        // Description
         descLabel.numberOfLines = 0
         descLabel.font = .systemFont(ofSize: 17, weight: .regular)
         descLabel.textColor = UIColor.label.withAlphaComponent(0.7)
 
-        // Choose button
         chooseButton.setTitle("Choose Gift", for: .normal)
         chooseButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
         chooseButton.contentHorizontalAlignment = .leading
         chooseButton.addTarget(self, action: #selector(chooseTapped), for: .touchUpInside)
 
         chevron.contentMode = .scaleAspectFit
-        chevron.tintColor = .systemGreen
 
         contentView.addSubview(cardView)
         [heartImageView, titleLabel, priceLabel, amountField, descLabel, chooseButton, chevron].forEach {
@@ -164,24 +149,27 @@ final class GiftCardCell: UICollectionViewCell {
         NSLayoutConstraint.activate([descBottom, chooseBottom])
     }
 
-    // MARK: - Configure
+    func configure(item: MercyGift, accent: UIColor, existingAmount: Decimal?) {
+        // Image (URL first, then asset)
+        if let url = item.imageURL, !url.isEmpty {
+            ImageLoader.shared.setImage(on: heartImageView, from: url, placeholder: nil)
+        } else if let asset = item.assetName, !asset.isEmpty {
+            heartImageView.image = UIImage(named: asset)
+        } else {
+            heartImageView.image = nil
+        }
 
-    func configure(item: GiftsChooseViewController.GiftItem,
-                   accent: UIColor,
-                   existingAmount: Decimal?) {
-
-        heartImageView.image = UIImage(named: item.imageName)
         titleLabel.text = item.title
         chooseButton.setTitleColor(accent, for: .normal)
         chevron.tintColor = accent
         descLabel.text = item.description
 
-        switch item.pricing {
-        case .fixed(let amount):
+        switch item.pricingMode {
+        case .fixed:
             priceLabel.isHidden = false
             amountField.isHidden = true
             priceLabel.textColor = accent
-            priceLabel.text = amount.moneyString()
+            priceLabel.text = (item.fixedAmount ?? 0).moneyString()
 
             descTopToPrice.isActive = true
             descTopToAmount.isActive = false
@@ -200,8 +188,6 @@ final class GiftCardCell: UICollectionViewCell {
             descTopToAmount.isActive = true
         }
     }
-
-    // MARK: - Actions
 
     @objc private func chooseTapped() {
         onChooseTapped?()

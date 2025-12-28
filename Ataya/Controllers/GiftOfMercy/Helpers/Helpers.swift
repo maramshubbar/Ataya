@@ -7,7 +7,6 @@
 
 import UIKit
 
-
 // MARK: - UITextField padding
 extension UITextField {
     func setLeftPadding(_ amount: CGFloat) {
@@ -54,10 +53,32 @@ extension String {
         let trimmed = self.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.isEmpty { return nil }
 
-        // يسمح بالأرقام + النقطة
         let cleaned = trimmed.filter { "0123456789.".contains($0) }
         if cleaned.isEmpty { return nil }
 
         return Decimal(string: cleaned)
+    }
+}
+
+// MARK: - Double / Int moneyString helpers
+extension Double {
+    func moneyString() -> String {
+        let f = NumberFormatter()
+        f.numberStyle = .currency
+        f.currencySymbol = "$"
+        f.minimumFractionDigits = 2
+        f.maximumFractionDigits = 2
+        return f.string(from: NSNumber(value: self)) ?? "$0.00"
+    }
+}
+
+extension Int {
+    func moneyString() -> String {
+        let f = NumberFormatter()
+        f.numberStyle = .currency
+        f.currencySymbol = "$"
+        f.minimumFractionDigits = 2
+        f.maximumFractionDigits = 2
+        return f.string(from: NSNumber(value: self)) ?? "$0.00"
     }
 }

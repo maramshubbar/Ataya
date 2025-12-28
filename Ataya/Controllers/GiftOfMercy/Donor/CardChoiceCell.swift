@@ -4,7 +4,6 @@
 //
 //  Created by Fatema Maitham on 25/12/2025.
 //
-
 import UIKit
 
 final class CardChoiceCell: UICollectionViewCell {
@@ -16,7 +15,6 @@ final class CardChoiceCell: UICollectionViewCell {
 
     private let cardView = UIView()
     private let imageView = UIImageView()
-
     private let zoomButton = UIButton(type: .system)
 
     private let chooseButton = UIButton(type: .system)
@@ -44,25 +42,21 @@ final class CardChoiceCell: UICollectionViewCell {
     private func buildUI() {
         contentView.backgroundColor = .clear
 
-        // Card container
         cardView.backgroundColor = .white
         cardView.layer.cornerRadius = 16
         cardView.layer.borderWidth = 1
         cardView.layer.borderColor = UIColor.black.withAlphaComponent(0.06).cgColor
         cardView.clipsToBounds = true
 
-        // Shadow
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOpacity = 0.08
         layer.shadowRadius = 10
         layer.shadowOffset = CGSize(width: 0, height: 6)
 
-        // Image
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 12
 
-        // Zoom button (top-right)
         zoomButton.setImage(UIImage(systemName: "plus.magnifyingglass"), for: .normal)
         zoomButton.tintColor = .white
         zoomButton.backgroundColor = UIColor.black.withAlphaComponent(0.35)
@@ -70,7 +64,6 @@ final class CardChoiceCell: UICollectionViewCell {
         zoomButton.clipsToBounds = true
         zoomButton.addTarget(self, action: #selector(zoomTapped), for: .touchUpInside)
 
-        // Choose
         chooseButton.setTitle("Choose this card", for: .normal)
         chooseButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
         chooseButton.contentHorizontalAlignment = .leading
@@ -120,13 +113,6 @@ final class CardChoiceCell: UICollectionViewCell {
         chevron.tintColor = accent
     }
 
-
-
-    @objc private func chooseTapped() {
-        onChooseTapped?()
-    }
-
-    @objc private func zoomTapped() {
-        onZoomTapped?()
-    }
+    @objc private func chooseTapped() { onChooseTapped?() }
+    @objc private func zoomTapped() { onZoomTapped?() }
 }

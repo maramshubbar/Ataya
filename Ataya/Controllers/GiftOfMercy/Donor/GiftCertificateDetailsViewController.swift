@@ -14,6 +14,7 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
     var cardDesignText: String?
     var topPreviewImage: UIImage?
     var bottomPreviewImage: UIImage?
+    var selectedCardDesignId: String?
 
     // MARK: - Theme
     private let accentGreen = UIColor(atayaHex: "00A85C")              // للكتابة (مثل المثال)

@@ -5,37 +5,48 @@
 //  Created by Fatema Maitham on 25/12/2025.
 //
 
+
 import UIKit
 
 final class ChooseCardViewController: UIViewController {
 
+    // MARK: - Models
     struct CardItem {
-        let id: String
-        let imageName: String
+        let id: String            // e.g. "c1"
+        let imageName: String     // asset name
+        let title: String         // display name
     }
 
+    // MARK: - Inputs (set from previous screen)
     var giftNameText: String?
 
-    private let accent = UIColor(atayaHex: "00A85C")
-    private let brandYellow = UIColor(atayaHex: "F7D44C")
-
-    private var collectionView: UICollectionView!
-
-    // Banner
-    private let bannerView = UIView()
-    private let bannerIcon = UIImageView()
-    private let bannerLabel = UILabel()
-
-    private var items: [CardItem] = [
-        .init(id: "c1", imageName: "c1"),
-        .init(id: "c2", imageName: "c2"),
-        .init(id: "c3", imageName: "c3"),
-        .init(id: "c4", imageName: "c4")
-    ]
+    // ✅ coming from GiftsChooseViewController (backend gifts)
+    var selectedGift: MercyGift?
+    var selectedAmount: Decimal = 0
 
     // optional callback
     var onSelectCard: ((CardItem) -> Void)?
 
+    // MARK: - Theme
+    private let accent = UIColor(atayaHex: "00A85C")
+    private let brandYellow = UIColor(atayaHex: "F7D44C")
+
+    // MARK: - UI
+    private var collectionView: UICollectionView!
+
+    private let bannerView = UIView()
+    private let bannerIcon = UIImageView()
+    private let bannerLabel = UILabel()
+
+    // MARK: - Data
+    private let items: [CardItem] = [
+        .init(id: "c1", imageName: "c1", title: "Kaaba"),
+        .init(id: "c2", imageName: "c2", title: "Palestine Al Aqsa"),
+        .init(id: "c3", imageName: "c3", title: "Floral"),
+        .init(id: "c4", imageName: "c4", title: "Water")
+    ]
+
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNav()
@@ -48,12 +59,11 @@ final class ChooseCardViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .black
     }
 
+    // MARK: - Setup
     private func setupNav() {
         title = "Step 2: Choose a card"
         navigationItem.largeTitleDisplayMode = .never
         view.backgroundColor = .systemBackground
-
-        navigationController?.navigationBar.tintColor = .black
     }
 
     private func setupUI() {
@@ -139,7 +149,7 @@ final class ChooseCardViewController: UIViewController {
         ])
     }
 
-    // MARK: - Helpers
+    // MARK: - Actions
     private func openPreview(for item: CardItem) {
         let vc = CardPreviewViewController()
         vc.image = loadImage(named: item.imageName)
@@ -147,29 +157,25 @@ final class ChooseCardViewController: UIViewController {
         present(vc, animated: true)
     }
 
-    // ✅ أسماء الديزاينات اللي تبينها فوق
-    private func cardTitle(for item: CardItem) -> String {
-        switch item.id {
-        case "c1": return "Kaaba"
-        case "c2": return "Palestine Al Aqsa"
-        case "c3": return "Floral"
-        case "c4": return "Water"
-        default:   return "Card Design"
-        }
-    }
-
     private func chooseCard(_ item: CardItem) {
-        print("✅ Selected card:", item.id)
         onSelectCard?(item)
 
         let vc = GiftCertificateDetailsViewController()
 
-        // ✅ هذي اللي تخلي النص يطلع فوق
+        // ✅ show text on top
         vc.giftNameText = giftNameText
-        vc.cardDesignText = cardTitle(for: item)
+        vc.cardDesignText = item.title
 
-        // ✅ صورة التصميم المختار
+        // ✅ selected design id (for backend submit)
+        vc.selectedCardDesignId = item.id
+
+        // ✅ selected image preview
         vc.bottomPreviewImage = loadImage(named: item.imageName)
+
+        // ✅ pass gift + amount forward (if your submit uses them)
+        // (only if you already added these props in GiftCertificateDetailsViewController)
+        // vc.selectedGift = selectedGift
+        // vc.selectedAmount = selectedAmount
 
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -182,18 +188,22 @@ final class ChooseCardViewController: UIViewController {
 
 // MARK: - DataSource
 extension ChooseCardViewController: UICollectionViewDataSource {
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         items.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+
         guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: CardChoiceCell.reuseID,
             for: indexPath
-        ) as? CardChoiceCell else { return UICollectionViewCell() }
+        ) as? CardChoiceCell else {
+            return UICollectionViewCell()
+        }
 
         let item = items[indexPath.item]
-        let img = UIImage(named: item.imageName)
+        let img = loadImage(named: item.imageName)
 
         cell.configure(image: img, accent: brandYellow)
 

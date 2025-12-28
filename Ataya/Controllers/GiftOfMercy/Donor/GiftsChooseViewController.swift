@@ -7,26 +7,9 @@
 
 
 import UIKit
+import FirebaseFirestore
 
 final class GiftsChooseViewController: UIViewController {
-
-    // MARK: - Model
-    struct GiftItem {
-        enum Pricing {
-            case fixed(amount: Decimal)
-            case custom
-        }
-
-        let title: String
-        let imageName: String
-        let pricing: Pricing
-        let description: String
-
-        var requiresAmount: Bool {
-            if case .custom = pricing { return true }
-            return false
-        }
-    }
 
     // MARK: - UI
     private var collectionView: UICollectionView!
@@ -37,19 +20,31 @@ final class GiftsChooseViewController: UIViewController {
 
     // MARK: - Data
     private let accent = UIColor(atayaHex: "#F7D44C")
-    private var items: [GiftItem] = []
+    private var items: [MercyGift] = []
 
-    private var enteredAmounts: [Int: Decimal] = [:]
+    // amounts keyed by giftId (مو index)
+    private var enteredAmounts: [String: Decimal] = [:]
+
+    private var giftsListener: ListenerRegistration?
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNav()
-        setupData()
         setupUI()
         setupErrorBanner()
         setupConstraints()
         addDismissKeyboardTap()
+        listenGifts()
+    }
+
+    deinit {
+        giftsListener?.remove()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.navigationBar.tintColor = .black
     }
 
     // MARK: - Setup
@@ -57,40 +52,10 @@ final class GiftsChooseViewController: UIViewController {
         title = "Step 1: Choose a gift"
         navigationItem.largeTitleDisplayMode = .never
         navigationController?.navigationBar.tintColor = .black
-    }
-
-    private func setupData() {
-        items = [
-            GiftItem(
-                title: "WATER WELL",
-                imageName: "water_well_heart",
-                pricing: .fixed(amount: 500),
-                description: "Provide clean water\nto impoverished\ncommunities"
-            ),
-            GiftItem(
-                title: "Restore Eyesight\nin Africa",
-                imageName: "heart_restore_eyesight",
-                pricing: .custom,
-                description: "Help bring joy to\nthose who cannot\nsee"
-            ),
-            GiftItem(
-                title: "SADAQAH\nJARIYA",
-                imageName: "heart_sadaqah",
-                pricing: .custom,
-                description: "Benefit from the\nongoing rewards of\ncontinuous charity"
-            ),
-            GiftItem(
-                title: "Orphan Care",
-                imageName: "heart_orphan_care",
-                pricing: .custom,
-                description: "Give orphans in need\na brighter future"
-            )
-        ]
+        view.backgroundColor = .systemBackground
     }
 
     private func setupUI() {
-        view.backgroundColor = .systemBackground
-
         let layout = makeTwoColumnLayout()
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
@@ -105,7 +70,6 @@ final class GiftsChooseViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
     }
 
-
     private func makeTwoColumnLayout() -> UICollectionViewLayout {
         let spacing: CGFloat = 16
 
@@ -114,26 +78,17 @@ final class GiftsChooseViewController: UIViewController {
             heightDimension: .fractionalHeight(1.0)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
-        item.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
 
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
             heightDimension: .absolute(400)
         )
-        let group = NSCollectionLayoutGroup.horizontal(
-            layoutSize: groupSize,
-            subitems: [item, item]
-        )
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item, item])
         group.interItemSpacing = .fixed(spacing)
 
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = spacing
-        section.contentInsets = NSDirectionalEdgeInsets(
-            top: 18,
-            leading: 16,
-            bottom: 24,
-            trailing: 16
-        )
+        section.contentInsets = NSDirectionalEdgeInsets(top: 18, leading: 16, bottom: 24, trailing: 16)
 
         return UICollectionViewCompositionalLayout(section: section)
     }
@@ -190,21 +145,31 @@ final class GiftsChooseViewController: UIViewController {
         view.endEditing(true)
     }
 
-    // MARK: - Validation + Actions
-    private func validateAmount(for index: Int) -> Bool {
-        guard items.indices.contains(index) else { return false }
+    // MARK: - Backend
+    private func listenGifts() {
+        giftsListener?.remove()
+        giftsListener = MercyBackend.listenActiveGifts { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .failure(let err):
+                print("❌ gifts listen error:", err)
 
-        switch items[index].pricing {
+            case .success(let items):
+                self.items = items
+                self.collectionView.reloadData()
+            }
+        }
+    }
+
+    // MARK: - Validation + Actions
+    private func validateAmount(for gift: MercyGift) -> Bool {
+        switch gift.pricingMode {
         case .fixed:
             return true
         case .custom:
-            guard let amount = enteredAmounts[index], amount > 0 else { return false }
+            guard let amount = enteredAmounts[gift.id], amount > 0 else { return false }
             return true
         }
-    }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.navigationBar.tintColor = .black
     }
 
     private func showErrorBanner() {
@@ -219,7 +184,6 @@ final class GiftsChooseViewController: UIViewController {
             self.errorBanner.transform = .identity
         }
 
-        // Auto hide
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) { [weak self] in
             self?.hideErrorBanner()
         }
@@ -240,17 +204,42 @@ final class GiftsChooseViewController: UIViewController {
         }
     }
 
-    private func didTapChooseGift(at index: Int) {
+    private func didTapChooseGift(_ gift: MercyGift) {
         dismissKeyboard()
 
-        if validateAmount(for: index) {
-            let vc = ChooseCardViewController()
-            vc.giftNameText = certificateGiftText(for: index)
-            navigationController?.pushViewController(vc, animated: true)
-            print("Proceed with gift:", items[index].title, "amount:", enteredAmounts[index] ?? 0)
-        } else {
+        guard validateAmount(for: gift) else {
             showErrorBanner()
+            return
         }
+
+        let amount: Decimal
+        switch gift.pricingMode {
+        case .fixed:
+            amount = Decimal(gift.fixedAmount ?? 0)
+        case .custom:
+            amount = enteredAmounts[gift.id] ?? 0
+        }
+
+        let vc = ChooseCardViewController()
+        vc.selectedGift = gift
+        vc.selectedAmount = amount
+
+        // text فوق (مثل اللي عندك)
+        vc.giftNameText = certificateGiftText(gift: gift, amount: amount)
+
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    private func certificateGiftText(gift: MercyGift, amount: Decimal) -> String {
+        let title = gift.title.replacingOccurrences(of: "\n", with: " ")
+
+        let nf = NumberFormatter()
+        nf.numberStyle = .decimal
+        nf.minimumFractionDigits = 0
+        nf.maximumFractionDigits = 2
+
+        let amountString = nf.string(from: amount as NSDecimalNumber) ?? "\(amount)"
+        return "\(title) $\(amountString)"
     }
 }
 
@@ -268,53 +257,29 @@ extension GiftsChooseViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
 
-        let item = items[indexPath.item]
+        let gift = items[indexPath.item]
+        let existingAmount = enteredAmounts[gift.id]
 
-        let existingAmount = enteredAmounts[indexPath.item]
-        cell.configure(
-            item: item,
-            accent: accent,
-            existingAmount: existingAmount
-        )
+        cell.configure(item: gift, accent: accent, existingAmount: existingAmount)
 
         cell.onAmountChanged = { [weak self] newText in
             guard let self else { return }
             let value = newText.decimalValue()
             if let value, value > 0 {
-                self.enteredAmounts[indexPath.item] = value
+                self.enteredAmounts[gift.id] = value
             } else {
-                self.enteredAmounts[indexPath.item] = nil
+                self.enteredAmounts[gift.id] = nil
             }
         }
 
         cell.onChooseTapped = { [weak self] in
-            self?.didTapChooseGift(at: indexPath.item)
+            self?.didTapChooseGift(gift)
         }
 
         return cell
     }
-    
-    private func certificateGiftText(for index: Int) -> String {
-        let title = items[index].title.replacingOccurrences(of: "\n", with: " ")
-
-        let amount: Decimal
-        switch items[index].pricing {
-        case .fixed(let a): amount = a
-        case .custom: amount = enteredAmounts[index] ?? 0
-        }
-
-        let nf = NumberFormatter()
-        nf.numberStyle = .decimal
-        nf.minimumFractionDigits = 0
-        nf.maximumFractionDigits = 2
-
-        let amountString = nf.string(from: amount as NSDecimalNumber) ?? "\(amount)"
-        return "\(title) $\(amountString)"
-    }
-
 }
 
-// MARK: - UICollectionViewDelegate (optional tap to dismiss)
 extension GiftsChooseViewController: UICollectionViewDelegate {
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         dismissKeyboard()

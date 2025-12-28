@@ -256,21 +256,21 @@ struct locationStorage {
 }
 
 // MARK: - Small helpers
-private extension String {
-    var trimmed: String { trimmingCharacters(in: .whitespacesAndNewlines) }
-}
-
-private extension UIColor {
-    convenience init(hex: String) {
-        var s = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-        if s.hasPrefix("#") { s.removeFirst() }
-        var rgb: UInt64 = 0
-        Scanner(string: s).scanHexInt64(&rgb)
-        self.init(
-            red: CGFloat((rgb & 0xFF0000) >> 16) / 255.0,
-            green: CGFloat((rgb & 0x00FF00) >> 8) / 255.0,
-            blue: CGFloat(rgb & 0x0000FF) / 255.0,
-            alpha: 1.0
-        )
-    }
-}
+//private extension String {
+//    var trimmed: String { trimmingCharacters(in: .whitespacesAndNewlines) }
+//}
+//
+//private extension UIColor {
+//    convenience init(hex: String) {
+//        var s = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+//        if s.hasPrefix("#") { s.removeFirst() }
+//        var rgb: UInt64 = 0
+//        Scanner(string: s).scanHexInt64(&rgb)
+//        self.init(
+//            red: CGFloat((rgb & 0xFF0000) >> 16) / 255.0,
+//            green: CGFloat((rgb & 0x00FF00) >> 8) / 255.0,
+//            blue: CGFloat(rgb & 0x0000FF) / 255.0,
+//            alpha: 1.0
+//        )
+//    }
+//}

@@ -160,9 +160,9 @@ final class GiftManagementCell: UITableViewCell {
         priceLabel.text = model.priceLine
         descriptionLabel.text = model.description
 
-        // ✅ تحميل من رابط Cloudinary
-        thumbImageView.setRemoteImage(model.imageURL)
+        thumbImageView.setRemoteImage(model.imageURL, placeholder: nil) // or your placeholder image
     }
+
 
     // MARK: - Actions
     @objc private func editTapped() {
@@ -170,27 +170,8 @@ final class GiftManagementCell: UITableViewCell {
     }
 }
 
-// MARK: - Remote Image (No ImageLoader)
-private extension UIImageView {
-    func setRemoteImage(_ urlString: String?) {
-        self.image = nil
-
-        let s = (urlString ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !s.isEmpty, let url = URL(string: s) else { return }
-
-        // لمنع مشكلة reuse
-        self.accessibilityIdentifier = s
-        let current = s
-
-        URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
-            guard let self else { return }
-            guard self.accessibilityIdentifier == current else { return }
-            guard let data, let img = UIImage(data: data) else { return }
-
-            DispatchQueue.main.async {
-                guard self.accessibilityIdentifier == current else { return }
-                self.image = img
-            }
-        }.resume()
+extension UIImageView {
+    func setRemoteImage(_ urlString: String?, placeholder: UIImage? = nil) {
+        ImageLoader.shared.setImage(on: self, from: urlString, placeholder: placeholder)
     }
 }

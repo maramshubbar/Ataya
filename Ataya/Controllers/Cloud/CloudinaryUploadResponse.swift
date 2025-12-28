@@ -63,6 +63,8 @@ final class CloudinaryUploader {
     func uploadImage(
         _ image: UIImage,
         folder: String? = nil,
+        
+        
         completion: @escaping (Result<(secureUrl: String, publicId: String), Error>) -> Void
     ) {
         guard let endpoint = CloudinaryManager.shared.uploadEndpoint else {
@@ -130,6 +132,10 @@ final class CloudinaryUploader {
                     completion(.failure(CloudinaryUploadError.decodeFailed))
                     return
                 }
+                // ✅ ADD THESE PRINTS HERE
+                print("DEBUG Cloudinary secure_url:", decoded.secure_url)
+                print("DEBUG Cloudinary public_id:", decoded.public_id)
+                print("DEBUG Cloudinary statusCode:", http.statusCode)
 
                 completion(.success((secureUrl: decoded.secure_url, publicId: decoded.public_id)))
             }

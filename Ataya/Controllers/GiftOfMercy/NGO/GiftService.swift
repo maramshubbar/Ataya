@@ -26,6 +26,7 @@ final class GiftService {
         if let ngoId, !ngoId.isEmpty {
             q = q.whereField(Gift.Keys.ngoId, isEqualTo: ngoId)
         }
+        print("DEBUG listenGifts ngoId param:", ngoId ?? "nil")
 
         // Order newest first
         q = q.order(by: Gift.Keys.createdAt, descending: true)

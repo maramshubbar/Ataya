@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		883A5C882EFFF653003C2A73 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 883A5C872EFFF653003C2A73 /* DGCharts */; };
 		88B4AC6F2ED4A61B00D28B8F /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 88B4AC6E2ED4A61B00D28B8F /* FirebaseAuth */; };
 		88B4AC712ED4A61B00D28B8F /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 88B4AC702ED4A61B00D28B8F /* FirebaseCore */; };
 		88B4AC732ED4A61B00D28B8F /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 88B4AC722ED4A61B00D28B8F /* FirebaseFirestore */; };
@@ -46,7 +45,6 @@
 			files = (
 				88B4AC712ED4A61B00D28B8F /* FirebaseCore in Frameworks */,
 				88B4AC752ED4A61B00D28B8F /* FirebaseStorage in Frameworks */,
-				883A5C882EFFF653003C2A73 /* DGCharts in Frameworks */,
 				88B4AC6F2ED4A61B00D28B8F /* FirebaseAuth in Frameworks */,
 				88B4AC732ED4A61B00D28B8F /* FirebaseFirestore in Frameworks */,
 			);
@@ -95,7 +93,6 @@
 				88B4AC702ED4A61B00D28B8F /* FirebaseCore */,
 				88B4AC722ED4A61B00D28B8F /* FirebaseFirestore */,
 				88B4AC742ED4A61B00D28B8F /* FirebaseStorage */,
-				883A5C872EFFF653003C2A73 /* DGCharts */,
 			);
 			productName = Ataya;
 			productReference = 88231D072ED47DCC0015B250 /* Ataya.app */;
@@ -113,6 +110,7 @@
 				TargetAttributes = {
 					88231D062ED47DCC0015B250 = {
 						CreatedOnToolsVersion = 16.4;
+						LastSwiftMigration = 1640;
 					};
 				};
 			};
@@ -127,7 +125,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				88B4AC6D2ED4A61B00D28B8F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				883A5C862EFFF653003C2A73 /* XCRemoteSwiftPackageReference "Charts" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 88231D082ED47DCC0015B250 /* Products */;
@@ -165,6 +162,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -182,6 +180,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = Maram.Ataya;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -192,6 +192,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -209,6 +210,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = Maram.Ataya;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -357,14 +359,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		883A5C862EFFF653003C2A73 /* XCRemoteSwiftPackageReference "Charts" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/danielgindi/Charts.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.1.0;
-			};
-		};
 		88B4AC6D2ED4A61B00D28B8F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
@@ -376,11 +370,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		883A5C872EFFF653003C2A73 /* DGCharts */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 883A5C862EFFF653003C2A73 /* XCRemoteSwiftPackageReference "Charts" */;
-			productName = DGCharts;
-		};
 		88B4AC6E2ED4A61B00D28B8F /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 88B4AC6D2ED4A61B00D28B8F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

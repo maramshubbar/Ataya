@@ -58,7 +58,6 @@ final class NotificationViewController: UIViewController {
         refreshEmptyState()
 
         clearAllButton.addTarget(self, action: #selector(clearAllTapped), for: .touchUpInside)
-        settingsButton.addTarget(self, action: #selector(settingsTapped), for: .touchUpInside)
     }
 
     override func viewDidLayoutSubviews() {
@@ -202,12 +201,6 @@ final class NotificationViewController: UIViewController {
             self.refreshEmptyState()
         }))
         present(alert, animated: true)
-    }
-
-    @objc private func settingsTapped() {
-        let a = UIAlertController(title: "Settings", message: "Connect Settings screen later.", preferredStyle: .alert)
-        a.addAction(UIAlertAction(title: "OK", style: .default))
-        present(a, animated: true)
     }
 }
 

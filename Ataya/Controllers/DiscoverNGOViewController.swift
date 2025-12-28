@@ -8,72 +8,95 @@
 import UIKit
 
 class DiscoverNGOViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
+    @IBOutlet weak var tableView: UITableView!
     
+    // Dummy data
+        let ngos: [NGO] = [
+            NGO(
+                name: "BrightImpact",
+                category: "Community Support",
+                email: "support@brightimpact.org",
+                location: "Riyadh, Saudi Arabia",
+                rating: 5.0,
+                impact: 5000,
+                mission: "Helping families with food and essential supplies.",
+                activities: [
+                    "Food distribution",
+                    "Donation drives",
+                    "Volunteer programs"
+                ]
+            ),
+            NGO(
+                name: "GlobalReach",
+                category: "Education & Relief",
+                email: "info@globalreach.org",
+                location: "Manama, Bahrain",
+                rating: 4.2,
+                impact: 2300,
+                mission: "Providing education and emergency relief worldwide.",
+                activities: [
+                    "School support",
+                    "Emergency aid",
+                    "Community workshops"
+                ]
+            )
+        ]
+    
+    var filteredNGOs: [NGO] = []
 
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.dataSource = self
-        tableView.delegate = self
-        
-        
+        filteredNGOs = ngos
+
+                tableView.dataSource = self
+                tableView.delegate = self
+
+                tableView.register(
+                    UINib(nibName: "NGOCardCell", bundle: nil),
+                    forCellReuseIdentifier: NGOCardCell.reuseId
+                )
+
+                tableView.rowHeight = UITableView.automaticDimension
+                tableView.estimatedRowHeight = 160
+    }
+    
+    // MARK: - TableView DataSource
+
+        func tableView(_ tableView: UITableView,
+                       numberOfRowsInSection section: Int) -> Int {
+            return filteredNGOs.count
+        }
+
+        func tableView(_ tableView: UITableView,
+                       cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: NGOCardCell.reuseId,
+                for: indexPath
+            ) as! NGOCardCell
+
+            cell.configure(with: filteredNGOs[indexPath.row])
+            return cell
         }
     
-    let ngos: [NGO] = [
-        NGO(
-            name: "BrightImpact",
-            category: "Community Support & Donations",
-            email: "support@brightimpact.org",
-            location: "Riyadh, Saudi Arabia",
-            rating: 5.0,
-            impact: 5000,
-            mission: "To collect and distribute food, groceries, and essentials to underprivileged families.",
-            activities: ["Organizing donation pickups", "Sorting and packing donations", "Partnering with volunteers"]
-        ),
-        NGO(
-            name: "GlobalReach",
-            category: "Community Support & Donations",
-            email: "support@globalimpact.org",
-            location: "Manama, Bahrain",
-            rating: 3.7,
-            impact: 1200,
-            mission: "Providing community support and donations to families in need.",
-            activities: ["Running seasonal drives", "Collaborating with local organizations"]
-        )
-    ]
+    // MARK: - Navigation
 
+       func tableView(_ tableView: UITableView,
+                      didSelectRowAt indexPath: IndexPath) {
+           performSegue(
+               withIdentifier: "ShowNGODetails",
+               sender: filteredNGOs[indexPath.row]
+           )
+       }
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return ngos.count
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "NGOCell", for: indexPath)
-        let ngo = ngos[indexPath.row]
-        
-        cell.textLabel?.text = ngo.name
-        cell.detailTextLabel?.text = "\(ngo.category) • \(ngo.location)"
-        
-        return cell
-    }
-
-
-
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: "ShowNGODetails", sender: ngos[indexPath.row])
-    }
-
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "ShowNGODetails",
-           let destination = segue.destination as? NGOProfileViewController,
-           let selectedNGO = sender as? NGO {
-            destination.ngo = selectedNGO
-        }
-    }
-
-
-    }
-
-  
-
+       override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+           if segue.identifier == "ShowNGODetails",
+              let destination = segue.destination as? NGOProfileViewController,
+              let ngo = sender as? NGO {
+               destination.ngo = ngo
+           }
+       }
+    
+}
 

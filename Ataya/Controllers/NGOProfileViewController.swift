@@ -36,13 +36,12 @@ class NGOProfileViewController: UIViewController {
         
         ngoName.text = ngo.name
         categoryValue.text = ngo.category
-        emailValue.text = ngo.email
         locationValue.text = ngo.location
+        emailValue.text = ngo.email
         ratingValue.text = "⭐️ \(ngo.rating)"
         impactLabel.text = "Impact: \(ngo.impact)"
         missionValue.text = ngo.mission
         activitesValue.text = ngo.activities.joined(separator: "\n• ")
-
     }
 
 }

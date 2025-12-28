@@ -17,6 +17,10 @@ class NGOCellTableViewCell: UITableViewCell {
     @IBOutlet weak var locationValue: UILabel!
     @IBOutlet weak var ratingIcon: UIImageView!
     @IBOutlet weak var ratingValue: UILabel!
+    @IBOutlet weak var cardCell: UIView!
+    
+    static let reuseId = "NGOCardCell"
+
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -30,11 +34,18 @@ class NGOCellTableViewCell: UITableViewCell {
         
     }
     
+    private func styleCard() {
+        cardCell.layer.cornerRadius = 10
+        cardCell.layer.borderWidth = 1
+        cardCell.layer.borderColor = UIColor.systemGray5.cgColor
+        cardCell.clipsToBounds = true }
+    
     func configure(with ngo: NGO) {
         NgoName.text = ngo.name
         typeValue.text = ngo.category
         emailValue.text = ngo.email
         locationValue.text = ngo.location
         ratingValue.text = "⭐ \(ngo.rating)"
+        verificationIcon.isHidden = false // or based on logic }
     }
 }

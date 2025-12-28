@@ -402,44 +402,104 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
     private func saveToFirestore() {
         let db = Firestore.firestore()
 
-        // ✅ donorId (current user UID)
         guard let uid = Auth.auth().currentUser?.uid else {
             showAlert("Not logged in", "Please login first.")
             nextButton.isEnabled = true
             return
         }
 
-        // ✅ detect if new donation
-        let isNew = (draft.id == nil)
+        let currentId = (draft.id ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        // ✅ إذا فاضي أو مو رقم => اعتبره New وخليه يدخل counter
+        let isNew = currentId.isEmpty || Int(currentId) == nil
 
-        // reuse same doc if already created
-        let docId = draft.id ?? db.collection("donations").document().documentID
-        draft.id = docId
+        // always sync quantity from picker before saving
+        updateQuantityFromPicker()
+
+        // ✅ NEW donation -> generate 1,2,3 as docId
+        if isNew {
+            reserveNextDonationNumber(db: db) { [weak self] result in
+                guard let self else { return }
+
+                switch result {
+                case .failure(let err):
+                    self.nextButton.isEnabled = true
+                    self.showAlert("Counter failed", err.localizedDescription)
+
+                case .success(let number):
+                    let docId = "\(number)"          // ✅ docId = "1" , "2" , "3"
+                    self.draft.id = docId
+
+                    var data = self.draft.toFirestoreDict()
+                    data["id"] = docId              // store same id inside doc
+                    data["donationNumber"] = number
+                    data["donorId"] = uid
+                    data["status"] = "pending"
+                    data["createdAt"] = FieldValue.serverTimestamp()
+                    data["updatedAt"] = FieldValue.serverTimestamp()
+
+                    db.collection("donations").document(docId).setData(data, merge: true) { error in
+                        self.nextButton.isEnabled = true
+                        if let error {
+                            self.showAlert("Save failed", error.localizedDescription)
+                        }
+                    }
+                }
+            }
+            return
+        }
+
+        // ✅ EXISTING donation -> update using same numeric id
+        guard let docId = draft.id else {
+            nextButton.isEnabled = true
+            showAlert("Error", "Missing donation id.")
+            return
+        }
 
         var data = draft.toFirestoreDict()
-
+        data["id"] = docId
         data["donorId"] = uid
         data["status"] = "pending"
         data["updatedAt"] = FieldValue.serverTimestamp()
 
-        if isNew {
-            data["createdAt"] = FieldValue.serverTimestamp()
-        }
-
-        print("✅ Saving donation docId:", docId)
-        print("✅ Data keys:", Array(data.keys))
-
         db.collection("donations").document(docId).setData(data, merge: true) { [weak self] error in
             guard let self else { return }
             self.nextButton.isEnabled = true
-
             if let error {
-                print("❌ Firestore error:", error.localizedDescription)
                 self.showAlert("Save failed", error.localizedDescription)
-                return
             }
         }
     }
+
+    
+    private func reserveNextDonationNumber(
+        db: Firestore,
+        completion: @escaping (Result<Int, Error>) -> Void
+    ) {
+        let counterRef = db.collection("counters").document("donations")
+
+        db.runTransaction({ (tx, errorPointer) -> Any? in
+            let snap: DocumentSnapshot
+            do {
+                snap = try tx.getDocument(counterRef)
+            } catch let err {
+                errorPointer?.pointee = err as NSError
+                return nil
+            }
+
+            // next number (default 1)
+            let currentNext = (snap.data()?["next"] as? Int) ?? 1
+            tx.setData(["next": currentNext + 1], forDocument: counterRef, merge: true)
+
+            return currentNext
+        }, completion: { result, error in
+            if let error {
+                completion(.failure(error))
+                return
+            }
+            completion(.success(result as? Int ?? 1))
+        })
+    }
+
 }
 
 // MARK: - UIPickerView Delegate/DataSource (Dropdowns + Quantity)

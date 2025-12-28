@@ -9,88 +9,69 @@ import UIKit
 
 class DiscoverNGOViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
     
-    @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var searchBar: UISearchBar!
-    @IBOutlet weak var filterSegment: UISegmentedControl!
-    
-    
-    private var allNGOs: [NGO] = []
-    private var shownNGOs: [NGO] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        searchBar.delegate = self
-        filterSegment.addTarget(self, action: #selector(filterChanged), for: .valueChanged)
-        
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.register(UINib(nibName: "NGOCardCell", bundle: nil), forCellReuseIdentifier: NGOCellTableViewCell.reuseId)
-
-
         
-        loadDummyNGOs()
-        applyFiltersAndReload()
-    }
-
-    private func loadDummyNGOs() {
-        allNGOs = [
-            NGO(name: "NextGen Giving", category: "Educational & Children Support", email: "info@brighthands.org", location: "Manama, Bahrain", rating: 4.5),
-            NGO(name: "GlobalReach", category: "Community Support & Donations", email: "contact@globalreach.org", location: "Doha, Qatar", rating: 5.0),
-        ]
-    }
-
-    @objc private func filterChanged() {
-        applyFiltersAndReload()
-    }
-
-    private func applyFiltersAndReload() {
-        let key = filterSegment.selectedSegmentIndex
-        let searchText = (searchBar.text ?? "").lowercased().trimmingCharacters(in: .whitespaces)
-        var filtered = allNGOs
         
-        switch key {
-        case 1:filtered = filtered.filter { $0.category.lowercased().contains("education") }
-        case 2: filtered = filtered.filter { $0.location.lowercased().contains("qatar") }
-        case 3:filtered = filtered.filter { $0.rating >= 4.8 }
-        default:
-            break
         }
-        
-        if !searchText.isEmpty {
-            filtered = filtered.filter {
-                [$0.name, $0.category, $0.email, $0.location]
-                    .joined(separator: " ")
-                    .lowercased()
-                    .contains(searchText)
-            }
-        }
-        
-        shownNGOs = filtered
-        tableView.reloadData()
-    }
+    
+    let ngos: [NGO] = [
+        NGO(
+            name: "BrightImpact",
+            category: "Community Support & Donations",
+            email: "support@brightimpact.org",
+            location: "Riyadh, Saudi Arabia",
+            rating: 5.0,
+            impact: 5000,
+            mission: "To collect and distribute food, groceries, and essentials to underprivileged families.",
+            activities: ["Organizing donation pickups", "Sorting and packing donations", "Partnering with volunteers"]
+        ),
+        NGO(
+            name: "GlobalReach",
+            category: "Community Support & Donations",
+            email: "support@globalimpact.org",
+            location: "Manama, Bahrain",
+            rating: 3.7,
+            impact: 1200,
+            mission: "Providing community support and donations to families in need.",
+            activities: ["Running seasonal drives", "Collaborating with local organizations"]
+        )
+    ]
+
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return shownNGOs.count
+        return ngos.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: NGOCellTableViewCell.reuseId, for: indexPath) as! NGOCellTableViewCell
-        let ngo = shownNGOs[indexPath.row]
-        cell.configure(with: ngo)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "NGOCell", for: indexPath)
+        let ngo = ngos[indexPath.row]
+        
+        cell.textLabel?.text = ngo.name
+        cell.detailTextLabel?.text = "\(ngo.category) • \(ngo.location)"
+        
         return cell
     }
 
-        
-        func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-            searchBar.resignFirstResponder()
+
+
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "ShowNGODetails", sender: ngos[indexPath.row])
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "ShowNGODetails",
+           let destination = segue.destination as? NGOProfileViewController,
+           let selectedNGO = sender as? NGO {
+            destination.ngo = selectedNGO
         }
-        
-        func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-            searchBar.text = ""
-            searchBar.resignFirstResponder()
-            applyFiltersAndReload()
-        }
+    }
+
+
     }
 
   

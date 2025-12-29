@@ -38,7 +38,7 @@ final class PickupListCardCell: UITableViewCell {
         // CARD
         cardView.translatesAutoresizingMaskIntoConstraints = false
         cardView.backgroundColor = .white
-        cardView.layer.cornerRadius = 12
+        cardView.layer.cornerRadius = 10
         cardView.layer.borderWidth = 1
         cardView.layer.borderColor = UIColor.hex("#E6E6E6").cgColor
         cardView.layer.masksToBounds = false
@@ -76,8 +76,8 @@ final class PickupListCardCell: UITableViewCell {
         viewDetailsButton.setTitle("View Details", for: .normal)
         viewDetailsButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
         viewDetailsButton.setTitleColor(.black, for: .normal)
-        viewDetailsButton.backgroundColor = UIColor.hex("#FEC400") // your primary yellow
-        viewDetailsButton.layer.cornerRadius = 10
+        viewDetailsButton.backgroundColor = UIColor.hex("#F7D44C") // your primary yellow
+        viewDetailsButton.layer.cornerRadius = 8
         viewDetailsButton.layer.masksToBounds = true
         viewDetailsButton.addTarget(self, action: #selector(detailsTapped), for: .touchUpInside)
 

@@ -8,6 +8,7 @@ final class DonateFundsViewController: UIViewController {
     private let atayaYellow = UIColor(red: 0xF7/255.0, green: 0xD4/255.0, blue: 0x4C/255.0, alpha: 1.0)
     private let optionBG    = UIColor(red: 0xFF/255.0, green: 0xFB/255.0, blue: 0xE7/255.0, alpha: 1.0)
     private let textGray    = UIColor(red: 90/255.0, green: 90/255.0, blue: 90/255.0, alpha: 1.0)
+    private let iconGray    = UIColor.systemGray2  // ✅ For amount arrows (gray)
 
     // MARK: - Data
     private let ngos = ["Hoppal", "Al Rahma", "Al Rayaheen"]
@@ -31,8 +32,6 @@ final class DonateFundsViewController: UIViewController {
     // MARK: - UI
     private let scrollView = UIScrollView()
     private let contentView = UIView()
-
-    private let titleLabel = UILabel()
 
     private let amountLabel = UILabel()
     private let amountField = AmountDropdownField()
@@ -63,21 +62,21 @@ final class DonateFundsViewController: UIViewController {
 
     // MARK: - Build UI
     private func buildUI() {
-        // Scroll
+        // Scroll setup
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
 
-        // Title in nav
+        // Title in nav bar
         navigationItem.title = "Donate"
         navigationItem.largeTitleDisplayMode = .never
 
-        // Labels style
+        // Label helper
         func styleFieldLabel(_ l: UILabel, text: String) {
             l.text = text
-            l.font = .systemFont(ofSize: 13, weight: .semibold)
-            l.textColor = textGray
+            l.font = .systemFont(ofSize: 15, weight: .semibold)
+            l.textColor = .black
             l.translatesAutoresizingMaskIntoConstraints = false
         }
 
@@ -88,24 +87,26 @@ final class DonateFundsViewController: UIViewController {
         amountField.translatesAutoresizingMaskIntoConstraints = false
         amountField.setAmount(amount)
         amountField.minimumAmount = 5
-        amountField.textGray = textGray
+        amountField.textGray = .black
+        amountField.arrowTint = iconGray   // ✅ arrows gray
 
         // NGO dropdown field
         ngoDropdown.translatesAutoresizingMaskIntoConstraints = false
         ngoDropdown.textGray = textGray
         ngoDropdown.setValue(selectedNGO)
+        ngoDropdown.chevronSize = 18        // ✅ make chevron bigger
 
-        // Add payment method (right side)
+        // Add payment method button
         addPaymentButton.setTitle("Add payment Method", for: .normal)
         addPaymentButton.titleLabel?.font = .systemFont(ofSize: 12, weight: .semibold)
         addPaymentButton.setTitleColor(.systemBlue, for: .normal)
         addPaymentButton.contentHorizontalAlignment = .right
         addPaymentButton.translatesAutoresizingMaskIntoConstraints = false
 
-        // Select payment label (LEFT aligned — not centered)
+        // Select payment label
         selectPaymentLabel.text = "Select Payment Method"
-        selectPaymentLabel.font = .systemFont(ofSize: 13, weight: .semibold)
-        selectPaymentLabel.textColor = textGray
+        selectPaymentLabel.font = .systemFont(ofSize: 15, weight: .semibold)
+        selectPaymentLabel.textColor = .black
         selectPaymentLabel.textAlignment = .left
         selectPaymentLabel.translatesAutoresizingMaskIntoConstraints = false
 
@@ -133,16 +134,16 @@ final class DonateFundsViewController: UIViewController {
         }
         paymentRows.forEach { paymentStack.addArrangedSubview($0) }
 
-        // Confirm button (aligned to safe area bottom)
+        // Confirm button pinned to bottom
         confirmButton.setTitle("Confirm", for: .normal)
         confirmButton.backgroundColor = atayaYellow
         confirmButton.setTitleColor(.black, for: .normal)
         confirmButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
-        confirmButton.layer.cornerRadius = 10
+        confirmButton.layer.cornerRadius = 8
         confirmButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(confirmButton)
 
-        // Add all to contentView
+        // Add all subviews
         [amountLabel, amountField,
          ngoLabel, ngoDropdown, addPaymentButton,
          selectPaymentLabel, paymentStack
@@ -176,7 +177,7 @@ final class DonateFundsViewController: UIViewController {
             contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
         ])
 
-        // Field sizes (60x362)
+        // Field sizes
         NSLayoutConstraint.activate([
             amountField.widthAnchor.constraint(equalToConstant: 370),
             amountField.heightAnchor.constraint(equalToConstant: 60),
@@ -184,7 +185,7 @@ final class DonateFundsViewController: UIViewController {
             ngoDropdown.heightAnchor.constraint(equalToConstant: 60),
         ])
 
-        // Payment rows (height close to design)
+        // Payment rows sizes
         paymentRows.forEach { row in
             row.heightAnchor.constraint(equalToConstant: 56).isActive = true
             row.widthAnchor.constraint(equalToConstant: 362).isActive = true
@@ -228,7 +229,7 @@ final class DonateFundsViewController: UIViewController {
             }
         }
 
-        // Amount arrows
+        // Amount arrows changes
         amountField.onChange = { [weak self] newValue in
             self?.amount = newValue
         }
@@ -238,7 +239,7 @@ final class DonateFundsViewController: UIViewController {
     }
 
     private func applyInitialState() {
-        // defaults
+        // Default values
         selectedNGO = ngos.first ?? "Hoppal"
         amount = max(10, 5)
         selectedPayment = .visa
@@ -253,18 +254,16 @@ final class DonateFundsViewController: UIViewController {
 
     // MARK: - Actions
     @objc private func addPaymentTapped() {
-        // TODO: push add card screen later
-        let alert = UIAlertController(title: "Add Payment Method", message: "Coming soon.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
+        let vc = AddPaymentMethodViewController()
+        navigationController?.pushViewController(vc, animated: true)
     }
 
     @objc private func confirmTapped() {
-        // TODO: push Payment screen later
-        let msg = "Amount: \(amount)$\nNGO: \(selectedNGO)\nPayment: \(selectedPayment.rawValue)"
-        let alert = UIAlertController(title: "Confirm", message: msg, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
+        // Present success popup screen
+        let vc = DonationSuccessViewController()
+        vc.modalPresentationStyle = .overFullScreen
+        vc.modalTransitionStyle = .crossDissolve
+        present(vc, animated: true)
     }
 
     // MARK: - Helpers
@@ -303,7 +302,7 @@ private struct PaymentMethod {
     let subtitle: String?
 }
 
-// MARK: - DropdownField (looks like textfield with chevron)
+// MARK: - DropdownField (textfield-like with chevron)
 
 private final class DropdownField: UIControl {
 
@@ -313,9 +312,21 @@ private final class DropdownField: UIControl {
         didSet { valueLabel.textColor = textGray }
     }
 
+    // ✅ Make chevron bigger from VC
+    var chevronSize: CGFloat = 14 {
+        didSet {
+            chevronWidthConstraint?.constant = chevronSize
+            chevronHeightConstraint?.constant = chevronSize
+            layoutIfNeeded()
+        }
+    }
+
     private let container = UIView()
     private let valueLabel = UILabel()
     private let chevron = UIImageView()
+
+    private var chevronWidthConstraint: NSLayoutConstraint?
+    private var chevronHeightConstraint: NSLayoutConstraint?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -332,7 +343,7 @@ private final class DropdownField: UIControl {
 
         container.translatesAutoresizingMaskIntoConstraints = false
         container.backgroundColor = .white
-        container.layer.cornerRadius = 10
+        container.layer.cornerRadius = 8
         container.layer.borderWidth = 1
         container.layer.borderColor = UIColor.systemGray5.cgColor
 
@@ -342,12 +353,20 @@ private final class DropdownField: UIControl {
 
         chevron.translatesAutoresizingMaskIntoConstraints = false
         chevron.image = UIImage(systemName: "chevron.down")?.withRenderingMode(.alwaysTemplate)
-        chevron.tintColor = .black // icon color black
+        chevron.tintColor = .black
         chevron.contentMode = .scaleAspectFit
+
+        // ✅ IMPORTANT: Do not block touches (so UIControl gets the tap)
+        container.isUserInteractionEnabled = false
+        valueLabel.isUserInteractionEnabled = false
+        chevron.isUserInteractionEnabled = false
 
         addSubview(container)
         container.addSubview(valueLabel)
         container.addSubview(chevron)
+
+        chevronWidthConstraint = chevron.widthAnchor.constraint(equalToConstant: chevronSize)
+        chevronHeightConstraint = chevron.heightAnchor.constraint(equalToConstant: chevronSize)
 
         NSLayoutConstraint.activate([
             container.topAnchor.constraint(equalTo: topAnchor),
@@ -361,8 +380,9 @@ private final class DropdownField: UIControl {
 
             chevron.centerYAnchor.constraint(equalTo: container.centerYAnchor),
             chevron.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -14),
-            chevron.widthAnchor.constraint(equalToConstant: 14),
-            chevron.heightAnchor.constraint(equalToConstant: 14),
+
+            chevronWidthConstraint!,
+            chevronHeightConstraint!,
         ])
 
         addTarget(self, action: #selector(tapped), for: .touchUpInside)
@@ -377,7 +397,7 @@ private final class DropdownField: UIControl {
     }
 }
 
-// MARK: - AmountDropdownField (textfield look + up/down arrows, min 5$)
+// MARK: - AmountDropdownField (textfield-like + up/down arrows, min 5$)
 
 private final class AmountDropdownField: UIControl {
 
@@ -388,6 +408,14 @@ private final class AmountDropdownField: UIControl {
 
     var textGray: UIColor = .darkGray {
         didSet { valueLabel.textColor = textGray }
+    }
+
+    // ✅ Make arrows gray from VC
+    var arrowTint: UIColor = .systemGray2 {
+        didSet {
+            upButton.tintColor = arrowTint
+            downButton.tintColor = arrowTint
+        }
     }
 
     private let container = UIView()
@@ -412,7 +440,7 @@ private final class AmountDropdownField: UIControl {
     private func setup() {
         container.translatesAutoresizingMaskIntoConstraints = false
         container.backgroundColor = .white
-        container.layer.cornerRadius = 10
+        container.layer.cornerRadius = 8
         container.layer.borderWidth = 1
         container.layer.borderColor = UIColor.systemGray5.cgColor
 
@@ -426,9 +454,9 @@ private final class AmountDropdownField: UIControl {
         upButton.setImage(UIImage(systemName: "chevron.up")?.withRenderingMode(.alwaysTemplate), for: .normal)
         downButton.setImage(UIImage(systemName: "chevron.down")?.withRenderingMode(.alwaysTemplate), for: .normal)
 
-        // icons black
-        upButton.tintColor = .black
-        downButton.tintColor = .black
+        // ✅ arrows gray
+        upButton.tintColor = arrowTint
+        downButton.tintColor = arrowTint
 
         upButton.addTarget(self, action: #selector(increase), for: .touchUpInside)
         downButton.addTarget(self, action: #selector(decrease), for: .touchUpInside)
@@ -440,6 +468,12 @@ private final class AmountDropdownField: UIControl {
         arrowsStack.translatesAutoresizingMaskIntoConstraints = false
         arrowsStack.addArrangedSubview(upButton)
         arrowsStack.addArrangedSubview(downButton)
+
+        // ✅ IMPORTANT: Do not block touches on the whole control
+        container.isUserInteractionEnabled = true
+        valueLabel.isUserInteractionEnabled = true
+        // arrowsStack must stay interactive because it contains buttons
+        arrowsStack.isUserInteractionEnabled = true
 
         addSubview(container)
         container.addSubview(valueLabel)
@@ -456,8 +490,8 @@ private final class AmountDropdownField: UIControl {
 
             arrowsStack.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -12),
             arrowsStack.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-            arrowsStack.widthAnchor.constraint(equalToConstant: 22),
-            arrowsStack.heightAnchor.constraint(equalToConstant: 34),
+            arrowsStack.widthAnchor.constraint(equalToConstant: 24),
+            arrowsStack.heightAnchor.constraint(equalToConstant: 24),
         ])
     }
 
@@ -508,14 +542,14 @@ private final class PaymentOptionView: UIControl {
 
     private func setup() {
         container.translatesAutoresizingMaskIntoConstraints = false
-        container.layer.cornerRadius = 10
+        container.layer.cornerRadius = 8
         container.layer.borderWidth = 1
         container.layer.borderColor = UIColor.clear.cgColor
         container.backgroundColor = optionBG
 
         iconView.translatesAutoresizingMaskIntoConstraints = false
         iconView.contentMode = .scaleAspectFit
-        iconView.tintColor = .black // icon color black
+        iconView.tintColor = .black
 
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.font = .systemFont(ofSize: 14, weight: .semibold)
@@ -531,6 +565,13 @@ private final class PaymentOptionView: UIControl {
         labelsStack.translatesAutoresizingMaskIntoConstraints = false
         labelsStack.addArrangedSubview(titleLabel)
         labelsStack.addArrangedSubview(subtitleLabel)
+
+        // ✅ IMPORTANT: container should not block touches
+        container.isUserInteractionEnabled = false
+        iconView.isUserInteractionEnabled = false
+        labelsStack.isUserInteractionEnabled = false
+        titleLabel.isUserInteractionEnabled = false
+        subtitleLabel.isUserInteractionEnabled = false
 
         addSubview(container)
         container.addSubview(iconView)
@@ -578,7 +619,6 @@ private final class PaymentOptionView: UIControl {
             subtitleLabel.isHidden = true
         }
 
-        // icons (black)
         switch iconType {
         case .visa:
             iconView.image = UIImage(systemName: "creditcard")?.withRenderingMode(.alwaysTemplate)

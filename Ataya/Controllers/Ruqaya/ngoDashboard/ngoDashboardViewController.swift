@@ -15,23 +15,23 @@ class ngoDashboardViewController: UIViewController, UITableViewDataSource, UITab
     
     @IBOutlet weak var assignedTableHeightConstraint: NSLayoutConstraint!
     
-    
-    struct AssignedPickupItem {
-        let title: String
-        let donor: String
-        let location: String
-        let status: String
-    }
+
 
     private let assignedPickups: [AssignedPickupItem] = [
-        .init(title: "Canned Beans",
-              donor: "Abdulla Hasan (ID: D-17)",
-              location: "Hamad Town, Bahrain",
-              status: "Upcoming"),
-        .init(title: "Cooking Oil",
-              donor: "Ali AlArab (ID: D-61)",
-              location: "Zayed Town, Bahrain",
-              status: "Upcoming")
+        .init(
+            title: "Canned Beans",
+            donor: "Abdulla Hasan (ID: D-17)",
+            location: "Hamad Town, Bahrain",
+            status: "Upcoming",
+            imageName: "beans"
+        ),
+        .init(
+            title: "Cooking Oil",
+            donor: "Ali AlArab (ID: D-61)",
+            location: "Zayed Town, Bahrain",
+            status: "Upcoming",
+            imageName: "oil"
+        )
     ]
 
     
@@ -41,49 +41,56 @@ class ngoDashboardViewController: UIViewController, UITableViewDataSource, UITab
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
         assignedTableView.dataSource = self
-        assignedTableView.delegate = self
-        assignedTableView.isScrollEnabled = false
-        assignedTableView.separatorStyle = .none
-        assignedTableView.backgroundColor = .clear
+               assignedTableView.delegate = self
+               assignedTableView.isScrollEnabled = false
+               assignedTableView.separatorStyle = .none
+               assignedTableView.backgroundColor = .clear
+
+               assignedTableView.rowHeight = UITableView.automaticDimension
+               assignedTableView.estimatedRowHeight = 120
+
+        assignedTableView.rowHeight = 125
 
         assignedTableView.register(
-            UITableViewCell.self,
-            forCellReuseIdentifier: "cell"
+            UINib(nibName: "AssignedPickupCell", bundle: nil),
+            forCellReuseIdentifier: AssignedPickupCell.reuseId
         )
+
+        assignedTableView.reloadData()
+
+        // ✅ احسبي الارتفاع بعد ما يخلص reload + layout
+        DispatchQueue.main.async {
+            self.updateTableHeight()
+        }
+
 
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return assignedPickups.count
-    }
+            assignedPickups.count
+        }
 
-    func tableView(_ tableView: UITableView,
-                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: AssignedPickupCell.reuseId,
+                for: indexPath
+            ) as! AssignedPickupCell
 
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell",
-                                                 for: indexPath)
+            cell.configure(with: assignedPickups[indexPath.row])
+            return cell
+        }
 
-        let item = assignedPickups[indexPath.row]
-        cell.textLabel?.numberOfLines = 0
-        cell.textLabel?.text = """
-        \(item.title)
-        \(item.donor)
-        \(item.location)
-        \(item.status)
-        """
+        override func viewDidLayoutSubviews() {
+            super.viewDidLayoutSubviews()
+            updateTableHeight()
+        }
 
-        cell.selectionStyle = .none
-        return cell
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        assignedTableView.layoutIfNeeded()
-        assignedTableHeightConstraint.constant =
-            assignedTableView.contentSize.height
-    }
-
+        private func updateTableHeight() {
+            assignedTableView.layoutIfNeeded()
+            assignedTableHeightConstraint.constant = assignedTableView.contentSize.height
+        }
 
     /*
     // MARK: - Navigation

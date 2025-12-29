@@ -25,9 +25,13 @@ final class AssignedPickupCell: UITableViewCell {
     @IBOutlet private weak var productImageView: UIImageView!
     
     @IBOutlet private weak var titleLabel: UILabel!
-    @IBOutlet private weak var donorLabel: UILabel!
-    @IBOutlet weak var locationLabel: UILabel!
     
+        
+    @IBOutlet weak var donorLabel: UILabel!
+    
+
+    
+    @IBOutlet weak var locationLabel: UILabel!
     
     
     @IBOutlet private weak var statusContainerView: UIView!
@@ -45,11 +49,12 @@ final class AssignedPickupCell: UITableViewCell {
 
             // Shadow
             shadowView.layer.shadowColor = UIColor.black.cgColor
-            shadowView.layer.shadowOpacity = 0.06
+            shadowView.layer.shadowOpacity = 0.08
             shadowView.layer.shadowOffset = CGSize(width: 0, height: 4)
-            shadowView.layer.shadowRadius = 8
+            shadowView.layer.shadowRadius = 10
             shadowView.layer.shouldRasterize = true
             shadowView.layer.rasterizationScale = UIScreen.main.scale
+            shadowView.clipsToBounds = false
 
             // Card
             cardView.backgroundColor = .white
@@ -61,6 +66,7 @@ final class AssignedPickupCell: UITableViewCell {
             // Image
             productImageView.layer.cornerRadius = 12
             productImageView.clipsToBounds = true
+            productImageView.contentMode = .scaleAspectFill
 
             // Text
             titleLabel.font = .systemFont(ofSize: 20, weight: .semibold)
@@ -84,6 +90,7 @@ final class AssignedPickupCell: UITableViewCell {
 
         private func updateStatusPillWidth() {
             statusLabel.layoutIfNeeded()
+
             let padding: CGFloat = 28
             let maxWidth = contentView.bounds.width * 0.42
             let targetWidth = min(statusLabel.intrinsicContentSize.width + padding, maxWidth)
@@ -105,10 +112,8 @@ final class AssignedPickupCell: UITableViewCell {
             statusLabel.text = item.status
             productImageView.image = UIImage(named: item.imageName)
 
-            // Upcoming style (مثل الفقما)
-            statusContainerView.backgroundColor = UIColor(red: 252/255, green: 246/255, blue: 201/255, alpha: 1)
+            statusContainerView.backgroundColor = UIColor(red: 255/255, green: 251/255, blue: 204/255, alpha: 1)
 
             setNeedsLayout()
         }
-
 }

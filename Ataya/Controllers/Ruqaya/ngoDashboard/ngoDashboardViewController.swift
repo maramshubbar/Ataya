@@ -51,8 +51,9 @@ class ngoDashboardViewController: UIViewController, UITableViewDataSource, UITab
                assignedTableView.rowHeight = UITableView.automaticDimension
                assignedTableView.estimatedRowHeight = 120
 
-        assignedTableView.rowHeight = 125
-
+        assignedTableView.rowHeight = 130
+        
+        
         assignedTableView.register(
             UINib(nibName: "AssignedPickupCell", bundle: nil),
             forCellReuseIdentifier: AssignedPickupCell.reuseId
@@ -60,7 +61,6 @@ class ngoDashboardViewController: UIViewController, UITableViewDataSource, UITab
 
         assignedTableView.reloadData()
 
-        // ✅ احسبي الارتفاع بعد ما يخلص reload + layout
         DispatchQueue.main.async {
             self.updateTableHeight()
         }

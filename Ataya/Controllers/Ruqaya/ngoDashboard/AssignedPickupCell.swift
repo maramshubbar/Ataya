@@ -38,7 +38,6 @@ final class AssignedPickupCell: UITableViewCell {
     @IBOutlet private weak var statusLabel: UILabel!
     
     private let radius: CGFloat = 24
-    private var statusWidthConstraint: NSLayoutConstraint?
     
     override func awakeFromNib() {
             super.awakeFromNib()
@@ -47,62 +46,38 @@ final class AssignedPickupCell: UITableViewCell {
             contentView.backgroundColor = .clear
             selectionStyle = .none
 
-            // Shadow
-            shadowView.layer.shadowColor = UIColor.black.cgColor
-            shadowView.layer.shadowOpacity = 0.08
-            shadowView.layer.shadowOffset = CGSize(width: 0, height: 4)
-            shadowView.layer.shadowRadius = 10
-            shadowView.layer.shouldRasterize = true
-            shadowView.layer.rasterizationScale = UIScreen.main.scale
-            shadowView.clipsToBounds = false
-
-            // Card
+            // ===== Card =====
             cardView.backgroundColor = .white
             cardView.layer.cornerRadius = radius
-            cardView.clipsToBounds = true
             cardView.layer.borderWidth = 1
             cardView.layer.borderColor = UIColor.systemGray4.cgColor
+            cardView.clipsToBounds = true
 
-            // Image
+            // ===== Image =====
             productImageView.layer.cornerRadius = 12
             productImageView.clipsToBounds = true
             productImageView.contentMode = .scaleAspectFill
 
-            // Text
+            // ===== Text =====
             titleLabel.font = .systemFont(ofSize: 20, weight: .semibold)
+
             donorLabel.font = .systemFont(ofSize: 16, weight: .regular)
             donorLabel.textColor = .systemGray
+
             locationLabel.font = .systemFont(ofSize: 16, weight: .regular)
             locationLabel.textColor = .systemGray
 
-            // Badge
+            // ===== Upcoming Badge =====
             statusContainerView.layer.cornerRadius = 15
             statusContainerView.clipsToBounds = true
+            statusContainerView.backgroundColor = UIColor(red: 255/255,
+                                                          green: 251/255,
+                                                          blue: 204/255,
+                                                          alpha: 1) // FFFBCC
+
             statusLabel.font = .systemFont(ofSize: 14, weight: .medium)
             statusLabel.textAlignment = .center
-        }
 
-        override func layoutSubviews() {
-            super.layoutSubviews()
-            shadowView.layer.shadowPath = UIBezierPath(roundedRect: shadowView.bounds, cornerRadius: radius).cgPath
-            updateStatusPillWidth()
-        }
-
-        private func updateStatusPillWidth() {
-            statusLabel.layoutIfNeeded()
-
-            let padding: CGFloat = 28
-            let maxWidth = contentView.bounds.width * 0.42
-            let targetWidth = min(statusLabel.intrinsicContentSize.width + padding, maxWidth)
-
-            if statusWidthConstraint == nil {
-                let c = statusContainerView.widthAnchor.constraint(equalToConstant: targetWidth)
-                c.priority = .required
-                c.isActive = true
-                statusWidthConstraint = c
-            } else {
-                statusWidthConstraint?.constant = targetWidth
-            }
         }
 
         func configure(with item: AssignedPickupItem) {
@@ -111,9 +86,5 @@ final class AssignedPickupCell: UITableViewCell {
             locationLabel.text = item.location
             statusLabel.text = item.status
             productImageView.image = UIImage(named: item.imageName)
-
-            statusContainerView.backgroundColor = UIColor(red: 255/255, green: 251/255, blue: 204/255, alpha: 1)
-
-            setNeedsLayout()
         }
 }

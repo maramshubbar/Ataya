@@ -1,6 +1,6 @@
 import UIKit
 
-final class DonorTabBarController: UITabBarController, UITabBarControllerDelegate, UIAdaptivePresentationControllerDelegate {
+final class NGOTabBarController: UITabBarController, UITabBarControllerDelegate, UIAdaptivePresentationControllerDelegate {
 
     private let centerButton = UIButton(type: .custom)
     private var centerButtonConstraints: [NSLayoutConstraint] = []
@@ -44,8 +44,8 @@ final class DonorTabBarController: UITabBarController, UITabBarControllerDelegat
         items[0].image = UIImage(named: "housefillgrey")?.resized(to: size).withRenderingMode(.alwaysTemplate)
         items[0].selectedImage = UIImage(named: "housefillgrey")?.resized(to: size).withRenderingMode(.alwaysTemplate)
 
-        items[1].image = UIImage(named: "deliverytime")?.resized(to: size).withRenderingMode(.alwaysTemplate)
-        items[1].selectedImage = UIImage(named: "deliverytime")?.resized(to: size).withRenderingMode(.alwaysTemplate)
+        items[1].image = UIImage(named: "Deliverytime")?.resized(to: size).withRenderingMode(.alwaysTemplate)
+        items[1].selectedImage = UIImage(named: "Deliverytime")?.resized(to: size).withRenderingMode(.alwaysTemplate)
 
         // center dummy
         items[2].image = UIImage(named: "tab_empty")?.withRenderingMode(.alwaysOriginal)

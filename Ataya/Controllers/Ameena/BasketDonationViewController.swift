@@ -25,9 +25,30 @@ final class BasketDonationViewController: UIViewController {
         view.backgroundColor = .systemBackground
         title = "Basket Donation"
         navigationItem.backButtonTitle = ""
+        
+        addBasketCard(
+            title: "Basic Basket",
+            descriptionText: """
+            A simple basket with essential food items to support a small family's basic needs.
+            Includes: Rice, lentils, canned beans, oil, and salt.
+            Perfect for: Supporting individuals or small families with staple foods.
+            """,
+            imageName: "Basic basket",
+            price: "$10"
+        )
+
+        addBasketCard(
+            title: "Family Basket",
+            descriptionText: """
+            A variety of foods for a family of 4–6 people for several days.
+            Includes: Rice, flour, canned vegetables, pasta, oil, lentils.
+            Perfect for: Providing enough food for a family, offering a balanced mix of staples and meals.
+            """,
+            imageName: "Family Basket",
+            price: "$20"
+        )
 
         buildLayout()
-        buildBasicBasketCard()
     }
 
     // MARK: - Layout
@@ -72,124 +93,132 @@ final class BasketDonationViewController: UIViewController {
         ])
     }
 
-    // MARK: - Card (Basic Basket)
-    private func buildBasicBasketCard() {
-        // Card container
+    // MARK: - Cards
+    private func addBasketCard(
+        title: String,
+        descriptionText: String,
+        imageName: String,
+        price: Double
+    ) {
+
+        let cardView = UIView()
         cardView.translatesAutoresizingMaskIntoConstraints = false
         cardView.backgroundColor = .white
         cardView.layer.cornerRadius = 24
-        cardView.layer.masksToBounds = false
-
-        // Shadow
         cardView.layer.shadowColor = UIColor.black.cgColor
         cardView.layer.shadowOpacity = 0.12
         cardView.layer.shadowOffset = CGSize(width: 0, height: 4)
         cardView.layer.shadowRadius = 10
 
-        // Card stack
-        cardStack.translatesAutoresizingMaskIntoConstraints = false
-        cardStack.axis = .vertical
-        cardStack.spacing = 12
-        cardStack.alignment = .fill
-        cardStack.distribution = .fill
-        cardStack.isLayoutMarginsRelativeArrangement = true
-        cardStack.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(named: imageName)
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 24
+        imageView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
 
-        // Image
-        basketImageView.translatesAutoresizingMaskIntoConstraints = false
-        basketImageView.image = UIImage(named: "Basic basket")
-        basketImageView.contentMode = .scaleAspectFill
-        basketImageView.clipsToBounds = true
+        let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .vertical
+        stack.spacing = 0
+        stack.isLayoutMarginsRelativeArrangement = true
+        stack.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
 
-        // Title
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.text = "Basic Basket"
+        let titleLabel = UILabel()
+        titleLabel.text = title
         titleLabel.font = .systemFont(ofSize: 22, weight: .bold)
-        titleLabel.textColor = .black
-        titleLabel.numberOfLines = 1
 
-        // Description
-        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        descriptionLabel.text =
-        """
-        A simple basket with essential food items to support a small family's basic needs.
-        Includes: Rice, lentils, canned beans, oil, and salt.
-        Perfect for: Supporting individuals or small families with staple foods.
-        """
-        descriptionLabel.font = .systemFont(ofSize: 14, weight: .regular)
-        descriptionLabel.textColor = .darkGray
+        let descriptionLabel = UILabel()
         descriptionLabel.numberOfLines = 0
+        descriptionLabel.attributedText = styledDescription(text: descriptionText)
 
-        // Price
-        priceLabel.translatesAutoresizingMaskIntoConstraints = false
-        priceLabel.text = "Price: $10"
-        priceLabel.font = .systemFont(ofSize: 16, weight: .semibold)
-        priceLabel.textColor = .black
-        priceLabel.numberOfLines = 1
+        let priceLabel = UILabel()
+        priceLabel.attributedText = styledPrice(amount: price)
 
-        // Donate button
-        donateButton.translatesAutoresizingMaskIntoConstraints = false
+        let donateButton = UIButton(type: .system)
         donateButton.setTitle("Donate", for: .normal)
-        donateButton.setTitleColor(.black, for: .normal)
         donateButton.backgroundColor = atayaYellow
+        donateButton.setTitleColor(.black, for: .normal)
         donateButton.layer.cornerRadius = 4.6
         donateButton.titleLabel?.font = .systemFont(ofSize: 17, weight: .medium)
-        donateButton.addTarget(self, action: #selector(donateTapped), for: .touchUpInside)
+        donateButton.translatesAutoresizingMaskIntoConstraints = false
+        donateButton.heightAnchor.constraint(equalToConstant: 42).isActive = true
+        donateButton.widthAnchor.constraint(equalToConstant: 190).isActive = true
+        donateButton.accessibilityIdentifier = title
+        donateButton.tag = Int(price * 100)
+        donateButton.addTarget(self, action: #selector(donateBasketTapped(_:)), for: .touchUpInside)
 
-        // Assemble
-        cardView.addSubview(cardStack)
-        cardStack.addArrangedSubview(titleLabel)
-        let imageContainer = UIView()
-        imageContainer.translatesAutoresizingMaskIntoConstraints = false
-        imageContainer.addSubview(basketImageView)
 
-        basketImageView.translatesAutoresizingMaskIntoConstraints = false
+        let buttonContainer = UIView()
+        buttonContainer.addSubview(donateButton)
+        donateButton.centerXAnchor.constraint(equalTo: buttonContainer.centerXAnchor).isActive = true
+        donateButton.centerYAnchor.constraint(equalTo: buttonContainer.centerYAnchor).isActive = true
 
-        NSLayoutConstraint.activate([
-            basketImageView.topAnchor.constraint(equalTo: imageContainer.topAnchor),
-            basketImageView.bottomAnchor.constraint(equalTo: imageContainer.bottomAnchor),
-            basketImageView.leadingAnchor.constraint(equalTo: imageContainer.leadingAnchor),
-            basketImageView.trailingAnchor.constraint(equalTo: imageContainer.trailingAnchor),
-            imageContainer.heightAnchor.constraint(equalToConstant: 180)
-        ])
+        cardView.addSubview(imageView)
+        cardView.addSubview(stack)
 
-        cardStack.addArrangedSubview(imageContainer)
-        cardStack.addArrangedSubview(descriptionLabel)
-        cardStack.addArrangedSubview(priceLabel)
-
-        // Button needs to be centered with fixed width
-        let buttonRow = UIView()
-        buttonRow.translatesAutoresizingMaskIntoConstraints = false
-        buttonRow.addSubview(donateButton)
-        cardStack.addArrangedSubview(buttonRow)
+        stack.addArrangedSubview(titleLabel)
+        stack.setCustomSpacing(12, after: titleLabel)
+        stack.addArrangedSubview(descriptionLabel)
+        stack.addArrangedSubview(priceLabel)
+        stack.setCustomSpacing(16, after: priceLabel)
+        stack.addArrangedSubview(buttonContainer)
 
         stackView.addArrangedSubview(cardView)
 
-        // Constraints
         NSLayoutConstraint.activate([
-            // Card size (from you)
             cardView.widthAnchor.constraint(equalToConstant: 352),
             cardView.heightAnchor.constraint(equalToConstant: 463),
 
-            // Card stack fills card
-            cardStack.topAnchor.constraint(equalTo: cardView.topAnchor),
-            cardStack.bottomAnchor.constraint(equalTo: cardView.bottomAnchor),
-            cardStack.leadingAnchor.constraint(equalTo: cardView.leadingAnchor),
-            cardStack.trailingAnchor.constraint(equalTo: cardView.trailingAnchor),
+            imageView.topAnchor.constraint(equalTo: cardView.topAnchor),
+            imageView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: cardView.trailingAnchor),
+            imageView.heightAnchor.constraint(equalToConstant: 221),
 
-            // Image height
-            basketImageView.heightAnchor.constraint(equalToConstant: 180),
-
-            // Button center + size (from you)
-            donateButton.widthAnchor.constraint(equalToConstant: 190),
-            donateButton.heightAnchor.constraint(equalToConstant: 42),
-            donateButton.centerXAnchor.constraint(equalTo: buttonRow.centerXAnchor),
-            donateButton.topAnchor.constraint(equalTo: buttonRow.topAnchor),
-            donateButton.bottomAnchor.constraint(equalTo: buttonRow.bottomAnchor),
-
-            // Give a little space in buttonRow
-            buttonRow.heightAnchor.constraint(greaterThanOrEqualToConstant: 42)
+            stack.topAnchor.constraint(equalTo: imageView.bottomAnchor),
+            stack.leadingAnchor.constraint(equalTo: cardView.leadingAnchor),
+            stack.trailingAnchor.constraint(equalTo: cardView.trailingAnchor),
+            stack.bottomAnchor.constraint(equalTo: cardView.bottomAnchor)
         ])
+    }
+
+    private func styledDescription(text: String) -> NSAttributedString {
+
+        let gray = UIColor(red: 0x5A/255, green: 0x5A/255, blue: 0x5A/255, alpha: 1)
+        let regular = UIFont.systemFont(ofSize: 14)
+        let bold = UIFont.systemFont(ofSize: 14, weight: .bold)
+
+        let attr = NSMutableAttributedString(string: text, attributes: [
+            .font: regular,
+            .foregroundColor: gray
+        ])
+
+        ["Includes:", "Perfect for:"].forEach {
+            let range = (text as NSString).range(of: $0)
+            if range.location != NSNotFound {
+                attr.setAttributes([.font: bold, .foregroundColor: UIColor.black], range: range)
+            }
+        }
+
+        return attr
+    }
+
+    private func styledPrice(amount: String) -> NSAttributedString {
+        let gray = UIColor(red: 0x5A/255, green: 0x5A/255, blue: 0x5A/255, alpha: 1)
+        let regular = UIFont.systemFont(ofSize: 14)
+        let bold = UIFont.systemFont(ofSize: 14, weight: .bold)
+
+        let full = "Price: \(amount)"
+        let attr = NSMutableAttributedString(string: full, attributes: [
+            .font: regular,
+            .foregroundColor: gray
+        ])
+
+        let range = (full as NSString).range(of: "Price:")
+        attr.setAttributes([.font: bold, .foregroundColor: UIColor.black], range: range)
+
+        return attr
     }
 
     // MARK: - Action
@@ -202,4 +231,15 @@ final class BasketDonationViewController: UIViewController {
         let vc = DonateFundsViewController()
         navigationController?.pushViewController(vc, animated: true)
     }
+    
+    @objc private func donateBasketTapped(_ sender: UIButton) {
+        let title = sender.accessibilityIdentifier ?? "Basket"
+        let amount = Double(sender.tag) / 100.0
+
+        let vc = DonateFundsViewController()
+        vc.fixedAmount = amount
+        vc.donationTitle = title
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
 }

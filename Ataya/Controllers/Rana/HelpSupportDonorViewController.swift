@@ -16,6 +16,8 @@ final class HelpSupportDonorViewController: UIViewController {
     // Content
     private let stack = UIStackView()
 
+    // MARK: - Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -23,17 +25,22 @@ final class HelpSupportDonorViewController: UIViewController {
         setupHeader()
         setupCards()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // We use our own custom header, so hide the nav bar here.
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: false)
+        // IMPORTANT:
+        // Don't force-show nav bar for next screens, because our next screens also use custom headers.
+        // So keep it hidden.
+        navigationController?.setNavigationBarHidden(true, animated: false)
     }
 
+    // MARK: - UI
 
     private func setupHeader() {
         headerContainer.translatesAutoresizingMaskIntoConstraints = false
@@ -42,6 +49,7 @@ final class HelpSupportDonorViewController: UIViewController {
         backButton.translatesAutoresizingMaskIntoConstraints = false
         backButton.setImage(UIImage(systemName: "chevron.left"), for: .normal)
         backButton.tintColor = .black
+        backButton.contentHorizontalAlignment = .leading
         backButton.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
 
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -65,7 +73,9 @@ final class HelpSupportDonorViewController: UIViewController {
             backButton.heightAnchor.constraint(equalToConstant: 44),
 
             titleLabel.centerXAnchor.constraint(equalTo: headerContainer.centerXAnchor),
-            titleLabel.centerYAnchor.constraint(equalTo: headerContainer.centerYAnchor)
+            titleLabel.centerYAnchor.constraint(equalTo: headerContainer.centerYAnchor),
+            titleLabel.leadingAnchor.constraint(greaterThanOrEqualTo: backButton.trailingAnchor, constant: 8),
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: headerContainer.trailingAnchor, constant: -16)
         ])
     }
 
@@ -84,23 +94,35 @@ final class HelpSupportDonorViewController: UIViewController {
 
         let faq = NavCardView(title: "Frequently Asked Questions")
         faq.onTap = { [weak self] in
-            let vc = FAQListViewController()
-            self?.navigationController?.pushViewController(vc, animated: true)
+            self?.push(FAQListViewController())
         }
 
         let submit = NavCardView(title: "Submit Support Ticket")
         submit.onTap = { [weak self] in
-            self?.showInfo("Submit Support Ticket screen will be added later.")
+            self?.push(SubmitSupportTicketViewController())
         }
 
         let myTickets = NavCardView(title: "My Support Tickets")
         myTickets.onTap = { [weak self] in
-            self?.showInfo("My Support Tickets screen will be added later.")
+            self?.push(MySupportTicketsViewController())
         }
 
         stack.addArrangedSubview(faq)
         stack.addArrangedSubview(submit)
         stack.addArrangedSubview(myTickets)
+    }
+
+    // MARK: - Navigation
+
+    private func push(_ vc: UIViewController) {
+        guard let nav = navigationController else {
+            // If not inside a nav controller, present one.
+            let n = UINavigationController(rootViewController: vc)
+            n.modalPresentationStyle = .fullScreen
+            present(n, animated: true)
+            return
+        }
+        nav.pushViewController(vc, animated: true)
     }
 
     @objc private func backTapped() {
@@ -110,17 +132,11 @@ final class HelpSupportDonorViewController: UIViewController {
             dismiss(animated: true)
         }
     }
-
-    private func showInfo(_ msg: String) {
-        let a = UIAlertController(title: "Info", message: msg, preferredStyle: .alert)
-        a.addAction(UIAlertAction(title: "OK", style: .default))
-        present(a, animated: true)
-    }
 }
 
 // MARK: - Reusable card (title + chevron)
 
-private final class NavCardView: UIControl {
+final class NavCardView: UIControl {
 
     var onTap: (() -> Void)?
 
@@ -151,6 +167,7 @@ private final class NavCardView: UIControl {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
         titleLabel.textColor = .black
+        titleLabel.numberOfLines = 1
 
         chevron.translatesAutoresizingMaskIntoConstraints = false
         chevron.image = UIImage(systemName: "chevron.right")
@@ -187,4 +204,3 @@ private final class NavCardView: UIControl {
         layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: layer.cornerRadius).cgPath
     }
 }
-

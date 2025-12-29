@@ -42,6 +42,18 @@ final class FAQDetailsViewController: UIViewController {
         fill()
     }
 
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+
     private func setupHeader() {
         headerContainer.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(headerContainer)
@@ -72,23 +84,18 @@ final class FAQDetailsViewController: UIViewController {
             backButton.heightAnchor.constraint(equalToConstant: 44),
 
             titleLabel.centerXAnchor.constraint(equalTo: headerContainer.centerXAnchor),
-            titleLabel.centerYAnchor.constraint(equalTo: headerContainer.centerYAnchor)
+            titleLabel.centerYAnchor.constraint(equalTo: headerContainer.centerYAnchor),
+            titleLabel.leadingAnchor.constraint(greaterThanOrEqualTo: backButton.trailingAnchor, constant: 8),
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: headerContainer.trailingAnchor, constant: -16)
         ])
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: false)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: false)
-    }
-
 
     @objc private func backTapped() {
-        navigationController?.popViewController(animated: true)
+        if let nav = navigationController {
+            nav.popViewController(animated: true)
+        } else {
+            dismiss(animated: true)
+        }
     }
 
     private func setupScroll() {
@@ -150,8 +157,6 @@ final class FAQDetailsViewController: UIViewController {
 
         view.addSubview(submitButton)
 
-        // Requirement: bottom = safe area 0, H=54, W=368
-        // (Added safety constraints so it doesn't break on small devices)
         let width = submitButton.widthAnchor.constraint(equalToConstant: 368)
         width.priority = UILayoutPriority(999)
 
@@ -182,18 +187,12 @@ final class FAQDetailsViewController: UIViewController {
     }
 
     @objc private func submitTapped() {
-        let a = UIAlertController(
-            title: "Submit Support Ticket",
-            message: "This button will navigate to Submit Support Ticket screen later.",
-            preferredStyle: .alert
-        )
-        a.addAction(UIAlertAction(title: "OK", style: .default))
-        present(a, animated: true)
+        let vc = SubmitSupportTicketViewController()
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
 
 // MARK: - UIColor Hex
-
 private extension UIColor {
     convenience init(hex: String) {
         var s = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
@@ -208,4 +207,3 @@ private extension UIColor {
         self.init(red: r, green: g, blue: b, alpha: 1)
     }
 }
-

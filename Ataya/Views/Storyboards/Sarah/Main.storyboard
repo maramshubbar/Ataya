@@ -8,10 +8,9 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Donor Profile-->
+        <!--Donor Profile View Controller-->
         <scene sceneID="s0d-6b-0kx">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <viewController id="Y6W-OH-hqX" customClass="DonorProfileViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
@@ -43,7 +42,7 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.95842611830000002" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="DonorProfile" translatesAutoresizingMaskIntoConstraints="NO" id="29I-GB-upe">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="29I-GB-upe">
                                 <rect key="frame" x="121" y="162" width="199" height="118"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -90,7 +89,6 @@
                                         <rect key="frame" x="54" y="19" width="78" height="22"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                        <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
@@ -189,6 +187,9 @@
                                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="lv3-vW-NlI">
                                         <rect key="frame" x="298" y="14" width="49" height="31"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <connections>
+                                            <action selector="darkModeToggled:" destination="Y6W-OH-hqX" eventType="valueChanged" id="pKZ-su-uAX"/>
+                                        </connections>
                                     </switch>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -262,8 +263,8 @@
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Donor Profile" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="029-SL-uXD">
-                                <rect key="frame" x="161" y="289" width="118" height="24"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="DOnors Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="029-SL-uXD">
+                                <rect key="frame" x="161" y="289" width="127" height="24"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="20"/>
                                 <nil key="textColor"/>
@@ -273,18 +274,24 @@
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Donor Profile" id="Pyh-oe-g6y"/>
+                    <navigationItem key="navigationItem" id="Pyh-oe-g6y"/>
                     <connections>
                         <outlet property="Aboutme" destination="DKi-oG-rJK" id="rB6-Wb-wJ1"/>
+                        <outlet property="HelpSupport" destination="agw-Vz-HR9" id="oQD-SB-VBv"/>
+                        <outlet property="Logout" destination="ujD-OR-7Hd" id="uqk-xz-c4t"/>
+                        <outlet property="Notification" destination="RjA-O2-nuh" id="oSv-lc-RuZ"/>
+                        <outlet property="RecurringHistory" destination="dCy-Na-eTX" id="QSC-UY-jYI"/>
+                        <outlet property="darkModeSwitch" destination="lv3-vW-NlI" id="PZI-TL-oEL"/>
+                        <outlet property="modeLabel" destination="fRv-Se-xbW" id="DnN-3C-eYf"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1037.7272727272727" y="-2.510460251046025"/>
         </scene>
         <!--About Me-->
         <scene sceneID="tRG-wJ-zsY">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="8cv-Vu-5VX" sceneMemberID="firstResponder"/>
                 <viewController id="9nH-yj-3f4" customClass="DonorAboutMeViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="4Se-GT-5bW">
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
@@ -335,13 +342,13 @@
                     </view>
                     <navigationItem key="navigationItem" title="About Me" style="editor" id="neQ-V1-FyO"/>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="8cv-Vu-5VX" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1933.6363636363637" y="-2.510460251046025"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="J7C-kd-htB">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="9qP-dQ-LUy" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="LaV-rO-Qpg" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="5gi-ID-7Cv">
@@ -354,6 +361,7 @@
                         <segue destination="Y6W-OH-hqX" kind="relationship" relationship="rootViewController" id="eID-w8-T3N"/>
                     </connections>
                 </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9qP-dQ-LUy" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="112.21374045801527" y="-2.1126760563380285"/>
         </scene>
@@ -599,7 +607,6 @@
         <!--About Me-->
         <scene sceneID="w6e-QG-sPf">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="rNk-FH-W64" sceneMemberID="firstResponder"/>
                 <viewController id="jFS-by-9Mo" customClass="NGOAboutMeViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="WOf-4j-FqF">
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
@@ -608,8 +615,8 @@
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9kF-hj-5fU">
                                 <rect key="frame" x="55" y="168" width="342" height="403"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <mutableString key="text">BrightImpact is a community-driven NGO committed to supporting underprivileged families across Bahrain. Our mission is to collect and distribute food, groceries, and essential household items to those who need it most.
- We believe in delivering aid with dignity, transparency, and compassion. By partnering with donors and volunteers, we strive to reduce hardship, strengthen families, and make a positive, sustainable impact on our communities.</mutableString>
+                                <string key="text">BrightImpact is a community-driven NGO committed to supporting underprivileged families across Bahrain. Our mission is to collect and distribute food, groceries, and essential household items to those who need it most.
+ We believe in delivering aid with dignity, transparency, and compassion. By partnering with donors and volunteers, we strive to reduce hardship, strengthen families, and make a positive, sustainable impact on our communities.</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -646,6 +653,7 @@
                     </view>
                     <navigationItem key="navigationItem" title="About Me" largeTitleDisplayMode="always" style="editor" id="tVl-Lo-fHj"/>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rNk-FH-W64" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2825.4545454545455" y="740.58577405857739"/>
         </scene>
@@ -669,7 +677,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="DonorProfile" width="109" height="107"/>
         <image name="NgoProfile" width="96" height="93"/>
         <image name="bell.fill" catalog="system" width="123" height="128"/>
         <image name="iphone.and.arrow.right.outward" catalog="system" width="125" height="128"/>

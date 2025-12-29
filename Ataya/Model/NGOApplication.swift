@@ -16,4 +16,5 @@ struct NGOApplication {
     var status: String
     var notes: String
     var uploadedDocuments: [String] // file names or URLs
+    var ngoProfile: String
 }

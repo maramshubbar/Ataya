@@ -26,18 +26,6 @@ class ReportReviewViewController: UIViewController {
     
     @IBOutlet weak var reportTypeValue: UILabel!
     
-    @IBOutlet weak var location: UILabel!
-    
-    @IBOutlet weak var locationValue: UILabel!
-    
-    @IBOutlet weak var reportedBy: UILabel!
-    
-    @IBOutlet weak var reportedByValue: UILabel!
-    
-    @IBOutlet weak var reportedUser: UILabel!
-    
-    @IBOutlet weak var reportedUserValue: UILabel!
-    
     @IBOutlet weak var date: UILabel!
     
     @IBOutlet weak var dateValue: UILabel!
@@ -119,9 +107,6 @@ class ReportReviewViewController: UIViewController {
             id: "RPT-001",
             title: "Damaged Food Donation",
             type: "Donation Issue",
-            location: "Warehouse A",
-            reportedBy: "Fatema",
-            reportedUser: "Maram",
             date: "2025-12-27",
             details: "The package collected during the recent donation pickup was damaged and unusable.", status: "Pending",
             feedback: "" )
@@ -130,9 +115,6 @@ class ReportReviewViewController: UIViewController {
         reportTitleValue.text = dummy.title
         reportIdValue.text = dummy.id
         reportTypeValue.text = dummy.type
-        locationValue.text = dummy.location
-        reportedByValue.text = dummy.reportedBy
-        reportedUserValue.text = dummy.reportedUser
         dateValue.text = dummy.date
         reportDetailsTextView.text = dummy.details
         statusLabel.text = dummy.status

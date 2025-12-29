@@ -21,53 +21,72 @@ class NGOCardCell: UITableViewCell {
     
     @IBOutlet weak var ratingValue: UILabel!
     
+    
+    @IBOutlet weak var ratingStackView: UIStackView!
+    @IBOutlet weak var verificationIcon: UIImageView!
+    
+    
+    // Reuse identifier for this cell type
     static let reuseId = "NGOCardCell"
 
     @IBOutlet weak var cardContainerView: UIView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        
+
         // Round image
         ngoImage.layer.cornerRadius = 12
         ngoImage.clipsToBounds = true
+
+        // Round the rating stack view
+        ratingStackView.layer.cornerRadius = 5
+        ratingStackView.layer.masksToBounds = true
         
+        //to make the name expand and the badge to stay next to the name
+        ngoName.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        ngoName.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        verificationIcon.setContentHuggingPriority(.required, for: .horizontal)
+        verificationIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
+
         // Card styling
-        cardContainerView.layer.cornerRadius = 16
-        cardContainerView.layer.shadowColor = UIColor.black.cgColor
-        cardContainerView.layer.shadowOpacity = 0.1
-        cardContainerView.layer.shadowOffset = CGSize(width: 0, height: 2)
-        cardContainerView.layer.shadowRadius = 6
+        cardContainerView.backgroundColor = .white
+        cardContainerView.layer.cornerRadius = 12
+        cardContainerView.layer.borderWidth = 1
+        cardContainerView.layer.borderColor = UIColor.systemGray4.cgColor
         cardContainerView.layer.masksToBounds = false
+        
+        // Prevent default gray highlight on selection
+        self.selectionStyle = .none
+        
+        self.backgroundColor = .clear
+        self.contentView.backgroundColor = .clear
+        self.selectionStyle = .none
     }
 
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-    
+    // Fill the cell with NGO data
     func configure(with ngo: NGO) {
            ngoName.text = ngo.name
            ngoType.text = ngo.category
            ngoEmail.text = ngo.email
            ngoLocation.text = ngo.location
-           ratingValue.text = "⭐️ \(ngo.rating)"
+           ratingValue.text = "\(ngo.rating)"
+        ngoImage.image = UIImage(named: ngo.imageName)
+        ngoImage.contentMode = .scaleAspectFill
+        ngoImage.clipsToBounds = true
 
-           ngoImage.image = UIImage(systemName: "heart.circle.fill")
-           ngoImage.tintColor = .systemGreen
+           
+        
        }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 180 // or whatever fits your card height
-    }
+    // Highlight card when selected (not the whole cell)
+    /*override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
 
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        cell.contentView.layer.masksToBounds = true
-        cell.contentView.layer.cornerRadius = 16
-        cell.contentView.backgroundColor = .clear
-        cell.backgroundColor = .clear
+        // Only highlight the card, not the whole cell
+        cardContainerView.backgroundColor = selected ? UIColor.systemGray5 : UIColor.white
     }
+*/
 
+    override func setSelected(_ selected: Bool, animated: Bool) { super.setSelected(selected, animated: animated) // Only highlight the card, not the whole cell
+        cardContainerView.backgroundColor = selected ? UIColor.systemGray5 : UIColor.white }
 }

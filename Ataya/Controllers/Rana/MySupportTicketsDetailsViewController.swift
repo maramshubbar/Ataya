@@ -40,6 +40,13 @@ final class SupportTicketDetailsViewController: UIViewController {
         self.ticket = ticket
         super.init(nibName: nil, bundle: nil)
     }
+    
+    enum SupportTicketColors {
+        static let primaryYellow = UIColor(named: "#F7D44C")
+        static let cardBorder = UIColor(white: 0.88, alpha: 1)
+        static let bodyText = UIColor(white: 0.25, alpha: 1)
+        static let secondaryText = UIColor(white: 0.55, alpha: 1)
+    }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 

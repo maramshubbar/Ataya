@@ -8,18 +8,6 @@
 import UIKit
 
 class ReportReviewViewController: UIViewController {
-    struct Report {
-        let id: String
-        let title: String
-        let type: String
-        let location: String
-        let reportedBy: String
-        let reportedUser: String
-        let date: String
-        let details: String
-        var status: String
-        var feedback: String
-    }
     //outlets
     //report info card
     @IBOutlet weak var reportCard: UIView!
@@ -153,7 +141,7 @@ class ReportReviewViewController: UIViewController {
     }
     
     func saveFeedback(forReportId reportId: String, feedback: String) {
-        // Example: send to backend
+    
         print("Saving feedback for report \(reportId): \(feedback)")
         
         // TODO: Replace with actual API call or database write

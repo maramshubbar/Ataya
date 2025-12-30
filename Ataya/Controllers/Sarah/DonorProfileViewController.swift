@@ -9,7 +9,17 @@ import UIKit
 
 class DonorProfileViewController: UIViewController {
     
-    @IBOutlet weak var Aboutme: UIView!
+    @IBOutlet weak var imageProfile: UIImageView!
+    
+    @IBOutlet weak var donorName: UILabel!
+    
+    @IBOutlet weak var donorType: UILabel!
+    
+    @IBOutlet weak var ratingValue: UILabel!
+    
+    @IBOutlet weak var raitngView: UIView!
+    
+    @IBOutlet weak var Aboutme: UIButton!
     
     @IBOutlet weak var Notification: UIButton!
     
@@ -20,27 +30,41 @@ class DonorProfileViewController: UIViewController {
     @IBOutlet weak var HelpSupport: UIButton!
     
     @IBOutlet weak var modeLabel: UILabel!
-    @IBOutlet weak var Logout: UIView!
+    
+    @IBOutlet weak var themeToggleImage: UIImageView!
+    
+    @IBOutlet weak var Logout: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Load saved preference
         let isDarkMode = UserDefaults.standard.bool(forKey: "isDarkModeEnabled")
         darkModeSwitch.isOn = isDarkMode
-        overrideUserInterfaceStyle = isDarkMode ? .dark : .light
-        modeLabel.text = isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
+        
+        // Dummy profile data
+        donorName.text = "Zahra Ahmed"
+        ratingValue.text = "4.7"
+        imageProfile.image = UIImage(named: "donor_Image") // Add this image to Assets
+        
+        //styling
+        imageProfile.layer.cornerRadius = imageProfile.frame.width / 2
+        imageProfile.clipsToBounds = true
     }
-    
-    
-    
     
     @IBAction func darkModeToggled(_ sender: UISwitch) {
         let isDarkMode = sender.isOn
-        overrideUserInterfaceStyle = isDarkMode ? .dark : .light
-        UserDefaults.standard.set(isDarkMode, forKey: "isDarkModeEnabled")
+            UserDefaults.standard.set(isDarkMode, forKey: "isDarkModeEnabled")
 
-        // Update label to show the *next* mode
-        modeLabel.text = isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
+            //appplies to the entire app
+            if let window = view.window {
+                window.overrideUserInterfaceStyle = isDarkMode ? .dark : .light
+            }
+
+            modeLabel.text = isDarkMode ? "Light Mode" : "Dark Mode"
+            themeToggleImage.image = UIImage(
+                systemName: isDarkMode ? "sun.max.fill" : "moon.fill"
+            )
     }
 
     

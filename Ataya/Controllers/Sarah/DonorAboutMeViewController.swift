@@ -9,21 +9,23 @@ import UIKit
 
 class DonorAboutMeViewController: UIViewController {
 
+    @IBOutlet weak var fullnameTextBox: UITextField!
+    
+    @IBOutlet weak var emailTextBox: UITextField!
+    
+    @IBOutlet weak var phoneTextBox: UITextField!
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        // Dummy donor info
+        fullnameTextBox.text = "Zahra Ahmed"
+        emailTextBox.text = "zahra.ahmed@example.com"
+        phoneTextBox.text = "+973 1234 5678"
     }
     
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

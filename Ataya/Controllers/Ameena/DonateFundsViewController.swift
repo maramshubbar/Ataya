@@ -53,12 +53,18 @@ final class DonateFundsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        navigationController?.navigationBar.tintColor = .black
+        navigationItem.backButtonTitle = ""
+
 
         buildUI()
         setupLayout()
         bind()
         applyInitialState()
     }
+    
+    var fixedAmount: Double = 0
+    var donationTitle: String = ""
 
     // MARK: - Build UI
     private func buildUI() {

@@ -39,6 +39,8 @@ final class AddPaymentMethodViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         navigationItem.backButtonTitle = ""
+        navigationController?.navigationBar.tintColor = .black
+
         buildUI()
         setupLayout()
         bind()

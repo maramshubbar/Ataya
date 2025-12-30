@@ -33,6 +33,10 @@ final class AssignedPickupViewController: UIViewController, UITableViewDataSourc
            
            view.backgroundColor = .white
            tableView.backgroundColor = .white
+           
+           tableView.contentInset.bottom = 80
+           tableView.verticalScrollIndicatorInsets.bottom = 80
+
 
            
        }
@@ -127,42 +131,43 @@ final class AssignedPickupViewController: UIViewController, UITableViewDataSourc
            return container
        }
 
-       private func makeKeyValueRow(key: String, value: String) -> UIView {
-           let row = UIView()
-           row.translatesAutoresizingMaskIntoConstraints = false
+    private func makeKeyValueRow(key: String, value: String) -> UIView {
+        let row = UIView()
+        row.translatesAutoresizingMaskIntoConstraints = false
 
-           let k = UILabel()
-           k.translatesAutoresizingMaskIntoConstraints = false
-           k.text = key
-           k.font = .systemFont(ofSize: 12, weight: .regular)
-           k.textColor = .systemGray
+        let k = UILabel()
+        k.translatesAutoresizingMaskIntoConstraints = false
+        k.text = key
+        k.font = .systemFont(ofSize: 12, weight: .regular)
+        k.textColor = .systemGray
+        k.setContentHuggingPriority(.required, for: .horizontal)
+        k.setContentCompressionResistancePriority(.required, for: .horizontal)
 
-           let v = UILabel()
-           v.translatesAutoresizingMaskIntoConstraints = false
-           v.text = value
-           v.font = .systemFont(ofSize: 12, weight: .regular)
-           v.textColor = .black
-           v.numberOfLines = 0
-           v.textAlignment = .left
+        let v = UILabel()
+        v.translatesAutoresizingMaskIntoConstraints = false
+        v.text = value
+        v.font = .systemFont(ofSize: 12, weight: .regular)
+        v.textColor = .black
+        v.numberOfLines = 0
+        v.textAlignment = .left
 
-           row.addSubview(k)
-           row.addSubview(v)
+        row.addSubview(k)
+        row.addSubview(v)
 
-           NSLayoutConstraint.activate([
-               k.leadingAnchor.constraint(equalTo: row.leadingAnchor),
-               k.topAnchor.constraint(equalTo: row.topAnchor),
-               k.bottomAnchor.constraint(equalTo: row.bottomAnchor),
+        NSLayoutConstraint.activate([
+            k.leadingAnchor.constraint(equalTo: row.leadingAnchor),
+            k.topAnchor.constraint(equalTo: row.topAnchor),
+            k.bottomAnchor.constraint(equalTo: row.bottomAnchor),
 
-               v.leadingAnchor.constraint(greaterThanOrEqualTo: k.trailingAnchor, constant: 12),
-               v.trailingAnchor.constraint(equalTo: row.trailingAnchor),
-               v.topAnchor.constraint(equalTo: row.topAnchor),
-               v.bottomAnchor.constraint(equalTo: row.bottomAnchor),
+            v.leadingAnchor.constraint(equalTo: k.trailingAnchor, constant: 10),
+            v.topAnchor.constraint(equalTo: row.topAnchor),
+            v.bottomAnchor.constraint(equalTo: row.bottomAnchor),
+            v.trailingAnchor.constraint(lessThanOrEqualTo: row.trailingAnchor)
+        ])
 
-               k.widthAnchor.constraint(equalToConstant: 110)
-           ])
+        return row
+    }
 
-           return row
-       }
 
        private func configureDonationDetails(card: UIView, item: AssignedPickupItem) {
            let header = makeHeader(title: "Donation Details", statusText: item.status)
@@ -231,38 +236,47 @@ final class AssignedPickupViewController: UIViewController, UITableViewDataSourc
                stack.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
                stack.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
                stack.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 12),
-               stack.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -14)
+               stack.bottomAnchor.constraint(lessThanOrEqualTo: card.bottomAnchor, constant: -14)
+
            ])
        }
 
-       private func configurePickupInfo(card: UIView, item: AssignedPickupItem) {
-           let header = makeHeader(title: "Pickup Information")
+    private func configurePickupInfo(card: UIView, item: AssignedPickupItem) {
+        let header = makeHeader(title: "Pickup Information")
 
-           let stack = UIStackView(arrangedSubviews: [
-               makeKeyValueRow(key: "Scheduled date:", value: item.scheduledDate),
-               makeKeyValueRow(key: "Pickup Window:", value: item.pickupWindow),
-               makeKeyValueRow(key: "Distance:", value: item.distance),
-               makeKeyValueRow(key: "Estimated Time:", value: item.estimatedTime),
-               makeKeyValueRow(key: "Donor Notes:", value: item.donorNotes)
-           ])
-           stack.translatesAutoresizingMaskIntoConstraints = false
-           stack.axis = .vertical
-           stack.spacing = 10
+        let stack = UIStackView(arrangedSubviews: [
+            makeKeyValueRow(key: "Scheduled date:", value: item.scheduledDate),
+            makeKeyValueRow(key: "Pickup Window:", value: item.pickupWindow),
+            makeKeyValueRow(key: "Distance:", value: item.distance),
+            makeKeyValueRow(key: "Estimated Time:", value: item.estimatedTime),
+            makeKeyValueRow(key: "Donor Notes:", value: item.donorNotes)
+        ])
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .vertical
+        stack.spacing = 10
+        stack.alignment = .fill
+        stack.distribution = .fill
 
-           card.addSubview(header)
-           card.addSubview(stack)
+        stack.setContentHuggingPriority(.required, for: .vertical)
+        stack.setContentCompressionResistancePriority(.required, for: .vertical)
 
-           NSLayoutConstraint.activate([
-               header.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
-               header.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
-               header.topAnchor.constraint(equalTo: card.topAnchor, constant: 14),
+        card.addSubview(header)
+        card.addSubview(stack)
 
-               stack.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
-               stack.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
-               stack.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 12),
-               stack.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -14)
-           ])
-       }
+        NSLayoutConstraint.activate([
+            header.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
+            header.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
+            header.topAnchor.constraint(equalTo: card.topAnchor, constant: 14),
+
+            stack.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
+            stack.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
+            stack.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 12),
+
+
+            stack.bottomAnchor.constraint(lessThanOrEqualTo: card.bottomAnchor, constant: -14)
+        ])
+    }
+
     
     
 }

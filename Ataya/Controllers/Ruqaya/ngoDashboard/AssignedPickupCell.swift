@@ -54,7 +54,7 @@ final class AssignedPickupCell: UITableViewCell {
             // Image
             productImageView.layer.cornerRadius = 12
             productImageView.clipsToBounds = true
-            productImageView.contentMode = .scaleAspectFill
+            productImageView.contentMode = .scaleAspectFit
 
             // Text
             titleLabel.font = .systemFont(ofSize: 20, weight: .semibold)
@@ -65,7 +65,6 @@ final class AssignedPickupCell: UITableViewCell {
             locationLabel.font = .systemFont(ofSize: 16, weight: .regular)
             locationLabel.textColor = .systemGray
 
-            cardView.layer.borderWidth = 0
 
             
             

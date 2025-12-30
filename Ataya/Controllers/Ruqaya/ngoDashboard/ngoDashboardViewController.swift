@@ -81,7 +81,7 @@ final class ngoDashboardViewController: UIViewController, UITableViewDataSource,
         assignedTableView.isScrollEnabled = false
         assignedTableView.separatorStyle = .none
         assignedTableView.backgroundColor = .clear
-
+        
         // ✅ خليها ثابتة عشان تتأكدين إنها تطلع
         assignedTableView.rowHeight = 110
         assignedTableView.estimatedRowHeight = 110
@@ -92,6 +92,12 @@ final class ngoDashboardViewController: UIViewController, UITableViewDataSource,
         )
 
         assignedTableView.reloadData()
+        
+        assignedTableView.reloadData()
+        DispatchQueue.main.async {
+            self.updateTableHeight()
+        }
+
     }
 
     override func viewDidLayoutSubviews() {
@@ -100,9 +106,13 @@ final class ngoDashboardViewController: UIViewController, UITableViewDataSource,
     }
 
     private func updateTableHeight() {
+        guard isViewLoaded else { return }
+        guard let heightConstraint = assignedTableHeightConstraint else { return }
+
         assignedTableView.layoutIfNeeded()
-        assignedTableHeightConstraint.constant = assignedTableView.contentSize.height
+        heightConstraint.constant = assignedTableView.contentSize.height + 90
     }
+
 
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -151,4 +161,7 @@ final class ngoDashboardViewController: UIViewController, UITableViewDataSource,
         print("CONTENT SIZE:", assignedTableView.contentSize)
     }
 
+    
+
+    
 }

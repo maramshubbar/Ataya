@@ -112,6 +112,9 @@ final class RoutesViewController: UIViewController, UITableViewDataSource, UITab
         filterSegmented.addTarget(self,
                                   action: #selector(filterChanged),
                                   for: .valueChanged)
+        
+        tableView.contentInset.bottom = 70
+        tableView.verticalScrollIndicatorInsets.bottom = 70
     }
 
     // MARK: - Filter

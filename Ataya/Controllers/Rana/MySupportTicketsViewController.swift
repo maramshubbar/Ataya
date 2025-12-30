@@ -2,67 +2,81 @@
 //  MySupportTicketsViewController.swift
 //  Ataya
 //
-//  Created by BP-36-224-09 on 29/12/2025.
+//  Created by BP-36-224-14 on 30/12/2025.
 //
 
 import UIKit
 
+private extension UIColor {
+    convenience init(hex: String) {
+        var s = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        if s.hasPrefix("#") { s.removeFirst() }
+        var rgb: UInt64 = 0
+        Scanner(string: s).scanHexInt64(&rgb)
+        let r = CGFloat((rgb & 0xFF0000) >> 16) / 255
+        let g = CGFloat((rgb & 0x00FF00) >> 8) / 255
+        let b = CGFloat(rgb & 0x0000FF) / 255
+        self.init(red: r, green: g, blue: b, alpha: 1)
+    }
+}
+
+enum SupportTicketStatus: String {
+    case pending = "Pending"
+    case resolved = "Resolved"
+}
+
+struct SupportTicket {
+    let id: String
+    let status: SupportTicketStatus
+    let userIssue: String
+    let adminReply: String?
+    let updatedAt: Date
+}
+
 final class MySupportTicketsViewController: UIViewController {
 
-    // MARK: - Layout
     private let sidePadding: CGFloat = 36
-    private let yellow = UIColor(named: "#F7D44C")
+    private let yellow = UIColor(hex: "#F7D44C")
 
-    // MARK: - Header
     private let headerContainer = UIView()
     private let backButton = UIButton(type: .system)
     private let headerTitleLabel = UILabel()
 
-    // MARK: - List
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     private let stack = UIStackView()
 
-    // MARK: - Empty State
     private let emptyContainer = UIView()
     private let emptyIcon = UIImageView()
     private let emptyLabel = UILabel()
 
-    // MARK: - Data (replace later with Firebase)
-    // NOTE: "adminReply" nil or empty => no reply yet.
     private var tickets: [SupportTicket] = [
         SupportTicket(
             id: "#12345",
             status: .resolved,
-            userIssue: "I scheduled a pickup for October 14, but the collector didn’t arrive at the selected time. Can you please check if it was confirmed correctly?",
-            adminReply: "Hello Zahra, thank you for contacting us.\n\nWe’ve checked your report about the pickup delay and found that it was caused by a small system update issue.\n\nYour donation #1001 has now been successfully marked as Collected and is visible in your donation history.\n\nEverything is working fine now.\n\nWe truly appreciate your patience and continued support!",
+            userIssue: "Pickup Delay — Collector did not arrive at the scheduled time.",
+            adminReply: "Thanks for your report. We found a scheduling sync issue. Your donation status is now updated and marked as Collected. Sorry for the inconvenience.",
             updatedAt: Date()
         ),
         SupportTicket(
             id: "#12346",
             status: .pending,
-            userIssue: "Notifications are not appearing for donation updates. I tried reinstalling and logging out/in but still nothing.",
-            adminReply: nil, // no reply yet
+            userIssue: "Account Issue — I can’t log in after updating the app.",
+            adminReply: nil,
             updatedAt: Date()
         )
     ]
 
-    // If you want to test empty state, set tickets = [] or all adminReply nil.
-    // private var tickets: [SupportTicket] = []
-
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-
         setupHeader()
         setupScroll()
         setupStack()
         setupEmptyState()
-
         refreshUI()
     }
 
-    // Keep system nav hidden (NO double back)
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
@@ -70,10 +84,9 @@ final class MySupportTicketsViewController: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: false)
+        navigationController?.setNavigationBarHidden(false, animated: false)
     }
 
-    // MARK: - Header
     private func setupHeader() {
         headerContainer.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(headerContainer)
@@ -104,21 +117,14 @@ final class MySupportTicketsViewController: UIViewController {
             backButton.heightAnchor.constraint(equalToConstant: 44),
 
             headerTitleLabel.centerXAnchor.constraint(equalTo: headerContainer.centerXAnchor),
-            headerTitleLabel.centerYAnchor.constraint(equalTo: headerContainer.centerYAnchor),
-            headerTitleLabel.leadingAnchor.constraint(greaterThanOrEqualTo: backButton.trailingAnchor, constant: 8),
-            headerTitleLabel.trailingAnchor.constraint(lessThanOrEqualTo: headerContainer.trailingAnchor, constant: -16)
+            headerTitleLabel.centerYAnchor.constraint(equalTo: headerContainer.centerYAnchor)
         ])
     }
 
     @objc private func backTapped() {
-        if let nav = navigationController {
-            nav.popViewController(animated: true)
-        } else {
-            dismiss(animated: true)
-        }
+        navigationController?.popViewController(animated: true)
     }
 
-    // MARK: - Scroll + Stack
     private func setupScroll() {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
@@ -145,7 +151,6 @@ final class MySupportTicketsViewController: UIViewController {
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .vertical
         stack.spacing = 18
-
         contentView.addSubview(stack)
 
         NSLayoutConstraint.activate([
@@ -156,7 +161,6 @@ final class MySupportTicketsViewController: UIViewController {
         ])
     }
 
-    // MARK: - Empty State
     private func setupEmptyState() {
         emptyContainer.translatesAutoresizingMaskIntoConstraints = false
         emptyContainer.isHidden = true
@@ -195,12 +199,9 @@ final class MySupportTicketsViewController: UIViewController {
         ])
     }
 
-    // MARK: - UI Refresh
     private func refreshUI() {
-        // Show only tickets that have admin reply (as you requested)
         let replied = tickets.filter { ($0.adminReply?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false) }
 
-        // Clear old cards
         stack.arrangedSubviews.forEach { v in
             stack.removeArrangedSubview(v)
             v.removeFromSuperview()
@@ -208,17 +209,173 @@ final class MySupportTicketsViewController: UIViewController {
 
         if replied.isEmpty {
             emptyContainer.isHidden = false
-        } else {
-            emptyContainer.isHidden = true
-            replied.forEach { ticket in
-                let card = SupportTicketCardView(ticket: ticket)
-                card.onViewDetails = { [weak self] in
-                    guard let self else { return }
-                    let vc = SupportTicketDetailsViewController(ticket: ticket)
-                    self.navigationController?.pushViewController(vc, animated: true)
-                }
-                stack.addArrangedSubview(card)
-            }
+            return
         }
+
+        emptyContainer.isHidden = true
+
+        replied.forEach { ticket in
+            let card = TicketCard(ticket: ticket, yellow: yellow)
+            card.onViewDetails = { [weak self] in
+                guard let self else { return }
+                let vc = MySupportTicketsDetailsViewController(ticket: ticket)
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+            stack.addArrangedSubview(card)
+        }
+    }
+}
+
+private final class TicketCard: UIView {
+
+    var onViewDetails: (() -> Void)?
+
+    private let yellow: UIColor
+
+    private let idLabel = UILabel()
+    private let statusPill = UILabel()
+
+    private let issueTitle = UILabel()
+    private let issueBody = UILabel()
+
+    private let replyBox = UIView()
+    private let replyTitle = UILabel()
+    private let replyBody = UILabel()
+
+    private let viewButton = UIButton(type: .system)
+
+    init(ticket: SupportTicket, yellow: UIColor) {
+        self.yellow = yellow
+        super.init(frame: .zero)
+        translatesAutoresizingMaskIntoConstraints = false
+        setupUI()
+        fill(ticket)
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    private func setupUI() {
+        backgroundColor = .white
+        layer.cornerRadius = 12
+        layer.borderWidth = 1
+        layer.borderColor = UIColor(white: 0.88, alpha: 1).cgColor
+
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowOpacity = 0.06
+        layer.shadowRadius = 10
+        layer.shadowOffset = CGSize(width: 0, height: 2)
+
+        idLabel.translatesAutoresizingMaskIntoConstraints = false
+        idLabel.font = .systemFont(ofSize: 13, weight: .semibold)
+        idLabel.textColor = .black
+
+        statusPill.translatesAutoresizingMaskIntoConstraints = false
+        statusPill.font = .systemFont(ofSize: 12, weight: .semibold)
+        statusPill.textAlignment = .center
+        statusPill.layer.cornerRadius = 10
+        statusPill.clipsToBounds = true
+
+        issueTitle.translatesAutoresizingMaskIntoConstraints = false
+        issueTitle.text = "Issue"
+        issueTitle.font = .systemFont(ofSize: 12, weight: .semibold)
+        issueTitle.textColor = UIColor(white: 0.2, alpha: 1)
+
+        issueBody.translatesAutoresizingMaskIntoConstraints = false
+        issueBody.font = .systemFont(ofSize: 13, weight: .regular)
+        issueBody.textColor = UIColor(white: 0.22, alpha: 1)
+        issueBody.numberOfLines = 2
+
+        replyBox.translatesAutoresizingMaskIntoConstraints = false
+        replyBox.backgroundColor = UIColor(white: 0.97, alpha: 1)
+        replyBox.layer.cornerRadius = 10
+        replyBox.layer.borderWidth = 1
+        replyBox.layer.borderColor = UIColor(white: 0.90, alpha: 1).cgColor
+
+        replyTitle.translatesAutoresizingMaskIntoConstraints = false
+        replyTitle.text = "Admin Reply"
+        replyTitle.font = .systemFont(ofSize: 12, weight: .semibold)
+        replyTitle.textColor = UIColor(white: 0.2, alpha: 1)
+
+        replyBody.translatesAutoresizingMaskIntoConstraints = false
+        replyBody.font = .systemFont(ofSize: 13, weight: .regular)
+        replyBody.textColor = UIColor(white: 0.25, alpha: 1)
+        replyBody.numberOfLines = 3
+
+        replyBox.addSubview(replyTitle)
+        replyBox.addSubview(replyBody)
+
+        viewButton.translatesAutoresizingMaskIntoConstraints = false
+        if #available(iOS 15.0, *) { viewButton.configuration = nil }
+        viewButton.setTitle("View Details", for: .normal)
+        viewButton.setTitleColor(.black, for: .normal)
+        viewButton.titleLabel?.font = .systemFont(ofSize: 12, weight: .medium)
+        viewButton.backgroundColor = yellow
+        viewButton.tintColor = .black
+        viewButton.layer.cornerRadius = 8
+        viewButton.clipsToBounds = true
+        viewButton.contentEdgeInsets = UIEdgeInsets(top: 8, left: 14, bottom: 8, right: 14)
+        viewButton.addTarget(self, action: #selector(viewTapped), for: .touchUpInside)
+
+        addSubview(idLabel)
+        addSubview(statusPill)
+        addSubview(issueTitle)
+        addSubview(issueBody)
+        addSubview(replyBox)
+        addSubview(viewButton)
+
+        NSLayoutConstraint.activate([
+            idLabel.topAnchor.constraint(equalTo: topAnchor, constant: 14),
+            idLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14),
+
+            statusPill.centerYAnchor.constraint(equalTo: idLabel.centerYAnchor),
+            statusPill.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14),
+
+            issueTitle.topAnchor.constraint(equalTo: idLabel.bottomAnchor, constant: 12),
+            issueTitle.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14),
+            issueTitle.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14),
+
+            issueBody.topAnchor.constraint(equalTo: issueTitle.bottomAnchor, constant: 6),
+            issueBody.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14),
+            issueBody.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14),
+
+            replyBox.topAnchor.constraint(equalTo: issueBody.bottomAnchor, constant: 12),
+            replyBox.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14),
+            replyBox.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14),
+
+            replyTitle.topAnchor.constraint(equalTo: replyBox.topAnchor, constant: 10),
+            replyTitle.leadingAnchor.constraint(equalTo: replyBox.leadingAnchor, constant: 12),
+            replyTitle.trailingAnchor.constraint(equalTo: replyBox.trailingAnchor, constant: -12),
+
+            replyBody.topAnchor.constraint(equalTo: replyTitle.bottomAnchor, constant: 6),
+            replyBody.leadingAnchor.constraint(equalTo: replyBox.leadingAnchor, constant: 12),
+            replyBody.trailingAnchor.constraint(equalTo: replyBox.trailingAnchor, constant: -12),
+            replyBody.bottomAnchor.constraint(equalTo: replyBox.bottomAnchor, constant: -10),
+
+            viewButton.topAnchor.constraint(equalTo: replyBox.bottomAnchor, constant: 12),
+            viewButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14),
+            viewButton.heightAnchor.constraint(equalToConstant: 30),
+            viewButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -14)
+        ])
+    }
+
+    private func fill(_ ticket: SupportTicket) {
+        idLabel.text = ticket.id
+
+        let resolved = (ticket.status == .resolved)
+        statusPill.text = " \(ticket.status.rawValue) "
+        statusPill.textColor = UIColor(white: 0.15, alpha: 1)
+        statusPill.backgroundColor = resolved ? UIColor(hex: "#EAF8EF") : UIColor(hex: "#FFF6DD")
+
+        issueBody.text = ticket.userIssue
+        replyBody.text = ticket.adminReply ?? "No reply yet."
+    }
+
+    @objc private func viewTapped() {
+        onViewDetails?()
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: layer.cornerRadius).cgPath
     }
 }

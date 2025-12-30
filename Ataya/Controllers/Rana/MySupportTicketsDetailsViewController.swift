@@ -2,50 +2,34 @@
 //  MySupportTicketsDetailsViewController.swift
 //  Ataya
 //
-//  Created by BP-36-224-09 on 29/12/2025.
+//  Created by BP-36-224-14 on 30/12/2025.
 //
 
 import UIKit
 
-final class SupportTicketDetailsViewController: UIViewController {
+final class MySupportTicketsDetailsViewController: UIViewController {
 
     private let ticket: SupportTicket
-
-    // MARK: - Layout
     private let sidePadding: CGFloat = 36
 
-    // Header
     private let headerContainer = UIView()
     private let backButton = UIButton(type: .system)
     private let headerTitleLabel = UILabel()
 
-    // Scroll
     private let scrollView = UIScrollView()
     private let contentView = UIView()
 
-    private let cardView = UIView()
-
+    private let container = UIView()
     private let idLabel = UILabel()
     private let statusLabel = UILabel()
-
-    private let replyTitle = UILabel()
-    private let replyBody = UILabel()
-
-    private let divider = UIView()
-
     private let issueTitle = UILabel()
     private let issueBody = UILabel()
+    private let replyTitle = UILabel()
+    private let replyBody = UILabel()
 
     init(ticket: SupportTicket) {
         self.ticket = ticket
         super.init(nibName: nil, bundle: nil)
-    }
-    
-    enum SupportTicketColors {
-        static let primaryYellow = UIColor(named: "#F7D44C")
-        static let cardBorder = UIColor(white: 0.88, alpha: 1)
-        static let bodyText = UIColor(white: 0.25, alpha: 1)
-        static let secondaryText = UIColor(white: 0.55, alpha: 1)
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -53,10 +37,9 @@ final class SupportTicketDetailsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-
         setupHeader()
         setupScroll()
-        setupCard()
+        setupContainer()
         fill()
     }
 
@@ -67,7 +50,7 @@ final class SupportTicketDetailsViewController: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: false)
+        navigationController?.setNavigationBarHidden(false, animated: false)
     }
 
     private func setupHeader() {
@@ -80,7 +63,7 @@ final class SupportTicketDetailsViewController: UIViewController {
         backButton.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
 
         headerTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        headerTitleLabel.text = "My Support Tickets"
+        headerTitleLabel.text = "Ticket Details"
         headerTitleLabel.font = .systemFont(ofSize: 17, weight: .semibold)
         headerTitleLabel.textAlignment = .center
         headerTitleLabel.textColor = .black
@@ -100,9 +83,7 @@ final class SupportTicketDetailsViewController: UIViewController {
             backButton.heightAnchor.constraint(equalToConstant: 44),
 
             headerTitleLabel.centerXAnchor.constraint(equalTo: headerContainer.centerXAnchor),
-            headerTitleLabel.centerYAnchor.constraint(equalTo: headerContainer.centerYAnchor),
-            headerTitleLabel.leadingAnchor.constraint(greaterThanOrEqualTo: backButton.trailingAnchor, constant: 8),
-            headerTitleLabel.trailingAnchor.constraint(lessThanOrEqualTo: headerContainer.trailingAnchor, constant: -16)
+            headerTitleLabel.centerYAnchor.constraint(equalTo: headerContainer.centerYAnchor)
         ])
     }
 
@@ -113,7 +94,6 @@ final class SupportTicketDetailsViewController: UIViewController {
     private func setupScroll() {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
-
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
 
@@ -127,105 +107,75 @@ final class SupportTicketDetailsViewController: UIViewController {
             contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
-
             contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor)
         ])
     }
 
-    private func setupCard() {
-        cardView.translatesAutoresizingMaskIntoConstraints = false
-        cardView.backgroundColor = .white
-        cardView.layer.cornerRadius = 12
-        cardView.layer.borderWidth = 1
-        cardView.layer.borderColor = UIColor(white: 0.87, alpha: 1).cgColor
-        cardView.layer.shadowColor = UIColor.black.cgColor
-        cardView.layer.shadowOpacity = 0.06
-        cardView.layer.shadowRadius = 10
-        cardView.layer.shadowOffset = CGSize(width: 0, height: 2)
+    private func setupContainer() {
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.backgroundColor = .white
+        container.layer.cornerRadius = 12
+        container.layer.borderWidth = 1
+        container.layer.borderColor = UIColor(white: 0.88, alpha: 1).cgColor
+        contentView.addSubview(container)
 
-        contentView.addSubview(cardView)
+        [idLabel, statusLabel, issueTitle, issueBody, replyTitle, replyBody].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            $0.numberOfLines = 0
+            container.addSubview($0)
+        }
 
-        idLabel.translatesAutoresizingMaskIntoConstraints = false
         idLabel.font = .systemFont(ofSize: 13, weight: .semibold)
-        idLabel.textColor = .black
+        statusLabel.font = .systemFont(ofSize: 12, weight: .regular)
+        statusLabel.textColor = UIColor(white: 0.35, alpha: 1)
 
-        statusLabel.translatesAutoresizingMaskIntoConstraints = false
-        statusLabel.font = .systemFont(ofSize: 13, weight: .regular)
-        statusLabel.textColor = UIColor(white: 0.25, alpha: 1)
-
-        replyTitle.translatesAutoresizingMaskIntoConstraints = false
-        replyTitle.text = "Admin Reply:"
-        replyTitle.font = .systemFont(ofSize: 13, weight: .semibold)
-        replyTitle.textColor = .black
-
-        replyBody.translatesAutoresizingMaskIntoConstraints = false
-        replyBody.font = .systemFont(ofSize: 14, weight: .regular)
-        replyBody.textColor = UIColor(white: 0.22, alpha: 1)
-        replyBody.numberOfLines = 0
-
-        divider.translatesAutoresizingMaskIntoConstraints = false
-        divider.backgroundColor = UIColor(white: 0.90, alpha: 1)
-
-        issueTitle.translatesAutoresizingMaskIntoConstraints = false
-        issueTitle.text = "Your Issue:"
         issueTitle.font = .systemFont(ofSize: 13, weight: .semibold)
-        issueTitle.textColor = .black
+        issueTitle.text = "Your Issue"
+        issueBody.font = .systemFont(ofSize: 13, weight: .regular)
+        issueBody.textColor = UIColor(white: 0.25, alpha: 1)
 
-        issueBody.translatesAutoresizingMaskIntoConstraints = false
-        issueBody.font = .systemFont(ofSize: 14, weight: .regular)
-        issueBody.textColor = UIColor(white: 0.22, alpha: 1)
-        issueBody.numberOfLines = 0
-
-        cardView.addSubview(idLabel)
-        cardView.addSubview(statusLabel)
-        cardView.addSubview(replyTitle)
-        cardView.addSubview(replyBody)
-        cardView.addSubview(divider)
-        cardView.addSubview(issueTitle)
-        cardView.addSubview(issueBody)
+        replyTitle.font = .systemFont(ofSize: 13, weight: .semibold)
+        replyTitle.text = "Admin Reply"
+        replyBody.font = .systemFont(ofSize: 13, weight: .regular)
+        replyBody.textColor = UIColor(white: 0.25, alpha: 1)
 
         NSLayoutConstraint.activate([
-            cardView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18),
-            cardView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: sidePadding),
-            cardView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -sidePadding),
-            cardView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -24),
+            container.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18),
+            container.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: sidePadding),
+            container.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -sidePadding),
+            container.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -24),
 
-            idLabel.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 14),
-            idLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 14),
-            idLabel.trailingAnchor.constraint(lessThanOrEqualTo: cardView.trailingAnchor, constant: -14),
+            idLabel.topAnchor.constraint(equalTo: container.topAnchor, constant: 14),
+            idLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 14),
+            idLabel.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -14),
 
             statusLabel.topAnchor.constraint(equalTo: idLabel.bottomAnchor, constant: 6),
-            statusLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 14),
-            statusLabel.trailingAnchor.constraint(lessThanOrEqualTo: cardView.trailingAnchor, constant: -14),
+            statusLabel.leadingAnchor.constraint(equalTo: idLabel.leadingAnchor),
+            statusLabel.trailingAnchor.constraint(equalTo: idLabel.trailingAnchor),
 
-            replyTitle.topAnchor.constraint(equalTo: statusLabel.bottomAnchor, constant: 12),
-            replyTitle.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 14),
-            replyTitle.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -14),
-
-            replyBody.topAnchor.constraint(equalTo: replyTitle.bottomAnchor, constant: 6),
-            replyBody.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 14),
-            replyBody.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -14),
-
-            divider.topAnchor.constraint(equalTo: replyBody.bottomAnchor, constant: 16),
-            divider.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 14),
-            divider.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -14),
-            divider.heightAnchor.constraint(equalToConstant: 1),
-
-            issueTitle.topAnchor.constraint(equalTo: divider.bottomAnchor, constant: 14),
-            issueTitle.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 14),
-            issueTitle.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -14),
+            issueTitle.topAnchor.constraint(equalTo: statusLabel.bottomAnchor, constant: 12),
+            issueTitle.leadingAnchor.constraint(equalTo: idLabel.leadingAnchor),
+            issueTitle.trailingAnchor.constraint(equalTo: idLabel.trailingAnchor),
 
             issueBody.topAnchor.constraint(equalTo: issueTitle.bottomAnchor, constant: 6),
-            issueBody.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 14),
-            issueBody.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -14),
-            issueBody.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -16)
+            issueBody.leadingAnchor.constraint(equalTo: idLabel.leadingAnchor),
+            issueBody.trailingAnchor.constraint(equalTo: idLabel.trailingAnchor),
+
+            replyTitle.topAnchor.constraint(equalTo: issueBody.bottomAnchor, constant: 12),
+            replyTitle.leadingAnchor.constraint(equalTo: idLabel.leadingAnchor),
+            replyTitle.trailingAnchor.constraint(equalTo: idLabel.trailingAnchor),
+
+            replyBody.topAnchor.constraint(equalTo: replyTitle.bottomAnchor, constant: 6),
+            replyBody.leadingAnchor.constraint(equalTo: idLabel.leadingAnchor),
+            replyBody.trailingAnchor.constraint(equalTo: idLabel.trailingAnchor),
+            replyBody.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -14)
         ])
     }
 
     private func fill() {
         idLabel.text = ticket.id
         statusLabel.text = "Status: \(ticket.status.rawValue)"
-        replyBody.text = ticket.adminReply ?? "No reply yet."
         issueBody.text = ticket.userIssue
+        replyBody.text = ticket.adminReply ?? "No reply yet."
     }
 }

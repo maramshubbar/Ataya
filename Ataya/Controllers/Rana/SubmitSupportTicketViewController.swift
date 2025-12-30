@@ -13,7 +13,6 @@ final class SubmitSupportTicketViewController: UIViewController,
 
     // MARK: - Constants
     private let sidePadding: CGFloat = 36
-    private let buttonWidth: CGFloat = 368
     private let buttonHeight: CGFloat = 54
     private let yellow = UIColor(hex: "#F7D44C")
 
@@ -282,8 +281,8 @@ final class SubmitSupportTicketViewController: UIViewController,
 
         NSLayoutConstraint.activate([
             submitButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0),
-            submitButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            submitButton.widthAnchor.constraint(equalToConstant: buttonWidth),
+            submitButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: sidePadding),
+            submitButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -sidePadding),
             submitButton.heightAnchor.constraint(equalToConstant: buttonHeight)
         ])
     }

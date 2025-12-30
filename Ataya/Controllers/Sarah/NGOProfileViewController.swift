@@ -90,6 +90,23 @@ class NGOProfileViewController: UIViewController, NGOAboutMeDelegate {
         }
     }
 
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        let collector = DummyDatabase.shared.collectors["collector_1"]
+        ratingValue.text = String(format: "%.1f", collector?.averageRating ?? 0)
+    }
+
+ 
+    @IBAction func ratingTapped(_ sender: UIButton) {
+        let vc = storyboard?.instantiateViewController(
+            withIdentifier: "ReviewsListViewController"
+        ) as! ReviewsListViewController
+
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
         
     }
 

@@ -50,6 +50,7 @@ class DonorProfileViewController: UIViewController {
         //styling
         imageProfile.layer.cornerRadius = imageProfile.frame.width / 2
         imageProfile.clipsToBounds = true
+        raitngView.layer.cornerRadius = 8
     }
     
     @IBAction func darkModeToggled(_ sender: UISwitch) {
@@ -67,9 +68,14 @@ class DonorProfileViewController: UIViewController {
             )
     }
 
-    
-    
-    
+   
+ 
+    @IBAction func testingPopupTapped(_ sender: UIButton) {
+        let vc = FeedbackPopupViewController()
+            vc.modalPresentationStyle = .overFullScreen
+            vc.modalTransitionStyle = .crossDissolve
+            present(vc, animated: true)
+    }
     
 }
 

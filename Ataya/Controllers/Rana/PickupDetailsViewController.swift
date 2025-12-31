@@ -62,7 +62,7 @@ final class PickupDetailsViewController: UIViewController {
             $0?.layer.masksToBounds = true
         }
 
-        actionButton.backgroundColor = UIColor.hex("#FEC400")
+        actionButton.backgroundColor = UIColor.hex("#F7D44C")
         actionButton.setTitleColor(.black, for: .normal)
         actionButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
         actionButton.layer.cornerRadius = 12

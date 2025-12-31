@@ -1,24 +1,30 @@
 import UIKit
+import FirebaseFirestore
+import FirebaseAuth
 
 // MARK: - Donate Funds (UIKit / built by code)
-
 final class DonateFundsViewController: UIViewController {
 
     // MARK: - Colors (Ataya)
     private let atayaYellow = UIColor(red: 0xF7/255.0, green: 0xD4/255.0, blue: 0x4C/255.0, alpha: 1.0)
     private let optionBG    = UIColor(red: 0xFF/255.0, green: 0xFB/255.0, blue: 0xE7/255.0, alpha: 1.0)
     private let textGray    = UIColor(red: 90/255.0, green: 90/255.0, blue: 90/255.0, alpha: 1.0)
-    private let iconGray    = UIColor.systemGray2  // ✅ For amount arrows (gray)
+    private let iconGray    = UIColor.systemGray2
 
-    // MARK: - Data
-    private let ngos = ["Hoppal", "Al Rahma", "Al Rayaheen"]
+    // MARK: - Firestore
+    private let db = Firestore.firestore()
+
+    // MARK: - Data (NGOs from Firestore)
+    private var ngoItems: [NGOItem] = []          // loaded from Firebase
+    private var ngoNames: [String] { ngoItems.map { $0.name } }  // names only for dropdown
+
     private let paymentMethods: [PaymentMethod] = [
         .init(type: .visa, title: "**** **** **** 8970", subtitle: "Expires: 12/26"),
         .init(type: .applePay, title: "Apple Pay", subtitle: nil)
     ]
 
-    private var selectedNGO: String = "Hoppal" {
-        didSet { ngoDropdown.setValue(selectedNGO) }
+    private var selectedNGO: NGOItem? {
+        didSet { ngoDropdown.setValue(selectedNGO?.name ?? "Select NGO") }
     }
 
     private var amount: Int = 10 {
@@ -49,6 +55,10 @@ final class DonateFundsViewController: UIViewController {
     // Payment rows
     private var paymentRows: [PaymentOptionView] = []
 
+    // MARK: - State
+    private var isNGOLoading = false
+    private var isSubmitting = false
+
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,13 +66,15 @@ final class DonateFundsViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .black
         navigationItem.backButtonTitle = ""
 
-
         buildUI()
         setupLayout()
         bind()
         applyInitialState()
+
+        // Fetch NGOs from Firestore after UI is ready
+        fetchNGOs()
     }
-    
+
     var fixedAmount: Double = 0
     var donationTitle: String = ""
 
@@ -94,13 +106,13 @@ final class DonateFundsViewController: UIViewController {
         amountField.setAmount(amount)
         amountField.minimumAmount = 5
         amountField.textGray = .black
-        amountField.arrowTint = iconGray   // ✅ arrows gray
+        amountField.arrowTint = iconGray
 
         // NGO dropdown field
         ngoDropdown.translatesAutoresizingMaskIntoConstraints = false
         ngoDropdown.textGray = textGray
-        ngoDropdown.setValue(selectedNGO)
-        ngoDropdown.chevronSize = 18        // ✅ make chevron bigger
+        ngoDropdown.setValue("Loading NGOs...")
+        ngoDropdown.chevronSize = 18
 
         // Add payment method button
         addPaymentButton.setTitle("Add payment Method", for: .normal)
@@ -161,29 +173,24 @@ final class DonateFundsViewController: UIViewController {
         let safe = view.safeAreaLayoutGuide
 
         NSLayoutConstraint.activate([
-            // Confirm button pinned to bottom safe area
             confirmButton.widthAnchor.constraint(equalToConstant: 362),
             confirmButton.heightAnchor.constraint(equalToConstant: 54),
             confirmButton.centerXAnchor.constraint(equalTo: safe.centerXAnchor),
             confirmButton.bottomAnchor.constraint(equalTo: safe.bottomAnchor, constant: -16),
 
-            // ScrollView fills above confirm button
             scrollView.topAnchor.constraint(equalTo: safe.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: confirmButton.topAnchor, constant: -12),
 
-            // Content view inside scroll
             contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
 
-            // Match width to scroll frame
             contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
         ])
 
-        // Field sizes
         NSLayoutConstraint.activate([
             amountField.widthAnchor.constraint(equalToConstant: 370),
             amountField.heightAnchor.constraint(equalToConstant: 60),
@@ -191,13 +198,11 @@ final class DonateFundsViewController: UIViewController {
             ngoDropdown.heightAnchor.constraint(equalToConstant: 60),
         ])
 
-        // Payment rows sizes
         paymentRows.forEach { row in
             row.heightAnchor.constraint(equalToConstant: 56).isActive = true
             row.widthAnchor.constraint(equalToConstant: 362).isActive = true
         }
 
-        // Spacing / positions
         NSLayoutConstraint.activate([
             amountLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
             amountLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24),
@@ -230,8 +235,22 @@ final class DonateFundsViewController: UIViewController {
         // NGO dropdown tap -> action sheet
         ngoDropdown.onTap = { [weak self] in
             guard let self else { return }
-            self.presentOptions(title: "NGO", options: self.ngos, selected: self.selectedNGO) { picked in
-                self.selectedNGO = picked
+
+            // If NGOs are still loading, do nothing (or show message)
+            if self.isNGOLoading {
+                self.showAlert(title: "Please wait", message: "NGOs are still loading.")
+                return
+            }
+
+            // If there are no NGOs, show message
+            if self.ngoItems.isEmpty {
+                self.showAlert(title: "No NGOs", message: "No NGOs found in the database.")
+                return
+            }
+
+            let current = self.selectedNGO?.name ?? ""
+            self.presentOptions(title: "NGO", options: self.ngoNames, selected: current) { pickedName in
+                self.selectedNGO = self.ngoItems.first(where: { $0.name == pickedName })
             }
         }
 
@@ -245,17 +264,51 @@ final class DonateFundsViewController: UIViewController {
     }
 
     private func applyInitialState() {
-        // Default values
-        selectedNGO = ngos.first ?? "Hoppal"
         amount = max(10, 5)
         selectedPayment = .visa
         updatePaymentSelectionUI()
+        confirmButton.isEnabled = true
     }
 
     private func updatePaymentSelectionUI() {
         for row in paymentRows {
             row.setSelected(row.iconType == selectedPayment)
         }
+    }
+
+    // MARK: - Firestore: Fetch NGOs
+    private func fetchNGOs() {
+        isNGOLoading = true
+        ngoDropdown.setValue("Loading NGOs...")
+
+        // NOTE: Adjust field names if your NGO docs use a different key than "name"
+        db.collection("ngos")
+            .getDocuments { [weak self] snap, err in
+                guard let self else { return }
+                self.isNGOLoading = false
+
+                if let err {
+                    self.ngoDropdown.setValue("Failed to load NGOs")
+                    self.showAlert(title: "Error", message: "Failed to load NGOs: \(err.localizedDescription)")
+                    return
+                }
+
+                let docs = snap?.documents ?? []
+                self.ngoItems = docs.compactMap { doc in
+                    let data = doc.data()
+                    let name = (data["name"] as? String) ?? (data["ngoName"] as? String) ?? ""
+                    guard !name.isEmpty else { return nil }
+                    return NGOItem(id: doc.documentID, name: name)
+                }.sorted(by: { $0.name.lowercased() < $1.name.lowercased() })
+
+                // Set default selection
+                if let first = self.ngoItems.first {
+                    self.selectedNGO = first
+                } else {
+                    self.selectedNGO = nil
+                    self.ngoDropdown.setValue("No NGOs")
+                }
+            }
     }
 
     // MARK: - Actions
@@ -265,11 +318,50 @@ final class DonateFundsViewController: UIViewController {
     }
 
     @objc private func confirmTapped() {
-        // Present success popup screen
-        let vc = DonationSuccessViewController()
-        vc.modalPresentationStyle = .overFullScreen
-        vc.modalTransitionStyle = .crossDissolve
-        present(vc, animated: true)
+        // Prevent double tap
+        guard !isSubmitting else { return }
+        isSubmitting = true
+        confirmButton.isEnabled = false
+
+        // Basic validation
+        guard let ngo = selectedNGO else {
+            isSubmitting = false
+            confirmButton.isEnabled = true
+            showAlert(title: "Missing NGO", message: "Please select an NGO.")
+            return
+        }
+
+        // Create donation record (simulation)
+        let donorId = Auth.auth().currentUser?.uid ?? "USER_UID"
+        let amountBHD = Double(amount) // store as Number in Firestore
+        let paymentMethod = selectedPayment.rawValue
+
+        let payload: [String: Any] = [
+            "amountBHD": amountBHD,                        // Number ✅
+            "createdAt": FieldValue.serverTimestamp(),     // Timestamp ✅
+            "donorId": donorId,
+            "ngoId": ngo.id,
+            "ngoName": ngo.name,
+            "paymentMethod": paymentMethod,
+            "status": "success"                            // simulation ✅
+        ]
+
+        db.collection("fund_donations").addDocument(data: payload) { [weak self] err in
+            guard let self else { return }
+            self.isSubmitting = false
+            self.confirmButton.isEnabled = true
+
+            if let err {
+                self.showAlert(title: "Failed", message: "Could not save donation: \(err.localizedDescription)")
+                return
+            }
+
+            // Show success popup ONLY after Firestore write succeeds
+            let vc = DonationSuccessViewController()
+            vc.modalPresentationStyle = .overFullScreen
+            vc.modalTransitionStyle = .crossDissolve
+            self.present(vc, animated: true)
+        }
     }
 
     // MARK: - Helpers
@@ -293,10 +385,21 @@ final class DonateFundsViewController: UIViewController {
 
         present(ac, animated: true)
     }
+
+    private func showAlert(title: String, message: String) {
+        let ac = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .default))
+        present(ac, animated: true)
+    }
+}
+
+// MARK: - Firestore NGO model
+private struct NGOItem {
+    let id: String
+    let name: String
 }
 
 // MARK: - Models
-
 private enum PaymentMethodType: String {
     case visa = "Visa"
     case applePay = "Apple Pay"
@@ -309,7 +412,6 @@ private struct PaymentMethod {
 }
 
 // MARK: - DropdownField (textfield-like with chevron)
-
 private final class DropdownField: UIControl {
 
     var onTap: (() -> Void)?
@@ -318,7 +420,6 @@ private final class DropdownField: UIControl {
         didSet { valueLabel.textColor = textGray }
     }
 
-    // ✅ Make chevron bigger from VC
     var chevronSize: CGFloat = 14 {
         didSet {
             chevronWidthConstraint?.constant = chevronSize
@@ -362,7 +463,6 @@ private final class DropdownField: UIControl {
         chevron.tintColor = .black
         chevron.contentMode = .scaleAspectFit
 
-        // ✅ IMPORTANT: Do not block touches (so UIControl gets the tap)
         container.isUserInteractionEnabled = false
         valueLabel.isUserInteractionEnabled = false
         chevron.isUserInteractionEnabled = false
@@ -404,7 +504,6 @@ private final class DropdownField: UIControl {
 }
 
 // MARK: - AmountDropdownField (textfield-like + up/down arrows, min 5$)
-
 private final class AmountDropdownField: UIControl {
 
     var onChange: ((Int) -> Void)?
@@ -416,7 +515,6 @@ private final class AmountDropdownField: UIControl {
         didSet { valueLabel.textColor = textGray }
     }
 
-    // ✅ Make arrows gray from VC
     var arrowTint: UIColor = .systemGray2 {
         didSet {
             upButton.tintColor = arrowTint
@@ -460,7 +558,6 @@ private final class AmountDropdownField: UIControl {
         upButton.setImage(UIImage(systemName: "chevron.up")?.withRenderingMode(.alwaysTemplate), for: .normal)
         downButton.setImage(UIImage(systemName: "chevron.down")?.withRenderingMode(.alwaysTemplate), for: .normal)
 
-        // ✅ arrows gray
         upButton.tintColor = arrowTint
         downButton.tintColor = arrowTint
 
@@ -475,10 +572,8 @@ private final class AmountDropdownField: UIControl {
         arrowsStack.addArrangedSubview(upButton)
         arrowsStack.addArrangedSubview(downButton)
 
-        // ✅ IMPORTANT: Do not block touches on the whole control
         container.isUserInteractionEnabled = true
         valueLabel.isUserInteractionEnabled = true
-        // arrowsStack must stay interactive because it contains buttons
         arrowsStack.isUserInteractionEnabled = true
 
         addSubview(container)
@@ -520,7 +615,6 @@ private final class AmountDropdownField: UIControl {
 }
 
 // MARK: - PaymentOptionView (card row)
-
 private final class PaymentOptionView: UIControl {
 
     var onTap: (() -> Void)?
@@ -572,7 +666,6 @@ private final class PaymentOptionView: UIControl {
         labelsStack.addArrangedSubview(titleLabel)
         labelsStack.addArrangedSubview(subtitleLabel)
 
-        // ✅ IMPORTANT: container should not block touches
         container.isUserInteractionEnabled = false
         iconView.isUserInteractionEnabled = false
         labelsStack.isUserInteractionEnabled = false

@@ -4,12 +4,11 @@
 //
 //  Created by BP-36-224-09 on 28/12/2025.
 //
-
 import UIKit
 
 final class NotificationSettingsViewController: UIViewController {
 
-    // MARK: - Outlets (connect these)
+    // MARK: - Outlets
     @IBOutlet private weak var cardAllowView: UIView!
     @IBOutlet private weak var allowTitleLabel: UILabel!
     @IBOutlet private weak var allowDescLabel: UILabel!
@@ -22,10 +21,9 @@ final class NotificationSettingsViewController: UIViewController {
 
     @IBOutlet private weak var saveButton: UIButton!
 
-    // MARK: - Colors (Figma)
+    // MARK: - Colors
     private let yellow = UIColor(hex: "#F7D44C")
     private let borderGray = UIColor(hex: "#B8B8B8")
-    private let textBlack = UIColor.black
 
     // MARK: - Storage Keys
     private enum Keys {
@@ -33,9 +31,12 @@ final class NotificationSettingsViewController: UIViewController {
         static let silentMode = "settings_silent_mode"
     }
 
-    // MARK: - State (to detect changes)
+    // MARK: - State
     private var initialAllow: Bool = true
     private var initialSilent: Bool = false
+
+    // MARK: - Layout
+    private var cardsStack: UIStackView?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,49 +45,113 @@ final class NotificationSettingsViewController: UIViewController {
         view.backgroundColor = .white
 
         applyDesign()
+
+        // ✅ THIS is the fix: force correct runtime layout even if storyboard is “lying”
+        forceTwoSeparateCardsLayout()
+
         loadSavedValues()
         wireActions()
         refreshSaveButtonState()
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        // Keep multiline wrapping stable
+        allowDescLabel.preferredMaxLayoutWidth = allowDescLabel.bounds.width
+        silentDescLabel.preferredMaxLayoutWidth = silentDescLabel.bounds.width
+
+        // Shadow path after layout
+        cardAllowView.layer.shadowPath = UIBezierPath(roundedRect: cardAllowView.bounds, cornerRadius: 10).cgPath
+        cardSilentView.layer.shadowPath = UIBezierPath(roundedRect: cardSilentView.bounds, cornerRadius: 10).cgPath
+    }
+
+    // MARK: - ✅ HARD LAYOUT FIX
+    private func forceTwoSeparateCardsLayout() {
+
+        // They must share a parent (same superview)
+        guard let parent = cardAllowView.superview,
+              parent === cardSilentView.superview else {
+            return
+        }
+
+        // 1) Deactivate constraints in parent that touch either card (kills overlap / pinned-to-same-edges bug)
+        let kill = parent.constraints.filter { c in
+            let a = (c.firstItem as AnyObject?) === cardAllowView || (c.secondItem as AnyObject?) === cardAllowView
+            let s = (c.firstItem as AnyObject?) === cardSilentView || (c.secondItem as AnyObject?) === cardSilentView
+            return a || s
+        }
+        NSLayoutConstraint.deactivate(kill)
+
+        // 2) Remove any stack we created before (safety)
+        cardsStack?.removeFromSuperview()
+        cardsStack = nil
+
+        // 3) Remove cards from parent then re-add inside a fresh stack
+        cardAllowView.removeFromSuperview()
+        cardSilentView.removeFromSuperview()
+
+        let stack = UIStackView(arrangedSubviews: [cardAllowView, cardSilentView])
+        stack.axis = .vertical
+        stack.alignment = .fill
+        stack.distribution = .fillEqually
+        stack.spacing = 16
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
+        parent.addSubview(stack)
+
+        // ✅ pin stack to parent exactly like storyboard intended
+        NSLayoutConstraint.activate([
+            stack.leadingAnchor.constraint(equalTo: parent.leadingAnchor),
+            stack.trailingAnchor.constraint(equalTo: parent.trailingAnchor),
+            stack.topAnchor.constraint(equalTo: parent.topAnchor),
+            stack.bottomAnchor.constraint(lessThanOrEqualTo: parent.bottomAnchor)
+        ])
+
+        // 4) Force equal heights even if one label wraps (super stable)
+        cardAllowView.translatesAutoresizingMaskIntoConstraints = false
+        cardSilentView.translatesAutoresizingMaskIntoConstraints = false
+
+        let minH: CGFloat = 118 // match your figma vibe
+        NSLayoutConstraint.activate([
+            cardAllowView.heightAnchor.constraint(greaterThanOrEqualToConstant: minH),
+            cardSilentView.heightAnchor.constraint(greaterThanOrEqualToConstant: minH),
+            cardSilentView.heightAnchor.constraint(equalTo: cardAllowView.heightAnchor)
+        ])
+
+        cardsStack = stack
+    }
+
     // MARK: - Design
     private func applyDesign() {
 
-        // Labels (you said: title 16, description 13)
         styleTitleLabel(allowTitleLabel)
         styleDescLabel(allowDescLabel)
 
         styleTitleLabel(silentTitleLabel)
         styleDescLabel(silentDescLabel)
 
-        // Ensure text is black like Figma
-        allowTitleLabel.textColor = textBlack
-        allowDescLabel.textColor = textBlack
-        silentTitleLabel.textColor = textBlack
-        silentDescLabel.textColor = textBlack
-
-        // Cards
         styleCard(cardAllowView)
         styleCard(cardSilentView)
 
-        // Save Button
         saveButton.setTitle("Save Changes", for: .normal)
         saveButton.backgroundColor = yellow
         saveButton.setTitleColor(.black, for: .normal)
         saveButton.layer.cornerRadius = 10
         saveButton.layer.masksToBounds = true
 
-        // Switch colors (optional but nicer)
-        allowSwitch.onTintColor = UIColor.systemGreen
-        silentSwitch.onTintColor = UIColor.systemGreen
+        allowSwitch.onTintColor = .systemGreen
+        silentSwitch.onTintColor = .systemGreen
     }
 
     private func styleTitleLabel(_ label: UILabel) {
+        label.textColor = .black
         label.font = .systemFont(ofSize: 16, weight: .semibold)
         label.numberOfLines = 1
     }
 
     private func styleDescLabel(_ label: UILabel) {
+        label.textColor = .black
         label.font = .systemFont(ofSize: 13, weight: .regular)
         label.numberOfLines = 0
     }
@@ -98,7 +163,6 @@ final class NotificationSettingsViewController: UIViewController {
         v.layer.borderColor = borderGray.cgColor
         v.layer.masksToBounds = false
 
-        // subtle shadow like Figma feel (soft)
         v.layer.shadowColor = UIColor.black.cgColor
         v.layer.shadowOpacity = 0.06
         v.layer.shadowRadius = 10
@@ -109,7 +173,6 @@ final class NotificationSettingsViewController: UIViewController {
     private func loadSavedValues() {
         let defaults = UserDefaults.standard
 
-        // If first time -> set defaults
         if defaults.object(forKey: Keys.allowNotifications) == nil {
             defaults.set(true, forKey: Keys.allowNotifications)
         }
@@ -120,11 +183,9 @@ final class NotificationSettingsViewController: UIViewController {
         let allow = defaults.bool(forKey: Keys.allowNotifications)
         let silent = defaults.bool(forKey: Keys.silentMode)
 
-        // Apply to UI
         allowSwitch.isOn = allow
         silentSwitch.isOn = silent
 
-        // Keep initial snapshot
         initialAllow = allow
         initialSilent = silent
     }
@@ -133,9 +194,7 @@ final class NotificationSettingsViewController: UIViewController {
         let defaults = UserDefaults.standard
         defaults.set(allow, forKey: Keys.allowNotifications)
         defaults.set(silent, forKey: Keys.silentMode)
-        defaults.synchronize()
 
-        // update initial snapshot after saving
         initialAllow = allow
         initialSilent = silent
         refreshSaveButtonState()
@@ -153,11 +212,10 @@ final class NotificationSettingsViewController: UIViewController {
     }
 
     private func hasUnsavedChanges() -> Bool {
-        return allowSwitch.isOn != initialAllow || silentSwitch.isOn != initialSilent
+        allowSwitch.isOn != initialAllow || silentSwitch.isOn != initialSilent
     }
 
     private func refreshSaveButtonState() {
-        // Optional UX: disable save if no changes
         let enabled = hasUnsavedChanges()
         saveButton.isEnabled = enabled
         saveButton.alpha = enabled ? 1.0 : 0.55
@@ -171,30 +229,24 @@ final class NotificationSettingsViewController: UIViewController {
             message: "Do you want to save your notification settings?",
             preferredStyle: .alert
         )
-
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
 
         alert.addAction(UIAlertAction(title: "Save", style: .default, handler: { [weak self] _ in
             guard let self = self else { return }
 
-            let allow = self.allowSwitch.isOn
-            let silent = self.silentSwitch.isOn
+            self.persistValues(allow: self.allowSwitch.isOn,
+                               silent: self.silentSwitch.isOn)
 
-            self.persistValues(allow: allow, silent: silent)
-            self.showSavedPopup()
+            let done = UIAlertController(
+                title: "Changes Saved",
+                message: "Your notification preferences have been updated successfully.",
+                preferredStyle: .alert
+            )
+            done.addAction(UIAlertAction(title: "OK", style: .default))
+            self.present(done, animated: true)
         }))
 
         present(alert, animated: true)
-    }
-
-    private func showSavedPopup() {
-        let done = UIAlertController(
-            title: "Changes Saved",
-            message: "Your notification preferences have been updated successfully.",
-            preferredStyle: .alert
-        )
-        done.addAction(UIAlertAction(title: "OK", style: .default))
-        present(done, animated: true)
     }
 }
 

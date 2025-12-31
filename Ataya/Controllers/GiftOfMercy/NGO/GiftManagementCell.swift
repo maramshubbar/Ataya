@@ -15,7 +15,10 @@ final class GiftManagementCell: UITableViewCell {
     // MARK: - UI
     private let cardView = UIView()
 
+    // ✅ FIX: use a container so the image does NOT get cut
+    private let thumbContainer = UIView()
     private let thumbImageView = UIImageView()
+
     private let titleLabel = UILabel()
     private let priceLabel = UILabel()
     private let descriptionLabel = UILabel()
@@ -64,16 +67,30 @@ final class GiftManagementCell: UITableViewCell {
             cardView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
         ])
 
-        // Image
-        thumbImageView.translatesAutoresizingMaskIntoConstraints = false
-        thumbImageView.contentMode = .scaleAspectFill
-        thumbImageView.clipsToBounds = true
-        thumbImageView.layer.cornerRadius = 10
-        thumbImageView.backgroundColor = UIColor.systemGray6
+        // ✅ Thumbnail container (rounded + bg)
+        thumbContainer.translatesAutoresizingMaskIntoConstraints = false
+        thumbContainer.backgroundColor = .clear
+        thumbContainer.layer.cornerRadius = 0
+        thumbContainer.clipsToBounds = false
 
         NSLayoutConstraint.activate([
-            thumbImageView.widthAnchor.constraint(equalToConstant: 80),
-            thumbImageView.heightAnchor.constraint(equalToConstant: 80)
+            thumbContainer.widthAnchor.constraint(equalToConstant: 80),
+            thumbContainer.heightAnchor.constraint(equalToConstant: 80)
+        ])
+
+        // ✅ Image inside (no cropping)
+        thumbImageView.translatesAutoresizingMaskIntoConstraints = false
+        thumbImageView.contentMode = .scaleAspectFit
+        thumbImageView.backgroundColor = .clear
+        thumbImageView.clipsToBounds = false
+
+        thumbContainer.addSubview(thumbImageView)
+
+        NSLayoutConstraint.activate([
+            thumbImageView.topAnchor.constraint(equalTo: thumbContainer.topAnchor, constant: 0),
+            thumbImageView.leadingAnchor.constraint(equalTo: thumbContainer.leadingAnchor, constant: 0),
+            thumbImageView.trailingAnchor.constraint(equalTo: thumbContainer.trailingAnchor, constant: 0),
+            thumbImageView.bottomAnchor.constraint(equalTo: thumbContainer.bottomAnchor, constant: 0),
         ])
 
         // Labels
@@ -93,9 +110,9 @@ final class GiftManagementCell: UITableViewCell {
         textStack.spacing = 4
         textStack.translatesAutoresizingMaskIntoConstraints = false
 
-        let topRow = UIStackView(arrangedSubviews: [thumbImageView, textStack])
+        let topRow = UIStackView(arrangedSubviews: [thumbContainer, textStack])
         topRow.axis = .horizontal
-        topRow.alignment = .top
+        topRow.alignment = .center
         topRow.spacing = 12
         topRow.translatesAutoresizingMaskIntoConstraints = false
 
@@ -138,8 +155,9 @@ final class GiftManagementCell: UITableViewCell {
         button.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
         button.backgroundColor = accentYellow
         button.layer.cornerRadius = 8
+
         if #available(iOS 15.0, *) {
-            var config = button.configuration ?? .plain()
+            var config = UIButton.Configuration.plain()
             config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
             button.configuration = config
         } else {
@@ -160,9 +178,8 @@ final class GiftManagementCell: UITableViewCell {
         priceLabel.text = model.priceLine
         descriptionLabel.text = model.description
 
-        thumbImageView.setRemoteImage(model.imageURL, placeholder: nil) // or your placeholder image
+        thumbImageView.setRemoteImage(model.imageURL, placeholder: nil)
     }
-
 
     // MARK: - Actions
     @objc private func editTapped() {

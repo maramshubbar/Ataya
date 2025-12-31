@@ -11,7 +11,6 @@ final class SubmitSupportTicketViewController: UIViewController,
                                               UIPickerViewDataSource, UIPickerViewDelegate,
                                               UITextViewDelegate {
 
-    // MARK: - Constants
     private let sidePadding: CGFloat = 36
     private let buttonHeight: CGFloat = 54
     private let yellow = UIColor(hex: "#F7D44C")
@@ -19,14 +18,17 @@ final class SubmitSupportTicketViewController: UIViewController,
     private let categories = ["Donations", "Accounts", "Other"]
     private var selectedCategory: String?
 
-    // MARK: - Header
     private let headerContainer = UIView()
     private let backButton = UIButton(type: .system)
     private let headerTitleLabel = UILabel()
 
-    // MARK: - Form
     private let scrollView = UIScrollView()
     private let contentView = UIView()
+
+
+    private let ticketLabel = UILabel()
+    private let ticketContainer = UIView()
+    private let ticketTextField = UITextField()
 
     private let issueCategoryLabel = UILabel()
     private let categoryContainer = UIView()
@@ -38,20 +40,15 @@ final class SubmitSupportTicketViewController: UIViewController,
     private let issueTextView = UITextView()
     private let placeholderLabel = UILabel()
 
-    // NOTE (must be above button - NOT inside scroll)
     private let noteLabel = UILabel()
 
-    // MARK: - Picker
     private let pickerView = UIPickerView()
     private let pickerToolbar = UIToolbar()
 
-    // MARK: - Button
     private let submitButton = UIButton(type: .system)
 
-    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
         view.backgroundColor = .white
 
         setupHeader()
@@ -62,12 +59,15 @@ final class SubmitSupportTicketViewController: UIViewController,
         setupNoteAboveButton()
         setupKeyboardDismiss()
 
-        // default selection
         selectedCategory = categories.first
         categoryTextField.text = selectedCategory
     }
 
-    // MARK: - Header (NO NAV TITLE)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+
     private func setupHeader() {
         headerContainer.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(headerContainer)
@@ -106,7 +106,6 @@ final class SubmitSupportTicketViewController: UIViewController,
         navigationController?.popViewController(animated: true)
     }
 
-    // MARK: - Scroll
     private func setupScroll() {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
@@ -128,19 +127,34 @@ final class SubmitSupportTicketViewController: UIViewController,
             contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor)
         ])
 
-        // space so content doesn't hide behind note + button
         scrollView.contentInset.bottom = buttonHeight + 70
         scrollView.verticalScrollIndicatorInsets.bottom = buttonHeight + 70
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: false)
-    }
 
-
-    // MARK: - Form UI (NO note here)
     private func setupForm() {
+
+
+        ticketLabel.translatesAutoresizingMaskIntoConstraints = false
+        ticketLabel.text = "Ticket "
+        ticketLabel.font = .systemFont(ofSize: 14, weight: .semibold)
+        ticketLabel.textColor = .black
+
+
+        ticketContainer.translatesAutoresizingMaskIntoConstraints = false
+        ticketContainer.backgroundColor = .white
+        ticketContainer.layer.cornerRadius = 10
+        ticketContainer.layer.borderWidth = 1
+        ticketContainer.layer.borderColor = UIColor(white: 0.85, alpha: 1).cgColor
+
+        ticketTextField.translatesAutoresizingMaskIntoConstraints = false
+        ticketTextField.borderStyle = .none
+        ticketTextField.textColor = .black
+        ticketTextField.font = .systemFont(ofSize: 14, weight: .regular)
+        ticketTextField.placeholder = "Enter ticket subject or ID"
+        ticketTextField.autocorrectionType = .no
+        ticketTextField.returnKeyType = .done
+        ticketTextField.delegate = self
+
         // Issue Category title
         issueCategoryLabel.translatesAutoresizingMaskIntoConstraints = false
         issueCategoryLabel.text = "Issue Category"
@@ -191,6 +205,10 @@ final class SubmitSupportTicketViewController: UIViewController,
         placeholderLabel.font = .systemFont(ofSize: 14, weight: .regular)
         placeholderLabel.textColor = UIColor(white: 0.65, alpha: 1)
 
+        contentView.addSubview(ticketLabel)
+        contentView.addSubview(ticketContainer)
+        ticketContainer.addSubview(ticketTextField)
+
         contentView.addSubview(issueCategoryLabel)
         contentView.addSubview(categoryContainer)
         categoryContainer.addSubview(categoryTextField)
@@ -202,7 +220,22 @@ final class SubmitSupportTicketViewController: UIViewController,
         issueTextContainer.addSubview(placeholderLabel)
 
         NSLayoutConstraint.activate([
-            issueCategoryLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18),
+            // ✅ Ticket
+            ticketLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18),
+            ticketLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: sidePadding),
+            ticketLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -sidePadding),
+
+            ticketContainer.topAnchor.constraint(equalTo: ticketLabel.bottomAnchor, constant: 10),
+            ticketContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: sidePadding),
+            ticketContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -sidePadding),
+            ticketContainer.heightAnchor.constraint(equalToConstant: 44),
+
+            ticketTextField.leadingAnchor.constraint(equalTo: ticketContainer.leadingAnchor, constant: 14),
+            ticketTextField.trailingAnchor.constraint(equalTo: ticketContainer.trailingAnchor, constant: -14),
+            ticketTextField.centerYAnchor.constraint(equalTo: ticketContainer.centerYAnchor),
+
+            // ✅ Issue Category
+            issueCategoryLabel.topAnchor.constraint(equalTo: ticketContainer.bottomAnchor, constant: 18),
             issueCategoryLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: sidePadding),
             issueCategoryLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -sidePadding),
 
@@ -220,6 +253,7 @@ final class SubmitSupportTicketViewController: UIViewController,
             chevronIcon.widthAnchor.constraint(equalToConstant: 16),
             chevronIcon.heightAnchor.constraint(equalToConstant: 16),
 
+            // ✅ Describe
             describeLabel.topAnchor.constraint(equalTo: categoryContainer.bottomAnchor, constant: 18),
             describeLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: sidePadding),
             describeLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -sidePadding),
@@ -238,17 +272,14 @@ final class SubmitSupportTicketViewController: UIViewController,
             placeholderLabel.leadingAnchor.constraint(equalTo: issueTextContainer.leadingAnchor, constant: 16),
             placeholderLabel.trailingAnchor.constraint(equalTo: issueTextContainer.trailingAnchor, constant: -16),
 
-            // content ends here (note is NOT inside scroll)
             issueTextContainer.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -18)
         ])
 
-        // Tap to open picker
         let tap = UITapGestureRecognizer(target: self, action: #selector(openCategoryPicker))
         categoryContainer.addGestureRecognizer(tap)
         categoryContainer.isUserInteractionEnabled = true
     }
 
-    // MARK: - Picker setup
     private func setupPicker() {
         pickerView.dataSource = self
         pickerView.delegate = self
@@ -267,7 +298,6 @@ final class SubmitSupportTicketViewController: UIViewController,
         categoryTextField.resignFirstResponder()
     }
 
-    // MARK: - Button (fixed bottom)
     private func setupSubmitButton() {
         submitButton.translatesAutoresizingMaskIntoConstraints = false
         submitButton.setTitle("Submit Support Ticket", for: .normal)
@@ -287,7 +317,6 @@ final class SubmitSupportTicketViewController: UIViewController,
         ])
     }
 
-    // MARK: - NOTE ABOVE BUTTON (the fix)
     private func setupNoteAboveButton() {
         noteLabel.translatesAutoresizingMaskIntoConstraints = false
         noteLabel.text = "Note: You will receive a notification when the admin replies."
@@ -305,14 +334,20 @@ final class SubmitSupportTicketViewController: UIViewController,
         ])
     }
 
-    // MARK: - Actions
     @objc private func submitTapped() {
+        let ticketText = (ticketTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         let text = issueTextView.text.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !ticketText.isEmpty else {
+            showInfoAlert(title: "Missing Ticket", message: "Please enter the ticket subject or ID.")
+            return
+        }
 
         guard let category = selectedCategory, !category.isEmpty else {
             showInfoAlert(title: "Missing Category", message: "Please choose an issue category.")
             return
         }
+
         guard !text.isEmpty else {
             showInfoAlert(title: "Missing Issue", message: "Please describe your issue before submitting.")
             return
@@ -324,13 +359,13 @@ final class SubmitSupportTicketViewController: UIViewController,
 
         alert.addAction(UIAlertAction(title: "No", style: .cancel))
         alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { [weak self] _ in
-            self?.sendTicketToAdmin(category: category, message: text)
+            self?.sendTicketToAdmin(ticketTitle: ticketText, category: category, message: text)
         }))
 
         present(alert, animated: true)
     }
 
-    private func sendTicketToAdmin(category: String, message: String) {
+    private func sendTicketToAdmin(ticketTitle: String, category: String, message: String) {
         let success = UIAlertController(title: "Successfully Submitted",
                                         message: "Your support ticket has been submitted to the admin.",
                                         preferredStyle: .alert)
@@ -346,13 +381,11 @@ final class SubmitSupportTicketViewController: UIViewController,
         present(a, animated: true)
     }
 
-    // MARK: - UITextView placeholder
     func textViewDidChange(_ textView: UITextView) {
         let t = textView.text.trimmingCharacters(in: .whitespacesAndNewlines)
         placeholderLabel.isHidden = !t.isEmpty
     }
 
-    // MARK: - UIPickerView
     func numberOfComponents(in pickerView: UIPickerView) -> Int { 1 }
 
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
@@ -368,7 +401,6 @@ final class SubmitSupportTicketViewController: UIViewController,
         categoryTextField.text = selectedCategory
     }
 
-    // MARK: - Keyboard dismiss
     private func setupKeyboardDismiss() {
         let tap = UITapGestureRecognizer(target: self, action: #selector(endEditingAll))
         tap.cancelsTouchesInView = false
@@ -380,7 +412,12 @@ final class SubmitSupportTicketViewController: UIViewController,
     }
 }
 
-// MARK: - UIColor Hex
+extension SubmitSupportTicketViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+}
 
 private extension UIColor {
     convenience init(hex: String) {

@@ -4,7 +4,6 @@
 //
 //  Created by BP-36-224-14 on 30/12/2025.
 //
-
 import UIKit
 
 private extension UIColor {
@@ -27,6 +26,8 @@ enum SupportTicketStatus: String {
 
 struct SupportTicket {
     let id: String
+    let ticketLabel: String
+    let category: String
     let status: SupportTicketStatus
     let userIssue: String
     let adminReply: String?
@@ -53,15 +54,19 @@ final class MySupportTicketsViewController: UIViewController {
     private var tickets: [SupportTicket] = [
         SupportTicket(
             id: "#12345",
+            ticketLabel: "Pickup Delay",
+            category: "Donations",
             status: .resolved,
-            userIssue: "Pickup Delay — Collector did not arrive at the scheduled time.",
-            adminReply: "Thanks for your report. We found a scheduling sync issue. Your donation status is now updated and marked as Collected. Sorry for the inconvenience.",
+            userIssue: "I scheduled a pickup for October 14, but the collector didn’t arrive at the selected time. Can you please check if it was confirmed correctly?",
+            adminReply: "Hello Zahra, thank you for contacting us.\n\nWe checked your report and found a scheduling sync issue caused by a minor system update.\n\nYour donation #1001 has now been marked as Collected and is visible in your donation history.\n\nEverything is working normally now. We truly appreciate your patience and continued support!",
             updatedAt: Date()
         ),
         SupportTicket(
             id: "#12346",
+            ticketLabel: "Login Problem",
+            category: "Accounts",
             status: .pending,
-            userIssue: "Account Issue — I can’t log in after updating the app.",
+            userIssue: "I can’t log in after updating the app. I tried resetting password but it still fails.",
             adminReply: nil,
             updatedAt: Date()
         )
@@ -229,11 +234,14 @@ final class MySupportTicketsViewController: UIViewController {
 private final class TicketCard: UIView {
 
     var onViewDetails: (() -> Void)?
-
     private let yellow: UIColor
+    private let ticket: SupportTicket
 
+    private let titleLabel = UILabel()
     private let idLabel = UILabel()
     private let statusPill = UILabel()
+
+    private let metaLabel = UILabel()
 
     private let issueTitle = UILabel()
     private let issueBody = UILabel()
@@ -245,11 +253,12 @@ private final class TicketCard: UIView {
     private let viewButton = UIButton(type: .system)
 
     init(ticket: SupportTicket, yellow: UIColor) {
+        self.ticket = ticket
         self.yellow = yellow
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
         setupUI()
-        fill(ticket)
+        fill()
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -265,9 +274,14 @@ private final class TicketCard: UIView {
         layer.shadowRadius = 10
         layer.shadowOffset = CGSize(width: 0, height: 2)
 
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.font = .systemFont(ofSize: 15, weight: .semibold)
+        titleLabel.textColor = .black
+        titleLabel.numberOfLines = 1
+
         idLabel.translatesAutoresizingMaskIntoConstraints = false
-        idLabel.font = .systemFont(ofSize: 13, weight: .semibold)
-        idLabel.textColor = .black
+        idLabel.font = .systemFont(ofSize: 12, weight: .semibold)
+        idLabel.textColor = UIColor(white: 0.35, alpha: 1)
 
         statusPill.translatesAutoresizingMaskIntoConstraints = false
         statusPill.font = .systemFont(ofSize: 12, weight: .semibold)
@@ -275,8 +289,13 @@ private final class TicketCard: UIView {
         statusPill.layer.cornerRadius = 10
         statusPill.clipsToBounds = true
 
+        metaLabel.translatesAutoresizingMaskIntoConstraints = false
+        metaLabel.font = .systemFont(ofSize: 12, weight: .regular)
+        metaLabel.textColor = UIColor(white: 0.40, alpha: 1)
+        metaLabel.numberOfLines = 1
+
         issueTitle.translatesAutoresizingMaskIntoConstraints = false
-        issueTitle.text = "Issue"
+        issueTitle.text = "Your Issue"
         issueTitle.font = .systemFont(ofSize: 12, weight: .semibold)
         issueTitle.textColor = UIColor(white: 0.2, alpha: 1)
 
@@ -310,27 +329,37 @@ private final class TicketCard: UIView {
         viewButton.setTitleColor(.black, for: .normal)
         viewButton.titleLabel?.font = .systemFont(ofSize: 12, weight: .medium)
         viewButton.backgroundColor = yellow
-        viewButton.tintColor = .black
         viewButton.layer.cornerRadius = 8
         viewButton.clipsToBounds = true
         viewButton.contentEdgeInsets = UIEdgeInsets(top: 8, left: 14, bottom: 8, right: 14)
         viewButton.addTarget(self, action: #selector(viewTapped), for: .touchUpInside)
 
-        addSubview(idLabel)
+        addSubview(titleLabel)
         addSubview(statusPill)
+        addSubview(idLabel)
+        addSubview(metaLabel)
         addSubview(issueTitle)
         addSubview(issueBody)
         addSubview(replyBox)
         addSubview(viewButton)
 
         NSLayoutConstraint.activate([
-            idLabel.topAnchor.constraint(equalTo: topAnchor, constant: 14),
-            idLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14),
+            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 14),
+            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14),
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: statusPill.leadingAnchor, constant: -10),
 
-            statusPill.centerYAnchor.constraint(equalTo: idLabel.centerYAnchor),
+            statusPill.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
             statusPill.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14),
 
-            issueTitle.topAnchor.constraint(equalTo: idLabel.bottomAnchor, constant: 12),
+            idLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 6),
+            idLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14),
+            idLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14),
+
+            metaLabel.topAnchor.constraint(equalTo: idLabel.bottomAnchor, constant: 6),
+            metaLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14),
+            metaLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14),
+
+            issueTitle.topAnchor.constraint(equalTo: metaLabel.bottomAnchor, constant: 12),
             issueTitle.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14),
             issueTitle.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14),
 
@@ -358,7 +387,8 @@ private final class TicketCard: UIView {
         ])
     }
 
-    private func fill(_ ticket: SupportTicket) {
+    private func fill() {
+        titleLabel.text = ticket.ticketLabel
         idLabel.text = ticket.id
 
         let resolved = (ticket.status == .resolved)
@@ -366,6 +396,7 @@ private final class TicketCard: UIView {
         statusPill.textColor = UIColor(white: 0.15, alpha: 1)
         statusPill.backgroundColor = resolved ? UIColor(hex: "#EAF8EF") : UIColor(hex: "#FFF6DD")
 
+        metaLabel.text = "Category: \(ticket.category)"
         issueBody.text = ticket.userIssue
         replyBody.text = ticket.adminReply ?? "No reply yet."
     }

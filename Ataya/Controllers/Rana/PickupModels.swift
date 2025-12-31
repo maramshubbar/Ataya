@@ -6,24 +6,24 @@
 //
 
 import Foundation
+import FirebaseFirestore
 
-enum PickupStatus: String {
+enum PickupStatus: String, Codable {
     case pending = "Pending"
     case accepted = "Accepted"
     case completed = "Completed"
 }
 
-struct PickupItem {
+struct PickupItem: Codable {
+    var id: String?               // Firestore docId
     let pickupID: String
 
-    // List screen
     let title: String
     let donor: String
     let location: String
     let date: String
     let imageName: String
 
-    // Details screen
     let itemName: String
     let quantity: String
     let category: String
@@ -32,4 +32,8 @@ struct PickupItem {
     let scheduledDate: String
 
     var status: PickupStatus
+    let assignedNgoId: String
+
+    var createdAt: Timestamp?
 }
+

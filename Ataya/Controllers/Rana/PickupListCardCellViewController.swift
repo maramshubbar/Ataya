@@ -2,6 +2,7 @@
 //
 //
 import UIKit
+import FirebaseFirestore
 
 final class PickupListCardCellViewController: UIViewController {
 
@@ -10,6 +11,8 @@ final class PickupListCardCellViewController: UIViewController {
 
     private var allItems: [PickupItem] = []
     private var shownItems: [PickupItem] = []
+
+    private var listener: ListenerRegistration?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,8 +23,28 @@ final class PickupListCardCellViewController: UIViewController {
 
         statusSegment.addTarget(self, action: #selector(segmentChanged(_:)), for: .valueChanged)
 
-        loadExampleCards()
-        applyFilter()
+        startListening()
+    }
+
+    deinit {
+        listener?.remove()
+    }
+
+    private func startListening() {
+        listener?.remove()
+
+        listener = PickupFirestoreService.shared.listenMyPickups { [weak self] result in
+            guard let self else { return }
+
+            switch result {
+            case .success(let items):
+                self.allItems = items
+                self.applyFilter()
+
+            case .failure(let error):
+                print("❌ Firestore listen error:", error.localizedDescription)
+            }
+        }
     }
 
     private func setupTable() {
@@ -43,56 +66,6 @@ final class PickupListCardCellViewController: UIViewController {
         statusSegment.layer.masksToBounds = true
     }
 
-    private func loadExampleCards() {
-        allItems = [
-            PickupItem(
-                pickupID: "DON-10",
-                title: "Baby Formula (DON-10)",
-                donor: "Ahmed Saleh (ID: D-26)",
-                location: "Manama, Bahrain",
-                date: "Nov 6 2025",
-                imageName: "baby_formula",
-                itemName: "Baby Formula",
-                quantity: "850 grams",
-                category: "Infant Nutrition",
-                expiryDate: "05/2026",
-                notes: "Keep in a cool, dry place",
-                scheduledDate: "Nov 6, 2025",
-                status: .pending
-            ),
-            PickupItem(
-                pickupID: "DON-7",
-                title: "Water 5 Gallon (DON-7)",
-                donor: "Sara Carter (ID: D-29)",
-                location: "A'ali, Bahrain",
-                date: "Nov 6 2025",
-                imageName: "water_gallon",
-                itemName: "Water 5 Gallon",
-                quantity: "1 bottle",
-                category: "Drinks",
-                expiryDate: "—",
-                notes: "Handle carefully",
-                scheduledDate: "Nov 6, 2025",
-                status: .accepted
-            ),
-            PickupItem(
-                pickupID: "DON-99",
-                title: "White Rice (DON-99)",
-                donor: "Mohd Jamal (ID: D-150)",
-                location: "Kuwait City, Kuwait",
-                date: "Nov 4 2025",
-                imageName: "white_rice",
-                itemName: "White Rice",
-                quantity: "2 kg",
-                category: "Food",
-                expiryDate: "12/2026",
-                notes: "Store in a dry place",
-                scheduledDate: "Nov 4, 2025",
-                status: .completed
-            )
-        ]
-    }
-
     @objc private func segmentChanged(_ sender: UISegmentedControl) {
         applyFilter()
     }
@@ -112,15 +85,27 @@ final class PickupListCardCellViewController: UIViewController {
     }
 
     private func openDetails(for pickupID: String) {
+        // Find item inside allItems (source of truth)
         guard let index = allItems.firstIndex(where: { $0.pickupID == pickupID }) else { return }
 
         let vc = storyboard?.instantiateViewController(withIdentifier: "PickupDetailsViewController") as! PickupDetailsViewController
         vc.item = allItems[index]
 
-        vc.onStatusChanged = { [weak self] newStatus in
-            guard let self else { return }
-            self.allItems[index].status = newStatus
-            self.applyFilter()
+
+        vc.onStatusChanged = { newStatus in
+            guard let docId = vc.item.id else {
+                print("❌ Missing Firestore docId (item.id is nil)")
+                return
+            }
+
+            PickupFirestoreService.shared.updateStatus(docId: docId, status: newStatus) { result in
+                switch result {
+                case .success:
+                    print("✅ Firestore updated:", newStatus.rawValue)
+                case .failure(let error):
+                    print("❌ Firestore update failed:", error.localizedDescription)
+                }
+            }
         }
 
         navigationController?.pushViewController(vc, animated: true)
@@ -155,10 +140,8 @@ extension PickupListCardCellViewController: UITableViewDataSource, UITableViewDe
         return cell
     }
 
-    // Optional: tap on whole cell also opens details
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let item = shownItems[indexPath.row]
         openDetails(for: item.pickupID)
     }
 }
-

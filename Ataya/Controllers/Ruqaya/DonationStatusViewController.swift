@@ -64,17 +64,18 @@ final class DonationStatusViewController: UIViewController {
             ngoImage.clipsToBounds = true
         }
 
+        // MARK: - Style
         private func styleLikeFigma() {
-            
+
             // Big card
             detailsCardView.backgroundColor = .white
-            detailsCardView.layer.cornerRadius = 5
+            detailsCardView.layer.cornerRadius = 12
             detailsCardView.layer.borderWidth = 1
             detailsCardView.layer.borderColor = lightGray.cgColor
 
             // NGO card
             ngoContact.backgroundColor = .white
-            ngoContact.layer.cornerRadius = 5
+            ngoContact.layer.cornerRadius = 10
             ngoContact.layer.borderWidth = 1
             ngoContact.layer.borderColor = lightGray.cgColor
 
@@ -94,9 +95,8 @@ final class DonationStatusViewController: UIViewController {
             supportButton.setTitle("Raise a Support Ticket", for: .normal)
             supportButton.setTitleColor(.black, for: .normal)
             supportButton.backgroundColor = atayaYellow
-            supportButton.layer.cornerRadius = 8
+            supportButton.layer.cornerRadius = 12
         }
-
 
         // MARK: - Dummy Data
         private func fillDummyData() {

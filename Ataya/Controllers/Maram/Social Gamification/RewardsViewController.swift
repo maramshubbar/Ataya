@@ -44,7 +44,7 @@ final class RewardsViewController: UIViewController {
     private func updateBadgesItemSizeIfNeeded() {
         guard let layout = badgesCollectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
 
-        let newSize = CGSize(width: 104, height: 194)   // ✅ EXACT size you want
+        let newSize = CGSize(width: 130, height: 190)   // ✅ EXACT size you want
         if layout.itemSize != newSize {
             layout.itemSize = newSize
             layout.invalidateLayout()
@@ -91,7 +91,8 @@ final class RewardsViewController: UIViewController {
         layout.sectionInset = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
 
         // ✅ temporary size (final size will be set in viewDidLayoutSubviews)
-        layout.itemSize = CGSize(width: 104, height: 194)  // ✅ EXACT
+        let newSize = CGSize(width: 130, height: 220)
+            // ✅ EXACT
 
         badgesCollectionView.collectionViewLayout = layout
 

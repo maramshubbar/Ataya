@@ -104,7 +104,7 @@ final class RewardsNgoViewController: UIViewController, UICollectionViewDataSour
 
     private func updateBadgesItemSizeIfNeeded() {
         guard let layout = badgesCollectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
-        let newSize = CGSize(width: 104, height: 194) // ✅ EXACT
+        let newSize = CGSize(width: 130, height: 190) // ✅ EXACT
         if layout.itemSize != newSize {
             layout.itemSize = newSize
             layout.invalidateLayout()

@@ -15,7 +15,7 @@ final class ImpactDetailsViewController: UIViewController {
     private lazy var periodControl: UISegmentedControl = {
         let sc = UISegmentedControl(items: ["Daily", "Monthly", "Yearly"])
         sc.selectedSegmentIndex = Period.daily.rawValue
-        sc.selectedSegmentTintColor = atayaYellow
+        sc.selectedSegmentTintColor = .white
         sc.addTarget(self, action: #selector(periodChanged(_:)), for: .valueChanged)
         return sc
     }()

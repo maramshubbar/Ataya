@@ -19,6 +19,8 @@ final class DonationOverviewViewController: UIViewController {
     private var allItems: [DonationItem] = []
     private var shownItems: [DonationItem] = []
 
+    private var selectedDocId: String?
+
     private static let dateFormatter: DateFormatter = {
         let f = DateFormatter()
         f.dateStyle = .medium
@@ -29,7 +31,6 @@ final class DonationOverviewViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // SearchBar UI
         searchBar.backgroundImage = UIImage()
         searchBar.searchBarStyle = .minimal
         if let searchField = searchBar.value(forKey: "searchField") as? UITextField {
@@ -38,12 +39,10 @@ final class DonationOverviewViewController: UIViewController {
             searchField.clipsToBounds = true
         }
 
-        // Delegates
         searchBar.delegate = self
         tableView.dataSource = self
         tableView.delegate = self
 
-        // Table styling
         tableView.register(UINib(nibName: "DonationOverviewCell", bundle: nil),
                            forCellReuseIdentifier: DonationOverviewCell.reuseId)
         tableView.separatorStyle = .none
@@ -65,7 +64,6 @@ final class DonationOverviewViewController: UIViewController {
 
     deinit { listener?.remove() }
 
-    // MARK: - Firestore Listener (وفق schema المتفق عليه)
     private func startListening() {
         listener?.remove()
         listener = nil
@@ -85,59 +83,35 @@ final class DonationOverviewViewController: UIViewController {
 
                 self.allItems = docs.compactMap { doc in
                     let data = doc.data()
-                    let donationId = doc.documentID
 
-                    // Required fields (حسب اللي اتفقنا عليه)
-                    let title = data["title"] as? String ?? ""
-                    let donorName = data["donorName"] as? String ?? ""
-                    let donorId = data["donorId"] as? String ?? ""
-                    let ngoName = data["ngoName"] as? String ?? ""
-                    let ngoId = data["ngoId"] as? String ?? ""
-                    let city = data["city"] as? String ?? ""
-                    let country = data["country"] as? String ?? ""
-                    let statusStr = (data["status"] as? String ?? "pending")
-                    let imageName = data["imageName"] as? String ?? "aptamil"
+                    let donationId = data["id"] as? String ?? doc.documentID
+                    let itemName   = data["itemName"] as? String ?? ""
+                    let donorId    = data["donorId"] as? String ?? ""
+                    let statusStr  = data["status"] as? String ?? "pending"
 
-                    // Timestamp
                     let ts = data["createdAt"] as? Timestamp
                     let createdAt = ts?.dateValue() ?? Date.distantPast
                     let dateText = Self.dateFormatter.string(from: createdAt)
 
-                    // Title + ID
+                    let photoURLs = data["photoURLs"] as? [String] ?? []
+                    let imageUrl = photoURLs.first ?? ""
+
                     let headerTitle: String = {
-                        let clean = title.trimmingCharacters(in: .whitespacesAndNewlines)
+                        let clean = itemName.trimmingCharacters(in: .whitespacesAndNewlines)
                         if clean.isEmpty { return donationId }
                         return "\(clean) (\(donationId))"
                     }()
 
-                    let donorText: String = {
-                        if !donorName.isEmpty && !donorId.isEmpty { return "\(donorName) (ID: \(donorId))" }
-                        if !donorName.isEmpty { return "\(donorName) (ID: —)" }
-                        if !donorId.isEmpty { return "Donor (ID: \(donorId))" }
-                        return "Donor (ID: —)"
-                    }()
-
-                    let ngoText: String = {
-                        if !ngoName.isEmpty && !ngoId.isEmpty { return "\(ngoName) (ID: \(ngoId))" }
-                        if !ngoName.isEmpty { return "\(ngoName) (ID: —)" }
-                        if !ngoId.isEmpty { return "NGO (ID: \(ngoId))" }
-                        return "NGO (ID: —)"
-                    }()
-
-                    let locationText: String = {
-                        if !city.isEmpty && !country.isEmpty { return "\(city), \(country)" }
-                        if !country.isEmpty { return country }
-                        if !city.isEmpty { return city }
-                        return ""
-                    }()
+                    let donorText: String = donorId.isEmpty ? "Donor (ID: —)" : "Donor (ID: \(donorId))"
 
                     return DonationItem(
+                        docId: doc.documentID,
                         title: headerTitle,
                         donorText: donorText,
-                        ngoText: ngoText,
-                        locationText: locationText,
+                        ngoText: "NGO (ID: —)",
+                        locationText: "",
                         dateText: dateText,
-                        imageName: imageName,
+                        imageUrl: imageUrl,
                         status: self.mapStatus(statusStr)
                     )
                 }
@@ -148,7 +122,6 @@ final class DonationOverviewViewController: UIViewController {
             }
     }
 
-    // يرجع DonationItem.Status
     private func mapStatus(_ s: String) -> DonationItem.Status {
         switch s.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() {
         case "approved": return .approved
@@ -162,29 +135,48 @@ final class DonationOverviewViewController: UIViewController {
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .lowercased()
 
-        var items = allItems
-
-        if !searchText.isEmpty {
-            items = items.filter { item in
-                let haystack = [
-                    item.title,
-                    item.donorText,
-                    item.ngoText,
-                    item.locationText,
-                    item.dateText,
-                    item.status.rawValue
-                ].joined(separator: " ").lowercased()
-
-                return haystack.contains(searchText)
-            }
+        if searchText.isEmpty {
+            shownItems = allItems
+            tableView.reloadData()
+            return
         }
 
-        shownItems = items
+        shownItems = allItems.filter { item in
+            // ✅ ابحثي في أهم حقولك (بدون ما نعتمد على نصوص "NGO" الوهمية)
+            let haystack = [
+                item.title,
+                item.donorText,
+                item.dateText,
+                item.status.rawValue
+            ].joined(separator: " ").lowercased()
+
+            return haystack.contains(searchText)
+        }
+
         tableView.reloadData()
     }
 
+
     private func openDetails(item: DonationItem) {
-        // هنا بتفتحين صفحة التفاصيل بعدين
+        selectedDocId = item.docId
+        print("✅ openDetails docId:", item.docId)
+        performSegue(withIdentifier: "sgDonationDetails", sender: self)
+    }
+
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard segue.identifier == "sgDonationDetails" else { return }
+
+        let dest = segue.destination
+
+        // لو الصفحة داخل NavigationController
+        let detailsVC =
+            (dest as? UINavigationController)?.topViewController as? AdminDonationDetailsViewController
+            ?? dest as? AdminDonationDetailsViewController
+
+        detailsVC?.donationDocId = selectedDocId
+        print("✅ Passing docId to details:", selectedDocId ?? "nil")
+
     }
 }
 

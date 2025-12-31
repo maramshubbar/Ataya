@@ -5,14 +5,47 @@
 //  Created by Maram on 20/12/2025.
 //
 
-import UIKit
 
-class AdminDonationDetailsViewController: UIViewController {
+import UIKit
+import FirebaseFirestore
+
+final class AdminDonationDetailsViewController: UIViewController {
+
+    var donationDocId: String?
+
+    private let db = Firestore.firestore()
+    private var listener: ListenerRegistration?
 
     @IBOutlet weak var donationCardView: UIView!
     @IBOutlet weak var donorCardView: UIView!
     @IBOutlet weak var ngoCardView: UIView!
     @IBOutlet weak var adminReviewCardView: UIView!
+    @IBOutlet weak var statusBadgeView: UIView?
+
+    // الموجودين عندك
+    @IBOutlet weak var lblDonationTitle: UILabel?
+    @IBOutlet weak var lblDonationId: UILabel?
+    @IBOutlet weak var lblStatus: UILabel?
+    @IBOutlet weak var lblCreatedAt: UILabel?
+    @IBOutlet weak var lblDonorId: UILabel?
+    @IBOutlet weak var imgDonation: UIImageView?
+
+    // ✅ جدد (اربطيهم إذا موجودين في الStoryboard)
+    @IBOutlet weak var lblCategory: UILabel?
+    @IBOutlet weak var lblQuantity: UILabel?
+    @IBOutlet weak var lblPackagingType: UILabel?
+    @IBOutlet weak var lblAllergenInfo: UILabel?
+    @IBOutlet weak var lblNotes: UILabel?
+    @IBOutlet weak var lblExpiryDate: UILabel?
+    @IBOutlet weak var lblSafetyConfirmed: UILabel?
+    @IBOutlet weak var lblPhotoCount: UILabel?
+
+    private static let dateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateStyle = .medium
+        f.timeStyle = .none
+        return f
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,73 +54,163 @@ class AdminDonationDetailsViewController: UIViewController {
         donorCardView.applyCardStyleNoShadow()
         ngoCardView.applyCardStyleNoShadow()
         adminReviewCardView.applyCardStyleNoShadow()
-    }
-}
 
-extension UIColor {
-    convenience init(hex: String, alpha: CGFloat = 1) {
-        var h = hex.trimmingCharacters(in: .whitespacesAndNewlines)
-        if h.hasPrefix("#") { h.removeFirst() }
-        var rgb: UInt64 = 0
-        Scanner(string: h).scanHexInt64(&rgb)
-        let r = CGFloat((rgb >> 16) & 0xFF) / 255
-        let g = CGFloat((rgb >> 8) & 0xFF) / 255
-        let b = CGFloat(rgb & 0xFF) / 255
-        self.init(red: r, green: g, blue: b, alpha: alpha)
-    }
-}
+        imgDonation?.contentMode = .scaleAspectFit
+        imgDonation?.backgroundColor = .clear
 
-extension UIView {
-
-    /// ✅ Normal card: radius + border ONLY (NO shadow)
-    func applyCardStyleNoShadow(
-        radius: CGFloat = 16,
-        borderHex: String = "#E6E6E6",
-        borderWidth: CGFloat = 1
-    ) {
-        // Remove any shadow completely
-        layer.shadowColor = nil
-        layer.shadowOpacity = 0
-        layer.shadowRadius = 0
-        layer.shadowOffset = .zero
-        layer.shadowPath = nil
-        layer.shouldRasterize = false
-
-        // Card border + radius
-        layer.cornerRadius = radius
-        layer.borderWidth = borderWidth
-        layer.borderColor = UIColor(hex: borderHex).cgColor
-
-        // Clip content to rounded corners
-        clipsToBounds = true
-        layer.masksToBounds = true
+        print("✅ Details viewDidLoad docId:", donationDocId ?? "nil")
+        print("✅ outlets:",
+              lblDonationTitle != nil,
+              lblDonationId != nil,
+              lblStatus != nil,
+              lblCreatedAt != nil,
+              lblDonorId != nil,
+              imgDonation != nil)
     }
 
-    // ✅ Keep your method, but make sure NO shadow happens
-    func applyCardBorder(radius: CGFloat, borderColor: UIColor, borderWidth: CGFloat = 2) {
-        layer.shadowColor = nil
-        layer.shadowOpacity = 0
-        layer.shadowRadius = 0
-        layer.shadowOffset = .zero
-        layer.shadowPath = nil
-        layer.shouldRasterize = false
-
-        layer.cornerRadius = radius
-        layer.borderWidth = borderWidth
-        layer.borderColor = borderColor.cgColor
-
-        clipsToBounds = true
-        layer.masksToBounds = true
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        startListeningDonation()
     }
 
-    // (Left here if you still have calls somewhere, but it will NOT add shadow)
-    func applySoftShadow(radius: CGFloat) {
-        // Intentionally disabled (no shadow)
-        layer.shadowColor = nil
-        layer.shadowOpacity = 0
-        layer.shadowRadius = 0
-        layer.shadowOffset = .zero
-        layer.shadowPath = nil
-        layer.shouldRasterize = false
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        listener?.remove()
+        listener = nil
+    }
+
+    deinit { listener?.remove() }
+
+    private func startListeningDonation() {
+        listener?.remove()
+        listener = nil
+
+        guard let docId = donationDocId, !docId.isEmpty else {
+            print("❌ Missing donationDocId")
+            return
+        }
+
+        listener = db.collection("donations").document(docId)
+            .addSnapshotListener { [weak self] snap, err in
+                guard let self else { return }
+
+                if let err = err {
+                    print("❌ details error:", err.localizedDescription)
+                    return
+                }
+
+                guard let data = snap?.data() else {
+                    print("❌ donation not found for docId:", docId)
+                    return
+                }
+
+                // ✅ نفس الحقول اللي في Firebase عندك
+                let donationId = data["id"] as? String ?? docId
+                let itemName   = data["itemName"] as? String ?? "—"
+                let donorId    = data["donorId"] as? String ?? "—"
+                let statusStr  = (data["status"] as? String ?? "pending").lowercased()
+
+                let createdAtText = self.formatTimestamp(data["createdAt"])
+                let expiryText    = self.formatTimestamp(data["expiryDate"])   // ✅ expiryDate موجود عندك
+
+                let category      = data["category"] as? String ?? "—"
+                let packagingType = data["packagingType"] as? String ?? "—"
+                let allergenInfo  = data["allergenInfo"] as? String ?? "—"
+                let notes         = data["notes"] as? String ?? "—"
+
+                let quantityValue = self.numberText(data["quantityValue"])
+                let quantityUnit  = data["quantityUnit"] as? String ?? ""
+                let quantityText: String = {
+                    if quantityValue == "—" { return "—" }
+                    if quantityUnit.isEmpty { return quantityValue }
+                    return "\(quantityValue) \(quantityUnit)"
+                }()
+
+                let safetyConfirmed = data["safetyConfirmed"] as? Bool
+                let safetyText = (safetyConfirmed == true) ? "Yes" : "No"
+
+                let photoCountText = self.numberText(data["photoCount"])
+
+                let photoURLs = data["photoURLs"] as? [String] ?? []
+                let imageUrl = photoURLs.first ?? ""
+
+                DispatchQueue.main.async {
+                    // top card
+                    self.lblDonationTitle?.text = itemName
+                    self.lblDonationId?.text = donationId
+                    self.lblDonorId?.text = donorId
+                    self.lblCreatedAt?.text = createdAtText
+                    self.lblStatus?.text = statusStr.capitalized
+                    self.applyStatusBadge(statusStr)
+
+
+                    // donation details (من Firebase)
+                    self.lblCategory?.text = category
+                    self.lblQuantity?.text = quantityText
+                    self.lblPackagingType?.text = packagingType
+                    self.lblAllergenInfo?.text = allergenInfo
+                    self.lblNotes?.text = notes
+                    self.lblExpiryDate?.text = expiryText
+                    self.lblSafetyConfirmed?.text = safetyText
+                    self.lblPhotoCount?.text = photoCountText
+
+                    // image from Firebase URL
+                    self.imgDonation?.image = nil
+                    let clean = imageUrl.trimmingCharacters(in: .whitespacesAndNewlines)
+                    if !clean.isEmpty {
+                        self.imgDonation?.fetchRemoteImage(urlString: clean) { [weak self] img in
+                            DispatchQueue.main.async {
+                                self?.imgDonation?.image = img
+                            }
+                        }
+                    }
+
+                    print("✅ Details loaded from Firestore:", data)
+                }
+            }
+    }
+    
+    private func applyStatusBadge(_ statusStr: String) {
+        let s = statusStr.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+
+        statusBadgeView?.layer.cornerRadius = 8
+        statusBadgeView?.clipsToBounds = true
+
+        switch s {
+        case "pending":
+            statusBadgeView?.backgroundColor = UIColor(red: 255/255, green: 244/255, blue: 191/255, alpha: 1)
+            lblStatus?.textColor = .black
+
+        case "approved":
+            statusBadgeView?.backgroundColor = UIColor(red: 213/255, green: 244/255, blue: 214/255, alpha: 1)
+            lblStatus?.textColor = .black
+
+        case "rejected":
+            statusBadgeView?.backgroundColor = UIColor(red: 242/255, green: 156/255, blue: 148/255, alpha: 1)
+            lblStatus?.textColor = .black
+
+        default:
+            statusBadgeView?.backgroundColor = UIColor(white: 0.9, alpha: 1)
+            lblStatus?.textColor = .black
+        }
+    }
+
+
+    // MARK: - Helpers
+    private func formatTimestamp(_ any: Any?) -> String {
+        guard let ts = any as? Timestamp else { return "—" }
+        return Self.dateFormatter.string(from: ts.dateValue())
+    }
+
+    private func numberText(_ any: Any?) -> String {
+        if let v = any as? Int { return "\(v)" }
+        if let v = any as? Int64 { return "\(v)" }
+        if let v = any as? Double {
+            // لو 1.0 نخليها 1
+            if v.rounded() == v { return "\(Int(v))" }
+            return "\(v)"
+        }
+        if let v = any as? NSNumber { return v.stringValue }
+        return "—"
     }
 }

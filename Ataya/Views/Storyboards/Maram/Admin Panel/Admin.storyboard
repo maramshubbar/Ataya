@@ -387,7 +387,7 @@
                                 <constraints>
                                     <constraint firstItem="bHN-c3-I99" firstAttribute="leading" secondItem="DHr-Bg-Oix" secondAttribute="leading" id="7nX-5h-Kma"/>
                                     <constraint firstItem="bHN-c3-I99" firstAttribute="top" secondItem="DHr-Bg-Oix" secondAttribute="top" id="PDy-qw-gy0"/>
-                                    <constraint firstAttribute="bottom" secondItem="bHN-c3-I99" secondAttribute="bottom" id="S6g-mM-H8s"/>
+                                    <constraint firstAttribute="bottom" secondItem="bHN-c3-I99" secondAttribute="bottom" constant="40" id="S6g-mM-H8s"/>
                                     <constraint firstItem="bHN-c3-I99" firstAttribute="width" secondItem="DHr-Bg-Oix" secondAttribute="width" id="Zoe-Kc-UIF"/>
                                     <constraint firstAttribute="trailing" secondItem="bHN-c3-I99" secondAttribute="trailing" id="dHZ-0c-rTT"/>
                                 </constraints>
@@ -983,11 +983,12 @@
                     <connections>
                         <outlet property="searchBar" destination="m5U-L0-AsW" id="xQl-cc-fWY"/>
                         <outlet property="tableView" destination="TAQ-Xg-5KN" id="NBf-6h-diU"/>
+                        <segue destination="c3t-LN-kbt" kind="show" identifier="sgDonationDetails" id="G6B-WO-fnr"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bq7-JS-aSz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1124" y="319"/>
+            <point key="canvasLocation" x="-1128" y="319"/>
         </scene>
         <!--Admin Tab Bar Controller-->
         <scene sceneID="YjR-o1-Oym">
@@ -1110,10 +1111,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8DL-fx-SUz">
-                                <rect key="frame" x="0.0" y="124" width="440" height="764"/>
+                                <rect key="frame" x="0.0" y="168" width="440" height="671"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="22g-ra-2e0" userLabel="Content View">
-                                        <rect key="frame" x="0.0" y="0.0" width="440" height="1373"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="440" height="1453"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="isF-AC-gcP" userLabel="mainStack">
                                                 <rect key="frame" x="16" y="20" width="408" height="1333"/>
@@ -1159,7 +1160,7 @@
                                                                         <rect key="frame" x="0.0" y="0.0" width="368" height="80.666666666666671"/>
                                                                         <subviews>
                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Donation ID:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SN9-3l-5Sy">
-                                                                                <rect key="frame" x="0.0" y="61.33333333333335" width="100" height="19.333333333333336"/>
+                                                                                <rect key="frame" x="0.0" y="61.333333333333321" width="100" height="19.333333333333336"/>
                                                                                 <constraints>
                                                                                     <constraint firstAttribute="width" constant="100" id="SI9-35-odu"/>
                                                                                 </constraints>
@@ -1168,7 +1169,7 @@
                                                                                 <nil key="highlightedColor"/>
                                                                             </label>
                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DON-98" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xmK-5z-8Uf">
-                                                                                <rect key="frame" x="108" y="61.33333333333335" width="260" height="19.333333333333336"/>
+                                                                                <rect key="frame" x="108" y="61.333333333333321" width="260" height="19.333333333333336"/>
                                                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                                                                                 <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <nil key="highlightedColor"/>
@@ -1627,7 +1628,7 @@
                                                                         </subviews>
                                                                     </stackView>
                                                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="c87-hZ-WrX">
-                                                                        <rect key="frame" x="0.0" y="143.66666666666663" width="368" height="19.333333333333343"/>
+                                                                        <rect key="frame" x="0.0" y="143.66666666666674" width="368" height="19.333333333333343"/>
                                                                         <subviews>
                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Email:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sDL-zP-j7p">
                                                                                 <rect key="frame" x="0.0" y="0.0" width="118" height="19.333333333333332"/>
@@ -1905,7 +1906,7 @@
                                         <constraints>
                                             <constraint firstItem="isF-AC-gcP" firstAttribute="leading" secondItem="22g-ra-2e0" secondAttribute="leading" constant="16" id="1L5-3f-Gfi"/>
                                             <constraint firstAttribute="trailing" secondItem="isF-AC-gcP" secondAttribute="trailing" constant="16" id="4I2-kc-P7t"/>
-                                            <constraint firstAttribute="bottom" secondItem="isF-AC-gcP" secondAttribute="bottom" constant="20" id="Nib-3v-YLq"/>
+                                            <constraint firstAttribute="bottom" secondItem="isF-AC-gcP" secondAttribute="bottom" constant="100" id="Nib-3v-YLq"/>
                                             <constraint firstItem="isF-AC-gcP" firstAttribute="top" secondItem="22g-ra-2e0" secondAttribute="top" constant="20" id="wnD-MN-ek9"/>
                                         </constraints>
                                     </view>
@@ -1930,17 +1931,30 @@
                             <constraint firstItem="7zA-aH-Db9" firstAttribute="trailing" secondItem="8DL-fx-SUz" secondAttribute="trailing" id="sMk-7W-WVa"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Donation Details" id="wGw-aU-KkD"/>
+                    <navigationItem key="navigationItem" title="Donation Details" style="editor" id="wGw-aU-KkD"/>
                     <connections>
                         <outlet property="adminReviewCardView" destination="1JU-Rd-G2w" id="MD2-U0-OL9"/>
                         <outlet property="donationCardView" destination="BWc-8z-7A2" id="w2c-M3-0wi"/>
                         <outlet property="donorCardView" destination="eBK-yy-OYi" id="qAw-gF-kLi"/>
+                        <outlet property="imgDonation" destination="WeJ-IB-Ha5" id="jlj-lf-gaY"/>
+                        <outlet property="lblAllergenInfo" destination="oyb-7L-0ba" id="vwu-17-l8G"/>
+                        <outlet property="lblCategory" destination="xXO-1E-tp0" id="xqk-dY-9l5"/>
+                        <outlet property="lblCreatedAt" destination="sBI-FH-VmZ" id="M64-RH-sKj"/>
+                        <outlet property="lblDonationId" destination="xmK-5z-8Uf" id="vDh-aP-3yQ"/>
+                        <outlet property="lblDonationTitle" destination="MhS-0C-icE" id="ku5-Ae-Jfo"/>
+                        <outlet property="lblDonorId" destination="tJo-yI-SQb" id="AUh-TQ-w6c"/>
+                        <outlet property="lblExpiryDate" destination="dYn-C3-ItF" id="PcA-u5-qHd"/>
+                        <outlet property="lblNotes" destination="WrP-X5-HxM" id="CpO-cm-sok"/>
+                        <outlet property="lblPackagingType" destination="TFT-n2-cK2" id="dwl-ll-uh7"/>
+                        <outlet property="lblQuantity" destination="H0q-ch-fg2" id="Inc-E0-cHw"/>
+                        <outlet property="lblStatus" destination="qIK-rq-rSQ" id="FIi-5S-7ci"/>
                         <outlet property="ngoCardView" destination="LSP-Cc-PR9" id="EWh-qq-cEE"/>
+                        <outlet property="statusBadgeView" destination="YmW-Ps-xdZ" id="vKW-Qv-eqp"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aoL-wq-cAJ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-927" y="1007"/>
+            <point key="canvasLocation" x="-1129" y="1015"/>
         </scene>
         <!--Analytics-->
         <scene sceneID="eUU-sK-Ahc">
@@ -2306,8 +2320,8 @@
                                         <constraints>
                                             <constraint firstAttribute="trailing" secondItem="xcj-xk-mdx" secondAttribute="trailing" constant="16" id="Bvx-jW-kUW"/>
                                             <constraint firstItem="xcj-xk-mdx" firstAttribute="leading" secondItem="vIA-xk-jjV" secondAttribute="leading" constant="16" id="IsR-al-xrW"/>
-                                            <constraint firstAttribute="bottom" secondItem="xcj-xk-mdx" secondAttribute="bottom" constant="16" id="eLY-bv-UHP"/>
                                             <constraint firstItem="xcj-xk-mdx" firstAttribute="top" secondItem="vIA-xk-jjV" secondAttribute="top" constant="16" id="nHG-Rj-da8"/>
+                                            <constraint firstAttribute="height" constant="1282.6666666666667" id="rfp-2K-H2Z"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -2315,7 +2329,7 @@
                                     <constraint firstItem="vIA-xk-jjV" firstAttribute="leading" secondItem="lXd-u9-Bdf" secondAttribute="leading" id="8Kq-J4-ZWW"/>
                                     <constraint firstAttribute="trailing" secondItem="vIA-xk-jjV" secondAttribute="trailing" id="EvB-4u-gm8"/>
                                     <constraint firstItem="vIA-xk-jjV" firstAttribute="width" secondItem="lXd-u9-Bdf" secondAttribute="width" id="Sbz-QU-fJp"/>
-                                    <constraint firstAttribute="bottom" secondItem="vIA-xk-jjV" secondAttribute="bottom" id="pBS-m8-nQY"/>
+                                    <constraint firstAttribute="bottom" secondItem="vIA-xk-jjV" secondAttribute="bottom" constant="40" id="pBS-m8-nQY"/>
                                     <constraint firstItem="vIA-xk-jjV" firstAttribute="top" secondItem="lXd-u9-Bdf" secondAttribute="top" id="qXW-Dh-c9l"/>
                                 </constraints>
                                 <viewLayoutGuide key="contentLayoutGuide" id="Npd-Xq-yBe"/>
@@ -2353,6 +2367,7 @@
             <point key="canvasLocation" x="752.72727272727275" y="-380.3347280334728"/>
         </scene>
     </scenes>
+    <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
     <resources>
         <image name="Audit" width="42" height="32"/>
         <image name="Flag" width="64" height="64"/>

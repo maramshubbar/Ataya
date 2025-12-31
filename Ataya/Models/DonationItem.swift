@@ -8,28 +8,25 @@
 import Foundation
 
 struct DonationItem {
-    let title: String
-    let donorText: String
-    let ngoText: String
-    let locationText: String
-    let dateText: String
-    let imageName: String
-    let status: Status
 
     enum Status: String {
-        case pending
-        case approved
-        case rejected
+        case pending, approved, rejected
 
-        // للعرض في UI
         var displayText: String {
             switch self {
-            case .pending: return "Pending"
+            case .pending:  return "Pending"
             case .approved: return "Approved"
             case .rejected: return "Rejected"
             }
         }
     }
+
+    let docId: String
+    let title: String
+    let donorText: String
+    let ngoText: String
+    let locationText: String
+    let dateText: String
+    let imageUrl: String
+    let status: Status
 }
-
-

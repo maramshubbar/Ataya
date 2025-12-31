@@ -157,7 +157,23 @@ final class AdminDashboardViewController: UIViewController {
                 }
 
                 let docs = snap?.documents ?? []
-                self.activities = docs.map { $0.data()["message"] as? String ?? "" }
+                self.activities = docs.map { doc in
+                    let d = doc.data()
+                    let title = d["title"] as? String ?? ""
+                    let user = d["user"] as? String ?? ""
+                    let location = d["location"] as? String ?? ""
+                    let category = d["category"] as? String ?? ""
+
+                    // ركّبي النص مثل ما تبين
+                    // مثال: "Donation Approved • Zahraa Ali • Manama, Bahrain"
+                    var parts: [String] = []
+                    if !title.isEmpty { parts.append(title) }
+                    if !user.isEmpty { parts.append(user) }
+                    if !location.isEmpty { parts.append(location) }
+                    if parts.isEmpty { parts.append(category) }
+
+                    return parts.joined(separator: " • ")
+                }
 
                 DispatchQueue.main.async {
                     self.tblRecentActivity.reloadData()

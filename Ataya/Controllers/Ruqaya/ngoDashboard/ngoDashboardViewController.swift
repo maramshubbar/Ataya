@@ -13,6 +13,11 @@ final class ngoDashboardViewController: UIViewController, UITableViewDataSource,
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var assignedTableHeightConstraint: NSLayoutConstraint!
 
+    
+    @IBOutlet weak var donationOverviewView: UIView!
+    @IBOutlet weak var campaignManagementView: UIView!
+    @IBOutlet weak var giftOfMercyView: UIView!
+    
     // Dummy data (نفس اللي تكتبينه)
        private let assignedPickups: [AssignedPickupItem] = [
            AssignedPickupItem(
@@ -97,8 +102,29 @@ final class ngoDashboardViewController: UIViewController, UITableViewDataSource,
         DispatchQueue.main.async {
             self.updateTableHeight()
         }
+        
+        
+        styleMenuView(donationOverviewView)
+        styleMenuView(campaignManagementView)
+        styleMenuView(giftOfMercyView)
 
     }
+    
+    private func styleMenuView(_ view: UIView) {
+        let atayaYellow = UIColor(
+            red: 0xF7/255,
+            green: 0xD4/255,
+            blue: 0x4C/255,
+            alpha: 1
+        )
+
+        view.layer.cornerRadius = 8
+        view.layer.borderWidth = 1
+        view.layer.borderColor = atayaYellow.cgColor
+        view.layer.masksToBounds = true      
+    }
+
+
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()

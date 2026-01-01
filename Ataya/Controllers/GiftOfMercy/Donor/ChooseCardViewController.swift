@@ -162,23 +162,19 @@ final class ChooseCardViewController: UIViewController {
 
         let vc = GiftCertificateDetailsViewController()
 
-        // ✅ show text on top
         vc.giftNameText = giftNameText
         vc.cardDesignText = item.title
-
-        // ✅ selected design id (for backend submit)
         vc.selectedCardDesignId = item.id
-
-        // ✅ selected image preview
         vc.bottomPreviewImage = loadImage(named: item.imageName)
 
-        // ✅ pass gift + amount forward (if your submit uses them)
-        // (only if you already added these props in GiftCertificateDetailsViewController)
-        // vc.selectedGift = selectedGift
-        // vc.selectedAmount = selectedAmount
+        // ✅ pass gift + amount for backend submit
+        vc.selectedGift = selectedGift
+        vc.selectedAmount = selectedAmount
 
         navigationController?.pushViewController(vc, animated: true)
     }
+
+
 
     private func loadImage(named name: String) -> UIImage? {
         if let img = UIImage(named: name) { return img }

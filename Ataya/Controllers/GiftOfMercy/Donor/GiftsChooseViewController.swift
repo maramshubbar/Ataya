@@ -162,17 +162,34 @@ final class GiftsChooseViewController: UIViewController {
     }
 
     // MARK: - Validation + Actions
-    private func validateAmount(for gift: MercyGift) -> Bool {
+    private func validateAmount(for gift: MercyGift) -> (ok: Bool, message: String) {
         switch gift.pricingMode {
+
         case .fixed:
-            return true
+            return (true, "")
+
         case .custom:
-            guard let amount = enteredAmounts[gift.id], amount > 0 else { return false }
-            return true
+            guard let amount = enteredAmounts[gift.id] else {
+                return (false, "Please enter a donation amount.")
+            }
+
+            if amount <= 0 {
+                return (false, "Amount must be greater than 0.")
+            }
+
+            if let min = gift.minAmount, amount < Decimal(min) {
+                return (false, "Minimum amount is $\(min).")
+            }
+            if let max = gift.maxAmount, amount > Decimal(max) {
+                return (false, "Maximum amount is $\(max).")
+            }
+
+            return (true, "")
         }
     }
 
-    private func showErrorBanner() {
+    private func showErrorBanner(_ message: String) {
+        errorLabel.text = message
         errorBanner.isHidden = false
         errorBottomConstraint?.constant = -18
         errorBanner.alpha = 0
@@ -188,6 +205,7 @@ final class GiftsChooseViewController: UIViewController {
             self?.hideErrorBanner()
         }
     }
+
 
     private func hideErrorBanner() {
         guard !errorBanner.isHidden else { return }
@@ -207,10 +225,13 @@ final class GiftsChooseViewController: UIViewController {
     private func didTapChooseGift(_ gift: MercyGift) {
         dismissKeyboard()
 
-        guard validateAmount(for: gift) else {
-            showErrorBanner()
+        let result = validateAmount(for: gift)
+        guard result.ok else {
+            showErrorBanner(result.message)
             return
         }
+
+
 
         let amount: Decimal
         switch gift.pricingMode {
@@ -261,16 +282,23 @@ extension GiftsChooseViewController: UICollectionViewDataSource {
         let existingAmount = enteredAmounts[gift.id]
 
         cell.configure(item: gift, accent: accent, existingAmount: existingAmount)
-
+        
         cell.onAmountChanged = { [weak self] newText in
             guard let self else { return }
-            let value = newText.decimalValue()
-            if let value, value > 0 {
+
+            if let value = newText.decimalValue() {
+                // نخزن حتى لو سالب عشان نطلع رسالة واضحة عند الضغط
                 self.enteredAmounts[gift.id] = value
+
+                // ✅ رسالة مباشرة لو 0/سالب
+                if value <= 0 {
+                    self.showErrorBanner("Amount must be greater than 0.")
+                }
             } else {
                 self.enteredAmounts[gift.id] = nil
             }
         }
+
 
         cell.onChooseTapped = { [weak self] in
             self?.didTapChooseGift(gift)

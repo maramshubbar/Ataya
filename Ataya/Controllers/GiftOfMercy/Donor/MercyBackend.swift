@@ -5,7 +5,6 @@
 //  Created by Fatema Maitham on 29/12/2025.
 //
 
-
 import Foundation
 import FirebaseFirestore
 
@@ -17,7 +16,6 @@ enum MercyBackend {
 
         let db = Firestore.firestore()
 
-        // 👇 collection اسمها "gifts" (مثل rules عندج)
         let query = db.collection("gifts")
             .whereField("isActive", isEqualTo: true)
 
@@ -30,6 +28,24 @@ enum MercyBackend {
             let docs = snap?.documents ?? []
             let items = docs.compactMap { MercyGift($0) }
             completion(.success(items))
+        }
+    }
+
+    static func submitGiftCertificate(
+        request: GiftCertificateRequest,
+        completion: @escaping (Result<String, Error>) -> Void
+    ) {
+        let db = Firestore.firestore()
+
+        // ✅ يعطيج docId حقيقي
+        let ref = db.collection("giftCertificates").document()
+
+        ref.setData(request.toFirestoreData()) { err in
+            if let err {
+                completion(.failure(err))
+            } else {
+                completion(.success(ref.documentID))
+            }
         }
     }
 }

@@ -551,19 +551,20 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
     }
 
     private func showSuccessAndClose() {
-        let popup = SuccessPopupViewController(
-            titleText: "Done ✅",
-            messageText: "Your certificate request was submitted successfully.",
-            buttonTitle: "Back Home"
-        )
+        let pop = AtayaSuccessPopupViewController()
+        pop.titleText = "Successfully Submitted"
+        pop.subtitleText = "Your certificate request was submitted successfully."
+        pop.buttonText = "Back Home"
 
-        popup.onPrimaryTapped = { [weak self] in
+        pop.modalPresentationStyle = .overFullScreen
+        pop.modalTransitionStyle = .crossDissolve
+
+        pop.onPrimaryTapped = { [weak self] in
             self?.navigationController?.popToRootViewController(animated: true)
         }
 
-        present(popup, animated: true)
+        present(pop, animated: true)
     }
-
 
     // MARK: - UITextView
     func textViewDidChange(_ textView: UITextView) {

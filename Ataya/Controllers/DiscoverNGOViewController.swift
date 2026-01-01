@@ -19,7 +19,7 @@ class DiscoverNGOViewController: UIViewController, UITableViewDataSource, UITabl
             location: "Riyadh, Saudi Arabia",
             rating: 5.0,
             impact: 5000,
-            mission: "Our mission is to empower communities by addressing social, educational, and humanitarian challenges through sustainable and inclusive initiatives. We are committed to creating positive and lasting change by supporting vulnerable populations, promoting equal opportunities, and fostering collaboration between individuals, organizations, and communities. Through transparency, innovation, and compassion, we strive to build a more just, resilient, and empowered society.",
+            mission: "Our mission is to empower communities by addressing social, educational, and humanitarian challenges through sustainable and inclusive initiatives.",
             activities: [
                 "Food distribution",
                 "Donation drives",

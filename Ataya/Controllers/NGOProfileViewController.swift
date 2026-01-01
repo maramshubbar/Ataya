@@ -44,8 +44,8 @@ class NGOProfileViewController: UIViewController {
         //styling + element changes
         ngoProfile.layer.cornerRadius = ngoProfile.frame.size.width / 2
         ngoProfile.clipsToBounds = true
-        ngoProfile.layer.borderWidth = 1
-        ngoProfile.layer.borderColor = UIColor.systemGray4.cgColor
+
+
 
         ngoCard.layer.cornerRadius = 12
         ngoCard.layer.borderWidth = 1

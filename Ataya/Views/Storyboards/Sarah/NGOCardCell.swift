@@ -34,11 +34,14 @@ class NGOCardCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        // Round image
-        ngoImage.layer.cornerRadius = 12
+        // Make the image circular
+        ngoImage.layer.cornerRadius = ngoImage.frame.size.width / 2
+        ngoImage.layer.masksToBounds = true
         ngoImage.clipsToBounds = true
+        ngoImage.contentMode = .scaleAspectFill
 
-        // Round the rating stack view
+        
+        //Round the rating stack view
         ratingStackView.layer.cornerRadius = 5
         ratingStackView.layer.masksToBounds = true
         
@@ -48,7 +51,7 @@ class NGOCardCell: UITableViewCell {
         verificationIcon.setContentHuggingPriority(.required, for: .horizontal)
         verificationIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
 
-        // Card styling
+        //Card styling
         cardContainerView.backgroundColor = .white
         cardContainerView.layer.cornerRadius = 12
         cardContainerView.layer.borderWidth = 1
@@ -57,13 +60,12 @@ class NGOCardCell: UITableViewCell {
         
         // Prevent default gray highlight on selection
         self.selectionStyle = .none
-        
         self.backgroundColor = .clear
         self.contentView.backgroundColor = .clear
         self.selectionStyle = .none
     }
 
-    // Fill the cell with NGO data
+    //Fill the cell with NGO data
     func configure(with ngo: NGO) {
            ngoName.text = ngo.name
            ngoType.text = ngo.category
@@ -78,15 +80,6 @@ class NGOCardCell: UITableViewCell {
         
        }
     
-    // Highlight card when selected (not the whole cell)
-    /*override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Only highlight the card, not the whole cell
-        cardContainerView.backgroundColor = selected ? UIColor.systemGray5 : UIColor.white
-    }
-*/
-
     override func setSelected(_ selected: Bool, animated: Bool) { super.setSelected(selected, animated: animated) // Only highlight the card, not the whole cell
         cardContainerView.backgroundColor = selected ? UIColor.systemGray5 : UIColor.white }
 }

@@ -7,6 +7,9 @@
 
 import UIKit
 import Firebase
+import FirebaseCore
+import FirebaseAuth
+
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -19,9 +22,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseApp.configure()
         print("Firebase configured")
 
-        
+        ensureSignedIn()   // ✅ put it here
         return true
     }
+    
+    private func ensureSignedIn() {
+        if Auth.auth().currentUser == nil {
+            Auth.auth().signInAnonymously { result, error in
+                if let error = error {
+                    print("❌ Auth error:", error.localizedDescription)
+                } else {
+                    print("✅ Signed in uid:", result?.user.uid ?? "nil")
+                }
+            }
+        } else {
+            print("✅ Already signed in uid:", Auth.auth().currentUser?.uid ?? "nil")
+        }
+    }
+
     
     /*
     import UIKit

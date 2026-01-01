@@ -835,6 +835,16 @@
             </objects>
             <point key="canvasLocation" x="1981" y="281"/>
         </scene>
+        <!--NGODash-->
+        <scene sceneID="Qix-Za-Wbz">
+            <objects>
+                <viewControllerPlaceholder storyboardName="NGODash" id="1l3-g4-hau" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="KP4-NF-ijz"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="R9o-b6-Si2" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1606" y="301"/>
+        </scene>
         <!--NGO Login View Controller-->
         <scene sceneID="VBh-gL-DXe">
             <objects>
@@ -891,6 +901,7 @@
                                 <buttonConfiguration key="configuration" style="plain" title="Login"/>
                                 <connections>
                                     <action selector="loginPressed:" destination="o1g-Ph-glb" eventType="touchUpInside" id="f8Y-IJ-1zG"/>
+                                    <segue destination="1l3-g4-hau" kind="show" identifier="toNGOHome" id="7jg-rK-GBy"/>
                                 </connections>
                             </button>
                             <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Forget Password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qnM-XO-MXD">
@@ -1153,6 +1164,16 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="a13-WL-Lra" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="679" y="43"/>
+        </scene>
+        <!--NGODash-->
+        <scene sceneID="4uV-3d-OaR">
+            <objects>
+                <viewControllerPlaceholder storyboardName="NGODash" id="mu7-eh-9cS" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="6F6-FR-qzf"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4IX-uU-v7Y" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="374" y="475"/>
         </scene>
         <!--Admin-->
         <scene sceneID="bGp-54-zif">
@@ -1442,6 +1463,7 @@
                                 <buttonConfiguration key="configuration" style="plain" title="Sign Up"/>
                                 <connections>
                                     <action selector="signUpTapped:" destination="4TB-2k-PlB" eventType="touchUpInside" id="ygD-6i-fgr"/>
+                                    <segue destination="mu7-eh-9cS" kind="show" identifier="toNGOHome" id="Q2K-nQ-qTq"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="By signing up, you agree to the Terms of service and Privacy policy." lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IQJ-1Q-Xhi">
@@ -1592,7 +1614,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="h8Y-sU-ZG2"/>
+        <segue reference="jju-KK-NUU"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="1" width="641" height="637"/>

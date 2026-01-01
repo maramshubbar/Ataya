@@ -1,11 +1,3 @@
-////
-////  CreateCampaignViewController.swift
-////  Ataya
-////
-////  Created by Maram on 24/12/2025.
-////
-
-
 //
 //  CreateCampaignViewController.swift
 //  Ataya
@@ -51,18 +43,20 @@ final class CreateCampaignViewController: UIViewController {
     // MARK: Backend
     private let db = Firestore.firestore()
 
-    // ✅ Cloudinary
-    private let cloudName = "duzj3sbkb"
-    private let uploadPreset = "duzj3sbkb"   // ⚠️ تأكدي هذا فعلاً upload preset
-    private let cloudFolder = "campaigns"
-
     // MARK: UI
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     private let stack = UIStackView()
 
     private let titleField = LabeledTextField(title: "Title", placeholder: "Enter title")
-    private let categoryField = LabeledTextField(title: "Category", placeholder: "Enter category")
+
+    // ✅ CHANGED: Category is now dropdown like Organization
+    private let categoryField = LabeledMenuField(
+        title: "Category",
+        initial: "Critical",
+        items: ["Critical", "Climate change", "Emergency"]
+    )
+
     private let goalField = LabeledTextField(title: "Goal Amount", placeholder: "e.g. 80,000 $", keyboard: .numbersAndPunctuation)
 
     private let startDateField = LabeledDateField(title: "Start Date")
@@ -96,6 +90,9 @@ final class CreateCampaignViewController: UIViewController {
 
     private var selectedOrg: String = "LifeReach"
 
+    // ✅ ADDED: Category selected value
+    private var selectedCategory: String = "Critical"
+
     // ✅ مهم: عشان Edit ما يعيد يرفع الصورة القديمة (اللي نحمّلها للعرض فقط)
     private var didPickNewImage: Bool = false
 
@@ -111,7 +108,14 @@ final class CreateCampaignViewController: UIViewController {
         setupButtons()
         layoutUI()
 
-        orgField.onSelect = { [weak self] value in self?.selectedOrg = value }
+        orgField.onSelect = { [weak self] value in
+            self?.selectedOrg = value
+        }
+
+        // ✅ ADDED: category selection
+        categoryField.onSelect = { [weak self] value in
+            self?.selectedCategory = value
+        }
 
         uploadView.onTap = { [weak self] in
             self?.presentImagePicker()
@@ -124,6 +128,10 @@ final class CreateCampaignViewController: UIViewController {
 
             startDateField.setDate(Date())
             endDateField.setDate(Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date())
+
+            // ✅ default category display + value
+            selectedCategory = "Critical"
+            categoryField.setValue("Critical")
 
         case .edit(let existing):
             title = "Edit Campaign"
@@ -155,7 +163,11 @@ final class CreateCampaignViewController: UIViewController {
 
     private func fillForm(with data: CampaignFormData) {
         titleField.textField.text = data.title
-        categoryField.textField.text = data.category
+
+        // ✅ CHANGED: category is dropdown
+        selectedCategory = data.category
+        categoryField.setValue(data.category)
+
         goalField.textField.text = data.goalAmount
         locationField.textField.text = data.location
         fromField.textField.text = data.from
@@ -175,7 +187,7 @@ final class CreateCampaignViewController: UIViewController {
 
     private func clearAllErrors() {
         titleField.clearError()
-        categoryField.clearError()
+        categoryField.clearError()   // ✅ CHANGED
         goalField.clearError()
         locationField.clearError()
         startDateField.clearError()
@@ -230,7 +242,7 @@ final class CreateCampaignViewController: UIViewController {
         goalField.textField.inputAccessoryView = keyboardToolbar()
 
         stack.addArrangedSubview(titleField)
-        stack.addArrangedSubview(categoryField)
+        stack.addArrangedSubview(categoryField) // ✅ CHANGED
         stack.addArrangedSubview(goalField)
         stack.addArrangedSubview(startDateField)
         stack.addArrangedSubview(endDateField)
@@ -358,7 +370,10 @@ final class CreateCampaignViewController: UIViewController {
         clearAllErrors()
 
         let t = titleField.text.atayaTrimmed
-        let c = categoryField.text.atayaTrimmed
+
+        // ✅ CHANGED: take category from dropdown selected value
+        let c = selectedCategory.atayaTrimmed
+
         let g = goalField.text.atayaTrimmed
         let loc = locationField.text.atayaTrimmed
         let ov = overviewText.text.atayaTrimmed
@@ -367,7 +382,7 @@ final class CreateCampaignViewController: UIViewController {
 
         var hasError = false
         if t.isEmpty { titleField.setError("Title is required"); hasError = true }
-        if c.isEmpty { categoryField.setError("Category is required"); hasError = true }
+        if c.isEmpty { categoryField.setError("Category is required"); hasError = true } // ✅ works
         if g.isEmpty { goalField.setError("Goal Amount is required"); hasError = true }
         if loc.isEmpty { locationField.setError("Location is required"); hasError = true }
 
@@ -410,17 +425,18 @@ final class CreateCampaignViewController: UIViewController {
             }
         }()
 
+        // ✅ Uses your existing CloudinaryUploader.shared (from Cloudinary files)
         if shouldUploadNewImage, let img = selectedImage {
-            uploadToCloudinary(image: img) { [weak self] result in
+            CloudinaryUploader.shared.uploadImage(img, folder: "campaigns") { [weak self] result in
                 guard let self else { return }
+
                 switch result {
                 case .success(let up):
-                    self.saveToFirestore(form: form, imageURL: up.url, publicId: up.publicId)
+                    self.saveToFirestore(form: form, imageURL: up.secureUrl, publicId: up.publicId)
+
                 case .failure(let err):
-                    DispatchQueue.main.async {
-                        self.setSaving(false)
-                        self.showError("Cloudinary upload failed.\n\(err.localizedDescription)")
-                    }
+                    self.setSaving(false)
+                    self.showError("Cloudinary upload failed.\n\(err.localizedDescription)")
                 }
             }
         } else {
@@ -429,7 +445,7 @@ final class CreateCampaignViewController: UIViewController {
         }
     }
 
-    // ✅ أهم جزء: يضمن تسجيل دخول (anonymous) عشان Firestore ما يرفض
+    // ✅ ensures sign-in (anonymous) so Firestore rules can allow access (if configured)
     private func ensureSignedIn(completion: @escaping (Result<String, Error>) -> Void) {
         if let uid = Auth.auth().currentUser?.uid {
             completion(.success(uid))
@@ -590,63 +606,6 @@ final class CreateCampaignViewController: UIViewController {
         }
 
         present(pop, animated: true)
-    }
-
-    // MARK: Cloudinary Upload (Unsigned)
-    private func uploadToCloudinary(
-        image: UIImage,
-        completion: @escaping (Result<(url: String, publicId: String), Error>) -> Void
-    ) {
-        guard let jpg = image.jpegData(compressionQuality: 0.85) else {
-            completion(.failure(NSError(domain: "img", code: 0)))
-            return
-        }
-
-        let url = URL(string: "https://api.cloudinary.com/v1_1/\(cloudName)/image/upload")!
-        var req = URLRequest(url: url)
-        req.httpMethod = "POST"
-
-        let boundary = "Boundary-\(UUID().uuidString)"
-        req.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-
-        var body = Data()
-
-        func addField(_ name: String, _ value: String) {
-            body.append("--\(boundary)\r\n".data(using: .utf8)!)
-            body.append("Content-Disposition: form-data; name=\"\(name)\"\r\n\r\n".data(using: .utf8)!)
-            body.append("\(value)\r\n".data(using: .utf8)!)
-        }
-
-        addField("upload_preset", uploadPreset)
-        addField("folder", cloudFolder)
-
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"file\"; filename=\"campaign.jpg\"\r\n".data(using: .utf8)!)
-        body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
-        body.append(jpg)
-        body.append("\r\n".data(using: .utf8)!)
-        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
-
-        req.httpBody = body
-
-        URLSession.shared.dataTask(with: req) { data, _, error in
-            if let error { return completion(.failure(error)) }
-            guard let data else { return completion(.failure(NSError(domain: "cloud", code: 0))) }
-
-            do {
-                let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-                let secureUrl = json?["secure_url"] as? String
-                let publicId = json?["public_id"] as? String
-
-                if let secureUrl, let publicId {
-                    completion(.success((secureUrl, publicId)))
-                } else {
-                    completion(.failure(NSError(domain: "cloud_parse", code: 0)))
-                }
-            } catch {
-                completion(.failure(error))
-            }
-        }.resume()
     }
 
     // MARK: Image Picker
@@ -1146,32 +1105,38 @@ extension LabeledTextView: UITextViewDelegate {
     }
 }
 
+// ✅ CHANGED: Menu field now has error support (so we can validate category too)
 private final class LabeledMenuField: UIView {
 
     private let label = UILabel()
     private let box = UIView()
     private let button = UIButton(type: .system)
+    private let errorLabel = UILabel()
 
     var onSelect: ((String) -> Void)?
 
     init(title: String, initial: String, items: [String]) {
         super.init(frame: .zero)
 
+        // label
         label.text = title
         label.font = .systemFont(ofSize: 14, weight: .regular)
         label.textColor = .label
 
+        // box
         box.backgroundColor = .white
         box.layer.cornerRadius = 8
         box.layer.borderWidth = 1
         box.layer.borderColor = UIColor.atayaHex("#E6E6E6").cgColor
 
+        // button
         button.setTitle(initial, for: .normal)
         button.setTitleColor(.label, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 14, weight: .regular)
         button.contentHorizontalAlignment = .left
         button.contentEdgeInsets = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 44)
 
+        // chevron
         let chevron = UIImageView(image: UIImage(systemName: "chevron.down"))
         chevron.tintColor = .secondaryLabel
         chevron.contentMode = .scaleAspectFit
@@ -1181,31 +1146,38 @@ private final class LabeledMenuField: UIView {
         box.addSubview(chevron)
         button.translatesAutoresizingMaskIntoConstraints = false
 
+        // error label
+        errorLabel.textColor = .systemRed
+        errorLabel.font = .systemFont(ofSize: 12, weight: .regular)
+        errorLabel.numberOfLines = 0
+        errorLabel.isHidden = true
+
+        // menu
         let actions = items.map { value in
             UIAction(title: value) { [weak self] _ in
                 self?.button.setTitle(value, for: .normal)
+                self?.clearError()
                 self?.onSelect?(value)
             }
         }
         button.menu = UIMenu(children: actions)
         button.showsMenuAsPrimaryAction = true
 
-        addSubview(label)
-        addSubview(box)
-
-        label.translatesAutoresizingMaskIntoConstraints = false
-        box.translatesAutoresizingMaskIntoConstraints = false
+        // stack
+        let v = UIStackView(arrangedSubviews: [label, box, errorLabel])
+        v.axis = .vertical
+        v.spacing = 6
+        v.alignment = .fill
+        addSubview(v)
+        v.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: topAnchor),
-            label.leadingAnchor.constraint(equalTo: leadingAnchor),
-            label.trailingAnchor.constraint(equalTo: trailingAnchor),
+            v.topAnchor.constraint(equalTo: topAnchor),
+            v.leadingAnchor.constraint(equalTo: leadingAnchor),
+            v.trailingAnchor.constraint(equalTo: trailingAnchor),
+            v.bottomAnchor.constraint(equalTo: bottomAnchor),
 
-            box.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 6),
-            box.leadingAnchor.constraint(equalTo: leadingAnchor),
-            box.trailingAnchor.constraint(equalTo: trailingAnchor),
             box.heightAnchor.constraint(equalToConstant: 60),
-            box.bottomAnchor.constraint(equalTo: bottomAnchor),
 
             button.topAnchor.constraint(equalTo: box.topAnchor),
             button.leadingAnchor.constraint(equalTo: box.leadingAnchor),
@@ -1219,7 +1191,20 @@ private final class LabeledMenuField: UIView {
         ])
     }
 
-    func setValue(_ value: String) { button.setTitle(value, for: .normal) }
+    func setValue(_ value: String) {
+        button.setTitle(value, for: .normal)
+        clearError()
+    }
+
+    func setError(_ message: String) {
+        errorLabel.text = message
+        errorLabel.isHidden = false
+    }
+
+    func clearError() {
+        errorLabel.text = nil
+        errorLabel.isHidden = true
+    }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }

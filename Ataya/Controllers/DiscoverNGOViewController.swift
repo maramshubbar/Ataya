@@ -10,7 +10,10 @@ import UIKit
 class DiscoverNGOViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
     @IBOutlet weak var tableView: UITableView!
     
-    // Dummy data: hardcoded NGO objects for testing
+    @IBOutlet weak var search: UISearchBar!
+    
+    @IBOutlet weak var filterNGO: UISegmentedControl!
+    
     let ngos: [NGO] = [
         NGO(
             name: "BrightImpact",
@@ -87,22 +90,22 @@ class DiscoverNGOViewController: UIViewController, UITableViewDataSource, UITabl
             ],
             imageName: "Data 5",
         ),
-        NGO(
-            name: "HealthBridge",
-            category: "Medical Aid",
-            email: "help@healthbridge.org",
-            location: "Cairo, Egypt",
-            rating: 4.3,
-            impact: 4200,
-            mission: "Providing medical supplies and healthcare access to underserved communities.",
-            activities: [
-                "Mobile clinics",
-                "Medicine distribution",
-                "Health awareness campaigns"
-            ],
-            imageName: "Data 6",
-        ),
         
+        NGO(
+            name: "EcoFuture",
+            category: "Environmental Protection",
+            email: "eco@future.org",
+            location: "Dubai, UAE",
+            rating: 4.7,
+            impact: 3500,
+            mission: "Promoting sustainability and protecting natural habitats.",
+            activities: [
+                "Tree planting",
+                "Beach cleanups",
+                "Renewable energy workshops"
+            ],
+            imageName: "Data 2",
+        ),
     ]
 
     
@@ -130,6 +133,7 @@ class DiscoverNGOViewController: UIViewController, UITableViewDataSource, UITabl
         // Remove default separator lines between cells
         tableView.separatorStyle = .none
         tableView.backgroundColor = .white // or any light gray
+
     }
     
     // TableView DataSource

@@ -281,7 +281,7 @@
                                 </segments>
                             </segmentedControl>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="hd5-67-iNl">
-                                <rect key="frame" x="17" y="274" width="406" height="621"/>
+                                <rect key="frame" x="20" y="274" width="400" height="621"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                         </subviews>
@@ -289,19 +289,21 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="0YQ-jq-vaH" firstAttribute="top" secondItem="Jwa-QB-pUb" secondAttribute="top" id="4aM-dX-hX0"/>
+                            <constraint firstItem="hd5-67-iNl" firstAttribute="centerX" secondItem="xpF-Xq-T5J" secondAttribute="centerX" id="NZc-KT-KyC"/>
+                            <constraint firstItem="hd5-67-iNl" firstAttribute="leading" secondItem="yPA-WV-36r" secondAttribute="leadingMargin" id="RhM-et-9dl"/>
                             <constraint firstItem="xpF-Xq-T5J" firstAttribute="leading" secondItem="Jwa-QB-pUb" secondAttribute="leading" constant="16" id="Uw4-1c-Rx6"/>
                             <constraint firstItem="xpF-Xq-T5J" firstAttribute="trailing" secondItem="0YQ-jq-vaH" secondAttribute="trailing" constant="-6" id="Xra-Gd-AjP"/>
                             <constraint firstItem="0YQ-jq-vaH" firstAttribute="leading" secondItem="Jwa-QB-pUb" secondAttribute="leading" constant="10" id="cEn-Bb-8wh"/>
-                            <constraint firstItem="hd5-67-iNl" firstAttribute="leading" secondItem="Jwa-QB-pUb" secondAttribute="leading" constant="17" id="eor-88-gdJ"/>
                             <constraint firstItem="hd5-67-iNl" firstAttribute="bottom" secondItem="Jwa-QB-pUb" secondAttribute="bottom" constant="7" id="gL5-Z9-oF0"/>
-                            <constraint firstItem="0YQ-jq-vaH" firstAttribute="centerX" secondItem="yPA-WV-36r" secondAttribute="centerX" id="hSq-3v-ebf"/>
                             <constraint firstItem="xpF-Xq-T5J" firstAttribute="top" secondItem="Jwa-QB-pUb" secondAttribute="top" constant="66" id="ka9-gq-dDD"/>
+                            <constraint firstItem="Jwa-QB-pUb" firstAttribute="trailing" secondItem="0YQ-jq-vaH" secondAttribute="trailing" constant="10" id="qHk-zi-tFM"/>
                             <constraint firstItem="hd5-67-iNl" firstAttribute="top" secondItem="xpF-Xq-T5J" secondAttribute="bottom" constant="8" id="tW8-eR-pLD"/>
-                            <constraint firstItem="Jwa-QB-pUb" firstAttribute="trailing" secondItem="hd5-67-iNl" secondAttribute="trailing" constant="17" id="vs3-m7-KlT"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Discover NGO" id="K25-bA-mDv"/>
                     <connections>
+                        <outlet property="filterNGO" destination="xpF-Xq-T5J" id="TUi-PZ-WyP"/>
+                        <outlet property="search" destination="0YQ-jq-vaH" id="e0b-vU-Hd5"/>
                         <outlet property="tableView" destination="hd5-67-iNl" id="0K6-zy-u2e"/>
                         <segue destination="G1U-Zr-rLu" kind="show" identifier="ShowNGODetails" id="J0r-ao-GqT"/>
                     </connections>

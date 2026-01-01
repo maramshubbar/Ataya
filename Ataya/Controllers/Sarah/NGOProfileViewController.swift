@@ -44,7 +44,7 @@ class NGOProfileViewController: UIViewController, NGOAboutMeDelegate {
         rating: "5.0",
         email: "contact@hopefoundation.org",
         phone: "+973 9876 5432",
-        mission: "Our mission is to empower communities through education and healthcare. I see exactly what’s happening, Sarah. Right now your About Me screen always resets to the dummy data inI see exactly what’s happening, Sarah. Right now your About Me screen always resets to the dummy data inI see exactly what’s happening, Sarah. Right now your About Me screen always resets to the dummy data inI see exactly what’s happening, Sarah. Right now your About Me screen always resets to the dummy data in" )
+        mission: "Our mission is to uplift vulnerable families by providing access to food, shelter, and education. We believe that every individual deserves dignity and opportunity, and we work hand in hand with local communities to create sustainable solutions that address immediate needs while building long‑term resilience." )
     
     override func viewDidLoad() {
         super.viewDidLoad()

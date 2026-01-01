@@ -142,8 +142,8 @@ class NGOProfileViewController: UIViewController, NGOAboutMeDelegate {
         changePhotoButton.isHidden = true
         savePhotoButton.isHidden = true
         
-        // Optionally persist the image in your NGO model
-        ngo.profileView = profileView.image
+        // Persist the image in your NGO model
+        ngo.profileImage = profileView.image
     }
     
     

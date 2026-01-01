@@ -9,7 +9,8 @@ import UIKit
 
 final class CardPreviewViewController: UIViewController {
 
-    var image: UIImage?
+    var imageURL: String?
+    var image: UIImage? // placeholder
 
     private let dimView = UIView()
     private let imageView = UIImageView()
@@ -19,6 +20,7 @@ final class CardPreviewViewController: UIViewController {
         super.viewDidLoad()
         buildUI()
         buildConstraints()
+        load()
     }
 
     private func buildUI() {
@@ -61,6 +63,11 @@ final class CardPreviewViewController: UIViewController {
             imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             imageView.heightAnchor.constraint(lessThanOrEqualTo: view.heightAnchor, multiplier: 0.75)
         ])
+    }
+
+    private func load() {
+        // ✅ load from URL if exists
+        ImageLoader.shared.setImage(on: imageView, from: imageURL, placeholder: image)
     }
 
     @objc private func closeTapped() {

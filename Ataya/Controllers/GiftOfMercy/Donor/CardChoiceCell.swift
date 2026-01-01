@@ -4,6 +4,7 @@
 //
 //  Created by Fatema Maitham on 25/12/2025.
 //
+
 import UIKit
 
 final class CardChoiceCell: UICollectionViewCell {
@@ -35,6 +36,7 @@ final class CardChoiceCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         imageView.image = nil
+        imageView.accessibilityIdentifier = nil
         onChooseTapped = nil
         onZoomTapped = nil
     }
@@ -56,6 +58,7 @@ final class CardChoiceCell: UICollectionViewCell {
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 12
+        imageView.backgroundColor = UIColor.systemGray6
 
         zoomButton.setImage(UIImage(systemName: "plus.magnifyingglass"), for: .normal)
         zoomButton.tintColor = .white
@@ -103,14 +106,16 @@ final class CardChoiceCell: UICollectionViewCell {
             chevron.centerYAnchor.constraint(equalTo: chooseButton.centerYAnchor),
             chevron.leadingAnchor.constraint(equalTo: chooseButton.trailingAnchor, constant: 8),
             chevron.widthAnchor.constraint(equalToConstant: 14),
-            chevron.heightAnchor.constraint(equalToConstant: 14)
+            chevron.heightAnchor.constraint(equalToConstant: 14),
+            chevron.trailingAnchor.constraint(lessThanOrEqualTo: cardView.trailingAnchor, constant: -16)
         ])
     }
 
-    func configure(image: UIImage?, accent: UIColor) {
-        imageView.image = image
+    /// ✅ Remote URL + placeholder using YOUR ImageLoader
+    func configure(imageURL: String?, accent: UIColor, placeholder: UIImage? = nil) {
         chooseButton.setTitleColor(accent, for: .normal)
         chevron.tintColor = accent
+        ImageLoader.shared.setImage(on: imageView, from: imageURL, placeholder: placeholder)
     }
 
     @objc private func chooseTapped() { onChooseTapped?() }

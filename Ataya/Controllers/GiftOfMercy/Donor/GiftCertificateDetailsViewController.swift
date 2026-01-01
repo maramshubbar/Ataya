@@ -5,21 +5,29 @@
 //  Created by Fatema Maitham on 25/12/2025.
 //
 
+
 import UIKit
+import FirebaseAuth
 
 final class GiftCertificateDetailsViewController: UIViewController, UITextViewDelegate, UITextFieldDelegate {
 
     // MARK: - Inputs (set these from previous screen)
+    var selectedGift: MercyGift?
+    var selectedAmount: Decimal = 0
+    private let currency = "BHD"
     var giftNameText: String?
     var cardDesignText: String?
     var topPreviewImage: UIImage?
     var bottomPreviewImage: UIImage?
     var selectedCardDesignId: String?
 
+    // ✅ NEW: image URL from Firestore/Cloudinary
+    var selectedCardDesignImageURL: String?
+
     // MARK: - Theme
-    private let accentGreen = UIColor(atayaHex: "00A85C")              // للكتابة (مثل المثال)
-    private let softGreen   = UIColor(atayaHex: "00A85C", alpha: 0.10) // خلفية الكرت الأخضر الخفيف
-    private let brandYellow = UIColor(atayaHex: "F7D44C")              // للأزرار (Proceed / Add recipient)
+    private let accentGreen = UIColor(atayaHex: "00A85C")
+    private let softGreen   = UIColor(atayaHex: "00A85C", alpha: 0.10)
+    private let brandYellow = UIColor(atayaHex: "F7D44C")
 
     // MARK: - UI
     private let scrollView = UIScrollView()
@@ -89,19 +97,15 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
         addDismissKeyboardTap()
     }
 
-    // ✅ يثبت لون الـ Back أسود وما يتغير من صفحات ثانية
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.navigationBar.tintColor = .label // أسود (لايت) / أبيض (دارك)
-        // إذا تبينه أسود دايم حتى بالدارك:
-        // navigationController?.navigationBar.tintColor = .black
+        navigationController?.navigationBar.tintColor = .label
     }
 
     private func setupNav() {
         title = "Step 2: Choose a card"
         navigationItem.largeTitleDisplayMode = .never
         view.backgroundColor = .systemBackground
-        // ❌ لا تحطين tintColor هنا عشان ما يرجع أخضر/غيره
     }
 
     // MARK: - UI Setup
@@ -142,7 +146,16 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
 
         // ✅ نبي صورة وحده مثل المثال (حسب اختيار اليوزر)
         previewTop.isHidden = true
+
+        // placeholder (لو عندج صورة محلية/تم تمريرها)
         previewBottom.image = bottomPreviewImage ?? topPreviewImage
+
+        // ✅ NEW: تحميل من URL (Cloudinary) فوق الـ placeholder
+        ImageLoader.shared.setImage(
+            on: previewBottom,
+            from: selectedCardDesignImageURL,
+            placeholder: previewBottom.image
+        )
 
         summaryTextStack.axis = .vertical
         summaryTextStack.spacing = 10
@@ -184,7 +197,7 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
         previewStack.translatesAutoresizingMaskIntoConstraints = false
         summaryTextStack.translatesAutoresizingMaskIntoConstraints = false
 
-        // ✅ نخلي بس صورة وحده في الستاكد
+        // ✅ نخلي بس صورة وحده
         previewStack.addArrangedSubview(previewBottom)
 
         // From
@@ -249,7 +262,7 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
         rEmailField.autocorrectionType = .no
         fromErrorLabelStyle(rEmailError)
 
-        // ✅ Add recipient = أصفر
+        // Add recipient
         var cfg = UIButton.Configuration.plain()
         cfg.title = "Add recipient"
         cfg.image = UIImage(systemName: "plus")
@@ -264,10 +277,8 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
         addRecipientButton.layer.borderColor = brandYellow.cgColor
         addRecipientButton.backgroundColor = .clear
 
-        // Bottom bar
+        // Proceed
         bottomBar.backgroundColor = .systemBackground
-
-        // ✅ Proceed = أصفر + كتابة سوداء (أوضح على الأصفر)
         var pCfg = UIButton.Configuration.filled()
         pCfg.title = "Proceed"
         pCfg.baseBackgroundColor = brandYellow
@@ -279,7 +290,6 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
         proceedButton.clipsToBounds = true
 
         // Toast
-
         toastView.backgroundColor = UIColor.systemRed.withAlphaComponent(0.15)
         toastView.layer.cornerRadius = 12
         toastView.clipsToBounds = true
@@ -351,7 +361,7 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
 
         stack.addArrangedSubview(recipientCard)
 
-        // Bottom bar + toast
+        // Bottom + toast
         stack.addArrangedSubview(proceedButton)
         proceedButton.heightAnchor.constraint(equalToConstant: 56).isActive = true
 
@@ -379,29 +389,24 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
 
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            // Scroll fills the screen
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
 
-            // ContentView ties to scroll content layout
             contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
 
-            // Content width = scroll frame width
             contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
 
-            // Stack inside contentView
             stack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18),
             stack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 18),
             stack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -18),
             stack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -18),
         ])
 
-        // ✅ Toast position (bottom)
         toastBottom = toastView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10)
         toastBottom?.isActive = true
 
@@ -410,11 +415,9 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
             toastView.widthAnchor.constraint(lessThanOrEqualTo: view.widthAnchor, constant: -40),
         ])
 
-        // ✅ الحين proceed داخل الـ stack، فـ لا تحتاجين inset كبير
         scrollView.contentInset.bottom = 18
         scrollView.verticalScrollIndicatorInsets.bottom = 18
     }
-
 
     private func setupActions() {
         proceedButton.addTarget(self, action: #selector(proceedTapped), for: .touchUpInside)
@@ -428,7 +431,6 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
     private func applyInitialState() {
         setRecipientEnabled(false)
 
-        // hide all error labels initially
         setError(for: fromField, label: fromError, message: nil)
         setTextViewError(message: nil)
         setError(for: rNameField, label: rNameError, message: nil)
@@ -439,7 +441,6 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
         giftTitleLabel.isHidden = false
         giftValueLabel.isHidden = false
         giftValueLabel.text = gift.isEmpty ? "—" : gift
-
     }
 
     // MARK: - Validation
@@ -471,9 +472,7 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
             setTextViewError(message: nil)
         }
 
-        if !recipientEnabled {
-            ok = false
-        }
+        if !recipientEnabled { ok = false }
 
         if recipientEnabled {
             if rNameField.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true {
@@ -492,11 +491,75 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
             }
         }
 
-        if ok {
-            print("✅ OK -> Go next")
-        } else {
-            showToast("Fill all required fields first")
+        if ok { submitCertificate() }
+        else { showToast("Fill all required fields first") }
+    }
+
+    private func submitCertificate() {
+        guard let gift = selectedGift else {
+            showToast("Missing gift selection.")
+            return
         }
+        guard let cardId = selectedCardDesignId, !cardId.isEmpty else {
+            showToast("Please choose a card design.")
+            return
+        }
+
+        let from = (fromField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let msg  = messageBox.text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let rName = (rNameField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let rEmail = (rEmailField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if gift.pricingMode == .custom, selectedAmount <= 0 {
+            showToast("Amount must be greater than 0.")
+            return
+        }
+
+        let req = GiftCertificateRequest(
+            giftId: gift.id,
+            giftTitle: gift.title.replacingOccurrences(of: "\n", with: " "),
+            amount: selectedAmount,
+            currency: currency,
+            pricingMode: gift.pricingMode,
+            cardDesignId: cardId,
+            cardDesignTitle: cardDesignText ?? "",
+            fromName: from,
+            message: msg,
+            recipientName: rName,
+            recipientEmail: rEmail,
+            createdByUid: Auth.auth().currentUser?.uid,
+            createdAt: nil
+        )
+
+        proceedButton.isEnabled = false
+        proceedButton.alpha = 0.7
+
+        MercyBackend.submitGiftCertificate(request: req) { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.proceedButton.isEnabled = true
+                self.proceedButton.alpha = 1.0
+
+                switch result {
+                case .failure(let err):
+                    self.showToast("Failed to submit. \(err.localizedDescription)")
+                case .success:
+                    self.showSuccessAndClose()
+                }
+            }
+        }
+    }
+
+    private func showSuccessAndClose() {
+        let alert = UIAlertController(
+            title: "Done ✅",
+            message: "Your certificate request was submitted successfully.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+            self?.navigationController?.popToRootViewController(animated: true)
+        })
+        present(alert, animated: true)
     }
 
     // MARK: - UITextView
@@ -554,7 +617,6 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
         tf.leftView = pad
         tf.leftViewMode = .always
 
-        // ✅ لا نحط حدود/ألوان تتغير مع الايرور
         tf.layer.borderWidth = 0
         tf.layer.borderColor = UIColor.clear.cgColor
     }
@@ -573,7 +635,6 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
         lbl.isHidden = true
     }
 
-    // ✅ فقط الليبل يظهر/يختفي — بدون تحديد الأحمر على الحقول
     private func setError(for tf: UITextField, label: UILabel, message: String?) {
         if let message, !message.isEmpty {
             label.text = message
@@ -584,7 +645,6 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
         }
     }
 
-    // ✅ فقط الليبل — بدون إطار أحمر على الـ TextView
     private func setTextViewError(message: String?) {
         if let message, !message.isEmpty {
             messageError.text = message

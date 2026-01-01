@@ -5,26 +5,24 @@
 //  Created by Fatema Maitham on 25/12/2025.
 //
 
-
 import UIKit
+import FirebaseFirestore
 
 final class ChooseCardViewController: UIViewController {
 
-    // MARK: - Models
+    // MARK: - ViewModel
     struct CardItem {
-        let id: String            // e.g. "c1"
-        let imageName: String     // asset name
-        let title: String         // display name
+        let id: String
+        let title: String
+        let imageURL: String?
     }
 
     // MARK: - Inputs (set from previous screen)
     var giftNameText: String?
 
-    // ✅ coming from GiftsChooseViewController (backend gifts)
     var selectedGift: MercyGift?
     var selectedAmount: Decimal = 0
 
-    // optional callback
     var onSelectCard: ((CardItem) -> Void)?
 
     // MARK: - Theme
@@ -38,13 +36,13 @@ final class ChooseCardViewController: UIViewController {
     private let bannerIcon = UIImageView()
     private let bannerLabel = UILabel()
 
-    // MARK: - Data
-    private let items: [CardItem] = [
-        .init(id: "c1", imageName: "c1", title: "Kaaba"),
-        .init(id: "c2", imageName: "c2", title: "Palestine Al Aqsa"),
-        .init(id: "c3", imageName: "c3", title: "Floral"),
-        .init(id: "c4", imageName: "c4", title: "Water")
-    ]
+    private let emptyLabel = UILabel()
+
+    // MARK: - Data (from Firestore)
+    private var items: [CardItem] = []
+    private var cardsListener: ListenerRegistration?
+
+    deinit { cardsListener?.remove() }
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -52,6 +50,7 @@ final class ChooseCardViewController: UIViewController {
         setupNav()
         setupUI()
         setupConstraints()
+        listenCards()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -88,6 +87,15 @@ final class ChooseCardViewController: UIViewController {
         bannerView.translatesAutoresizingMaskIntoConstraints = false
         bannerIcon.translatesAutoresizingMaskIntoConstraints = false
         bannerLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        // Empty label (when no cards)
+        emptyLabel.text = "No card designs available."
+        emptyLabel.textAlignment = .center
+        emptyLabel.textColor = .secondaryLabel
+        emptyLabel.font = .systemFont(ofSize: 16, weight: .semibold)
+        emptyLabel.isHidden = true
+        view.addSubview(emptyLabel)
+        emptyLabel.translatesAutoresizingMaskIntoConstraints = false
 
         // Collection
         let layout = makeTwoColumnLayout()
@@ -145,14 +153,48 @@ final class ChooseCardViewController: UIViewController {
             collectionView.topAnchor.constraint(equalTo: bannerView.bottomAnchor, constant: 14),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+
+            emptyLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            emptyLabel.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: 16),
+            emptyLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -16),
         ])
+    }
+
+    // MARK: - Firestore
+    private func listenCards() {
+        cardsListener?.remove()
+
+        cardsListener = MercyBackend.listenActiveCardDesigns { [weak self] result in
+            guard let self else { return }
+
+            switch result {
+            case .failure(let err):
+                print("❌ listenActiveCardDesigns error:", err)
+                DispatchQueue.main.async {
+                    self.items = []
+                    self.collectionView.reloadData()
+                    self.emptyLabel.isHidden = false
+                }
+
+            case .success(let list):
+                let mapped = list.map { CardItem(id: $0.id, title: $0.title, imageURL: $0.imageURL) }
+
+                DispatchQueue.main.async {
+                    self.items = mapped
+                    self.collectionView.reloadData()
+                    self.emptyLabel.isHidden = !mapped.isEmpty
+                }
+            }
+        }
     }
 
     // MARK: - Actions
     private func openPreview(for item: CardItem) {
         let vc = CardPreviewViewController()
-        vc.image = loadImage(named: item.imageName)
+        vc.imageURL = item.imageURL
+        vc.image = placeholderImage(for: item.id) // optional
         vc.modalPresentationStyle = .overFullScreen
         present(vc, animated: true)
     }
@@ -161,24 +203,24 @@ final class ChooseCardViewController: UIViewController {
         onSelectCard?(item)
 
         let vc = GiftCertificateDetailsViewController()
-
         vc.giftNameText = giftNameText
         vc.cardDesignText = item.title
         vc.selectedCardDesignId = item.id
-        vc.bottomPreviewImage = loadImage(named: item.imageName)
 
-        // ✅ pass gift + amount for backend submit
+        // ✅ IMPORTANT: pass URL to details
+        vc.selectedCardDesignImageURL = item.imageURL
+
+        // optional quick placeholder
+        vc.bottomPreviewImage = placeholderImage(for: item.id)
+
         vc.selectedGift = selectedGift
         vc.selectedAmount = selectedAmount
 
         navigationController?.pushViewController(vc, animated: true)
     }
 
-
-
-    private func loadImage(named name: String) -> UIImage? {
-        if let img = UIImage(named: name) { return img }
-        return UIImage(named: "\(name).jpeg") ?? UIImage(named: "\(name).jpg") ?? UIImage(named: "\(name).png")
+    private func placeholderImage(for id: String) -> UIImage? {
+        UIImage(named: id) ?? UIImage(named: "\(id).jpg") ?? UIImage(named: "\(id).png")
     }
 }
 
@@ -189,7 +231,8 @@ extension ChooseCardViewController: UICollectionViewDataSource {
         items.count
     }
 
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
         guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: CardChoiceCell.reuseID,
@@ -199,9 +242,10 @@ extension ChooseCardViewController: UICollectionViewDataSource {
         }
 
         let item = items[indexPath.item]
-        let img = loadImage(named: item.imageName)
+        let placeholder = placeholderImage(for: item.id)
 
-        cell.configure(image: img, accent: brandYellow)
+        // ✅ one call فقط
+        cell.configure(imageURL: item.imageURL, accent: brandYellow, placeholder: placeholder)
 
         cell.onZoomTapped = { [weak self] in
             self?.openPreview(for: item)
@@ -215,5 +259,4 @@ extension ChooseCardViewController: UICollectionViewDataSource {
     }
 }
 
-// MARK: - Delegate
 extension ChooseCardViewController: UICollectionViewDelegate { }

@@ -1,5 +1,0 @@
-# Xcode user files
-*.xcuserstate
-*.xcuserdata/
-.DS_Store
-

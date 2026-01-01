@@ -38,7 +38,7 @@ class NGOProfileViewController: UIViewController, NGOAboutMeDelegate {
     @IBOutlet weak var editButton: UIBarButtonItem!
     
     
-    var ngo = NGO(
+    var ngo = Ngo(
         name: "Hope Foundation",
         type: "Ngo",
         rating: "5.0",

@@ -413,7 +413,7 @@ class DonorSignUpViewController: UIViewController, UIImagePickerControllerDelega
 
 
                 // أو تسوين segue لصفحة Donor Home إذا عندك:
-                // self?.performSegue(withIdentifier: "toDonorHome", sender: nil)
+//                 self?.performSegue(withIdentifier: "toDonorHome", sender: nil)
             }
 
         }

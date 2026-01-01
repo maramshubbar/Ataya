@@ -431,6 +431,7 @@
                                 <connections>
                                     <action selector="nextButton:" destination="y1E-sX-w8x" eventType="touchUpInside" id="O10-R1-NTX"/>
                                     <action selector="signUpPressed:" destination="jfm-VT-fH3" eventType="touchUpInside" id="P7A-q5-HTO"/>
+                                    <segue destination="3TP-08-MBI" kind="show" identifier="toDonorHome" id="sp8-Jd-DXN"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="By signing up, you agree to the Terms of service and Privacy policy." lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ccX-4A-EMR">
@@ -737,7 +738,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8XO-Lu-vlY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1513.6363636363637" y="-638.28451882845195"/>
+            <point key="canvasLocation" x="2100" y="-611"/>
         </scene>
         <!--DonorDashboard-->
         <scene sceneID="qKM-zH-ZMW">
@@ -748,6 +749,16 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fbd-U4-6EE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2192" y="-605"/>
+        </scene>
+        <!--DonorDashboard-->
+        <scene sceneID="ume-WM-kfq">
+            <objects>
+                <viewControllerPlaceholder storyboardName="DonorDashboard" id="3TP-08-MBI" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="sdL-1I-52a"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rmI-84-W3k" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1352" y="-319"/>
         </scene>
         <!--NGO Submitted View Controller-->
         <scene sceneID="plt-t4-OeC">
@@ -822,7 +833,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wgI-oQ-oEb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1531" y="43"/>
+            <point key="canvasLocation" x="1981" y="281"/>
         </scene>
         <!--NGO Login View Controller-->
         <scene sceneID="VBh-gL-DXe">

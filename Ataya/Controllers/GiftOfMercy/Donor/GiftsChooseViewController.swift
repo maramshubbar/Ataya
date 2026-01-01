@@ -5,7 +5,6 @@
 //  Created by Fatema Maitham on 24/12/2025.
 //
 
-
 import UIKit
 import FirebaseFirestore
 
@@ -166,6 +165,9 @@ final class GiftsChooseViewController: UIViewController {
         switch gift.pricingMode {
 
         case .fixed:
+            // ✅ also protect fixed gifts (just in case)
+            let fixed = Decimal(gift.fixedAmount ?? 0)
+            if fixed <= 0 { return (false, "Invalid fixed amount.") }
             return (true, "")
 
         case .custom:
@@ -206,7 +208,6 @@ final class GiftsChooseViewController: UIViewController {
         }
     }
 
-
     private func hideErrorBanner() {
         guard !errorBanner.isHidden else { return }
         errorBottomConstraint?.constant = 90
@@ -231,8 +232,6 @@ final class GiftsChooseViewController: UIViewController {
             return
         }
 
-
-
         let amount: Decimal
         switch gift.pricingMode {
         case .fixed:
@@ -241,11 +240,15 @@ final class GiftsChooseViewController: UIViewController {
             amount = enteredAmounts[gift.id] ?? 0
         }
 
+        // ✅ HARD BLOCK (no negative / no zero مهما صار)
+        guard amount > 0 else {
+            showErrorBanner("Amount must be greater than 0.")
+            return
+        }
+
         let vc = ChooseCardViewController()
         vc.selectedGift = gift
         vc.selectedAmount = amount
-
-        // text فوق (مثل اللي عندك)
         vc.giftNameText = certificateGiftText(gift: gift, amount: amount)
 
         navigationController?.pushViewController(vc, animated: true)
@@ -266,11 +269,14 @@ final class GiftsChooseViewController: UIViewController {
 
 // MARK: - UICollectionViewDataSource
 extension GiftsChooseViewController: UICollectionViewDataSource {
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         items.count
     }
 
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+
         guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: GiftCardCell.reuseID,
             for: indexPath
@@ -282,15 +288,18 @@ extension GiftsChooseViewController: UICollectionViewDataSource {
         let existingAmount = enteredAmounts[gift.id]
 
         cell.configure(item: gift, accent: accent, existingAmount: existingAmount)
-        
+
         cell.onAmountChanged = { [weak self] newText in
             guard let self else { return }
 
-            if let value = newText.decimalValue() {
-                // نخزن حتى لو سالب عشان نطلع رسالة واضحة عند الضغط
+            // ✅ BLOCK "-" even if user pastes it
+            let cleaned = newText
+                .replacingOccurrences(of: "-", with: "")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+
+            if let value = cleaned.decimalValue() {
                 self.enteredAmounts[gift.id] = value
 
-                // ✅ رسالة مباشرة لو 0/سالب
                 if value <= 0 {
                     self.showErrorBanner("Amount must be greater than 0.")
                 }
@@ -298,7 +307,6 @@ extension GiftsChooseViewController: UICollectionViewDataSource {
                 self.enteredAmounts[gift.id] = nil
             }
         }
-
 
         cell.onChooseTapped = { [weak self] in
             self?.didTapChooseGift(gift)

@@ -551,16 +551,19 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
     }
 
     private func showSuccessAndClose() {
-        let alert = UIAlertController(
-            title: "Done ✅",
-            message: "Your certificate request was submitted successfully.",
-            preferredStyle: .alert
+        let popup = SuccessPopupViewController(
+            titleText: "Done ✅",
+            messageText: "Your certificate request was submitted successfully.",
+            buttonTitle: "Back Home"
         )
-        alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+
+        popup.onPrimaryTapped = { [weak self] in
             self?.navigationController?.popToRootViewController(animated: true)
-        })
-        present(alert, animated: true)
+        }
+
+        present(popup, animated: true)
     }
+
 
     // MARK: - UITextView
     func textViewDidChange(_ textView: UITextView) {

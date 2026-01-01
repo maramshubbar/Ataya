@@ -19,10 +19,8 @@ final class ChooseCardViewController: UIViewController {
 
     // MARK: - Inputs (set from previous screen)
     var giftNameText: String?
-
     var selectedGift: MercyGift?
     var selectedAmount: Decimal = 0
-
     var onSelectCard: ((CardItem) -> Void)?
 
     // MARK: - Theme
@@ -39,8 +37,10 @@ final class ChooseCardViewController: UIViewController {
     private let emptyLabel = UILabel()
 
     // MARK: - Data (from Firestore)
+    private let db = Firestore.firestore()
     private var items: [CardItem] = []
     private var cardsListener: ListenerRegistration?
+    private var triedRootFallback = false
 
     deinit { cardsListener?.remove() }
 
@@ -162,24 +162,53 @@ final class ChooseCardViewController: UIViewController {
         ])
     }
 
-    // MARK: - Firestore
+    // MARK: - Firestore (FIX: reads cards from NGO subcollections OR root)
     private func listenCards() {
         cardsListener?.remove()
 
-        cardsListener = MercyBackend.listenActiveCardDesigns { [weak self] result in
-            guard let self else { return }
+        // ✅ 1) Reads from ANY: ngos/{id}/cardDesigns/{id}
+        cardsListener = db.collectionGroup("cardDesigns")
+            .addSnapshotListener { [weak self] snapshot, error in
+                guard let self else { return }
 
-            switch result {
-            case .failure(let err):
-                print("❌ listenActiveCardDesigns error:", err)
-                DispatchQueue.main.async {
-                    self.items = []
-                    self.collectionView.reloadData()
-                    self.emptyLabel.isHidden = false
+                if let error {
+                    print("❌ cardDesigns collectionGroup error:", error)
+                    DispatchQueue.main.async {
+                        self.items = []
+                        self.collectionView.reloadData()
+                        self.emptyLabel.isHidden = false
+                    }
+                    return
                 }
 
-            case .success(let list):
-                let mapped = list.map { CardItem(id: $0.id, title: $0.title, imageURL: $0.imageURL) }
+                let docs = snapshot?.documents ?? []
+
+                let mapped: [CardItem] = docs.compactMap { doc in
+                    let data = doc.data()
+
+                    // flexible fields
+                    let title = (data["title"] as? String) ?? (data["name"] as? String) ?? "Card"
+
+                    let imageURL = (data["imageURL"] as? String)
+                    ?? (data["imageUrl"] as? String)
+                    ?? (data["url"] as? String)
+
+                    // optional active filter
+                    let activeBool = (data["isActive"] as? Bool) ?? (data["active"] as? Bool)
+                    let statusActive = (data["status"] as? String)?.lowercased() == "active"
+
+                    if let activeBool, activeBool == false { return nil }
+                    if activeBool == nil, (data["status"] != nil), statusActive == false { return nil }
+
+                    return CardItem(id: doc.documentID, title: title, imageURL: imageURL)
+                }
+
+                // ✅ fallback once to root: /cardDesigns
+                if mapped.isEmpty, self.triedRootFallback == false {
+                    self.triedRootFallback = true
+                    self.listenCardsFromRoot()
+                    return
+                }
 
                 DispatchQueue.main.async {
                     self.items = mapped
@@ -187,14 +216,48 @@ final class ChooseCardViewController: UIViewController {
                     self.emptyLabel.isHidden = !mapped.isEmpty
                 }
             }
-        }
+    }
+
+    private func listenCardsFromRoot() {
+        cardsListener?.remove()
+
+        cardsListener = db.collection("cardDesigns")
+            .addSnapshotListener { [weak self] snapshot, error in
+                guard let self else { return }
+
+                if let error {
+                    print("❌ root /cardDesigns error:", error)
+                    DispatchQueue.main.async {
+                        self.items = []
+                        self.collectionView.reloadData()
+                        self.emptyLabel.isHidden = false
+                    }
+                    return
+                }
+
+                let docs = snapshot?.documents ?? []
+                let mapped: [CardItem] = docs.map { doc in
+                    let data = doc.data()
+                    let title = (data["title"] as? String) ?? (data["name"] as? String) ?? "Card"
+                    let imageURL = (data["imageURL"] as? String)
+                    ?? (data["imageUrl"] as? String)
+                    ?? (data["url"] as? String)
+                    return CardItem(id: doc.documentID, title: title, imageURL: imageURL)
+                }
+
+                DispatchQueue.main.async {
+                    self.items = mapped
+                    self.collectionView.reloadData()
+                    self.emptyLabel.isHidden = !mapped.isEmpty
+                }
+            }
     }
 
     // MARK: - Actions
     private func openPreview(for item: CardItem) {
         let vc = CardPreviewViewController()
         vc.imageURL = item.imageURL
-        vc.image = placeholderImage(for: item.id) // optional
+        vc.image = placeholderImage(for: item.id)
         vc.modalPresentationStyle = .overFullScreen
         present(vc, animated: true)
     }
@@ -244,7 +307,6 @@ extension ChooseCardViewController: UICollectionViewDataSource {
         let item = items[indexPath.item]
         let placeholder = placeholderImage(for: item.id)
 
-        // ✅ one call فقط
         cell.configure(imageURL: item.imageURL, accent: brandYellow, placeholder: placeholder)
 
         cell.onZoomTapped = { [weak self] in

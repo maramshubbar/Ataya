@@ -31,6 +31,13 @@ class NGOProfileViewController: UIViewController, NGOAboutMeDelegate {
     
     @IBOutlet weak var helpSupportButton: UIButton!
     
+    @IBOutlet weak var savePhotoButton: UIBarButtonItem!
+    
+    @IBOutlet weak var changePhotoButton: UIButton!
+    
+    @IBOutlet weak var editButton: UIBarButtonItem!
+    
+    
     var ngo = NGO(
         name: "Hope Foundation",
         type: "Ngo",
@@ -55,6 +62,15 @@ class NGOProfileViewController: UIViewController, NGOAboutMeDelegate {
         profileView.layer.cornerRadius = profileView.frame.width / 2
         profileView.clipsToBounds = true
         ratingView.layer.cornerRadius = 8
+        
+        // Existing setup...
+        profileView.layer.cornerRadius = profileView.frame.width / 2
+        profileView.clipsToBounds = true
+        ratingView.layer.cornerRadius = 8
+        
+        // Hide edit/save buttons initially
+        changePhotoButton.isHidden = true
+        savePhotoButton.isHidden = true
     }
 
     func didUpdateNGOInfo(name: String, email: String, phone: String, mission: String) {
@@ -108,5 +124,44 @@ class NGOProfileViewController: UIViewController, NGOAboutMeDelegate {
     }
     
         
+    @IBAction func editProfileTapped(_ sender: UIBarButtonItem) {
+        changePhotoButton.isHidden = false
+        savePhotoButton.isHidden = false
     }
+    
+    @IBAction func changePhotoTapped(_ sender: UIButton) {
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        picker.sourceType = .photoLibrary
+        picker.allowsEditing = true
+        present(picker, animated: true, completion: nil)
+    }
+    
+    @IBAction func savePhotoTapped(_ sender: UIBarButtonItem) {
+        // Hide buttons again
+        changePhotoButton.isHidden = true
+        savePhotoButton.isHidden = true
+        
+        // Optionally persist the image in your NGO model
+        ngo.profileView = profileView.image
+    }
+    
+    
+}
+extension NGOProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController,
+                               didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let editedImage = info[.editedImage] as? UIImage {
+            profileView.image = editedImage
+        } else if let originalImage = info[.originalImage] as? UIImage {
+            profileView.image = originalImage
+        }
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true, completion: nil)
+    }
+}
+
 

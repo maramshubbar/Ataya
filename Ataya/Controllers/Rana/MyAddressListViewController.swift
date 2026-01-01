@@ -16,9 +16,10 @@ final class MyAddressListViewController: UIViewController {
     private enum Choice { case myAddress, ngo }
     private var selectedChoice: Choice?
 
-    private let grayBorder = UIColor(hex: "#999999")
-    private let selectedBorder = UIColor(hex: "#FEC400")
-    private let selectedBG = UIColor(hex: "#FFFBE7")
+    private let grayBorder = UIColor.atayaHex("#999999")
+    private let selectedBorder = UIColor.atayaHex("#FEC400")
+    private let selectedBG = UIColor.atayaHex("#FFFBE7")
+
 
     override func viewDidLoad() {
         super.viewDidLoad()

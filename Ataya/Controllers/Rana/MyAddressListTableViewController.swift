@@ -42,12 +42,13 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
 
     private let store = AddressRuntimeStore.shared
 
-    // Selected colors (keep your originals)
-    private let yellow = UIColor(hex: "#F7D44C")
-    private let yellowBG = UIColor(hex: "#FFFBE7")
+    // ✅ Colors (using your UIColor.atayaHex)
+    private let yellow = UIColor.atayaHex("#F7D44C")
+    private let yellowBG = UIColor.atayaHex("#FFFBE7")
 
-    // Unselected border
-    private let grayBorder = UIColor(hex: "#B8B8B8")
+    private let grayBorder = UIColor.atayaHex("#999999")
+    private let selectedBorder = UIColor.atayaHex("#FEC400")
+    private let selectedBG = UIColor.atayaHex("#FFFBE7")
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -247,8 +248,8 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
 
         // ✅ Border + BG depending on selected
         card.layer.borderWidth = 2
-        card.layer.borderColor = (isSelected ? yellow : grayBorder).cgColor
-        card.backgroundColor = (isSelected ? yellowBG : .white)
+        card.layer.borderColor = (isSelected ? selectedBorder : grayBorder).cgColor
+        card.backgroundColor = (isSelected ? selectedBG : .white)
 
         // ✅ Drop shadow (light)
         card.layer.shadowColor = UIColor.black.cgColor
@@ -363,18 +364,16 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
     }
 }
 
-// MARK: - UIColor HEX helper
+// MARK: - UIColor helper (same as yours)
 //private extension UIColor {
-//    convenience init(hex: String) {
-//        var s = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-//        if s.hasPrefix("#") { s.removeFirst() }
+//    static func atayaHex(_ hex: String) -> UIColor {
+//        var h = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+//        if h.hasPrefix("#") { h.removeFirst() }
 //        var rgb: UInt64 = 0
-//        Scanner(string: s).scanHexInt64(&rgb)
-//        self.init(
-//            red: CGFloat((rgb & 0xFF0000) >> 16) / 255.0,
-//            green: CGFloat((rgb & 0x00FF00) >> 8) / 255.0,
-//            blue: CGFloat(rgb & 0x0000FF) / 255.0,
-//            alpha: 1.0
-//        )
+//        Scanner(string: h).scanHexInt64(&rgb)
+//        let r = CGFloat((rgb & 0xFF0000) >> 16) / 255
+//        let g = CGFloat((rgb & 0x00FF00) >> 8) / 255
+//        let b = CGFloat(rgb & 0x0000FF) / 255
+//        return UIColor(red: r, green: g, blue: b, alpha: 1)
 //    }
 //}

@@ -7,9 +7,9 @@
 
 import UIKit
 
-final class CampaignCell: UICollectionViewCell {
+final class CampaignCellDashboard: UICollectionViewCell {
 
-    static let reuseId = "CampaignCell"
+    static let reuseId = "CampaignCellDashboard"
     private let baseShadowOpacity: Float = 0.08
 
     @IBOutlet private weak var shadowView: UIView!
@@ -73,7 +73,7 @@ final class CampaignCell: UICollectionViewCell {
             shadowView.layer.shadowOpacity = baseShadowOpacity
         }
     }
-    func configure(with item: Campaign) {
+    func configure(with item: DashboardCampaign) {
         imgCampaign.image = UIImage(named: item.imageName)
         badgeLabel.text = item.tag
         titleLabel.text = item.title

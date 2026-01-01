@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct Campaign {
+struct DashboardCampaign {
     let imageName: String
     let tag: String
     let title: String
@@ -16,7 +16,7 @@ struct Campaign {
 final class DonorDashboardViewController: UIViewController,
     UICollectionViewDataSource, UICollectionViewDelegateFlowLayout,
     UITableViewDataSource, UITableViewDelegate {
-    private let campaigns: [Campaign] = [
+    private let campaigns: [DashboardCampaign] = [
         .init(imageName: "campaign1", tag: "Emergency", title: "Food Aid for Families\nin Palestine"),
         .init(imageName: "campaign2", tag: "Climate Change", title: "Shallow Water Well"),
         .init(imageName: "campaign3", tag: "Emergency", title: "Medical Relief for\nInjured Palestinian")
@@ -63,7 +63,7 @@ final class DonorDashboardViewController: UIViewController,
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CampaignCell.reuseId, for: indexPath) as! CampaignCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CampaignCellDashboard.reuseId, for: indexPath) as! CampaignCellDashboard
         cell.configure(with: campaigns[indexPath.item])
         return cell
     }
@@ -103,8 +103,8 @@ final class DonorDashboardViewController: UIViewController,
         
         // Register XIB
         campaignsCollectionView.register(
-            UINib(nibName: "CampaignCell", bundle: nil),
-            forCellWithReuseIdentifier: CampaignCell.reuseId)
+            UINib(nibName: "CampaignCellDashboard", bundle: nil),
+            forCellWithReuseIdentifier: CampaignCellDashboard.reuseId)
         
         if let layout = campaignsCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             layout.scrollDirection = .horizontal

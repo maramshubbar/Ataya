@@ -37,18 +37,17 @@ class AddFoodDonationViewController: UIViewController{
 
         // Card 1 — Active (yellow border)
         styleCard(uploadPhotosCard,
-                  bgColor: UIColor(hex: "#FFFAE8"),
-                  borderColor: UIColor(hex: "#FFD83F"))
+                  bgColor: UIColor.atayaHex("#FFFAE8"),
+                  borderColor: UIColor.atayaHex("#FFD83F"))
 
-        // Card 2 — Inactive (gray border)
         styleCard(enterDetailsCard,
-                  bgColor: UIColor.white,
-                  borderColor: UIColor(hex: "#DADADA"))
+                  bgColor: .white,
+                  borderColor: UIColor.atayaHex("#DADADA"))
 
-        // Card 3 — Inactive (gray border)
         styleCard(safetySubmitCard,
-                  bgColor: UIColor.white,
-                  borderColor: UIColor(hex: "#DADADA"))
+                  bgColor: .white,
+                  borderColor: UIColor.atayaHex("#DADADA"))
+
     }
 
     func styleCard(_ view: UIView, bgColor: UIColor, borderColor: UIColor) {

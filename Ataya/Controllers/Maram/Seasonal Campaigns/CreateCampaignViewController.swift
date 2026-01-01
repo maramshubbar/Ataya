@@ -1335,7 +1335,7 @@ private extension Date {
     }
 }
 
-private extension UIColor {
+extension UIColor {
     static func atayaHex(_ hex: String) -> UIColor {
         var h = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
         if h.hasPrefix("#") { h.removeFirst() }

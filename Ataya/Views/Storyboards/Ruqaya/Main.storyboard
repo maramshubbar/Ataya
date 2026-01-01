@@ -1132,6 +1132,16 @@
             </objects>
             <point key="canvasLocation" x="679" y="43"/>
         </scene>
+        <!--Admin-->
+        <scene sceneID="bGp-54-zif">
+            <objects>
+                <viewControllerPlaceholder storyboardIdentifier="AdminTabBarController" storyboardName="Admin" id="cKk-4W-YuX" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="pJR-6S-UkG"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="1DI-ml-SAO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2129" y="-503"/>
+        </scene>
         <!--Admin Login View Controller-->
         <scene sceneID="Ps0-qP-aLW">
             <objects>
@@ -1184,6 +1194,7 @@
                                 <buttonConfiguration key="configuration" style="plain" title="Login"/>
                                 <connections>
                                     <action selector="loginPressed:" destination="Ruz-Jj-afv" eventType="touchUpInside" id="6lR-mt-z95"/>
+                                    <segue destination="cKk-4W-YuX" kind="presentation" identifier="toAdminDash" id="Tce-JZ-71J"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Forget Password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="w4h-hz-bI7">

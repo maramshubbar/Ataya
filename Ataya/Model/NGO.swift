@@ -1,11 +1,4 @@
-//
-//  NGO.swift
-//  Ataya
-//
-//  Created by BP-36-224-14 on 30/12/2025.
-//
-
-import Foundation
+import UIKit
 
 class NGO {
     var name: String
@@ -15,10 +8,16 @@ class NGO {
     var phone: String
     var mission: String
     
-    // Add this property
+    // For dummy testing
     var profileImage: UIImage?
     
-    init(name: String, type: String, rating: String, email: String, phone: String, mission: String, profileImage: UIImage? = nil) {
+    init(name: String,
+         type: String,
+         rating: String,
+         email: String,
+         phone: String,
+         mission: String,
+         profileImage: UIImage? = nil) {
         self.name = name
         self.type = type
         self.rating = rating

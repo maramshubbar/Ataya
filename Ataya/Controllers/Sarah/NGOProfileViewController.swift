@@ -49,26 +49,19 @@ class NGOProfileViewController: UIViewController, NGOAboutMeDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Load saved preference
-        let isDarkMode = UserDefaults.standard.bool(forKey: "isDarkModeEnabled")
-        darkModeSwitch.isOn = isDarkMode
-        
-        // Show summary data
         ngoName.text = ngo.name
         ngoType.text = ngo.type
         ratingValue.text = ngo.rating
-        profileView.image = UIImage(named: "donor_Image")
         
+        // Show dummy image or saved profile image
+        if let image = ngo.profileImage {
+            profileView.image = image
+        } else {
+            profileView.image = UIImage(named: "donor_Image")
+        }
         profileView.layer.cornerRadius = profileView.frame.width / 2
         profileView.clipsToBounds = true
         ratingView.layer.cornerRadius = 8
-        
-        // Existing setup...
-        profileView.layer.cornerRadius = profileView.frame.width / 2
-        profileView.clipsToBounds = true
-        ratingView.layer.cornerRadius = 8
-        
-        // Hide edit/save buttons initially
         changePhotoButton.isHidden = true
         savePhotoButton.isHidden = true
     }

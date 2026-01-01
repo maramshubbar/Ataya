@@ -1,14 +1,12 @@
 import UIKit
 import Foundation
-
+// Holds ALL data across the 3-step donation flow.
+// ONE instance is passed between screens until final submit.
 final class DraftDonation {
     var id: String?
 
     var itemName: String = ""
-
-    // ✅ quantity as number + unit
-    var quantityValue: Int = 0         // 0 = not selected yet
-    var quantityUnit: String = "kg"
+    var quantity: String = ""
 
     var expiryDate: Date?
     var category: String = ""
@@ -17,32 +15,19 @@ final class DraftDonation {
     var notes: String? = nil
 
     var safetyConfirmed: Bool = false
-    
+
     var images: [UIImage] = []
-    var photoURLs: [String] = []
-    var imagePublicIds: [String] = []
-    var photoCount: Int { photoURLs.count }
 
-    var pickupDate: Date?
-    var pickupTime: String?
-    var pickupMethod: String = ""
-    var pickupAddress: AddressModel?
+    var photoCount: Int { images.count }
 
-    
     func toFirestoreDict() -> [String: Any] {
         var data: [String: Any] = [
             "itemName": itemName,
-
-            // ✅ store properly
-            "quantityValue": quantityValue,
-            "quantityUnit": quantityUnit,
-
+            "quantity": quantity,
             "category": category,
             "packagingType": packagingType,
             "safetyConfirmed": safetyConfirmed,
-            "photoCount": photoCount,
-            "photoURLs": photoURLs,
-            "imagePublicIds": imagePublicIds
+            "photoCount": photoCount
         ]
 
         if let expiryDate { data["expiryDate"] = expiryDate }

@@ -20,7 +20,7 @@ class NGOAboutMeViewController: UIViewController {
     @IBOutlet weak var saveButton: UIButton!
     
     weak var delegate: NGOAboutMeDelegate?
-    var ngo: NGO? // whole model
+    var ngo: Ngo? // whole model
 
     private var isEditingMode = false
     

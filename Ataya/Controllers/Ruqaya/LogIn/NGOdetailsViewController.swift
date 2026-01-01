@@ -11,7 +11,7 @@ import FirebaseAuth
 import FirebaseFirestore
 import FirebaseStorage
 
-class NGOdetailsViewController: UIViewController, UIDocumentPickerDelegate {
+class NGODetailsViewController: UIViewController, UIDocumentPickerDelegate {
     
     
     @IBOutlet weak var typeButton: UIButton!

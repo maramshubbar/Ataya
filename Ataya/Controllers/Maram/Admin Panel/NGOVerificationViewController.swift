@@ -1,13 +1,15 @@
 import UIKit
 import FirebaseFirestore
 
+// ✅ نفس Data Model بس مربوط بـ users collection
 struct NGO {
-    let id: String
+    let id: String            // = uid (documentID)
     let name: String
-    let description: String
+    let description: String   // mission/description (إذا موجود)
     let email: String
-    let note: String?
-    let status: String          // pending / verified / rejected
+    let phone: String
+    let note: String?         // rejectionReason أو note (اختياري)
+    let status: String        // pending / verified / rejected
     let createdAt: Date
 }
 
@@ -20,17 +22,14 @@ final class NGOVerificationViewController: UIViewController {
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
 
-    // ✅ لازم يكون نفس اسم كوليكشن البنات بالضبط
-    private let collectionName = "ngo_applications"
+    // ✅ الحين نقرأ من users
+    private let usersCollection = "users"
 
     private var allNGOs: [NGO] = []
     private var shownNGOs: [NGO] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // ✅ تأكد سريع (إذا طلع nil معناها outlet مو مربوط)
-        // print("searchBar nil? ->", searchBar == nil)
 
         // SearchBar UI
         searchBar.backgroundImage = UIImage()
@@ -70,28 +69,22 @@ final class NGOVerificationViewController: UIViewController {
         stopListening()
     }
 
-    deinit {
-        stopListening()
-    }
+    deinit { stopListening() }
 
     private func stopListening() {
         listener?.remove()
         listener = nil
     }
 
-    // MARK: - Firestore Listener
+    // MARK: - Firestore Listener (USERS -> NGO)
     private func startListening() {
-        stopListening() // ✅ امنعي تكرار listeners
+        stopListening()
 
-        // ✅ الخيار 1: Root collection
-        let query = db.collection(collectionName)
+        // ✅ نجيب NGOs من users
+        let query = db.collection(usersCollection)
+            .whereField("role", isEqualTo: "ngo")
             .order(by: "createdAt", descending: true)
             .limit(to: 200)
-
-        // ✅ الخيار 2 (إذا البنات مسوينها Subcollection):
-        // let query = db.collectionGroup(collectionName)
-        //     .order(by: "createdAt", descending: true)
-        //     .limit(to: 200)
 
         listener = query.addSnapshotListener { [weak self] snap, err in
             guard let self else { return }
@@ -106,10 +99,30 @@ final class NGOVerificationViewController: UIViewController {
                 let data = doc.data()
 
                 let name = data["name"] as? String ?? ""
-                let description = data["description"] as? String ?? ""
                 let email = data["email"] as? String ?? ""
-                let note = data["note"] as? String
-                let status = (data["status"] as? String ?? "pending").trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+                let phone = data["phone"] as? String ?? ""
+
+                // description ممكن تكون mission/description/overview
+                let description =
+                    (data["mission"] as? String) ??
+                    (data["description"] as? String) ??
+                    (data["overview"] as? String) ??
+                    ""
+
+                // note ممكن تكون rejectionReason أو note
+                let note =
+                    (data["rejectionReason"] as? String) ??
+                    (data["note"] as? String)
+
+                // ✅ نفس اللي عندج في الساين اب
+                let statusRaw =
+                    (data["approvalStatus"] as? String) ??
+                    (data["status"] as? String) ??
+                    "pending"
+
+                let status = statusRaw
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                    .lowercased()
 
                 let ts = data["createdAt"] as? Timestamp
                 let createdAt = ts?.dateValue() ?? Date.distantPast
@@ -119,6 +132,7 @@ final class NGOVerificationViewController: UIViewController {
                     name: name,
                     description: description,
                     email: email,
+                    phone: phone,
                     note: note,
                     status: status,
                     createdAt: createdAt
@@ -167,8 +181,9 @@ final class NGOVerificationViewController: UIViewController {
                     ngo.name,
                     ngo.description,
                     ngo.email,
+                    ngo.phone,
                     ngo.note ?? "",
-                    ngo.status // ✅ لو تبين تبحثين بـ pending/verified
+                    ngo.status
                 ].joined(separator: " ").lowercased()
 
                 return haystack.contains(searchText)
@@ -177,13 +192,103 @@ final class NGOVerificationViewController: UIViewController {
 
         shownNGOs = items
         tableView.reloadData()
-
-        // ✅ Debug (اختياري)
-        // print("all:", allNGOs.count, "shown:", shownNGOs.count, "search:", searchText, "seg:", selectedStatus)
     }
 
-    private func openDetails(ngo: NGO) {
-        // later
+    // MARK: - Admin Actions (Approve/Reject)
+    private func presentDetailsAndActions(for ngo: NGO) {
+
+        let descText = ngo.description.isEmpty ? "—" : ngo.description
+        let noteText = (ngo.note?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false) ? ngo.note! : "—"
+
+        let message =
+        """
+        Email: \(ngo.email)
+        Phone: \(ngo.phone)
+
+        About:
+        \(descText)
+
+        Note:
+        \(noteText)
+
+        Status: \(ngo.status.uppercased())
+        """
+
+        let sheet = UIAlertController(title: ngo.name, message: message, preferredStyle: .actionSheet)
+
+        // ✅ Approve
+        sheet.addAction(UIAlertAction(title: "Approve (Verified)", style: .default, handler: { [weak self] _ in
+            self?.updateNGOStatus(ngoId: ngo.id, status: "verified", rejectionReason: nil)
+        }))
+
+        // ✅ Reject
+        sheet.addAction(UIAlertAction(title: "Reject", style: .destructive, handler: { [weak self] _ in
+            self?.promptRejectReason(ngo: ngo)
+        }))
+
+        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+
+        // iPad safety
+        if let pop = sheet.popoverPresentationController {
+            pop.sourceView = self.view
+            pop.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.maxY - 120, width: 1, height: 1)
+        }
+
+        present(sheet, animated: true)
+    }
+
+    private func promptRejectReason(ngo: NGO) {
+        let alert = UIAlertController(title: "Reject NGO", message: "Add reason (optional)", preferredStyle: .alert)
+        alert.addTextField { tf in
+            tf.placeholder = "Reason…"
+        }
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Reject", style: .destructive, handler: { [weak self] _ in
+            let reason = alert.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines)
+            self?.updateNGOStatus(ngoId: ngo.id, status: "rejected", rejectionReason: reason)
+        }))
+        present(alert, animated: true)
+    }
+
+    private func updateNGOStatus(ngoId: String, status: String, rejectionReason: String?) {
+        var data: [String: Any] = [
+            "approvalStatus": status,
+            "statusUpdatedAt": FieldValue.serverTimestamp()
+        ]
+
+        if status == "rejected" {
+            // إذا ما كتب سبب، لا نحط field
+            if let r = rejectionReason, !r.isEmpty {
+                data["rejectionReason"] = r
+            }
+        } else {
+            // إذا صار verified، نحذف rejectionReason لو كانت موجودة
+            data["rejectionReason"] = FieldValue.delete()
+        }
+
+        db.collection(usersCollection).document(ngoId).updateData(data) { [weak self] err in
+            if let err {
+                self?.simpleAlert(title: "Update Failed", message: err.localizedDescription)
+                return
+            }
+
+            // ✅ Audit log عشان تظهر في Admin Dashboard Recent Activity
+            self?.db.collection("audit_logs").addDocument(data: [
+                "title": status == "verified" ? "NGO Verified" : "NGO Rejected",
+                "user": "Admin",
+                "location": "",            // إذا تبين حطي location
+                "category": "verification",
+                "createdAt": FieldValue.serverTimestamp()
+            ])
+
+            self?.simpleAlert(title: "Done", message: "Status updated to \(status)")
+        }
+    }
+
+    private func simpleAlert(title: String, message: String) {
+        let a = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        a.addAction(UIAlertAction(title: "OK", style: .default))
+        present(a, animated: true)
     }
 }
 
@@ -207,9 +312,13 @@ extension NGOVerificationViewController: UITableViewDataSource, UITableViewDeleg
         let ngo = shownNGOs[indexPath.row]
 
         cell.nameLabel.text = ngo.name
-        cell.descriptionLabel.text = ngo.description
+
+        // إذا description فاضي، خليها شي بسيط بدل الفراغ
+        cell.descriptionLabel.text = ngo.description.isEmpty ? "—" : ngo.description
+
         cell.emailLabel.text = ngo.email
 
+        // noteLabel: إذا ما في note، نخليه مخفي
         if let note = ngo.note, !note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             cell.noteLabel.isHidden = false
             cell.noteLabel.text = note
@@ -224,7 +333,7 @@ extension NGOVerificationViewController: UITableViewDataSource, UITableViewDeleg
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        openDetails(ngo: shownNGOs[indexPath.row])
+        presentDetailsAndActions(for: shownNGOs[indexPath.row])
     }
 }
 
@@ -240,7 +349,6 @@ extension NGOVerificationViewController: UISearchBarDelegate {
     }
 
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        // print("Typing:", searchText) // ✅ Debug
         applyFiltersAndReload()
     }
 

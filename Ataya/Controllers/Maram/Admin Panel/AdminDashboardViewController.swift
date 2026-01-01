@@ -4,6 +4,7 @@
 //
 //  Created by Maram on 24/11/2025.
 //
+
 import UIKit
 import FirebaseFirestore
 
@@ -15,7 +16,7 @@ final class AdminDashboardViewController: UIViewController {
     @IBOutlet private weak var cardFlaggedReports: UIView!
     @IBOutlet private weak var cardVerifiedCollectors: UIView!
 
-    // ✅ Outlets للأرقام الأربع (اربطيهم على Labels اللي فيها الأرقام)
+    // ✅ Outlets للأرقام الأربع
     @IBOutlet private weak var lblRegisteredUsersValue: UILabel!
     @IBOutlet private weak var lblTotalDonationsValue: UILabel!
     @IBOutlet private weak var lblFlaggedReportsValue: UILabel!
@@ -29,30 +30,36 @@ final class AdminDashboardViewController: UIViewController {
     @IBOutlet weak var tblRecentActivity: UITableView!
     @IBOutlet weak var tblRecentActivityHeight: NSLayoutConstraint!
 
+    // MARK: - Actions
     @IBAction func donationOverviewTapped(_ sender: Any) {
         performSegue(withIdentifier: "sgDonationOverview", sender: self)
     }
 
     private let cardCornerRadius: CGFloat = 16
 
-    // ✅ Firestore + listeners
+    // MARK: - Firestore
     private let db = Firestore.firestore()
-    private var statsListener: ListenerRegistration?
+
+    // ✅ Listeners (بدل admin_stats)
+    private var registeredUsersListener: ListenerRegistration?
+    private var totalDonationsListener: ListenerRegistration?
+    private var flaggedReportsListener: ListenerRegistration?
+    private var verifiedCollectorsListener: ListenerRegistration?
     private var activityListener: ListenerRegistration?
 
-    // ✅ بدل let activities
+    // Recent activity text rows
     private var activities: [String] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // Quick links tap
         donationOverviewCard.isUserInteractionEnabled = true
         auditLogCard.isUserInteractionEnabled = true
 
         donationOverviewCard.addGestureRecognizer(
             UITapGestureRecognizer(target: self, action: #selector(openDonationOverview))
         )
-
         auditLogCard.addGestureRecognizer(
             UITapGestureRecognizer(target: self, action: #selector(openAuditLog))
         )
@@ -77,7 +84,7 @@ final class AdminDashboardViewController: UIViewController {
         ]
         cards.forEach { $0.applyCardShadow(cornerRadius: cardCornerRadius) }
 
-        // ✅ ابدأ listening بعد ما تجهز UI
+        // ✅ Start listeners
         startListening()
     }
 
@@ -116,42 +123,77 @@ final class AdminDashboardViewController: UIViewController {
         v.backgroundColor = .white
     }
 
-    // MARK: - Firestore Listening
+    // MARK: - Firestore Listening (REAL DATA)
     private func startListening() {
 
-        // 1) Stats listener
-        statsListener = db.collection("admin_stats").document("global")
+        // 1) Registered Users = donor + collector (من users)
+        registeredUsersListener = db.collection("users")
+            .whereField("role", in: ["donor", "ngo"])
             .addSnapshotListener { [weak self] snap, err in
                 guard let self else { return }
-                if let err = err {
-                    print("❌ Stats error:", err.localizedDescription)
+                if let err {
+                    print("❌ RegisteredUsers error:", err.localizedDescription)
                     return
                 }
-
-                let data = snap?.data() ?? [:]
-
-                let registeredUsers     = self.intValue(data["registeredUsers"])
-                let totalDonations      = self.intValue(data["totalDonations"])
-                let flaggedReports      = self.intValue(data["flaggedReports"])
-                let verifiedCollectors  = self.intValue(data["verifiedCollectors"])
-
+                let count = snap?.documents.count ?? 0
                 DispatchQueue.main.async {
-                    self.lblRegisteredUsersValue.text = self.formatNumber(registeredUsers)
-                    self.lblFlaggedReportsValue.text = self.formatNumber(flaggedReports)
-                    self.lblVerifiedCollectorsValue.text = self.formatNumber(verifiedCollectors)
-
-                    // إذا تبينه مبلغ:
-                    self.lblTotalDonationsValue.text = "$" + self.formatNumber(totalDonations)
+                    self.lblRegisteredUsersValue.text = self.formatNumber(count)
                 }
             }
 
-        // 2) Recent activity listener
+        // 2) Total Donations = COUNT documents in donations (مو مبلغ)
+        // إذا تبين فقط المكتملة: ضيفي whereField("status", isEqualTo: "completed")
+        totalDonationsListener = db.collection("donations")
+            .addSnapshotListener { [weak self] snap, err in
+                guard let self else { return }
+                if let err {
+                    print("❌ TotalDonations error:", err.localizedDescription)
+                    return
+                }
+                let count = snap?.documents.count ?? 0
+                DispatchQueue.main.async {
+                    self.lblTotalDonationsValue.text = self.formatNumber(count)
+                }
+            }
+
+        // 3) Flagged Reports = status == "flagged" (من reports)
+        flaggedReportsListener = db.collection("reports")
+            .whereField("status", isEqualTo: "flagged")
+            .addSnapshotListener { [weak self] snap, err in
+                guard let self else { return }
+                if let err {
+                    print("❌ FlaggedReports error:", err.localizedDescription)
+                    return
+                }
+                let count = snap?.documents.count ?? 0
+                DispatchQueue.main.async {
+                    self.lblFlaggedReportsValue.text = self.formatNumber(count)
+                }
+            }
+
+        // 4) Verified Collectors = role == collector AND isVerified == true (من users)
+        verifiedCollectorsListener = db.collection("users")
+            .whereField("role", isEqualTo: "ngo")
+            .whereField("isVerified", isEqualTo: true)
+            .addSnapshotListener { [weak self] snap, err in
+                guard let self else { return }
+                if let err {
+                    print("❌ VerifiedCollectors error:", err.localizedDescription)
+                    return
+                }
+                let count = snap?.documents.count ?? 0
+                DispatchQueue.main.async {
+                    self.lblVerifiedCollectorsValue.text = self.formatNumber(count)
+                }
+            }
+
+        // 5) Recent Activity (من audit_logs)
         activityListener = db.collection("audit_logs")
             .order(by: "createdAt", descending: true)
             .limit(to: 10)
             .addSnapshotListener { [weak self] snap, err in
                 guard let self else { return }
-                if let err = err {
+                if let err {
                     print("❌ Activity error:", err.localizedDescription)
                     return
                 }
@@ -164,13 +206,13 @@ final class AdminDashboardViewController: UIViewController {
                     let location = d["location"] as? String ?? ""
                     let category = d["category"] as? String ?? ""
 
-                    // ركّبي النص مثل ما تبين
                     // مثال: "Donation Approved • Zahraa Ali • Manama, Bahrain"
                     var parts: [String] = []
                     if !title.isEmpty { parts.append(title) }
                     if !user.isEmpty { parts.append(user) }
                     if !location.isEmpty { parts.append(location) }
-                    if parts.isEmpty { parts.append(category) }
+                    if parts.isEmpty, !category.isEmpty { parts.append(category) }
+                    if parts.isEmpty { parts.append("Activity") }
 
                     return parts.joined(separator: " • ")
                 }
@@ -183,19 +225,14 @@ final class AdminDashboardViewController: UIViewController {
     }
 
     deinit {
-        statsListener?.remove()
+        registeredUsersListener?.remove()
+        totalDonationsListener?.remove()
+        flaggedReportsListener?.remove()
+        verifiedCollectorsListener?.remove()
         activityListener?.remove()
     }
 
     // MARK: - Helpers
-    private func intValue(_ any: Any?) -> Int {
-        if let v = any as? Int { return v }
-        if let v = any as? Int64 { return Int(v) }
-        if let v = any as? Double { return Int(v) }
-        if let v = any as? NSNumber { return v.intValue }
-        return 0
-    }
-
     private func formatNumber(_ n: Int) -> String {
         let f = NumberFormatter()
         f.numberStyle = .decimal

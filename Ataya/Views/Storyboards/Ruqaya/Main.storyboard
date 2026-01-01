@@ -648,6 +648,7 @@
                                 <connections>
                                     <action selector="loginPressed:" destination="cze-Xt-aRN" eventType="touchUpInside" id="Od2-yn-pEj"/>
                                     <action selector="nextButton:" destination="y1E-sX-w8x" eventType="touchUpInside" id="SbQ-c1-Jrw"/>
+                                    <segue destination="EOi-2i-lZ7" kind="presentation" identifier="toDonorHome" modalPresentationStyle="fullScreen" id="MuJ-mH-6L4"/>
                                 </connections>
                             </button>
                             <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Forget Password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DUQ-ga-ZEn">
@@ -737,6 +738,16 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8XO-Lu-vlY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1513.6363636363637" y="-638.28451882845195"/>
+        </scene>
+        <!--DonorDashboard-->
+        <scene sceneID="qKM-zH-ZMW">
+            <objects>
+                <viewControllerPlaceholder storyboardIdentifier="DonorDashboard" storyboardName="DonorDashboard" id="EOi-2i-lZ7" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="Ndf-wQ-2vZ"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fbd-U4-6EE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2192" y="-605"/>
         </scene>
         <!--NGO Submitted View Controller-->
         <scene sceneID="plt-t4-OeC">

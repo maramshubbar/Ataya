@@ -17,14 +17,18 @@ final class DraftDonation {
     var notes: String? = nil
 
     var safetyConfirmed: Bool = false
-
+    
     var images: [UIImage] = []
-
     var photoURLs: [String] = []
     var imagePublicIds: [String] = []
-
     var photoCount: Int { photoURLs.count }
 
+    var pickupDate: Date?
+    var pickupTime: String?
+    var pickupMethod: String = ""
+    var pickupAddress: AddressModel?
+
+    
     func toFirestoreDict() -> [String: Any] {
         var data: [String: Any] = [
             "itemName": itemName,

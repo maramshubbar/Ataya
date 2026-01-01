@@ -4,7 +4,6 @@
 //
 //  Created by BP-36-224-14 on 22/12/2025.
 //
-
 import UIKit
 
 final class MyAddressDetailsViewController: UIViewController {
@@ -19,16 +18,13 @@ final class MyAddressDetailsViewController: UIViewController {
     @IBOutlet weak var houseNumbertxt: UITextField!
     @IBOutlet weak var addressLabeltxt: UITextField!
 
-    private let yellow = UIColor.atayaHex("#F7D44C")
-    private let yellowBG = UIColor.atayaHex("#FFFBE7")
+    private let yellow = UIColor(hex: "#F7D44C")
+    private let yellowBG = UIColor(hex: "#FFFBE7")
 
-
-    // from List (edit/add)
     var editIndex: Int?
     var existingAddress: AddressModel?
     var onSaveAddress: ((AddressModel, Int?) -> Void)?
 
-    // confirmed location (in-memory)
     private var confirmedLat: Double?
     private var confirmedLng: Double?
     private var confirmedAddress: String?
@@ -37,7 +33,6 @@ final class MyAddressDetailsViewController: UIViewController {
         super.viewDidLoad()
         title = "Address Details"
 
-        // ✅ Back arrow always goes to My Address
         navigationItem.hidesBackButton = false
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "chevron.left"),
@@ -55,7 +50,6 @@ final class MyAddressDetailsViewController: UIViewController {
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
 
-        // Editing
         if let existing = existingAddress {
             addressLabeltxt.text = existing.title
             confirmedLat = existing.latitude
@@ -86,17 +80,10 @@ final class MyAddressDetailsViewController: UIViewController {
         viewLocationtxt.layer.cornerRadius = 10
     }
 
-    // MARK: - Back to list always
     @objc private func backToMyAddress() {
-        if let nav = navigationController,
-           let listVC = nav.viewControllers.first(where: { $0 is MyAddressListTableViewController }) {
-            nav.popToViewController(listVC, animated: true)
-        } else {
-            navigationController?.popViewController(animated: true)
-        }
+        navigationController?.popViewController(animated: true)
     }
 
-    // MARK: - UI
     private func setupButtons() {
         twobuttonView.backgroundColor = .clear
 
@@ -142,19 +129,18 @@ final class MyAddressDetailsViewController: UIViewController {
         savebtn.addTarget(self, action: #selector(saveTapped), for: .touchUpInside)
         cancelbtn.addTarget(self, action: #selector(cancelTapped), for: .touchUpInside)
 
-        // if you still have confirm location screen
         viewLocationtxt.addTarget(self, action: #selector(openConfirmLocation), for: .touchUpInside)
     }
 
     @objc private func openConfirmLocation() {
-        // If you have ConfirmLocationViewController keep it.
-        // If you DON'T have it, delete this function + remove the target above.
         LocationStorage.clear()
-        let vc = storyboard?.instantiateViewController(withIdentifier: "ConfirmLocationViewController") as! ConfirmLocationViewController
+        guard let vc = storyboard?.instantiateViewController(withIdentifier: "ConfirmLocationViewController") as? ConfirmLocationViewController else {
+            showAlert("Storyboard Error", "Set Storyboard ID = ConfirmLocationViewController")
+            return
+        }
         navigationController?.pushViewController(vc, animated: true)
     }
 
-    // MARK: - Actions
     @objc private func saveTapped() {
         let label = addressLabeltxt.text?.trimmed ?? ""
         let house = houseNumbertxt.text?.trimmed ?? ""
@@ -179,42 +165,22 @@ final class MyAddressDetailsViewController: UIViewController {
             longitude: lng
         )
 
-        // ✅ ALWAYS save (even if callback nil)
         if let onSaveAddress {
             onSaveAddress(newAddress, editIndex)
         } else {
             AddressRuntimeStore.shared.upsert(newAddress, at: editIndex)
-            if let editIndex {
-                AddressRuntimeStore.shared.selectedIndex = editIndex
-            } else {
-                AddressRuntimeStore.shared.selectedIndex = AddressRuntimeStore.shared.addresses.count - 1
-            }
         }
 
-        goToMyAddressList()
-    }
-
-    private func goToMyAddressList() {
-        guard let nav = navigationController else {
-            dismiss(animated: true)
-            return
-        }
-
-        if let listVC = nav.viewControllers.first(where: { $0 is MyAddressListTableViewController }) {
-            nav.popToViewController(listVC, animated: true)
-            return
-        }
-
-        let vc = storyboard?.instantiateViewController(withIdentifier: "MyAddressListTableViewController") as! MyAddressListTableViewController
-        nav.pushViewController(vc, animated: true)
+        navigationController?.popViewController(animated: true)
     }
 
     @objc private func cancelTapped() {
-        backToMyAddress()
+        navigationController?.popViewController(animated: true)
     }
 
-    // MARK: - Helpers
-    @objc private func dismissKeyboard() { view.endEditing(true) }
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
 
     private func showAlert(_ title: String, _ message: String) {
         let a = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -236,41 +202,3 @@ final class MyAddressDetailsViewController: UIViewController {
         }
     }
 }
-
-// MARK: - In-memory LocationStorage (no extra file)
-struct locationStorage {
-    struct SavedLocation {
-        let latitude: Double
-        let longitude: Double
-        let address: String
-    }
-
-    private static var cached: SavedLocation?
-
-    static func save(latitude: Double, longitude: Double, address: String) {
-        cached = SavedLocation(latitude: latitude, longitude: longitude, address: address)
-    }
-
-    static func load() -> SavedLocation? { cached }
-    static func clear() { cached = nil }
-}
-
-// MARK: - Small helpers
-//private extension String {
-//    var trimmed: String { trimmingCharacters(in: .whitespacesAndNewlines) }
-//}
-//
-//private extension UIColor {
-//    convenience init(hex: String) {
-//        var s = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-//        if s.hasPrefix("#") { s.removeFirst() }
-//        var rgb: UInt64 = 0
-//        Scanner(string: s).scanHexInt64(&rgb)
-//        self.init(
-//            red: CGFloat((rgb & 0xFF0000) >> 16) / 255.0,
-//            green: CGFloat((rgb & 0x00FF00) >> 8) / 255.0,
-//            blue: CGFloat(rgb & 0x0000FF) / 255.0,
-//            alpha: 1.0
-//        )
-//    }
-//}

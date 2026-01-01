@@ -1,9 +1,3 @@
-//
-//  MyAddressListViewController.swift
-//  Ataya
-//
-//  Created by BP-36-224-16 on 20/12/2025.
-//
 import UIKit
 
 final class MyAddressListViewController: UIViewController {
@@ -13,13 +7,18 @@ final class MyAddressListViewController: UIViewController {
     @IBOutlet weak var ngoButton: UIButton!
     @IBOutlet weak var nextButton: UIButton!
 
+    // ✅ optional عشان ما يطيح
+    var draft: DraftDonation?
+
     private enum Choice { case myAddress, ngo }
     private var selectedChoice: Choice?
 
-    private let grayBorder = UIColor.atayaHex("#999999")
-    private let selectedBorder = UIColor.atayaHex("#FEC400")
-    private let selectedBG = UIColor.atayaHex("#FFFBE7")
+    private let grayBorder = UIColor(hex: "#999999")
+    private let selectedBorder = UIColor(hex: "#FEC400")
+    private let selectedBG = UIColor(hex: "#FFFBE7")
 
+    // ✅ always from Pickup storyboard
+    private let pickupSB = UIStoryboard(name: "Pickup", bundle: nil)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,16 +29,17 @@ final class MyAddressListViewController: UIViewController {
         myAddressButton.addTarget(self, action: #selector(myAddressTapped), for: .touchUpInside)
         ngoButton.addTarget(self, action: #selector(ngoTapped), for: .touchUpInside)
 
-        // ✅ only ONE next handler
         nextButton.removeTarget(nil, action: nil, for: .allEvents)
         nextButton.addTarget(self, action: #selector(nextTappedProgrammatic), for: .touchUpInside)
 
         applyDefaultStyle(myAddressButton)
         applyDefaultStyle(ngoButton)
         setNextEnabled(false)
+
+        // ✅ Safety: if draft not passed, create one to avoid "draft missing"
+        if draft == nil { draft = DraftDonation() }
     }
 
-    // MARK: - Button setup
     private func setupOptionButton(_ button: UIButton) {
         button.setTitleColor(.black, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
@@ -56,7 +56,6 @@ final class MyAddressListViewController: UIViewController {
         button.addTarget(self, action: #selector(pressUp(_:)), for: [.touchUpInside, .touchCancel, .touchDragExit])
     }
 
-    // MARK: - Selection
     @objc private func myAddressTapped() { select(.myAddress) }
     @objc private func ngoTapped() { select(.ngo) }
 
@@ -91,40 +90,65 @@ final class MyAddressListViewController: UIViewController {
         nextButton.alpha = enabled ? 1.0 : 0.5
     }
 
-    // MARK: - NEXT
     @objc private func nextTappedProgrammatic() {
+
         guard let choice = selectedChoice else {
             showAlert(title: "Choose an option", message: "Select My Address or NGO first.")
             return
         }
 
+        // ✅ always have draft
+        let draftObj = draft ?? DraftDonation()
+        self.draft = draftObj
+
         switch choice {
+
         case .ngo:
-            presentThankYouPopup()   // ✅ NGO ends with popup
+            draftObj.pickupMethod = "ngo"
+            draftObj.pickupAddress = nil
+
+            nextButton.isEnabled = false
+            nextButton.alpha = 0.5
+
+            DonationDraftSaver.shared.saveAfterPickup(draft: draftObj) { [weak self] error in
+                guard let self else { return }
+
+                self.nextButton.isEnabled = true
+                self.nextButton.alpha = 1.0
+
+                if let error {
+                    self.showAlert(title: "Save failed", message: error.localizedDescription)
+                    return
+                }
+
+                // ✅ go to popup after save
+                self.presentThankYouPopup()
+            }
+
         case .myAddress:
-            showAlert(title: "Continue", message: "My Address flow continues.")
+            draftObj.pickupMethod = "myAddress"
+
+            guard let vc = pickupSB.instantiateViewController(withIdentifier: "MyAddressListTableViewController") as? MyAddressListTableViewController else {
+                showAlert(title: "Storyboard Error", message: "In Pickup.storyboard set Storyboard ID = MyAddressListTableViewController")
+                return
+            }
+
+            vc.draft = draftObj
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 
-    // MARK: - POPUP
     private func presentThankYouPopup() {
-        guard let sb = self.storyboard else {
-            showAlert(title: "Storyboard Error", message: "This screen is not loaded from storyboard.")
+        guard let popup = pickupSB.instantiateViewController(withIdentifier: "PopupConfirmPickupViewController") as? PopupConfirmPickupViewController else {
+            showAlert(title: "Storyboard Error", message: "In Pickup.storyboard set Storyboard ID = PopupConfirmPickupViewController")
             return
         }
 
-        // ✅ IMPORTANT: this must match Storyboard ID exactly
-        let popupVC = sb.instantiateViewController(withIdentifier: "PopupConfirmPickupViewController")
-
-        popupVC.modalPresentationStyle = .overFullScreen
-        popupVC.modalTransitionStyle = .crossDissolve
-
-        DispatchQueue.main.async {
-            self.present(popupVC, animated: true)
-        }
+        popup.modalPresentationStyle = .overFullScreen
+        popup.modalTransitionStyle = .crossDissolve
+        present(popup, animated: true)
     }
 
-    // MARK: - Press animation
     @objc private func pressDown(_ sender: UIButton) {
         UIView.animate(withDuration: 0.10) {
             sender.transform = CGAffineTransform(scaleX: 0.98, y: 0.98)
@@ -139,28 +163,9 @@ final class MyAddressListViewController: UIViewController {
         }
     }
 
-    // MARK: - Alert
     private func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
 }
-
-// MARK: - Hex helper
-//private extension UIColor {
-//    convenience init(hex: String) {
-//        var s = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-//        if s.hasPrefix("#") { s.removeFirst() }
-//
-//        var rgb: UInt64 = 0
-//        Scanner(string: s).scanHexInt64(&rgb)
-//
-//        self.init(
-//            red: CGFloat((rgb & 0xFF0000) >> 16) / 255,
-//            green: CGFloat((rgb & 0x00FF00) >> 8) / 255,
-//            blue: CGFloat(rgb & 0x0000FF) / 255,
-//            alpha: 1
-//        )
-//    }
-//}

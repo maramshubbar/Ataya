@@ -1,54 +1,18 @@
 import UIKit
 
-// MARK: - In-memory ONLY store (resets when app closes)
-final class AddressRuntimeStore {
-    var confirmedAddress: AddressModel? = nil
-    static let shared = AddressRuntimeStore()
-    private init() {}
-
-    var addresses: [AddressModel] = []
-    var selectedIndex: Int? = nil
-
-    func canAddNew() -> Bool { addresses.count < 2 }
-
-    func upsert(_ address: AddressModel, at index: Int?) {
-        if let i = index, i >= 0, i < addresses.count {
-            addresses[i] = address
-        } else {
-            guard addresses.count < 2 else { return }
-            addresses.append(address)
-        }
-    }
-
-    func selectedAddress() -> AddressModel? {
-        guard let idx = selectedIndex, idx >= 0, idx < addresses.count else { return nil }
-        return addresses[idx]
-    }
-}
-
-// MARK: - Model (no extra file)
-struct AddressModel {
-    var title: String
-    var fullAddress: String
-    var latitude: Double
-    var longitude: Double
-}
-
 final class MyAddressListTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var confirmButton: UIButton!
     @IBOutlet weak var addNewAddressButton: UIButton!
 
+    var draft: DraftDonation!
+
     private let store = AddressRuntimeStore.shared
 
-    // ✅ Colors (using your UIColor.atayaHex)
-    private let yellow = UIColor.atayaHex("#F7D44C")
-    private let yellowBG = UIColor.atayaHex("#FFFBE7")
-
-    private let grayBorder = UIColor.atayaHex("#999999")
-    private let selectedBorder = UIColor.atayaHex("#FEC400")
-    private let selectedBG = UIColor.atayaHex("#FFFBE7")
+    private let yellow = UIColor(hex: "#F7D44C")
+    private let yellowBG = UIColor(hex: "#FFFBE7")
+    private let grayBorder = UIColor(hex: "#B8B8B8")
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -63,17 +27,13 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 130
 
-        // ✅ FORCE Add New Address button to work even if storyboard IBAction not connected
-        addNewAddressButton.removeTarget(nil, action: nil, for: .touchUpInside)
+        addNewAddressButton.removeTarget(nil, action: nil, for: .allEvents)
         addNewAddressButton.addTarget(self, action: #selector(addNewProgrammatic), for: .touchUpInside)
 
-        // ✅ FORCE Confirm button to work even if storyboard IBAction not connected
         confirmButton.removeTarget(nil, action: nil, for: .allEvents)
         confirmButton.addTarget(self, action: #selector(confirmTappedProgrammatic), for: .touchUpInside)
 
-        // ✅ Figma style: rounded yellow border around Add New Address
         styleAddNewAddressButton()
-
         updateButtons()
         tableView.reloadData()
     }
@@ -104,20 +64,39 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
         confirmButton.alpha = canConfirm ? 1.0 : 0.4
     }
 
-    // MARK: - Actions
-
-    @IBAction func confirmTapped(_ sender: UIButton) {
-        confirmTappedProgrammatic()
-    }
-
     @objc private func confirmTappedProgrammatic() {
+
+        // ✅ prevent crash if draft not passed
+        guard let draft = self.draft else {
+            showAlert("Error", "Draft is missing. Go back and try again.")
+            return
+        }
+
         guard let address = store.selectedAddress() else {
             showAlert("Select Address", "Please select an address first.")
             return
         }
 
-        store.confirmedAddress = address
-        presentThankYouPopup()
+        draft.pickupMethod = "myAddress"
+        draft.pickupAddress = address
+
+        confirmButton.isEnabled = false
+        confirmButton.alpha = 0.5
+
+        DonationDraftSaver.shared.saveAfterPickup(draft: draft) { [weak self] error in
+            guard let self else { return }
+
+            self.confirmButton.isEnabled = true
+            self.confirmButton.alpha = 1.0
+
+            if let error {
+                self.showAlert("Save failed", error.localizedDescription)
+                return
+            }
+
+            self.store.confirmedAddress = address
+            self.presentThankYouPopup()
+        }
     }
 
     @IBAction func addNewAddressTapped(_ sender: UIButton) {
@@ -140,36 +119,24 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
         openDetailsForEdit(row)
     }
 
-    // MARK: - Popup
+    private let pickupSB = UIStoryboard(name: "Pickup", bundle: nil)
 
     private func presentThankYouPopup() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-
-            guard let sb = self.storyboard else {
-                self.showAlert("Storyboard Error", "This screen is not inside a storyboard.")
-                return
-            }
-
-            guard let popup = sb.instantiateViewController(withIdentifier: "PopupConfirmPickupViewController")
-                    as? PopupConfirmPickupViewController else {
-                self.showAlert("Storyboard Error", "Storyboard ID must be PopupConfirmPickupViewController")
-                return
-            }
-
-            popup.isModalInPresentation = true
-            popup.modalPresentationStyle = .overFullScreen
-            popup.modalTransitionStyle = .crossDissolve
-            popup.onDone = { }
-
-            self.present(popup, animated: true)
+        guard let popup = pickupSB.instantiateViewController(withIdentifier: "PopupConfirmPickupViewController") as? PopupConfirmPickupViewController else {
+            showAlert("Storyboard Error", "In Pickup.storyboard set Storyboard ID = PopupConfirmPickupViewController")
+            return
         }
+
+        popup.isModalInPresentation = true
+        popup.modalPresentationStyle = .overFullScreen
+        popup.modalTransitionStyle = .crossDissolve
+        present(popup, animated: true)
     }
 
-    // MARK: - Open Details
 
     private func openDetailsForAdd() {
-        guard let vc = storyboard?.instantiateViewController(withIdentifier: "MyAddressDetailsViewController") as? MyAddressDetailsViewController else {
+        let sb = UIStoryboard(name: "Pickup", bundle: nil)
+        guard let vc = sb.instantiateViewController(withIdentifier: "MyAddressDetailsViewController") as? MyAddressDetailsViewController else {
             showAlert("Storyboard Error", "Set Details Storyboard ID = MyAddressDetailsViewController")
             return
         }
@@ -191,7 +158,8 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
     private func openDetailsForEdit(_ index: Int) {
         guard index >= 0, index < store.addresses.count else { return }
 
-        guard let vc = storyboard?.instantiateViewController(withIdentifier: "MyAddressDetailsViewController") as? MyAddressDetailsViewController else {
+        let sb = UIStoryboard(name: "Pickup", bundle: nil)
+        guard let vc = sb.instantiateViewController(withIdentifier: "MyAddressDetailsViewController") as? MyAddressDetailsViewController else {
             showAlert("Storyboard Error", "Set Details Storyboard ID = MyAddressDetailsViewController")
             return
         }
@@ -210,10 +178,8 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
         navigationController?.pushViewController(vc, animated: true)
     }
 
-    // MARK: - Table
-
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        store.addresses.count
+        return store.addresses.count
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -231,38 +197,26 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
         cell.backgroundColor = .clear
         cell.contentView.backgroundColor = .clear
 
-        // remove old card view
         cell.contentView.viewWithTag(999)?.removeFromSuperview()
 
         let item = store.addresses[indexPath.row]
         let isSelected = (indexPath.row == store.selectedIndex)
 
-        // Card container
         let card = UIView()
         card.tag = 999
         card.translatesAutoresizingMaskIntoConstraints = false
 
-        // ✅ Round shape
         card.layer.cornerRadius = 12
-        card.layer.masksToBounds = false   // IMPORTANT for shadow
+        card.layer.masksToBounds = false
 
-        // ✅ Border + BG depending on selected
         card.layer.borderWidth = 2
-        card.layer.borderColor = (isSelected ? selectedBorder : grayBorder).cgColor
-        card.backgroundColor = (isSelected ? selectedBG : .white)
+        card.layer.borderColor = (isSelected ? yellow : grayBorder).cgColor
+        card.backgroundColor = (isSelected ? yellowBG : .white)
 
-        // ✅ Drop shadow (light)
         card.layer.shadowColor = UIColor.black.cgColor
         card.layer.shadowOpacity = 0.10
         card.layer.shadowRadius = 6
         card.layer.shadowOffset = CGSize(width: 0, height: 2)
-
-        // ✅ Hover/press effect targets
-        let press = UILongPressGestureRecognizer(target: self, action: #selector(cardPressGesture(_:)))
-        press.minimumPressDuration = 0
-        press.cancelsTouchesInView = false
-        card.addGestureRecognizer(press)
-        card.isUserInteractionEnabled = true
 
         cell.contentView.addSubview(card)
 
@@ -274,14 +228,12 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
             card.heightAnchor.constraint(greaterThanOrEqualToConstant: 120)
         ])
 
-        // Title
         let titleLabel = UILabel()
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
         titleLabel.textColor = .black
         titleLabel.text = item.title
 
-        // Details
         let detailsLabel = UILabel()
         detailsLabel.translatesAutoresizingMaskIntoConstraints = false
         detailsLabel.font = .systemFont(ofSize: 13, weight: .regular)
@@ -289,7 +241,6 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
         detailsLabel.numberOfLines = 2
         detailsLabel.text = item.fullAddress
 
-        // Edit Button
         let editButton = UIButton(type: .system)
         editButton.translatesAutoresizingMaskIntoConstraints = false
         editButton.tag = 1000 + indexPath.row
@@ -329,32 +280,10 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
             editButton.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -14)
         ])
 
-        // ✅ Improve shadow path (performance + crisp)
         card.layoutIfNeeded()
         card.layer.shadowPath = UIBezierPath(roundedRect: card.bounds, cornerRadius: card.layer.cornerRadius).cgPath
 
         return cell
-    }
-
-    // MARK: - Hover/Press effect for card
-
-    @objc private func cardPressGesture(_ gr: UILongPressGestureRecognizer) {
-        guard let card = gr.view else { return }
-
-        switch gr.state {
-        case .began, .changed:
-            UIView.animate(withDuration: 0.10) {
-                card.transform = CGAffineTransform(scaleX: 0.98, y: 0.98)
-                card.alpha = 0.92
-            }
-        case .ended, .cancelled, .failed:
-            UIView.animate(withDuration: 0.10) {
-                card.transform = .identity
-                card.alpha = 1.0
-            }
-        default:
-            break
-        }
     }
 
     private func showAlert(_ title: String, _ message: String) {
@@ -363,17 +292,3 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
         present(a, animated: true)
     }
 }
-
-// MARK: - UIColor helper (same as yours)
-//private extension UIColor {
-//    static func atayaHex(_ hex: String) -> UIColor {
-//        var h = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-//        if h.hasPrefix("#") { h.removeFirst() }
-//        var rgb: UInt64 = 0
-//        Scanner(string: h).scanHexInt64(&rgb)
-//        let r = CGFloat((rgb & 0xFF0000) >> 16) / 255
-//        let g = CGFloat((rgb & 0x00FF00) >> 8) / 255
-//        let b = CGFloat(rgb & 0x0000FF) / 255
-//        return UIColor(red: r, green: g, blue: b, alpha: 1)
-//    }
-//}

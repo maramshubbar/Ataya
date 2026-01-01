@@ -43,6 +43,8 @@ final class SafetyVC: UIViewController {
     }
 
     @IBAction func nextTapped(_ sender: UIButton) {
+        draft.safetyConfirmed = true
+
         guard isConfirmed else { return }
         guard !isUploading else { return }
 

@@ -375,15 +375,20 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
             return ok
         }
 
-        @IBAction func nextTapped(_ sender: UIButton) {
-            view.endEditing(true)
-            syncDraftFromUI()
+    @IBAction func nextTapped(_ sender: UIButton) {
+        view.endEditing(true)
+        guard validateAndShowInlineErrors() else { return }
 
-            guard validateAndShowInlineErrors() else { return }
-
-            nextButton.isEnabled = false
-            saveToFirestore()
+        let sb = UIStoryboard(name: "Pickup", bundle: nil)
+        guard let vc = sb.instantiateViewController(withIdentifier: "PickUpDateViewController") as? PickUpDateViewController else {
+            showAlert("Storyboard Error", "In Pickup.storyboard set Storyboard ID = PickUpDateViewController")
+            return
         }
+
+        vc.draft = draft
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
 
         // MARK: - ✅ DON-10 ID helpers
         private func makeDonationId(_ number: Int) -> String {

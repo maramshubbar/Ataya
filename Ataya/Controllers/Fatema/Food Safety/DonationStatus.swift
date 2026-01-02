@@ -9,94 +9,41 @@
 import Foundation
 import FirebaseFirestore
 
-enum DonationStatus: String {
-    case pending
-    case approved
-    case rejected
-}
 
-struct DonationItem {
-    let id: String
-    let donationNumber: Int
-    let donationCode: String
-    let itemName: String
-
-    let donorId: String
-    let donorName: String
-    let donorCity: String
-    let donorEmail: String
-    let donorPhone: String
-
-    let ngoId: String
-    let status: DonationStatus
-
-    let imageUrl: String?
-    let donorSafetyConfirmed: Bool
-
-    let createdAt: Date
-    let updatedAt: Date
-
-    // UI helpers
-    var titleText: String { "\(itemName) (\(donationCode))" }
-    var donorText: String { "\(donorName) (ID: \(donorId))" }
-    var locationText: String { donorCity }
-    var dateText: String {
-        let f = DateFormatter()
-        f.dateFormat = "MMM d yyyy"
-        return f.string(from: createdAt)
-    }
+extension DonationItem {
 
     init?(doc: DocumentSnapshot) {
         let data = doc.data() ?? [:]
 
-        guard
-            let ngoId = data["ngoId"] as? String,
-            let donorId = data["donorId"] as? String,
-            let itemName = data["itemName"] as? String,
-            let statusStr = data["status"] as? String,
-            let status = DonationStatus(rawValue: statusStr)
-        else { return nil }
-
-        let donationNumber =
-            (data["donationNumber"] as? Int)
-            ?? (data["donationNumber"] as? Int64).map(Int.init)
-            ?? (data["donationNumber"] as? NSNumber)?.intValue
-            ?? 0
-
-        let donationCode = (data["donationCode"] as? String) ?? doc.documentID
+        let itemName  = (data["itemName"] as? String) ?? "—"
+        let code      = (data["donationCode"] as? String) ?? doc.documentID
 
         let donorName = (data["donorName"] as? String) ?? "—"
-        let donorCity = (data["donorCity"] as? String) ?? "—"
-        let donorEmail = (data["donorEmail"] as? String) ?? "—"
-        let donorPhone = (data["donorPhone"] as? String) ?? "—"
+        let donorId   = (data["donorId"] as? String) ?? "—"
+        let city      = (data["donorCity"] as? String) ?? "—"
 
-        let donorSafetyConfirmed = (data["donorSafetyConfirmed"] as? Bool) ?? false
+        let statusStr = (data["status"] as? String) ?? "pending"
+        guard let st = DonationItem.Status(rawValue: statusStr) else { return nil }
 
-        let createdAt = (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
-        let updatedAt = (data["updatedAt"] as? Timestamp)?.dateValue() ?? createdAt
+        let created = (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
+        let f = DateFormatter()
+        f.dateFormat = "MMM d yyyy"
 
-        self.id = doc.documentID
-        self.ngoId = ngoId
-        self.donorId = donorId
-        self.itemName = itemName
-        self.status = status
+        let img = (data["imageUrl"] as? String) ?? ""
 
-        self.donationNumber = donationNumber
-        self.donationCode = donationCode
-
-        self.donorName = donorName
-        self.donorCity = donorCity
-        self.donorEmail = donorEmail
-        self.donorPhone = donorPhone
-
-        self.imageUrl = data["imageUrl"] as? String
-        self.donorSafetyConfirmed = donorSafetyConfirmed
-
-        self.createdAt = createdAt
-        self.updatedAt = updatedAt
+        // ✅ IMPORTANT: this matches YOUR DonationItem fields exactly
+        self.docId = doc.documentID
+        self.title = "\(itemName) (\(code))"
+        self.donorText = "\(donorName) (ID: \(donorId))"
+        self.ngoText = ""                 // إذا عندج ngoName خزنيه وغيّريها
+        self.locationText = city
+        self.dateText = f.string(from: created)
+        self.imageUrl = img
+        self.status = st
     }
 }
 
+// ✅ Keep this if you need it for details/rejected view
 struct FoodInspection {
     let decision: String   // "none" / "accept" / "reject"
     let reason: String

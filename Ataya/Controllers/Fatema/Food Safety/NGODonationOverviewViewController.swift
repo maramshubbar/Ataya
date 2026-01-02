@@ -79,9 +79,9 @@ final class NGODonationOverviewViewController: UIViewController {
 
         if !q.isEmpty {
             filtered = filtered.filter {
-                $0.titleText.lowercased().contains(q)
-                || $0.donorName.lowercased().contains(q)
-                || $0.donorCity.lowercased().contains(q)
+                $0.title.lowercased().contains(q)
+                || $0.donorText.lowercased().contains(q)
+                || $0.locationText.lowercased().contains(q)
             }
         }
 
@@ -114,14 +114,14 @@ extension NGODonationOverviewViewController: UITableViewDataSource, UITableViewD
         cell.configure(item: d)
 
         cell.onViewDetailsTapped = { [weak self] in
-            self?.openDetails(donationId: d.id)
+            self?.openDetails(donationId: d.docId)
         }
 
         return cell
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        openDetails(donationId: shownDonations[indexPath.row].id)
+        openDetails(donationId: shownDonations[indexPath.row].docId)
     }
 }
 

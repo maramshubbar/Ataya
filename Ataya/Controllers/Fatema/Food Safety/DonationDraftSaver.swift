@@ -1,11 +1,3 @@
-//
-//  DonationDraftSaver.swift
-//  Ataya
-//
-//  Created by Fatema Maitham on 02/01/2026.
-//
-
-
 import Foundation
 import FirebaseFirestore
 import FirebaseAuth
@@ -24,98 +16,80 @@ final class DonationDraftSaver {
             return
         }
 
-        // ✅ IMPORTANT:
-        // لا تخلينه دايم true اذا عندج checkbox
-        // خليه يجي من الـ UI (مثلاً draft.safetyConfirmed = checkbox.isOn)
-        // draft.safetyConfirmed = true
+        // ✅ 1) base dict from your DraftDonation (NO arguments)
+        var base = draft.toFirestoreDict()
 
-        // ✅ normalize now (important)
-        draft.normalizeBeforeSave()
+        // ✅ 2) donor safety (if your DraftDonation has it)
+        // (إذا ما عندج draft.safetyConfirmed لا تلمسينه)
+        base["donorSafetyConfirmed"] = base["donorSafetyConfirmed"] ?? true
 
-        // ✅ pickup map ONLY pickup fields
-        let pickupMap = buildPickupDict(draft: draft)
+        // ✅ 3) pickup map (try to extract from dict only)
+        let pickupMap = extractPickupMap(from: base)
 
-        // ✅ 0) Fetch donor info from users/{uid} (مرة وحدة قبل الحفظ)
+        // ✅ 4) Fetch donor info then save (so NGO screens show name/city)
         fetchDonorInfo(db: db, uid: uid) { donorInfo, fetchErr in
-            if let fetchErr {
-                completion(fetchErr)
-                return
-            }
+            if let fetchErr { completion(fetchErr); return }
 
             // ===== UPDATE existing =====
-            if let existingId = draft.id, !existingId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            if let existingId = (base["id"] as? String), !existingId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
 
-                var data = draft.toFirestoreDict(isUpdate: true)
-                data["id"] = existingId
-                data["donorId"] = uid
-                data["status"] = "pending"
-                data["updatedAt"] = FieldValue.serverTimestamp()
+                base["id"] = existingId
+                base["donorId"] = uid
+                base["status"] = "pending"
+                base["updatedAt"] = FieldValue.serverTimestamp()
 
-                // ✅ save donor safety (Feature 11 step 1)
-                data["donorSafetyConfirmed"] = draft.safetyConfirmed
+                // merge donor info snapshot
+                base.merge(donorInfo) { _, new in new }
 
-                // ✅ donor info for NGO details (from Firebase)
-                data.merge(donorInfo) { _, new in new }
-
-                // ✅ donationNumber
-                if let n = parseDonationNumber(from: existingId) {
-                    data["donationNumber"] = n
-                    data["donationCode"] = "DON-\(n)" // for UI
+                if let n = self.parseDonationNumber(from: existingId) {
+                    base["donationNumber"] = n
+                    base["donationCode"] = "DON-\(n)"
                 }
 
                 let ref = db.collection("donations").document(existingId)
 
-                // 1) set top-level fields
-                ref.setData(data, merge: true) { error in
+                ref.setData(base, merge: true) { error in
                     if let error { completion(error); return }
 
-                    // 2) overwrite pickup بالكامل
-                    ref.updateData(["pickup": pickupMap]) { err2 in
-                        completion(err2)
+                    // overwrite pickup فقط إذا موجود
+                    if let pickupMap {
+                        ref.updateData(["pickup": pickupMap]) { err2 in completion(err2) }
+                    } else {
+                        completion(nil)
                     }
                 }
                 return
             }
 
             // ===== CREATE new =====
-            reserveNextDonationNumber(db: db) { [weak self] result in
-                guard let self else { return }
-
+            self.reserveNextDonationNumber(db: db) { result in
                 switch result {
                 case .failure(let err):
                     completion(err)
 
                 case .success(let number):
                     let docId = "DON-\(number)"
-                    draft.id = docId
 
-                    var data = draft.toFirestoreDict(isUpdate: false)
-                    data["id"] = docId
+                    base["id"] = docId
+                    base["donationNumber"] = number
+                    base["donationCode"] = docId
+                    base["donorId"] = uid
+                    base["status"] = "pending"
+                    base["createdAt"] = FieldValue.serverTimestamp()
+                    base["updatedAt"] = FieldValue.serverTimestamp()
 
-                    // ✅ keep your int for sorting + add code string for display
-                    data["donationNumber"] = number
-                    data["donationCode"] = docId
-
-                    data["donorId"] = uid
-
-                    // ✅ Feature 11 step 1
-                    data["donorSafetyConfirmed"] = draft.safetyConfirmed
-
-                    data["status"] = "pending"
-                    data["createdAt"] = FieldValue.serverTimestamp()
-                    data["updatedAt"] = FieldValue.serverTimestamp()
-
-                    // ✅ donor info for NGO screens (from Firebase)
-                    data.merge(donorInfo) { _, new in new }
+                    // merge donor info snapshot
+                    base.merge(donorInfo) { _, new in new }
 
                     let ref = db.collection("donations").document(docId)
 
-                    ref.setData(data, merge: true) { error in
+                    ref.setData(base, merge: true) { error in
                         if let error { completion(error); return }
 
-                        // overwrite pickup بالكامل
-                        ref.updateData(["pickup": pickupMap]) { err2 in
-                            completion(err2)
+                        if let pickupMap {
+                            ref.updateData(["pickup": pickupMap]) { err2 in completion(err2) }
+                        } else {
+                            completion(nil)
                         }
                     }
                 }
@@ -123,7 +97,7 @@ final class DonationDraftSaver {
         }
     }
 
-    // MARK: - Donor Info (from users/{uid})
+    // MARK: - Donor Info
     private func fetchDonorInfo(
         db: Firestore,
         uid: String,
@@ -133,31 +107,41 @@ final class DonationDraftSaver {
             if let err { completion([:], err); return }
 
             let u = snap?.data() ?? [:]
-
-            let name = (u["name"] as? String) ?? "—"
-            let city = (u["city"] as? String) ?? "—"
+            let name  = (u["name"] as? String) ?? "—"
+            let city  = (u["city"] as? String) ?? "—"
             let phone = (u["phone"] as? String) ?? "—"
             let email = (u["email"] as? String) ?? (Auth.auth().currentUser?.email ?? "—")
 
-            // ✅ هذه الحقول بتستخدمينها في Donation Details (Donor Information card)
-            let map: [String: Any] = [
+            completion([
                 "donorName": name,
                 "donorCity": city,
                 "donorPhone": phone,
                 "donorEmail": email
-            ]
-            completion(map, nil)
+            ], nil)
         }
     }
 
-    // MARK: - Pickup map
-    private func buildPickupDict(draft: DraftDonation) -> [String: Any] {
+    // MARK: - Pickup extractor (NO DraftDonation properties)
+    private func extractPickupMap(from base: [String: Any]) -> [String: Any]? {
+
+        // 1) إذا draft.toFirestoreDict() أصلاً فيه pickup جاهز
+        if let pickup = base["pickup"] as? [String: Any], !pickup.isEmpty {
+            return pickup
+        }
+
+        // 2) إذا مخزّن مفصول keys (اختياري)
         var pickup: [String: Any] = [:]
-        if let d = draft.pickupDate { pickup["date"] = d }
-        if let t = draft.pickupTime, !t.isEmpty { pickup["time"] = t }
-        if !draft.pickupMethod.isEmpty { pickup["method"] = draft.pickupMethod }
-        if let a = draft.pickupAddress { pickup["address"] = a.toDict() }
-        return pickup
+
+        if let d = base["pickupDate"] { pickup["date"] = d }
+        if let t = base["pickupTime"] as? String, !t.isEmpty { pickup["time"] = t }
+        if let m = base["pickupMethod"] as? String, !m.isEmpty { pickup["method"] = m }
+
+        // address ممكن يكون dict جاهز
+        if let addr = base["pickupAddress"] as? [String: Any], !addr.isEmpty {
+            pickup["address"] = addr
+        }
+
+        return pickup.isEmpty ? nil : pickup
     }
 
     private func parseDonationNumber(from id: String) -> Int? {

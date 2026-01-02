@@ -12,14 +12,17 @@ class NGODonationDetailsViewController: UIViewController {
     @IBOutlet weak var donorCardView: UIView!
     @IBOutlet weak var collectorCardView: UIView!
     @IBOutlet weak var proceedToInspectionTapped: UIButton!
-    
+
+    var donationId: String!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         donationCardView.applyCardStyle()
         donorCardView.applyCardStyle()
         collectorCardView.applyCardStyle()
-
+        loadDonation()
     }
+    
     @IBAction func proceedToInspectionTapped(_ sender: UIButton) {
 
         let storyboard = UIStoryboard(name: "Main", bundle: nil)

@@ -5,10 +5,11 @@
 //  Created by BP-36-224-14 on 30/12/2025.
 //
 import UIKit
+import FirebaseFirestore
 
 final class MySupportTicketsDetailsViewController: UIViewController {
 
-    private let ticket: SupportTicket
+    private let ticketId: String
     private let sidePadding: CGFloat = 36
 
     private let headerContainer = UIView()
@@ -20,16 +21,23 @@ final class MySupportTicketsDetailsViewController: UIViewController {
 
     private let container = UIView()
 
-    private let metaLabel = UILabel()   // Ticket ID + Status only (no last updated)
+    private let metaLabel = UILabel()
     private let issueTitle = UILabel()
     private let issueBody = UILabel()
     private let replyTitle = UILabel()
     private let replyBody = UILabel()
     private let infoBody = UILabel()
 
-    init(ticket: SupportTicket) {
-        self.ticket = ticket
+    private var listener: ListenerRegistration?
+
+    init(ticketId: String, title: String) {
+        self.ticketId = ticketId
         super.init(nibName: nil, bundle: nil)
+        self.headerTitleLabel.text = title
+    }
+
+    convenience init(ticket: SupportTicket) {
+        self.init(ticketId: ticket.id ?? "", title: ticket.titleSafe)
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -40,7 +48,7 @@ final class MySupportTicketsDetailsViewController: UIViewController {
         setupHeader()
         setupScroll()
         setupContainer()
-        fill()
+        startListening()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -51,6 +59,26 @@ final class MySupportTicketsDetailsViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
+        listener?.remove()
+        listener = nil
+    }
+
+    private func startListening() {
+        guard !ticketId.isEmpty else { return }
+
+        listener = SupportTicketService.shared.listenTicket(ticketId: ticketId) { [weak self] result in
+            guard let self else { return }
+
+            switch result {
+            case .success(let ticket):
+                guard let ticket else { return }
+                self.headerTitleLabel.text = ticket.titleSafe
+                self.fill(ticket)
+
+            case .failure(let error):
+                self.metaLabel.text = "Error: \(error.localizedDescription)"
+            }
+        }
     }
 
     private func setupHeader() {
@@ -63,7 +91,7 @@ final class MySupportTicketsDetailsViewController: UIViewController {
         backButton.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
 
         headerTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        headerTitleLabel.text = ticket.ticketLabel
+        headerTitleLabel.text = "Ticket"
         headerTitleLabel.font = .systemFont(ofSize: 18, weight: .semibold)
         headerTitleLabel.textAlignment = .center
         headerTitleLabel.textColor = .black
@@ -184,8 +212,10 @@ final class MySupportTicketsDetailsViewController: UIViewController {
         ])
     }
 
-    private func fill() {
-        metaLabel.text = "Ticket ID: \(ticket.id)   •   Status: \(ticket.status.rawValue)"
+    private func fill(_ ticket: SupportTicket) {
+        let statusText = ticket.status.rawValue
+        let idText = ticket.displayId.replacingOccurrences(of: "#", with: "")
+        metaLabel.text = "Ticket ID: #\(idText)   •   Status: \(statusText)"
 
         issueBody.text = ticket.userIssue
         replyBody.text = ticket.adminReply ?? "No reply yet."

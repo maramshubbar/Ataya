@@ -4,16 +4,24 @@
 //
 //  Created by Maram on 01/12/2025.
 //
-
+//
+//  ReportManagementViewController.swift
+//  Ataya
+//
+//  Created by Maram on 01/12/2025.
+//
 import UIKit
 import FirebaseFirestore
 
 struct ReportItem {
     let id: String
     let title: String
+
+    // donation => "" (فاضي) عشان نخفي الصف بالكامل في السيل
     let location: String
-    let reporterText: String   // "Name (ID: ...)"
-    let ngoText: String        // "Name (ID: ...)" أو فاضي
+    let reporterText: String
+    let ngoText: String
+
     let dateText: String
     let type: String           // donation / accounts
     let statusRaw: String      // pending / resolved
@@ -29,7 +37,7 @@ final class ReportManagementViewController: UIViewController {
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
 
-    private let collectionName = "reports"   // غيّريه إذا اسم الكوليكشن مختلف
+    private let collectionName = "reports"
 
     private var allReports: [ReportItem] = []
     private var shownReports: [ReportItem] = []
@@ -44,24 +52,25 @@ final class ReportManagementViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // SearchBar UI
+        // SearchBar UI (نفس DonationOverview)
         searchBar.backgroundImage = UIImage()
         searchBar.searchBarStyle = .minimal
+        searchBar.placeholder = "Search"
+        searchBar.showsCancelButton = false
+        searchBar.delegate = self
+
         if let searchField = searchBar.value(forKey: "searchField") as? UITextField {
             searchField.backgroundColor = .white
             searchField.layer.cornerRadius = 10
             searchField.clipsToBounds = true
         }
 
-        // Delegates
-        searchBar.delegate = self
-        tableView.dataSource = self
-        tableView.delegate = self
-
         // Segment change
         filterSegment.addTarget(self, action: #selector(filterChanged), for: .valueChanged)
 
         // Table setup
+        tableView.dataSource = self
+        tableView.delegate = self
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         tableView.register(UINib(nibName: "ReportCardCell", bundle: nil),
@@ -88,12 +97,10 @@ final class ReportManagementViewController: UIViewController {
         listener = nil
     }
 
-    // ✅ تركّب "Name (ID: X)" إذا الكود موجود
     private func formatNameWithId(name: String, id: String?) -> String {
         let cleanName = name.trimmingCharacters(in: .whitespacesAndNewlines)
         let cleanId = (id ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
 
-        // إذا النص أصلاً يحتوي (ID:) لا نكرر
         if cleanName.lowercased().contains("(id:") { return cleanName }
         if cleanId.isEmpty { return cleanName }
         return "\(cleanName) (ID: \(cleanId))"
@@ -123,40 +130,77 @@ final class ReportManagementViewController: UIViewController {
             self.allReports = docs.compactMap { doc in
                 let data = doc.data()
 
-                let title = data["title"] as? String ?? ""
-                let location = data["location"] as? String ?? ""
+                let title = (data["title"] as? String ?? "")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
 
-                // ✅ الأسماء
-                let reporterName = (data["reporter"] as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-                let ngoName = (data["ngo"] as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                // ✅ type لو موجود بالفايرستور
+                let typeFromFS = (data["type"] as? String ?? "")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                    .lowercased()
 
-                // ✅ الأكواد اللي ضفتيهم
-                let donorId = (data["donorId"] as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-                let ngoCode = (data["ngoCode"] as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                // الأسماء
+                let reporterName = (data["reporter"] as? String ?? "")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
 
-                // ✅ النص النهائي للعرض
+                let ngoName = (data["ngo"] as? String ?? "")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+
+                // الأكواد
+                let donorId = (data["donorId"] as? String ?? "")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+
+                let ngoCode = (data["ngoCode"] as? String ?? "")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+
                 let reporterText = self.formatNameWithId(name: reporterName, id: donorId)
-                let ngoText = ngoName.isEmpty ? "" : self.formatNameWithId(name: ngoName, id: ngoCode)
 
-                // ✅ status
+                // status
                 let statusRaw = (data["status"] as? String ?? "pending")
                     .trimmingCharacters(in: .whitespacesAndNewlines)
                     .lowercased()
 
-                // ✅ التاريخ
+                // التاريخ
                 let ts = data["createdAt"] as? Timestamp
                 let createdAt = ts?.dateValue() ?? Date.distantPast
                 let dateText = Self.dateFormatter.string(from: createdAt)
 
-                // ✅ type: إذا ما عندكم type، نستنتجه من وجود ngo
-                let inferredType = ngoName.isEmpty ? "accounts" : "donation"
+                // ✅✅✅ نوع التقرير (هذا أهم إصلاح)
+                // لو type ما موجود: نحدد من العنوان أولاً
+                let inferredType: String = {
+                    if !typeFromFS.isEmpty { return typeFromFS }   // donation / accounts
+
+                    let t = title.lowercased()
+                    if t.contains("donation") { return "donation" }
+
+                    // إذا عنده NGO غالباً هذا accounts (ngo misconduct / fake ngo account…)
+                    if !ngoName.isEmpty { return "accounts" }
+
+                    // fallback
+                    return "donation"
+                }()
+
+                // location
+                let locationFromFS = (data["location"] as? String ?? "")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+
+                // ✅ RULE: الدونيشن ما فيه Location ولا NGO
+                let finalLocation: String
+                let finalNgoText: String
+
+                if inferredType == "donation" {
+                    finalLocation = ""
+                    finalNgoText = ""
+                } else {
+                    finalLocation = locationFromFS
+                    finalNgoText = ngoName.isEmpty ? "" : self.formatNameWithId(name: ngoName, id: ngoCode)
+                }
 
                 return ReportItem(
                     id: doc.documentID,
                     title: title,
-                    location: location,
+                    location: finalLocation,
                     reporterText: reporterText,
-                    ngoText: ngoText,
+                    ngoText: finalNgoText,
                     dateText: dateText,
                     type: inferredType,
                     statusRaw: statusRaw,
@@ -176,7 +220,6 @@ final class ReportManagementViewController: UIViewController {
     }
 
     private func selectedSegmentKey() -> String {
-        // All / Donation / Accounts / Resolved
         switch filterSegment.selectedSegmentIndex {
         case 0: return "all"
         case 1: return "donation"
@@ -194,7 +237,6 @@ final class ReportManagementViewController: UIViewController {
 
         var items = allReports
 
-        // Segment filter
         switch key {
         case "donation":
             items = items.filter { $0.type == "donation" }
@@ -206,11 +248,10 @@ final class ReportManagementViewController: UIViewController {
             break
         }
 
-        // Search filter
         if !searchText.isEmpty {
             items = items.filter { r in
                 let haystack = [
-                    r.title, r.location, r.reporterText, r.ngoText, r.type, r.statusRaw
+                    r.title, r.location, r.reporterText, r.ngoText, r.type, r.statusRaw, r.dateText
                 ].joined(separator: " ").lowercased()
                 return haystack.contains(searchText)
             }
@@ -222,7 +263,6 @@ final class ReportManagementViewController: UIViewController {
 
     private func openDetails(report: ReportItem) {
         // later
-        // report.id جاهز إذا تبين تفاصيل
     }
 }
 
@@ -242,9 +282,9 @@ extension ReportManagementViewController: UITableViewDataSource, UITableViewDele
         let r = shownReports[indexPath.row]
         cell.configure(
             title: r.title,
-            location: r.location,
+            location: r.location,     // donation = ""
             reporter: r.reporterText,
-            ngo: r.ngoText,
+            ngo: r.ngoText,           // donation = ""
             date: r.dateText,
             status: displayStatusText(r.statusRaw)
         )
@@ -263,15 +303,18 @@ extension ReportManagementViewController: UITableViewDataSource, UITableViewDele
     }
 }
 
-// MARK: - UISearchBarDelegate
+// MARK: - UISearchBarDelegate (بدون Cancel)
 extension ReportManagementViewController: UISearchBarDelegate {
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        searchBar.showsCancelButton = true
+        // ✅ لا يطلع Cancel أبداً
+        searchBar.showsCancelButton = false
+        searchBar.setShowsCancelButton(false, animated: false)
     }
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         searchBar.showsCancelButton = false
+        searchBar.setShowsCancelButton(false, animated: false)
     }
 
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -280,11 +323,5 @@ extension ReportManagementViewController: UISearchBarDelegate {
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
-    }
-
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.text = ""
-        searchBar.resignFirstResponder()
-        applyFiltersAndReload()
     }
 }

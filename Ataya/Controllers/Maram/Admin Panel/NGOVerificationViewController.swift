@@ -1,15 +1,16 @@
 import UIKit
 import FirebaseFirestore
 
-// ✅ نفس Data Model بس مربوط بـ users collection
+// ✅ Model مربوط بـ users collection
 struct NGO {
-    let id: String            // = uid (documentID)
+    let id: String
     let name: String
-    let description: String   // mission/description (إذا موجود)
+    let type: String           // ✅ NEW
+    let description: String    // mission/description (لـ View Details)
     let email: String
     let phone: String
-    let note: String?         // rejectionReason أو note (اختياري)
-    let status: String        // pending / verified / rejected
+    let note: String?
+    let status: String         // pending / verified / rejected
     let createdAt: Date
 }
 
@@ -22,7 +23,6 @@ final class NGOVerificationViewController: UIViewController {
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
 
-    // ✅ الحين نقرأ من users
     private let usersCollection = "users"
 
     private var allNGOs: [NGO] = []
@@ -42,15 +42,12 @@ final class NGOVerificationViewController: UIViewController {
             searchField.clipsToBounds = true
         }
 
-        // Delegates
         searchBar.delegate = self
         tableView.dataSource = self
         tableView.delegate = self
 
-        // Segment change
         filterSegment.addTarget(self, action: #selector(filterChanged), for: .valueChanged)
 
-        // Table setup
         let nib = UINib(nibName: "NGOVerificationTableViewCell", bundle: nil)
         tableView.register(nib, forCellReuseIdentifier: "NGOVerificationTableViewCell")
         tableView.separatorStyle = .none
@@ -80,7 +77,6 @@ final class NGOVerificationViewController: UIViewController {
     private func startListening() {
         stopListening()
 
-        // ✅ نجيب NGOs من users
         let query = db.collection(usersCollection)
             .whereField("role", isEqualTo: "ngo")
             .order(by: "createdAt", descending: true)
@@ -98,23 +94,25 @@ final class NGOVerificationViewController: UIViewController {
             self.allNGOs = docs.compactMap { doc in
                 let data = doc.data()
 
-                let name = data["name"] as? String ?? ""
+                let name  = data["name"] as? String ?? ""
                 let email = data["email"] as? String ?? ""
                 let phone = data["phone"] as? String ?? ""
 
-                // description ممكن تكون mission/description/overview
+                // ✅ type من Org Details
+                let type = (data["type"] as? String ?? "")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+
+                // description (mission/description/overview) للـ details
                 let description =
                     (data["mission"] as? String) ??
                     (data["description"] as? String) ??
                     (data["overview"] as? String) ??
                     ""
 
-                // note ممكن تكون rejectionReason أو note
                 let note =
                     (data["rejectionReason"] as? String) ??
                     (data["note"] as? String)
 
-                // ✅ نفس اللي عندج في الساين اب
                 let statusRaw =
                     (data["approvalStatus"] as? String) ??
                     (data["status"] as? String) ??
@@ -130,6 +128,7 @@ final class NGOVerificationViewController: UIViewController {
                 return NGO(
                     id: doc.documentID,
                     name: name,
+                    type: type,                 // ✅ NEW
                     description: description,
                     email: email,
                     phone: phone,
@@ -151,7 +150,6 @@ final class NGOVerificationViewController: UIViewController {
     }
 
     private func selectedStatusFromSegment() -> String {
-        // All / Pending / Verified / Rejected
         switch filterSegment.selectedSegmentIndex {
         case 0: return "all"
         case 1: return "pending"
@@ -169,16 +167,15 @@ final class NGOVerificationViewController: UIViewController {
 
         var items = allNGOs
 
-        // Segment filter
         if selectedStatus != "all" {
             items = items.filter { $0.status == selectedStatus }
         }
 
-        // Search filter
         if !searchText.isEmpty {
             items = items.filter { ngo in
                 let haystack = [
                     ngo.name,
+                    ngo.type,          // ✅ NEW
                     ngo.description,
                     ngo.email,
                     ngo.phone,
@@ -194,14 +191,17 @@ final class NGOVerificationViewController: UIViewController {
         tableView.reloadData()
     }
 
-    // MARK: - Admin Actions (Approve/Reject)
+    // MARK: - Admin Actions (View Details)
     private func presentDetailsAndActions(for ngo: NGO) {
 
+        let typeText = ngo.type.isEmpty ? "—" : ngo.type
         let descText = ngo.description.isEmpty ? "—" : ngo.description
         let noteText = (ngo.note?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false) ? ngo.note! : "—"
 
         let message =
         """
+        Type: \(typeText)
+
         Email: \(ngo.email)
         Phone: \(ngo.phone)
 
@@ -216,19 +216,16 @@ final class NGOVerificationViewController: UIViewController {
 
         let sheet = UIAlertController(title: ngo.name, message: message, preferredStyle: .actionSheet)
 
-        // ✅ Approve
         sheet.addAction(UIAlertAction(title: "Approve (Verified)", style: .default, handler: { [weak self] _ in
             self?.updateNGOStatus(ngoId: ngo.id, status: "verified", rejectionReason: nil)
         }))
 
-        // ✅ Reject
         sheet.addAction(UIAlertAction(title: "Reject", style: .destructive, handler: { [weak self] _ in
             self?.promptRejectReason(ngo: ngo)
         }))
 
         sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
 
-        // iPad safety
         if let pop = sheet.popoverPresentationController {
             pop.sourceView = self.view
             pop.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.maxY - 120, width: 1, height: 1)
@@ -257,12 +254,10 @@ final class NGOVerificationViewController: UIViewController {
         ]
 
         if status == "rejected" {
-            // إذا ما كتب سبب، لا نحط field
             if let r = rejectionReason, !r.isEmpty {
                 data["rejectionReason"] = r
             }
         } else {
-            // إذا صار verified، نحذف rejectionReason لو كانت موجودة
             data["rejectionReason"] = FieldValue.delete()
         }
 
@@ -272,11 +267,10 @@ final class NGOVerificationViewController: UIViewController {
                 return
             }
 
-            // ✅ Audit log عشان تظهر في Admin Dashboard Recent Activity
             self?.db.collection("audit_logs").addDocument(data: [
                 "title": status == "verified" ? "NGO Verified" : "NGO Rejected",
                 "user": "Admin",
-                "location": "",            // إذا تبين حطي location
+                "location": "",
                 "category": "verification",
                 "createdAt": FieldValue.serverTimestamp()
             ])
@@ -313,12 +307,11 @@ extension NGOVerificationViewController: UITableViewDataSource, UITableViewDeleg
 
         cell.nameLabel.text = ngo.name
 
-        // إذا description فاضي، خليها شي بسيط بدل الفراغ
-        cell.descriptionLabel.text = ngo.description.isEmpty ? "—" : ngo.description
+        // ✅ هنا التايب يطلع مكان الـ "—"
+        cell.descriptionLabel.text = ngo.type.isEmpty ? "—" : ngo.type
 
         cell.emailLabel.text = ngo.email
 
-        // noteLabel: إذا ما في note، نخليه مخفي
         if let note = ngo.note, !note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             cell.noteLabel.isHidden = false
             cell.noteLabel.text = note
@@ -341,7 +334,8 @@ extension NGOVerificationViewController: UITableViewDataSource, UITableViewDeleg
 extension NGOVerificationViewController: UISearchBarDelegate {
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        searchBar.showsCancelButton = true
+        // ✅ لا نعرض زر Cancel
+        searchBar.showsCancelButton = false
     }
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
@@ -354,11 +348,5 @@ extension NGOVerificationViewController: UISearchBarDelegate {
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
-    }
-
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.text = ""
-        searchBar.resignFirstResponder()
-        applyFiltersAndReload()
     }
 }

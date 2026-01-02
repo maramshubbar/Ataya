@@ -40,6 +40,8 @@ final class DonationOverviewViewController: UIViewController {
         }
 
         searchBar.delegate = self
+        searchBar.showsCancelButton = false
+
         tableView.dataSource = self
         tableView.delegate = self
 

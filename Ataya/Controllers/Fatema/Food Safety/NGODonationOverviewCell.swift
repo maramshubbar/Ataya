@@ -7,9 +7,9 @@
 
 import UIKit
 
-final class DonationOverviewCell: UITableViewCell {
+final class NGODonationOverviewCell: UITableViewCell {
 
-    static let reuseId = "DonationOverviewCell"
+    static let reuseId = "NGODonationOverviewCell"
 
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var titleLabel: UILabel!

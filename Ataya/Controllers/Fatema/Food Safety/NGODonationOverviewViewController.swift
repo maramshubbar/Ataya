@@ -43,8 +43,8 @@ final class NGODonationOverviewViewController: UIViewController {
         filterSegment.addTarget(self, action: #selector(filterChanged), for: .valueChanged)
 
         tableView.register(
-            UINib(nibName: "DonationOverviewCell", bundle: nil),
-            forCellReuseIdentifier: DonationOverviewCell.reuseId
+            UINib(nibName: "NGODonationOverviewCell", bundle: nil),
+            forCellReuseIdentifier: NGODonationOverviewCell.reuseId
         )
 
         startListening()
@@ -106,9 +106,9 @@ extension NGODonationOverviewViewController: UITableViewDataSource, UITableViewD
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         let cell = tableView.dequeueReusableCell(
-            withIdentifier: DonationOverviewCell.reuseId,
+            withIdentifier: NGODonationOverviewCell.reuseId,
             for: indexPath
-        ) as! DonationOverviewCell
+        ) as! NGODonationOverviewCell
 
         let d = shownDonations[indexPath.row]
         cell.configure(item: d)

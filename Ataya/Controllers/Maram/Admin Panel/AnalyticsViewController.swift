@@ -5,24 +5,7 @@
 //  Created by Maram on 02/12/2025.
 //
 //
-//  AnalyticsViewController.swift
-//  Ataya
-//
-//  Created by Maram on 02/12/2025.
-//
-//
-//  AnalyticsViewController.swift
-//  Ataya
-//
-//  Created by Maram on 02/12/2025.
-//
 
-//
-//  AnalyticsViewController.swift
-//  Ataya
-//
-//  Created by Maram on 02/12/2025.
-//
 
 import UIKit
 import FirebaseFirestore
@@ -91,11 +74,22 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
 
     enum RowType: String { case donor = "Donor", ngo = "NGO" }
 
+    // ✅✅✅ IMPORTANT: أضفنا points + init(points: default = 0)
+    // عشان ما نكسر أي .init قديم
     struct ListRow {
         let imageName: String?
         let name: String
         let countryText: String
         let type: RowType
+        let points: Int
+
+        init(imageName: String?, name: String, countryText: String, type: RowType, points: Int = 0) {
+            self.imageName = imageName
+            self.name = name
+            self.countryText = countryText
+            self.type = type
+            self.points = points
+        }
     }
 
     // ✅ Countries = COUNT + percent
@@ -115,15 +109,28 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         UIColor(red: 250/255, green: 220/255, blue: 120/255, alpha: 1)
     ]
 
+    // ==========================================================
+    // ✅✅✅ LEADERBOARD PLACEHOLDER MODE
+    // ==========================================================
+    // ✅ الحين نخلي الليدربورد “Placeholder فقط”
+    // ✅ لما تجهزين الباكند:
+    // 1) غيّريه إلى false
+    // 2) وفكي تعليق startListeningLeaderboard_FIREBASE_USERS()
+    private let useLeaderboardPlaceholderOnly = true
+
     // placeholder list (لو ما رجع شيء)
+    // ✅✅✅ (أضفنا points + صور placeholder)
     private let placeholderAllRows: [ListRow] = [
-        .init(imageName: "hopPal",     name: "HopPal",        countryText: "🇧🇭 Bahrain",         type: .ngo),
-        .init(imageName: "kindWave",   name: "KindWave",      countryText: "🇱🇧 Lebanon",         type: .ngo),
-        .init(imageName: "lifeReach",  name: "LifeReach",     countryText: "🇸🇦 Saudi Arabia",    type: .ngo),
-        .init(imageName: "aidBridge",  name: "AidBridge",     countryText: "🇩🇪 Germany",         type: .ngo),
-        .init(imageName: "pureRelief", name: "PureRelief",    countryText: "🇨🇦 Canada",          type: .ngo),
-        .init(imageName: "jassim",     name: "Jassim Ali",    countryText: "🇧🇭 Bahrain",         type: .donor),
-        .init(imageName: "henry",      name: "Henry Beeston", countryText: "🇬🇧 United Kingdom",  type: .donor)
+        .init(imageName: "HopPalImg",    name: "HopPal",        countryText: "🇧🇭 Bahrain",        type: .ngo,   points: 2200),
+        .init(imageName: "KindWave",     name: "KindWave",      countryText: "🇱🇧 Lebanon",        type: .ngo,   points: 1700),
+        .init(imageName: "LifeReachImg", name: "LifeReach",     countryText: "🇸🇦 Saudi Arabia",   type: .ngo,   points: 1600),
+        .init(imageName: "AidBridge",    name: "AidBridge",     countryText: "🇩🇪 Germany",        type: .ngo,   points: 1200),
+        .init(imageName: "PureRelief",   name: "PureRelief",    countryText: "🇨🇦 Canada",         type: .ngo,   points: 800),
+
+        .init(imageName: "ic_avatar_placeholder", name: "Jassim Ali",    countryText: "🇧🇭 Bahrain",        type: .donor, points: 1500),
+        .init(imageName: "ic_avatar_placeholder", name: "Henry Beeston", countryText: "🇬🇧 United Kingdom", type: .donor, points: 1400),
+        .init(imageName: "ic_avatar_placeholder", name: "Noor Mohd",     countryText: "🇮🇳 India",          type: .donor, points: 900),
+        .init(imageName: "ic_avatar_placeholder", name: "Willam Smith",  countryText: "🇺🇸 United States",  type: .donor, points: 500)
     ]
 
     // MARK: - Firestore
@@ -190,11 +197,18 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         segTimeRange?.selectedSegmentIndex = 1 // default 6 months
         segTimeRange?.addTarget(self, action: #selector(timeRangeChanged), for: .valueChanged)
 
-        allRows = placeholderAllRows
-        applyListFilterAndReload()
+        // ✅✅✅ PLACEHOLDER leaderboard الآن
+        loadLeaderboard_PLACEHOLDER()
 
         setupChart()
         startListening()
+
+        // ✅✅✅ لما تجهزين الباكند:
+        // 1) خلي useLeaderboardPlaceholderOnly = false
+        // 2) فكّي تعليق هذا
+        /*
+        startListeningLeaderboard_FIREBASE_USERS()
+        */
     }
 
     deinit {
@@ -210,6 +224,14 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         cardVerified?.applyCardShadow(cornerRadius: 20)
 
         applyCategoryBarsFromLastPct(animated: false)
+    }
+
+    // ==========================================================
+    // ✅✅✅ LEADERBOARD PLACEHOLDER LOADER (نفس فكرة الليدربورد)
+    // ==========================================================
+    private func loadLeaderboard_PLACEHOLDER() {
+        allRows = placeholderAllRows.sorted { $0.points > $1.points }
+        applyListFilterAndReload()
     }
 
     // MARK: - Listening
@@ -318,6 +340,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         }
 
         // ✅ Donors (for leaderboard) from DONATIONS only
+        // ✅ ملاحظة: الحين ما نستخدمهم للـ leaderboard لأننا في placeholder mode
         var uniqueDonors = Set<String>()
         var donorRowsDict: [String: ListRow] = [:]
 
@@ -338,7 +361,8 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
                     imageName: nil,
                     name: donorName,
                     countryText: countryText(from: donorCountry),
-                    type: .donor
+                    type: .donor,
+                    points: 0
                 )
             }
         }
@@ -388,6 +412,13 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
             return status == "verified"
         }.count
 
+        DispatchQueue.main.async {
+            self.lblVerifiedNGOs?.text = "\(verifiedCount)"
+        }
+
+        // ✅✅✅ مهم: لا تغيّرين بيانات الليدربورد إذا احنا في placeholder mode
+        if useLeaderboardPlaceholderOnly { return }
+
         let ngoRows: [ListRow] = latestNgoDocs.map { doc in
             let data = doc.data()
             let name = stringValue(data, keys: ["name", "ngoName"]).ifEmpty("NGO")
@@ -400,12 +431,9 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
                 imageName: nil,
                 name: name,
                 countryText: countryText(from: rawCountry),
-                type: .ngo
+                type: .ngo,
+                points: 0
             )
-        }
-
-        DispatchQueue.main.async {
-            self.lblVerifiedNGOs?.text = "\(verifiedCount)"
         }
 
         self.cachedNGOs = ngoRows
@@ -418,6 +446,9 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     }
 
     private func mergeRowsAndReload() {
+        // ✅✅✅ لا نبدّل placeholder list
+        if useLeaderboardPlaceholderOnly { return }
+
         let merged = cachedNGOs + cachedDonors
         DispatchQueue.main.async {
             self.allRows = merged.isEmpty ? self.placeholderAllRows : merged
@@ -793,6 +824,13 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         case 2: rows = allRows.filter { $0.type == .ngo }
         default: rows = allRows
         }
+
+        // ✅✅✅ نخلي الترتيب دايمًا أعلى نقاط أول (حتى placeholder)
+        rows.sort {
+            if $0.points != $1.points { return $0.points > $1.points }
+            return $0.name.lowercased() < $1.name.lowercased()
+        }
+
         tblList?.reloadData()
     }
 
@@ -864,8 +902,12 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         let lblCountry = cell.contentView.viewWithTag(2) as? UILabel
         let lblType = cell.contentView.viewWithTag(3) as? UILabel
 
-        if lblName != nil || lblCountry != nil || lblType != nil {
-            img?.image = UIImage(named: item.imageName ?? "ic_avatar_placeholder")
+        // ✅✅✅ مهم: نخليها AND مو OR
+        // عشان إذا tags ناقصه ما يطلع “Label”
+        if lblName != nil && lblCountry != nil && lblType != nil {
+
+            let avatar = UIImage(named: item.imageName ?? "") ?? UIImage(named: "ic_avatar_placeholder")
+            img?.image = avatar
             img?.layer.cornerRadius = 18
             img?.clipsToBounds = true
             img?.contentMode = .scaleAspectFill
@@ -873,6 +915,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
             lblName?.text = item.name
             lblCountry?.text = item.countryText
             lblType?.text = item.type.rawValue
+
         } else {
             cell.textLabel?.text = item.name
             cell.detailTextLabel?.text = "\(item.countryText) • \(item.type.rawValue)"
@@ -944,6 +987,86 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         ]
         return map[key] ?? ""
     }
+
+    // ==========================================================
+    // ✅✅✅ FIREBASE LEADERBOARD (جاهز لكن معلّق)
+    // ==========================================================
+    /*
+    private func startListeningLeaderboard_FIREBASE_USERS() {
+
+        // ✅ إذا تبين: أوقفي placeholder mode فوق (useLeaderboardPlaceholderOnly = false)
+
+        listeners.append(
+            db.collection("users").addSnapshotListener { [weak self] snap, err in
+                guard let self else { return }
+
+                if let err {
+                    print("❌ Analytics leaderboard users listen:", err.localizedDescription)
+                    DispatchQueue.main.async { self.loadLeaderboard_PLACEHOLDER() }
+                    return
+                }
+
+                let docs = snap?.documents ?? []
+                var list: [ListRow] = []
+
+                for doc in docs {
+                    let data = doc.data()
+
+                    let roleStr = (data["role"] as? String ?? "").lowercased()
+                    let type: RowType?
+                    if roleStr == "donor" { type = .donor }
+                    else if roleStr == "ngo" { type = .ngo }
+                    else { type = nil }
+
+                    guard let type else { continue }
+
+                    let name = (data["name"] as? String)
+                        ?? (data["fullName"] as? String)
+                        ?? (data["organizationName"] as? String)
+                        ?? "Unknown"
+
+                    let country = (data["country"] as? String) ?? "Unknown"
+                    let flag = (data["countryFlag"] as? String) ?? ""
+                    let countryText = flag.isEmpty ? country : "\(flag) \(country)"
+
+                    let points: Int
+                    if type == .donor {
+                        let rewards = data["rewards"] as? [String: Any] ?? [:]
+                        points = Self.intValue(rewards["points"])
+                    } else {
+                        let rewardsNgo = data["rewardsNgo"] as? [String: Any] ?? [:]
+                        points = Self.intValue(rewardsNgo["points"])
+                    }
+
+                    let imageName = data["avatarAssetName"] as? String
+                    list.append(.init(imageName: imageName,
+                                      name: name,
+                                      countryText: countryText,
+                                      type: type,
+                                      points: points))
+                }
+
+                list.sort {
+                    if $0.points != $1.points { return $0.points > $1.points }
+                    return $0.name.lowercased() < $1.name.lowercased()
+                }
+
+                DispatchQueue.main.async {
+                    self.allRows = list.isEmpty ? self.placeholderAllRows : list
+                    self.applyListFilterAndReload()
+                }
+            }
+        )
+    }
+
+    private static func intValue(_ any: Any?) -> Int {
+        if let i = any as? Int { return i }
+        if let d = any as? Double { return Int(d) }
+        if let n = any as? NSNumber { return n.intValue }
+        if let s = any as? String { return Int(s.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0 }
+        return 0
+    }
+    */
 
     // ==========================================================
     // ✅ PDF Export (مثل ما هو)

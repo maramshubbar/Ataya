@@ -167,7 +167,7 @@ class DiscoverNGOViewController: UIViewController, UITableViewDataSource, UITabl
     // Pass selected NGO object to the profile screen
        override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
            if segue.identifier == "ShowNGODetails",
-              let destination = segue.destination as? NGOProfileViewController,
+              let destination = segue.destination as? NGOdiscoverProfileViewController,
               let ngo = sender as? NGOdiscover {
                destination.ngo = ngo
            }

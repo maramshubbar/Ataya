@@ -7,7 +7,7 @@
 
 import UIKit
 
-class NGOProfileViewController: UIViewController {
+class NGOdiscoverProfileViewController: UIViewController {
     
     
     @IBOutlet weak var ngoCard: UIView!

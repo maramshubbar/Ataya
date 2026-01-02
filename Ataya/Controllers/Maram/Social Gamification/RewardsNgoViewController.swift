@@ -4,25 +4,33 @@
 //
 //  Created by Maram on 19/12/2025.
 //
-
-
-
+//
+//  RewardsNgoViewController.swift
+//  Ataya
+//
+//  Created by Maram on 19/12/2025.
+//
 
 import UIKit
 import FirebaseAuth
 import FirebaseFirestore
 
-final class RewardsNgoViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+final class RewardsNgoViewController: UIViewController {
 
-    // MARK: - Outlets (اربطّيهم من الـ storyboard)
+    // MARK: - Outlets
     @IBOutlet weak var badgesCollectionView: UICollectionView!
-
     @IBOutlet weak var pickupsLabel: UILabel!
     @IBOutlet weak var livesLabel: UILabel!
     @IBOutlet weak var pointsLabel: UILabel!
 
+    // ✅ NEW (اختياري): اربطي لابل الـ Tier + صورة الميدالية الكبيرة
+    @IBOutlet weak var tierLabel: UILabel?
+    @IBOutlet weak var tierMedalImageView: UIImageView?
+
     // MARK: - Firestore
     private let db = Firestore.firestore()
+    private var listener: ListenerRegistration?
+    private var didRecalculateOnce = false
 
     // MARK: - Badge VM
     private struct BadgeVM {
@@ -32,7 +40,6 @@ final class RewardsNgoViewController: UIViewController, UICollectionViewDataSour
         let colorHex: String
     }
 
-    // Default badges (إذا ما موجودة في Firebase)
     private let defaultBadges: [BadgeVM] = [
         .init(title: "Fast Responder", subtitle: "Accepted pickups quickly", iconName: "Heart", colorHex: "#fff8ed"),
         .init(title: "Meal Hero", subtitle: "Handled donations safely", iconName: "meal", colorHex: "#FBF9FF"),
@@ -41,20 +48,25 @@ final class RewardsNgoViewController: UIViewController, UICollectionViewDataSour
     ]
 
     private var badges: [BadgeVM] = []
+    private var metrics = NgoRewardsMetrics()
 
     // MARK: - Lifecycle
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupBadges()
         applyInitialPlaceholders()
 
-        // ✅ (اختياري) إذا تبين تثبتين لون النقاط فقط بدون تغيير الحجم:
-        // pointsLabel.textColor = UIColor(red: 255/255, green: 216/255, blue: 63/255, alpha: 1) // #FFD83F
+        ensureNgoRewardsSeededIfNeeded()
 
-        fetchNgoRewards()
+        // ✅ يحسب من donations ويكتب داخل users/{uid}.rewardsNgo (مرة وحدة)
+        recalculateNgoRewardsFromDonationsIfNeeded()
+
+        // ✅ يسمع للتغييرات ويحدث الواجهة
+        startListeningToNgoRewards()
     }
+
+    deinit { listener?.remove() }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -62,17 +74,19 @@ final class RewardsNgoViewController: UIViewController, UICollectionViewDataSour
     }
 
     private func applyInitialPlaceholders() {
-        // عشان ما تظهر نصوص مثل donationsLabel...
-        pickupsLabel.text = ""
-        livesLabel.text = ""
-        pointsLabel.text = ""
+        pickupsLabel.text = "—"
+        livesLabel.text = "—"
+        pointsLabel.text = "—"
+
+        // ✅ Tier placeholders
+        tierLabel?.text = "Reliable NGO"
+        tierMedalImageView?.image = UIImage(named: "tier_starter") // نفس صور الدونر
 
         badges = defaultBadges
         badgesCollectionView.reloadData()
     }
 
-    // MARK: - Badges Collection Layout
-
+    // MARK: - Badges Layout
     private func setupBadges() {
         badgesCollectionView.register(
             UINib(nibName: "BadgeCardCell", bundle: nil),
@@ -87,90 +101,174 @@ final class RewardsNgoViewController: UIViewController, UICollectionViewDataSour
         layout.minimumLineSpacing = 18
         layout.minimumInteritemSpacing = 0
         layout.sectionInset = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
-        layout.itemSize = CGSize(width: 104, height: 194) // temporary
+        layout.itemSize = CGSize(width: 104, height: 194)
 
         badgesCollectionView.collectionViewLayout = layout
         badgesCollectionView.showsHorizontalScrollIndicator = false
         badgesCollectionView.alwaysBounceHorizontal = true
         badgesCollectionView.backgroundColor = .clear
-
-        // shadows
         badgesCollectionView.clipsToBounds = false
         badgesCollectionView.layer.masksToBounds = false
-
-        // smooth
         badgesCollectionView.decelerationRate = .fast
     }
 
     private func updateBadgesItemSizeIfNeeded() {
         guard let layout = badgesCollectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
-        let newSize = CGSize(width: 130, height: 190) // ✅ EXACT
+        let newSize = CGSize(width: 130, height: 190)
         if layout.itemSize != newSize {
             layout.itemSize = newSize
             layout.invalidateLayout()
         }
     }
 
-    // MARK: - Firebase Fetch (NGO Rewards)
+    // MARK: - ✅ users/{uid}.rewardsNgo
 
-    private func fetchNgoRewards() {
+    private func ensureNgoRewardsSeededIfNeeded() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let userRef = db.collection("users").document(uid)
+
+        userRef.getDocument { snap, _ in
+            let data = snap?.data() ?? [:]
+            if (data["rewardsNgo"] as? [String: Any]) != nil { return }
+
+            userRef.setData([
+                "rewardsNgo": NgoRewardsMetrics.defaultFirestoreDict()
+            ], merge: true)
+        }
+    }
+
+    private func startListeningToNgoRewards() {
         guard let uid = Auth.auth().currentUser?.uid else {
-            pickupsLabel.text = "—"
-            livesLabel.text = "—"
-            pointsLabel.text = "—"
-            badges = defaultBadges
-            badgesCollectionView.reloadData()
+            applyInitialPlaceholders()
             return
         }
 
-        db.collection("ngos").document(uid).getDocument { [weak self] snap, err in
-            guard let self = self else { return }
+        let userRef = db.collection("users").document(uid)
+        listener?.remove()
 
-            if let err = err {
-                DispatchQueue.main.async {
-                    self.pickupsLabel.text = "Failed to load"
-                    self.livesLabel.text = err.localizedDescription
-                    self.pointsLabel.text = ""
-                    self.badges = self.defaultBadges
-                    self.badgesCollectionView.reloadData()
-                }
+        listener = userRef.addSnapshotListener { [weak self] snap, err in
+            guard let self else { return }
+
+            if let err {
+                print("❌ NGO rewards listen error:", err.localizedDescription)
+                DispatchQueue.main.async { self.applyInitialPlaceholders() }
                 return
             }
 
             let data = snap?.data() ?? [:]
-
-            let tierTitle = data["tierTitle"] as? String ?? ""
-            let successfulPickups = data["successfulPickups"] as? Int ?? 0
-            let livesImpacted = data["livesImpacted"] as? Int ?? 0
-            let points = data["points"] as? Int ?? 0
-
-            let pointsFormatted = NumberFormatter.localizedString(from: points as NSNumber, number: .decimal)
-
-            // badges optional
-            let badgesArray = data["badges"] as? [[String: Any]] ?? []
-            let parsedBadges: [BadgeVM] = badgesArray.compactMap { item in
-                guard
-                    let title = item["title"] as? String,
-                    let subtitle = item["subtitle"] as? String,
-                    let iconName = item["iconName"] as? String,
-                    let colorHex = item["colorHex"] as? String
-                else { return nil }
-                return BadgeVM(title: title, subtitle: subtitle, iconName: iconName, colorHex: colorHex)
-            }
+            let rewardsNgo = (data["rewardsNgo"] as? [String: Any]) ?? [:]
+            self.metrics = NgoRewardsMetrics(dict: rewardsNgo)
 
             DispatchQueue.main.async {
-                // ✅ ترتيب النصوص مثل فيقما (بدون تغيير أحجام الخط)
-                self.pickupsLabel.text = "\(successfulPickups) Successful Pickups"
-                self.livesLabel.text = "\(livesImpacted) Lives Impacted"
-                self.pointsLabel.text = "\(pointsFormatted) pts"
+                self.pickupsLabel.text = "\(self.metrics.successfulPickups) Successful Pickups"
+                self.livesLabel.text = "\(self.metrics.livesImpacted) Lives Impacted"
+                self.pointsLabel.text = "\(self.formatNumber(self.metrics.points)) pts"
 
-                self.badges = parsedBadges.isEmpty ? self.defaultBadges : parsedBadges
+                // ✅ حدّثي tier + medal من points
+                let tier = NgoTier.from(points: self.metrics.points)
+                self.tierLabel?.text = tier.title
+                self.tierMedalImageView?.image = UIImage(named: tier.medalAssetName)
+
+                // badges ثابتة (أو تقدرين تخليها من Firebase later)
+                self.badges = self.defaultBadges
                 self.badgesCollectionView.reloadData()
             }
         }
     }
 
-    // MARK: - UICollectionViewDataSource
+    private func formatNumber(_ n: Int) -> String {
+        let f = NumberFormatter()
+        f.numberStyle = .decimal
+        return f.string(from: NSNumber(value: n)) ?? "\(n)"
+    }
+
+    // MARK: - ✅ Calculate from donations -> write users/{uid}.rewardsNgo
+
+    private func recalculateNgoRewardsFromDonationsIfNeeded() {
+        guard !didRecalculateOnce else { return }
+        didRecalculateOnce = true
+
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+
+        // ✅ عدلي هذي لو عندكم أسماء مختلفة بالدونیشن:
+        // field: ngoId
+        // status: completed
+        let q = db.collection("donations")
+            .whereField("ngoId", isEqualTo: uid)
+            .whereField("status", isEqualTo: "completed")
+
+        q.getDocuments { [weak self] snap, err in
+            guard let self else { return }
+            if let err {
+                print("❌ NGO donations query:", err.localizedDescription)
+                return
+            }
+
+            let docs = snap?.documents ?? []
+            let successfulPickups = docs.count
+
+            var lives = 0
+            var verifiedCount = 0
+            var photoCount = 0
+            var campaignIds = Set<String>()
+
+            for doc in docs {
+                let d = doc.data()
+
+                lives += NgoRewardsMetrics.intValue(d["livesImpacted"])
+                if lives == 0 { lives += NgoRewardsMetrics.intValue(d["livesTouched"]) }
+                if lives == 0 { lives += NgoRewardsMetrics.intValue(d["servings"]) }
+
+                if self.boolValue(d["verifiedFoodQuality"]) == true ||
+                    self.boolValue(d["foodQualityVerified"]) == true {
+                    verifiedCount += 1
+                }
+
+                if let arr = d["imageURLs"] as? [String], !arr.isEmpty { photoCount += 1 }
+                else if let arr = d["imageUrls"] as? [String], !arr.isEmpty { photoCount += 1 }
+
+                if let c = d["campaignId"] as? String, !c.isEmpty { campaignIds.insert(c) }
+            }
+
+            if lives == 0 { lives = successfulPickups }
+
+            var points = 0
+            points += successfulPickups * 100
+            points += verifiedCount * 50
+            if successfulPickups >= 10 { points += 200 }
+            points += photoCount * 30
+            points += campaignIds.count * 100
+
+            let tier = NgoTier.from(points: points)
+
+            let userRef = self.db.collection("users").document(uid)
+            userRef.setData([
+                "rewardsNgo": [
+                    "successfulPickups": successfulPickups,
+                    "livesImpacted": lives,
+                    "points": points,
+                    "tierTitle": tier.title,
+                    "campaignsSupported": campaignIds.count,
+                    "updatedAt": FieldValue.serverTimestamp()
+                ]
+            ], merge: true)
+        }
+    }
+
+    private func boolValue(_ any: Any?) -> Bool? {
+        if let b = any as? Bool { return b }
+        if let n = any as? NSNumber { return n.boolValue }
+        if let s = any as? String {
+            let x = s.lowercased()
+            if x == "true" || x == "yes" || x == "1" { return true }
+            if x == "false" || x == "no" || x == "0" { return false }
+        }
+        return nil
+    }
+}
+
+// MARK: - Collection
+extension RewardsNgoViewController: UICollectionViewDataSource, UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return badges.count
@@ -185,7 +283,7 @@ final class RewardsNgoViewController: UIViewController, UICollectionViewDataSour
         ) as! BadgeCardCell
 
         let badge = badges[indexPath.item]
-        let bgColor = UIColor(hex: badge.colorHex) // لازم extension UIColor(hex:)
+        let bgColor = UIColor(hex: badge.colorHex)
 
         cell.configure(
             title: badge.title,
@@ -197,5 +295,73 @@ final class RewardsNgoViewController: UIViewController, UICollectionViewDataSour
         cell.contentView.backgroundColor = .clear
         cell.backgroundColor = .clear
         return cell
+    }
+}
+
+// MARK: - Helpers
+
+private struct NgoRewardsMetrics {
+    var successfulPickups: Int = 0
+    var livesImpacted: Int = 0
+    var points: Int = 0
+    var tierTitle: String = "Reliable NGO"
+
+    init() {}
+
+    init(dict: [String: Any]) {
+        successfulPickups = Self.intValue(dict["successfulPickups"])
+        livesImpacted = Self.intValue(dict["livesImpacted"])
+        points = Self.intValue(dict["points"])
+        tierTitle = (dict["tierTitle"] as? String) ?? NgoTier.from(points: points).title
+    }
+
+    static func defaultFirestoreDict() -> [String: Any] {
+        [
+            "successfulPickups": 0,
+            "livesImpacted": 0,
+            "points": 0,
+            "tierTitle": "Reliable NGO"
+        ]
+    }
+
+    // ✅ يدعم String "100" + Int + Double + NSNumber
+    static func intValue(_ any: Any?) -> Int {
+        if let i = any as? Int { return i }
+        if let d = any as? Double { return Int(d) }
+        if let n = any as? NSNumber { return n.intValue }
+        if let s = any as? String { return Int(s.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0 }
+        return 0
+    }
+}
+
+private enum NgoTier {
+    case starter, silver, gold, diamond
+
+    static func from(points: Int) -> NgoTier {
+        switch points {
+        case 0..<500: return .starter
+        case 500..<1500: return .silver
+        case 1500..<2500: return .gold
+        default: return .diamond
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .starter: return "Reliable NGO"
+        case .silver:  return "Silver Partner"
+        case .gold:    return "Gold Partner"
+        case .diamond: return "Diamond Partner"
+        }
+    }
+
+    // ✅ نفس أسماء صور الميداليات في Assets (استخدمي نفس صور الدونر)
+    var medalAssetName: String {
+        switch self {
+        case .starter: return "tier_starter"
+        case .silver:  return "tier_silver"
+        case .gold:    return "tier_gold"
+        case .diamond: return "tier_diamond"
+        }
     }
 }

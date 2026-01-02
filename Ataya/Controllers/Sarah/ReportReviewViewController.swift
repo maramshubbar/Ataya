@@ -31,59 +31,39 @@ class ReportReviewViewController: UIViewController {
     @IBOutlet weak var issueButton: UIButton!
     @IBOutlet weak var markResolvedButton: UIButton!
     
-    var reportId: String?   // Must be set before presenting this VC
-        var report: Report?
-        let db = Firestore.firestore()
-
+    let db = Firestore.firestore()
+    var report: Report?
+    
         override func viewDidLoad() {
             super.viewDidLoad()
             setupUI()
             fetchReport()
         }
 
-    private func fetchReport() {
-            guard let reportId = reportId else {
-                print("Error: reportId not set")
-                return
-            }
-
-            db.collection("supportTickets").document(reportId).getDocument { snapshot, error in
-                if let error = error {
-                    print("Error fetching report: \(error.localizedDescription)")
-                    return
-                }
-
-                guard let data = snapshot?.data() else {
-                    print("No data found for reportId: \(reportId)")
-                    return
-                }
-
-                // Map Firestore data to Report model
-                let report = Report(id: reportId, data: data)
-                self.report = report
-                self.populateUI(with: report)
-            }
+    func fetchReport() {
+        let documentId = "2qKheNZlqtzsWjqMgGyC"
+        db.collection("supportTickets").document(documentId).getDocument {
+            snapshot, error in if let error = error {
+                print("Error fetching report: \(error.localizedDescription)")
+                return }
+            guard let data = snapshot?.data() else { print("No data found")
+                return }
+            let report = Report(id: documentId, data: data)
+            self.report = report
+            self.populateUI(with: report)
         }
+    }
     
     // MARK: - Populate UI
-    private func populateUI(with report: Report) { reportTitleValue.text = report.title
+    func populateUI(with report: Report) {
+        reportTitleValue.text = report.title
         reportIdValue.text = report.id
         reportTypeValue.text = report.type
         dateValue.text = report.date
         reportDetailsTextView.text = report.details
+        feedbackTextView.text = report.feedback
         statusLabel.text = report.status
-        feedbackTextView.text = report.feedback.isEmpty ? "No feedback yet" : report.feedback
         
-        switch report.status { case "Resolved": feedbackTextView.isEditable = false
-            suspendButton.isHidden = true
-            blockButton.isHidden = true
-            issueButton.isHidden = true
-            markResolvedButton.isHidden = true
-            statusView.backgroundColor = UIColor.systemGreen
-        case "Pending":
-            statusView.backgroundColor = UIColor.systemYellow
-        default:
-            statusView.backgroundColor = UIColor.systemGray }
     }
     
     
@@ -99,8 +79,27 @@ class ReportReviewViewController: UIViewController {
         feedbackTextView.layer.borderColor = UIColor.systemGray.cgColor
         feedbackTextView.layer.borderWidth = 1.0
         feedbackTextView.layer.cornerRadius = 8
+        feedbackTextView.backgroundColor = .systemBackground
+        feedbackTextView.font = UIFont.systemFont(ofSize: 16)
+        feedbackTextView.textAlignment = .left
+        feedbackTextView.textContainerInset = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
+        feedbackTextView.textContainer.lineFragmentPadding = 0
+        feedbackTextView.isScrollEnabled = true
+
+
         statusView.layer.cornerRadius = 8
         statusView.layer.masksToBounds = true
+        
+        reportDetailsTextView.backgroundColor = .systemBackground
+        reportDetailsTextView.layer.borderColor = UIColor.systemGray.cgColor
+        reportDetailsTextView.layer.borderWidth = 1.0
+        reportDetailsTextView.layer.cornerRadius = 8
+        reportDetailsTextView.textContainerInset = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
+        reportDetailsTextView.isEditable = false
+        reportDetailsTextView.isScrollEnabled = false
+        reportDetailsTextView.font = UIFont.systemFont(ofSize: 16)
+
+
     }
     
     override func viewDidLayoutSubviews() {
@@ -177,21 +176,29 @@ class ReportReviewViewController: UIViewController {
     
     @IBAction func markResolvedTapped(_ sender: UIButton) {
         guard let report = report else { return }
-          let feedbackMessage = feedbackTextView.text ?? ""
-
-          // Update UI immediately
-          statusLabel.text = "Resolved"
-          statusView.backgroundColor = UIColor(hex: "D2F2C1")
-          feedbackTextView.isEditable = false
-          suspendButton.isHidden = true
-          blockButton.isHidden = true
-          issueButton.isHidden = true
-          markResolvedButton.isHidden = true
-
-          // Save feedback & status to Firestore
-          saveFeedback(forReportId: report.id, feedback: feedbackMessage)
-
-          showPopup(title: "Report Resolved!", description: "This report has been marked as resolved.")
+        let feedback = feedbackTextView.text ?? ""
+        
+        db.collection("supportTickets").document(report.id).updateData([
+            "adminReply": feedback,
+            "status": "Resolved",
+            "updatedAt": FieldValue.serverTimestamp() ])
+        {
+                error in if let error = error {
+                    print("Error updating report:\(error.localizedDescription)")
+                } else {
+                    // Update UI immediately
+                    self.statusLabel.text = "Resolved"
+                    self.statusView.backgroundColor = UIColor.systemGreen
+                    self.feedbackTextView.isEditable = false
+                    
+                    // Hide all action buttons
+                    self.suspendButton.isHidden = true
+                    self.blockButton.isHidden = true
+                    self.issueButton.isHidden = true
+                    self.markResolvedButton.isHidden = true
+                    print("Report marked as resolved")
+                }
+            }
     }
     
     

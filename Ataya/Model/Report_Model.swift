@@ -17,11 +17,10 @@ struct Report {
         self.type = data["category"] as? String ?? "No Type"
 
         if let timestamp = data["createdAt"] as? Timestamp {
-            let dateValue = timestamp.dateValue()
             let formatter = DateFormatter()
             formatter.dateStyle = .medium
             formatter.timeStyle = .short
-            self.date = formatter.string(from: dateValue)
+            self.date = formatter.string(from: timestamp.dateValue())
         } else {
             self.date = "No Date"
         }

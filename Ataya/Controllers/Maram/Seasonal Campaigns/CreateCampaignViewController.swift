@@ -5,6 +5,7 @@
 //  Created by Maram on 24/12/2025.
 //
 
+
 import UIKit
 import PhotosUI
 import FirebaseFirestore
@@ -71,7 +72,8 @@ final class CreateCampaignViewController: UIViewController {
 
     private let fromField = LabeledTextField(title: "From", placeholder: "e.g. Sharm’s Mother")
 
-    private let orgField = LabeledMenuField(title: "Organization / NGO", initial: "LifeReach", items: [
+    // ✅ Organization field stays, but will be AUTO + LOCKED for NGO
+    private let orgField = LabeledMenuField(title: "Organization / NGO", initial: "Loading…", items: [
         "LifeReach", "HopeAid", "MercyHands", "ReliefBridge", "CarePath"
     ])
 
@@ -88,13 +90,17 @@ final class CreateCampaignViewController: UIViewController {
         didSet { uploadView.setImage(selectedImage) }
     }
 
-    private var selectedOrg: String = "LifeReach"
+    // ✅ will be set automatically from users/{uid}
+    private var selectedOrg: String = ""
 
     // ✅ ADDED: Category selected value
     private var selectedCategory: String = "Critical"
 
     // ✅ مهم: عشان Edit ما يعيد يرفع الصورة القديمة (اللي نحمّلها للعرض فقط)
     private var didPickNewImage: Bool = false
+
+    // ✅ NEW: block create until NGO org loaded
+    private var isOrgReady: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -108,11 +114,7 @@ final class CreateCampaignViewController: UIViewController {
         setupButtons()
         layoutUI()
 
-        orgField.onSelect = { [weak self] value in
-            self?.selectedOrg = value
-        }
-
-        // ✅ ADDED: category selection
+        // ✅ category selection
         categoryField.onSelect = { [weak self] value in
             self?.selectedCategory = value
         }
@@ -133,10 +135,24 @@ final class CreateCampaignViewController: UIViewController {
             selectedCategory = "Critical"
             categoryField.setValue("Critical")
 
+            // ✅ LOCK org field + load automatically from users/{uid}
+            orgField.setLocked(true)
+            orgField.setValue("Loading…")
+            selectedOrg = ""
+            isOrgReady = false
+
+            // disable create until org ready
+            createButton.isEnabled = false
+            autoFillOrganizationForLoggedInNgo()
+
         case .edit(let existing):
             title = "Edit Campaign"
             createButton.setTitle("Save Changes", for: .normal)
             fillForm(with: existing)
+
+            // ✅ lock org in edit too (campaign belongs to the NGO)
+            orgField.setLocked(true)
+            isOrgReady = true
 
             // show old image if exists (only if user didn't choose new)
             if selectedImage == nil, let s = editingExistingImageUrl, let url = URL(string: s) {
@@ -150,6 +166,75 @@ final class CreateCampaignViewController: UIViewController {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    // ✅ AUTO: get org from Firestore users/{uid} for NGO account
+    private func autoFillOrganizationForLoggedInNgo() {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            DispatchQueue.main.async {
+                self.isOrgReady = false
+                self.createButton.isEnabled = false
+                self.showError("You must be logged in as NGO to create a campaign.")
+            }
+            return
+        }
+
+        db.collection("users").document(uid).getDocument { [weak self] snap, error in
+            guard let self else { return }
+
+            if let error {
+                DispatchQueue.main.async {
+                    self.isOrgReady = false
+                    self.createButton.isEnabled = false
+                    self.orgField.setValue("—")
+                    self.showError("Failed to load NGO profile.\n\(error.localizedDescription)")
+                }
+                return
+            }
+
+            let data = snap?.data() ?? [:]
+
+            // ✅ role must be ngo
+            let role = (data["role"] as? String ?? "")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .lowercased()
+
+            guard role == "ngo" else {
+                DispatchQueue.main.async {
+                    self.isOrgReady = false
+                    self.createButton.isEnabled = false
+                    self.orgField.setValue("—")
+                    self.showError("This screen is for NGO accounts only.")
+                }
+                return
+            }
+
+            // ✅ organization name from user doc (try common keys)
+            let org =
+                (data["organization"] as? String) ??
+                (data["ngoName"] as? String) ??
+                (data["orgName"] as? String) ??
+                (data["name"] as? String)
+
+            guard let org, !org.atayaTrimmed.isEmpty else {
+                DispatchQueue.main.async {
+                    self.isOrgReady = false
+                    self.createButton.isEnabled = false
+                    self.orgField.setValue("—")
+                    self.showError("Organization/NGO name is missing in users/{uid}.\nAdd field: organization (or ngoName).")
+                }
+                return
+            }
+
+            DispatchQueue.main.async {
+                self.selectedOrg = org
+                self.orgField.setValue(org)
+                self.orgField.setLocked(true)
+
+                self.isOrgReady = true
+                self.createButton.isEnabled = true
             }
         }
     }
@@ -178,6 +263,7 @@ final class CreateCampaignViewController: UIViewController {
         overviewText.setText(data.overview)
         storyText.setText(data.story)
 
+        // ✅ keep org
         selectedOrg = data.organization
         orgField.setValue(data.organization)
 
@@ -369,6 +455,12 @@ final class CreateCampaignViewController: UIViewController {
         view.endEditing(true)
         clearAllErrors()
 
+        // ✅ must have auto org ready
+        if !isOrgReady || selectedOrg.atayaTrimmed.isEmpty {
+            showError("Organization is still loading. Please wait a moment.")
+            return
+        }
+
         let t = titleField.text.atayaTrimmed
 
         // ✅ CHANGED: take category from dropdown selected value
@@ -382,7 +474,7 @@ final class CreateCampaignViewController: UIViewController {
 
         var hasError = false
         if t.isEmpty { titleField.setError("Title is required"); hasError = true }
-        if c.isEmpty { categoryField.setError("Category is required"); hasError = true } // ✅ works
+        if c.isEmpty { categoryField.setError("Category is required"); hasError = true }
         if g.isEmpty { goalField.setError("Goal Amount is required"); hasError = true }
         if loc.isEmpty { locationField.setError("Location is required"); hasError = true }
 
@@ -392,6 +484,7 @@ final class CreateCampaignViewController: UIViewController {
 
         if hasError { return }
 
+        // ✅ organization forced from NGO profile
         let form = CampaignFormData(
             title: t,
             category: c,
@@ -445,23 +538,16 @@ final class CreateCampaignViewController: UIViewController {
         }
     }
 
-    // ✅ ensures sign-in (anonymous) so Firestore rules can allow access (if configured)
+    // ✅ IMPORTANT: NO anonymous sign-in here (must be logged in)
     private func ensureSignedIn(completion: @escaping (Result<String, Error>) -> Void) {
         if let uid = Auth.auth().currentUser?.uid {
             completion(.success(uid))
-            return
-        }
-
-        Auth.auth().signInAnonymously { result, error in
-            if let error {
-                completion(.failure(error))
-                return
-            }
-            if let uid = result?.user.uid {
-                completion(.success(uid))
-            } else {
-                completion(.failure(NSError(domain: "auth", code: -1)))
-            }
+        } else {
+            completion(.failure(NSError(
+                domain: "Auth",
+                code: 0,
+                userInfo: [NSLocalizedDescriptionKey: "Not logged in"]
+            )))
         }
     }
 
@@ -510,7 +596,11 @@ final class CreateCampaignViewController: UIViewController {
                     "overview": form.overview,
                     "story": form.story,
                     "from": form.from,
-                    "organization": form.organization,
+
+                    // ✅ force org from logged-in NGO
+                    "organization": self.selectedOrg,
+                    "ngoId": uid,
+
                     "showOnHome": form.showOnHome,
                     "updatedAt": FieldValue.serverTimestamp(),
                     "lastUpdatedBy": uid
@@ -568,7 +658,7 @@ final class CreateCampaignViewController: UIViewController {
     }
 
     private func setSaving(_ saving: Bool) {
-        createButton.isEnabled = !saving
+        createButton.isEnabled = !saving && isOrgReady
         cancelButton.isEnabled = !saving
         createButton.alpha = saving ? 0.7 : 1
         cancelButton.alpha = saving ? 0.7 : 1
@@ -1105,13 +1195,16 @@ extension LabeledTextView: UITextViewDelegate {
     }
 }
 
-// ✅ CHANGED: Menu field now has error support (so we can validate category too)
+// ✅ Menu field now has error support + LOCK support
 private final class LabeledMenuField: UIView {
 
     private let label = UILabel()
     private let box = UIView()
     private let button = UIButton(type: .system)
     private let errorLabel = UILabel()
+
+    // ✅ keep chevron as a property so we can hide it when locked
+    private let chevron = UIImageView(image: UIImage(systemName: "chevron.down"))
 
     var onSelect: ((String) -> Void)?
 
@@ -1137,7 +1230,6 @@ private final class LabeledMenuField: UIView {
         button.contentEdgeInsets = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 44)
 
         // chevron
-        let chevron = UIImageView(image: UIImage(systemName: "chevron.down"))
         chevron.tintColor = .secondaryLabel
         chevron.contentMode = .scaleAspectFit
         chevron.translatesAutoresizingMaskIntoConstraints = false
@@ -1194,6 +1286,12 @@ private final class LabeledMenuField: UIView {
     func setValue(_ value: String) {
         button.setTitle(value, for: .normal)
         clearError()
+    }
+
+    // ✅ NEW: lock / unlock (for NGO org auto)
+    func setLocked(_ locked: Bool) {
+        button.isUserInteractionEnabled = !locked
+        chevron.isHidden = locked
     }
 
     func setError(_ message: String) {

@@ -5,6 +5,7 @@
 //  Created by Maram on 25/12/2025.
 //
 
+
 import UIKit
 
 final class DonorCampaignDetailViewController: UIViewController {
@@ -12,7 +13,7 @@ final class DonorCampaignDetailViewController: UIViewController {
     // MARK: - ViewModel
     struct ViewModel {
         let title: String
-        let category: String     // ✅ من Firestore: "Climate change" / "Emergency" / "Critical"
+        let category: String
         let imageURL: String?
 
         let goalAmount: Double
@@ -82,14 +83,12 @@ final class DonorCampaignDetailViewController: UIViewController {
     // Hero
     private let heroImageView = UIImageView()
 
-    // ✅ Status badge فوق يسار (لاصق + مربع)
     private let statusPill = DonorPaddedLabel()
 
     private let heroOverlay = UIView()
     private let heroTitleLabel = UILabel()
     private let heroGradient = CAGradientLayer()
 
-    // ✅ Progress (تحت داخل الصورة)
     private let progressTrack = UIView()
     private let progressFill  = UIView()
     private var progressWidthC: NSLayoutConstraint?
@@ -113,7 +112,6 @@ final class DonorCampaignDetailViewController: UIViewController {
     private let aboutTitle = UILabel()
     private let aboutBody  = UILabel()
 
-    // ✅ Donate Now
     private let donateButton = UIButton(type: .system)
 
     private var imageTask: URLSessionDataTask?
@@ -213,7 +211,6 @@ final class DonorCampaignDetailViewController: UIViewController {
         contentView.addSubview(heroImageView)
         heroImageView.translatesAutoresizingMaskIntoConstraints = false
 
-        // ✅ Status pill
         statusPill.font = .systemFont(ofSize: 13, weight: .semibold)
         statusPill.textColor = .white
         statusPill.textAlignment = .left
@@ -225,7 +222,6 @@ final class DonorCampaignDetailViewController: UIViewController {
         heroImageView.addSubview(statusPill)
         statusPill.translatesAutoresizingMaskIntoConstraints = false
 
-        // Overlay + Gradient
         heroOverlay.backgroundColor = .clear
         heroImageView.addSubview(heroOverlay)
         heroOverlay.translatesAutoresizingMaskIntoConstraints = false
@@ -237,7 +233,6 @@ final class DonorCampaignDetailViewController: UIViewController {
         heroGradient.locations = [0.0, 1.0]
         heroOverlay.layer.insertSublayer(heroGradient, at: 0)
 
-        // Title
         heroTitleLabel.font = .systemFont(ofSize: 24, weight: .bold)
         heroTitleLabel.textColor = .white
         heroTitleLabel.numberOfLines = 2
@@ -245,7 +240,6 @@ final class DonorCampaignDetailViewController: UIViewController {
         heroOverlay.addSubview(heroTitleLabel)
         heroTitleLabel.translatesAutoresizingMaskIntoConstraints = false
 
-        // Progress
         setupProgressBarUI()
 
         leftAmountLabel.font = .systemFont(ofSize: 12, weight: .semibold)
@@ -274,18 +268,15 @@ final class DonorCampaignDetailViewController: UIViewController {
             heroImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             heroImageView.heightAnchor.constraint(equalToConstant: 366),
 
-            // ✅ status stuck top-left
             statusPill.topAnchor.constraint(equalTo: heroImageView.topAnchor, constant: 0),
             statusPill.leadingAnchor.constraint(equalTo: heroImageView.leadingAnchor, constant: 0),
             statusPill.heightAnchor.constraint(equalToConstant: 32),
 
-            // overlay bottom
             heroOverlay.leadingAnchor.constraint(equalTo: heroImageView.leadingAnchor),
             heroOverlay.trailingAnchor.constraint(equalTo: heroImageView.trailingAnchor),
             heroOverlay.bottomAnchor.constraint(equalTo: heroImageView.bottomAnchor),
             heroOverlay.heightAnchor.constraint(equalToConstant: 170),
 
-            // ✅ progress near bottom
             progressInfoRow.bottomAnchor.constraint(equalTo: heroImageView.bottomAnchor, constant: -18),
             progressInfoRow.leadingAnchor.constraint(equalTo: progressTrack.leadingAnchor),
             progressInfoRow.trailingAnchor.constraint(equalTo: progressTrack.trailingAnchor),
@@ -295,7 +286,6 @@ final class DonorCampaignDetailViewController: UIViewController {
             progressTrack.widthAnchor.constraint(equalToConstant: 392),
             progressTrack.heightAnchor.constraint(equalToConstant: 28),
 
-            // ✅ title فوق progress
             heroTitleLabel.bottomAnchor.constraint(equalTo: progressTrack.topAnchor, constant: -14),
             heroTitleLabel.leadingAnchor.constraint(equalTo: heroOverlay.leadingAnchor, constant: 24),
             heroTitleLabel.trailingAnchor.constraint(equalTo: heroOverlay.trailingAnchor, constant: -24),
@@ -384,7 +374,8 @@ final class DonorCampaignDetailViewController: UIViewController {
 
         quoteAuthorLabel.font = .systemFont(ofSize: 16, weight: .regular)
         quoteAuthorLabel.textColor = .secondaryLabel
-        quoteAuthorLabel.textAlignment = .center
+        quoteAuthorLabel.textAlignment = .right              // ✅ يمين
+        quoteAuthorLabel.semanticContentAttribute = .forceLeftToRight
 
         [quoteIcon, quoteLabel, quoteAuthorLabel].forEach {
             quoteCard.addSubview($0)
@@ -401,8 +392,10 @@ final class DonorCampaignDetailViewController: UIViewController {
             quoteLabel.leadingAnchor.constraint(equalTo: quoteCard.leadingAnchor, constant: 70),
             quoteLabel.trailingAnchor.constraint(equalTo: quoteCard.trailingAnchor, constant: -24),
 
+            // ✅ FIX: author ياخذ نفس عرض quoteLabel ويصير يمين
             quoteAuthorLabel.topAnchor.constraint(equalTo: quoteLabel.bottomAnchor, constant: 18),
-            quoteAuthorLabel.centerXAnchor.constraint(equalTo: quoteCard.centerXAnchor),
+            quoteAuthorLabel.leadingAnchor.constraint(equalTo: quoteLabel.leadingAnchor),
+            quoteAuthorLabel.trailingAnchor.constraint(equalTo: quoteLabel.trailingAnchor),
             quoteAuthorLabel.bottomAnchor.constraint(equalTo: quoteCard.bottomAnchor, constant: -18)
         ])
 
@@ -414,7 +407,6 @@ final class DonorCampaignDetailViewController: UIViewController {
         aboutBody.numberOfLines = 0
         aboutBody.textAlignment = .left
 
-        // ✅ Donate Button
         donateButton.setTitle("Donate Now", for: .normal)
         donateButton.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
         donateButton.backgroundColor = brandYellow
@@ -485,11 +477,9 @@ final class DonorCampaignDetailViewController: UIViewController {
 
         statsRow.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
-        // ✅ غيرت أيقونة الوسط (بدال الهلال)
         statsRow.addArrangedSubview(statItem(icon: "target", title: "Goal",  value: "\(money(model.goalAmount)) $"))
         statsRow.addArrangedSubview(statItem(icon: "chart.line.uptrend.xyaxis", title: "Raised", value: "\(money(model.raisedAmount)) $"))
         statsRow.addArrangedSubview(statItem(icon: "clock", title: "Days",  value: model.daysLeftText))
-
 
         overviewBody.text = model.overviewText.isEmpty ? "—" : model.overviewText
 
@@ -552,7 +542,6 @@ final class DonorCampaignDetailViewController: UIViewController {
         stack.translatesAutoresizingMaskIntoConstraints = false
         iconView.translatesAutoresizingMaskIntoConstraints = false
 
-        // ✅ Command+F: iconSize (هني تغيرين حجم الأيقونات)
         let iconSize: CGFloat = 24
         NSLayoutConstraint.activate([
             stack.topAnchor.constraint(equalTo: v.topAnchor),

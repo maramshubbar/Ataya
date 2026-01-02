@@ -22,8 +22,9 @@ final class CampaignManagementViewController: UIViewController {
     private var campaigns: [CampaignItem] = []
 
     // MARK: Colors
-    private let brandYellow = UIColor(hex: "F7D44C")
-    private let borderGray  = UIColor(hex: "E6E6E6")
+    private let brandYellow = AppColors.brandYellow
+    private let borderGray  = AppColors.borderGray
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -336,10 +337,11 @@ private final class CampaignCell: UITableViewCell {
     var onEdit: (() -> Void)?
     var onView: (() -> Void)?
 
-    private let brandYellow = UIColor(hex: "F7D44C")
-    private let borderGray  = UIColor(hex: "E6E6E6")
-    private let thumbBG     = UIColor(hex: "F2F2F7")
-    private let editText    = UIColor(hex: "C28A00")
+    private let brandYellow = AppColors.brandYellow
+    private let borderGray  = AppColors.borderGray
+    private let thumbBG     = AppColors.thumbBG
+    private let editText    = AppColors.editText
+
 
     private let cardView = UIView()
 

@@ -18,8 +18,9 @@ final class MyAddressDetailsViewController: UIViewController {
     @IBOutlet weak var houseNumbertxt: UITextField!
     @IBOutlet weak var addressLabeltxt: UITextField!
 
-    private let yellow = UIColor(hex: "#F7D44C")
-    private let yellowBG = UIColor(hex: "#FFFBE7")
+    private let yellow = AppColors.brandYellow
+
+    private let yellowBG = AppColors.yellowBG
 
     var editIndex: Int?
     var existingAddress: AddressModel?
@@ -71,6 +72,7 @@ final class MyAddressDetailsViewController: UIViewController {
             viewLocationtxt.setTitle(saved.address, for: .normal)
             LocationStorage.clear()
         }
+        tabBarController?.tabBar.isHidden = true
     }
 
     override func viewDidLayoutSubviews() {
@@ -200,5 +202,10 @@ final class MyAddressDetailsViewController: UIViewController {
             sender.transform = .identity
             sender.alpha = 1.0
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
     }
 }

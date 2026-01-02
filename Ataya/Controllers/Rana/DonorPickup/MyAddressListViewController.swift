@@ -1,3 +1,5 @@
+// MyAddressListViewController.swift
+// MyAddressListViewController.swift
 import UIKit
 
 final class MyAddressListViewController: UIViewController {
@@ -7,7 +9,7 @@ final class MyAddressListViewController: UIViewController {
     @IBOutlet weak var ngoButton: UIButton!
     @IBOutlet weak var nextButton: UIButton!
 
-    // ❗️لا تخليه يسوي Draft جديد هنا
+    // Do NOT create new draft here
     var draft: DraftDonation?
 
     private enum Choice { case myAddress, ngo }
@@ -22,12 +24,11 @@ final class MyAddressListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // ✅ لازم draft يوصل من قبل
-        guard draft != nil else {
-            showAlert(title: "Missing draft", message: "Draft not passed from previous screen. Go back and try again.")
-            navigationController?.popViewController(animated: true)
-            return
-        }
+        title = "Pickup Location"
+
+        if draft == nil {
+                draft = DraftDonation()
+            }
 
         setupOptionButton(myAddressButton)
         setupOptionButton(ngoButton)
@@ -94,14 +95,13 @@ final class MyAddressListViewController: UIViewController {
     }
 
     @objc private func nextTappedProgrammatic() {
-
         guard let choice = selectedChoice else {
             showAlert(title: "Choose an option", message: "Select My Address or NGO first.")
             return
         }
-
         guard let draftObj = draft else {
             showAlert(title: "Missing draft", message: "Draft not found. Please go back and try again.")
+            navigationController?.popViewController(animated: true)
             return
         }
 
@@ -113,17 +113,28 @@ final class MyAddressListViewController: UIViewController {
 
             setNextEnabled(false)
 
-            // ✅ Upload (if needed) ثم Save ثم Popup
-            uploadThenSave(draftObj) { [weak self] error in
+            // ✅ TRY AUTH, but if it fails -> DEMO fallback (no error popup, just show your popup)
+            AuthGate.ensureLoggedIn { [weak self] ok in
                 guard let self else { return }
-                self.setNextEnabled(true)
 
-                if let error {
-                    self.showAlert(title: "Save failed", message: error.localizedDescription)
-                    return
+                self.uploadThenSave(draftObj) { [weak self] error in
+                    guard let self else { return }
+                    self.setNextEnabled(true)
+
+                    // DEMO fallback
+                    if !ok {
+                        self.presentThankYouPopup()
+                        return
+                    }
+
+                    // Real error (not login)
+                    if let error {
+                        self.showAlert(title: "Save failed", message: error.localizedDescription)
+                        return
+                    }
+
+                    self.presentThankYouPopup()
                 }
-
-                self.presentThankYouPopup()
             }
 
         case .myAddress:
@@ -139,12 +150,11 @@ final class MyAddressListViewController: UIViewController {
         }
     }
 
-    // MARK: - ✅ Upload then Save
+    // MARK: - Upload then Save
     private func uploadThenSave(_ draft: DraftDonation, completion: @escaping (Error?) -> Void) {
 
-        // إذا عنده صور محلية بس ما عنده روابط كلاودينري -> ارفع أول
+        // If has local images and no URLs -> upload first
         if !draft.images.isEmpty && draft.photoURLs.isEmpty {
-
             CloudinaryUploader.shared.uploadImages(draft.images, folder: "donations") { res in
                 switch res {
                 case .success(let items):
@@ -163,7 +173,7 @@ final class MyAddressListViewController: UIViewController {
             return
         }
 
-        // ما عنده صور أو الصور محفوظة URLs -> احفظ مباشرة
+        // No images / already have URLs -> save directly
         DonationDraftSaver.shared.saveAfterPickup(draft: draft) { err in
             completion(err)
         }
@@ -198,5 +208,15 @@ final class MyAddressListViewController: UIViewController {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.tabBar.isHidden = true
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
     }
 }

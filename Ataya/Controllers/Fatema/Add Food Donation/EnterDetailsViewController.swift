@@ -4,7 +4,6 @@
 //
 //  Created by Fatema Maitham on 28/11/2025.
 //
-
 import UIKit
 import FirebaseFirestore
 import FirebaseAuth
@@ -70,9 +69,12 @@ final class EnterDetailsViewController: UIViewController,
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if draft == nil { draft = DraftDonation() }
+        // ✅ لا تسوين draft جديد هنا — لازم ينمرر من قبل
+        guard draft != nil else {
+            showMissingDraftAndBack()
+            return
+        }
 
-        // delegates
         scrollView.delegate = self
 
         foodItemTextField.delegate = self
@@ -83,7 +85,6 @@ final class EnterDetailsViewController: UIViewController,
         expiryTextField.delegate = self
         descriptionTextView.delegate = self
 
-        // update itemName live
         foodItemTextField.addTarget(self, action: #selector(foodItemChanged), for: .editingChanged)
 
         nextButton.isHidden = true
@@ -103,6 +104,32 @@ final class EnterDetailsViewController: UIViewController,
         setupDropdowns()
         setupQuantityPicker()
         fillUIFromDraft()
+    }
+
+    // ✅ شبكة أمان: لو بالغلط كان فيه segue
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let dest = (segue.destination as? UINavigationController)?.topViewController ?? segue.destination
+        if let vc = dest as? PickUpDateViewController {
+            vc.draft = self.draft
+        }
+    }
+
+    // MARK: - Missing Draft
+    private func showMissingDraftAndBack() {
+        let ac = UIAlertController(
+            title: "Missing draft",
+            message: "Draft not passed from previous screen.\nGo back and try again.",
+            preferredStyle: .alert
+        )
+        ac.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+            guard let self else { return }
+            if let nav = self.navigationController {
+                nav.popViewController(animated: true)
+            } else {
+                self.dismiss(animated: true)
+            }
+        })
+        present(ac, animated: true)
     }
 
     private func styleCard(_ v: UIView) {
@@ -132,7 +159,6 @@ final class EnterDetailsViewController: UIViewController,
         allergenTextField.text = draft.allergenInfo ?? ""
         descriptionTextView.text = draft.notes ?? ""
 
-        // select picker rows
         if let i = categories.firstIndex(of: draft.category) {
             categoryPicker.selectRow(i, inComponent: 0, animated: false)
         }
@@ -377,6 +403,7 @@ final class EnterDetailsViewController: UIViewController,
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         syncDraftFromUI()
+        tabBarController?.tabBar.isHidden = false
     }
 
     // MARK: - Validation UI
@@ -439,6 +466,9 @@ final class EnterDetailsViewController: UIViewController,
         view.endEditing(true)
         guard validateAndShowInlineErrors() else { return }
 
+        // ✅ ديبق يساعدنا نتأكد انه نفس الدرفت ينمرر
+        print("✅ EnterDetails draft id =", draft.id ?? "nil", "mem =", ObjectIdentifier(draft as AnyObject))
+
         let sb = UIStoryboard(name: "Pickup", bundle: nil)
         guard let vc = sb.instantiateViewController(withIdentifier: "PickUpDateViewController") as? PickUpDateViewController else {
             showAlert("Storyboard Error", "In Pickup.storyboard set Storyboard ID = PickUpDateViewController")
@@ -491,5 +521,10 @@ final class EnterDetailsViewController: UIViewController,
         } else {
             commitAllergenSelection()
         }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.tabBar.isHidden = true
     }
 }

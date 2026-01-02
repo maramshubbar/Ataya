@@ -25,7 +25,8 @@ final class ConfirmLocationViewController: UIViewController {
     private var lastAddress: String = "Move map to pick location..."
     private var lastCoordinate: CLLocationCoordinate2D?
 
-    private let yellow = UIColor(hex: "#F7D44C")
+    private let yellow = AppColors.brandYellow
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -178,5 +179,15 @@ extension ConfirmLocationViewController: CLLocationManagerDelegate {
 extension ConfirmLocationViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         updateAddressFromMapCenter()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.tabBar.isHidden = true
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
     }
 }

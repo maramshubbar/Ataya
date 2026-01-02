@@ -12,40 +12,39 @@ final class DonationDraftSaver {
         let db = Firestore.firestore()
 
         guard let uid = Auth.auth().currentUser?.uid, !uid.isEmpty else {
-            completion(NSError(domain: "Auth", code: 0, userInfo: [NSLocalizedDescriptionKey: "Not logged in"]))
+            completion(NSError(domain: "Auth", code: 0, userInfo: [
+                NSLocalizedDescriptionKey: "Not logged in"
+            ]))
             return
         }
 
-        let isUpdate = (draft.id?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false)
+        // Confirm safety before saving
+        draft.safetyConfirmed = true
+        draft.normalizeBeforeSave()
 
-        // ✅ your DraftDonation expects isUpdate
-        var base = draft.toFirestoreDict(isUpdate: isUpdate)
-
-        // pickup (إذا موجود داخل الدكت)
-        let pickupMap = extractPickupMap(from: base)
+        // pickup map (nested pickup only)
+        let pickupMap = buildPickupDict(draft: draft)
 
         // ===== UPDATE existing =====
-        if isUpdate, let existingId = draft.id {
+        if let existingId = draft.id,
+           !existingId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
 
-            base["id"] = existingId
-            base["donorId"] = uid
-            base["status"] = "pending"
-            base["updatedAt"] = FieldValue.serverTimestamp()
+            var data = draft.toFirestoreDict(isUpdate: true)
+            data["id"] = existingId
+            data["donorId"] = uid
+            data["status"] = "pending"
+            data["updatedAt"] = FieldValue.serverTimestamp()
 
             if let n = parseDonationNumber(from: existingId) {
-                base["donationNumber"] = n
-                base["donationCode"] = "DON-\(n)"
+                data["donationNumber"] = n
             }
 
             let ref = db.collection("donations").document(existingId)
 
-            ref.setData(base, merge: true) { error in
+            ref.setData(data, merge: true) { error in
                 if let error { completion(error); return }
-
-                if let pickupMap {
-                    ref.updateData(["pickup": pickupMap]) { err2 in completion(err2) }
-                } else {
-                    completion(nil)
+                ref.updateData(["pickup": pickupMap]) { err2 in
+                    completion(err2)
                 }
             }
             return
@@ -63,47 +62,33 @@ final class DonationDraftSaver {
                 let docId = "DON-\(number)"
                 draft.id = docId
 
-                base["id"] = docId
-                base["donationNumber"] = number
-                base["donationCode"] = docId
-                base["donorId"] = uid
-                base["status"] = "pending"
-                base["createdAt"] = FieldValue.serverTimestamp()
-                base["updatedAt"] = FieldValue.serverTimestamp()
+                var data = draft.toFirestoreDict(isUpdate: false)
+                data["id"] = docId
+                data["donationNumber"] = number
+                data["donorId"] = uid
+                data["status"] = "pending"
+                data["createdAt"] = FieldValue.serverTimestamp()
+                data["updatedAt"] = FieldValue.serverTimestamp()
 
                 let ref = db.collection("donations").document(docId)
 
-                ref.setData(base, merge: true) { error in
+                ref.setData(data, merge: true) { error in
                     if let error { completion(error); return }
-
-                    if let pickupMap {
-                        ref.updateData(["pickup": pickupMap]) { err2 in completion(err2) }
-                    } else {
-                        completion(nil)
+                    ref.updateData(["pickup": pickupMap]) { err2 in
+                        completion(err2)
                     }
                 }
             }
         }
     }
 
-    // MARK: - Pickup extractor (NO DraftDonation props needed)
-    private func extractPickupMap(from base: [String: Any]) -> [String: Any]? {
-
-        if let pickup = base["pickup"] as? [String: Any], !pickup.isEmpty {
-            return pickup
-        }
-
+    private func buildPickupDict(draft: DraftDonation) -> [String: Any] {
         var pickup: [String: Any] = [:]
-
-        if let d = base["pickupDate"] { pickup["date"] = d }
-        if let t = base["pickupTime"] as? String, !t.isEmpty { pickup["time"] = t }
-        if let m = base["pickupMethod"] as? String, !m.isEmpty { pickup["method"] = m }
-
-        if let addr = base["pickupAddress"] as? [String: Any], !addr.isEmpty {
-            pickup["address"] = addr
-        }
-
-        return pickup.isEmpty ? nil : pickup
+        if let d = draft.pickupDate { pickup["date"] = d }
+        if let t = draft.pickupTime, !t.isEmpty { pickup["time"] = t }
+        if !draft.pickupMethod.isEmpty { pickup["method"] = draft.pickupMethod }
+        if let a = draft.pickupAddress { pickup["address"] = a.toFirestoreDict() }
+        return pickup
     }
 
     private func parseDonationNumber(from id: String) -> Int? {

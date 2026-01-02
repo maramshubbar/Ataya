@@ -5,39 +5,14 @@
 //  Created by BP-36-224-14 on 30/12/2025.
 //
 import UIKit
-//
-//private extension UIColor {
-//    convenience init(hex: String) {
-//        var s = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-//        if s.hasPrefix("#") { s.removeFirst() }
-//        var rgb: UInt64 = 0
-//        Scanner(string: s).scanHexInt64(&rgb)
-//        let r = CGFloat((rgb & 0xFF0000) >> 16) / 255
-//        let g = CGFloat((rgb & 0x00FF00) >> 8) / 255
-//        let b = CGFloat(rgb & 0x0000FF) / 255
-//        self.init(red: r, green: g, blue: b, alpha: 1)
-//    }
-//}
-
-enum SupportTicketStatus: String {
-    case pending = "Pending"
-    case resolved = "Resolved"
-}
-
-struct SupportTicket {
-    let id: String
-    let ticketLabel: String
-    let category: String
-    let status: SupportTicketStatus
-    let userIssue: String
-    let adminReply: String?
-    let updatedAt: Date
-}
+import FirebaseAuth
+import FirebaseFirestore
 
 final class MySupportTicketsViewController: UIViewController {
 
     private let sidePadding: CGFloat = 36
-    private let yellow = UIColor(hex: "#F7D44C")
+    private let yellow = UIColor(red: 247/255, green: 212/255, blue: 76/255, alpha: 1) // #F7D44C
+
 
     private let headerContainer = UIView()
     private let backButton = UIButton(type: .system)
@@ -51,26 +26,10 @@ final class MySupportTicketsViewController: UIViewController {
     private let emptyIcon = UIImageView()
     private let emptyLabel = UILabel()
 
-    private var tickets: [SupportTicket] = [
-        SupportTicket(
-            id: "#12345",
-            ticketLabel: "Pickup Delay",
-            category: "Donations",
-            status: .resolved,
-            userIssue: "I scheduled a pickup for October 14, but the collector didn’t arrive at the selected time. Can you please check if it was confirmed correctly?",
-            adminReply: "Hello Zahra, thank you for contacting us.\n\nWe checked your report and found a scheduling sync issue caused by a minor system update.\n\nYour donation #1001 has now been marked as Collected and is visible in your donation history.\n\nEverything is working normally now. We truly appreciate your patience and continued support!",
-            updatedAt: Date()
-        ),
-        SupportTicket(
-            id: "#12346",
-            ticketLabel: "Login Problem",
-            category: "Accounts",
-            status: .pending,
-            userIssue: "I can’t log in after updating the app. I tried resetting password but it still fails.",
-            adminReply: nil,
-            updatedAt: Date()
-        )
-    ]
+    private var tickets: [SupportTicket] = []
+    private var listener: ListenerRegistration?
+
+    private let includeOnlyReplied = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -85,11 +44,38 @@ final class MySupportTicketsViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
+        startListening()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
+        listener?.remove()
+        listener = nil
+    }
+
+    private func startListening() {
+        listener?.remove()
+        listener = nil
+
+        // ✅ No login blocking here.
+        // Service will use Firebase Auth user if exists, otherwise DEMO_USER.
+        listener = SupportTicketService.shared.listenMyTickets(includeOnlyReplied: includeOnlyReplied) { [weak self] result in
+            guard let self else { return }
+
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let items):
+                    self.tickets = items
+                    self.refreshUI()
+
+                case .failure(let error):
+                    self.tickets = []
+                    self.refreshUI()
+                    self.showInfoAlert(title: "Load Failed", message: error.localizedDescription)
+                }
+            }
+        }
     }
 
     private func setupHeader() {
@@ -148,7 +134,10 @@ final class MySupportTicketsViewController: UIViewController {
             contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
 
-            contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor)
+            contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+
+            // ✅ FIX: make contentView at least screen height so empty state centers correctly
+            contentView.heightAnchor.constraint(greaterThanOrEqualTo: scrollView.frameLayoutGuide.heightAnchor)
         ])
     }
 
@@ -177,7 +166,7 @@ final class MySupportTicketsViewController: UIViewController {
         emptyIcon.contentMode = .scaleAspectFit
 
         emptyLabel.translatesAutoresizingMaskIntoConstraints = false
-        emptyLabel.text = "No replies yet.\nOnce the admin responds, your tickets will appear here."
+        emptyLabel.text = "No tickets yet.\nSubmit a ticket and it will appear here."
         emptyLabel.numberOfLines = 0
         emptyLabel.textAlignment = .center
         emptyLabel.font = .systemFont(ofSize: 14, weight: .regular)
@@ -188,7 +177,7 @@ final class MySupportTicketsViewController: UIViewController {
 
         NSLayoutConstraint.activate([
             emptyContainer.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            emptyContainer.centerYAnchor.constraint(equalTo: contentView.centerYAnchor, constant: -40),
+            emptyContainer.centerYAnchor.constraint(equalTo: contentView.centerYAnchor), // ✅ now true center
             emptyContainer.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: sidePadding),
             emptyContainer.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -sidePadding),
 
@@ -205,21 +194,19 @@ final class MySupportTicketsViewController: UIViewController {
     }
 
     private func refreshUI() {
-        let replied = tickets.filter { ($0.adminReply?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false) }
-
         stack.arrangedSubviews.forEach { v in
             stack.removeArrangedSubview(v)
             v.removeFromSuperview()
         }
 
-        if replied.isEmpty {
+        if tickets.isEmpty {
             emptyContainer.isHidden = false
             return
         }
 
         emptyContainer.isHidden = true
 
-        replied.forEach { ticket in
+        tickets.forEach { ticket in
             let card = TicketCard(ticket: ticket, yellow: yellow)
             card.onViewDetails = { [weak self] in
                 guard let self else { return }
@@ -228,6 +215,12 @@ final class MySupportTicketsViewController: UIViewController {
             }
             stack.addArrangedSubview(card)
         }
+    }
+
+    private func showInfoAlert(title: String, message: String) {
+        let a = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        a.addAction(UIAlertAction(title: "OK", style: .default))
+        present(a, animated: true)
     }
 }
 
@@ -388,13 +381,30 @@ private final class TicketCard: UIView {
     }
 
     private func fill() {
-        titleLabel.text = ticket.ticketLabel
-        idLabel.text = ticket.id
+        titleLabel.text = ticket.titleSafe
+        idLabel.text = ticket.displayId
 
         let resolved = (ticket.status == .resolved)
+
         statusPill.text = " \(ticket.status.rawValue) "
         statusPill.textColor = UIColor(white: 0.15, alpha: 1)
-        statusPill.backgroundColor = resolved ? UIColor(hex: "#EAF8EF") : UIColor(hex: "#FFF6DD")
+
+        // بديل hex → RGB (عشان يختفي Ambiguous init)
+        let resolvedBG = UIColor(
+            red: 234/255,
+            green: 248/255,
+            blue: 239/255,
+            alpha: 1
+        ) // #EAF8EF
+
+        let pendingBG = UIColor(
+            red: 255/255,
+            green: 246/255,
+            blue: 221/255,
+            alpha: 1
+        ) // #FFF6DD
+
+        statusPill.backgroundColor = resolved ? resolvedBG : pendingBG
 
         metaLabel.text = "Category: \(ticket.category)"
         issueBody.text = ticket.userIssue

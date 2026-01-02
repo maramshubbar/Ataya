@@ -22,8 +22,20 @@ final class NotificationSettingsViewController: UIViewController {
     @IBOutlet private weak var saveButton: UIButton!
 
     // MARK: - Colors
-    private let yellow = UIColor(hex: "#F7D44C")
-    private let borderGray = UIColor(hex: "#B8B8B8")
+    private let yellow = UIColor(
+        red: 247/255,
+        green: 212/255,
+        blue: 76/255,
+        alpha: 1
+    ) // #F7D44C
+
+    private let borderGray = UIColor(
+        red: 184/255,
+        green: 184/255,
+        blue: 184/255,
+        alpha: 1
+    ) // #B8B8B8
+
 
     // MARK: - Storage Keys
     private enum Keys {

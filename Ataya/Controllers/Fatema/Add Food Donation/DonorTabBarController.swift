@@ -94,14 +94,18 @@ final class DonorTabBarController: UITabBarController, UITabBarControllerDelegat
         presentDonateSheet()
     }
 
-    // MARK: - Apple Sheet
+
     private func presentDonateSheet() {
         guard !isShowingDonateSheet else { return }
         isShowingDonateSheet = true
 
-        let sb = UIStoryboard(name: "Main", bundle: nil)
-        guard let donateVC = sb.instantiateViewController(withIdentifier: "DonateViewController") as? DonateViewController else {
-            assertionFailure("DonateViewController Storyboard ID not found")
+        // ✅ FIX: DonateViewController موجود في DonorDashboard.storyboard (مو Main)
+        let sb = UIStoryboard(name: "DonorDashboard", bundle: .main)
+
+        // ✅ FIX: ID لازم يطابق اللي بالستوريبورد
+        let vc = sb.instantiateViewController(withIdentifier: "DonateViewController")
+        guard let donateVC = vc as? DonateViewController else {
+            assertionFailure("❌ Found 'DonateViewController' but class is not DonateViewController")
             isShowingDonateSheet = false
             return
         }
@@ -112,39 +116,26 @@ final class DonorTabBarController: UITabBarController, UITabBarControllerDelegat
         donateNavController = nav
 
         if let sheet = nav.sheetPresentationController {
-            if let sheet = nav.sheetPresentationController {
-                sheet.prefersGrabberVisible = true
-                sheet.preferredCornerRadius = 28
-                sheet.largestUndimmedDetentIdentifier = nil
-
-                if #available(iOS 16.0, *) {
-                    let midID = UISheetPresentationController.Detent.Identifier("donateMedium")
-
-                    sheet.detents = [
-                        .custom(identifier: midID) { ctx in
-                            min(800, ctx.maximumDetentValue * 0.85)
-                        },
-                        .large()
-                    ]
-
-                    sheet.selectedDetentIdentifier = midID
-                    sheet.prefersScrollingExpandsWhenScrolledToEdge = true
-
-                    sheet.prefersEdgeAttachedInCompactHeight = true
-                    sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true
-                } else {
-                    sheet.detents = [.medium(), .large()]
-                    sheet.selectedDetentIdentifier = .medium
-                    sheet.prefersScrollingExpandsWhenScrolledToEdge = true
-                }
-            }
-
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 28
             sheet.largestUndimmedDetentIdentifier = nil
-            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
 
             if #available(iOS 16.0, *) {
+                let midID = UISheetPresentationController.Detent.Identifier("donateMedium")
+                sheet.detents = [
+                    .custom(identifier: midID) { ctx in
+                        min(800, ctx.maximumDetentValue * 0.85)
+                    },
+                    .large()
+                ]
+                sheet.selectedDetentIdentifier = midID
+                sheet.prefersScrollingExpandsWhenScrolledToEdge = true
                 sheet.prefersEdgeAttachedInCompactHeight = true
                 sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true
+            } else {
+                sheet.detents = [.medium(), .large()]
+                sheet.selectedDetentIdentifier = .medium
+                sheet.prefersScrollingExpandsWhenScrolledToEdge = true
             }
         }
 
@@ -164,6 +155,8 @@ final class DonorTabBarController: UITabBarController, UITabBarControllerDelegat
 
         present(nav, animated: true)
     }
+
+    
 
     @objc func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
         isShowingDonateSheet = false

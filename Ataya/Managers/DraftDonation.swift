@@ -44,59 +44,40 @@ final class DraftDonation {
         packagingType = packagingType.trimmingCharacters(in: .whitespacesAndNewlines)
         quantityUnit = quantityUnit.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        if let a = allergenInfo?.trimmingCharacters(in: .whitespacesAndNewlines) {
-            allergenInfo = a.isEmpty || a.lowercased() == "none" ? nil : a
+        let a = (allergenInfo ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        allergenInfo = (a.isEmpty || a == "None") ? nil : a
+
+        let n = (notes ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        notes = n.isEmpty ? nil : n
+
+        if let pt = pickupTime?.trimmingCharacters(in: .whitespacesAndNewlines) {
+            pickupTime = pt.isEmpty ? nil : pt
         }
-        if let n = notes?.trimmingCharacters(in: .whitespacesAndNewlines) {
-            notes = n.isEmpty ? nil : n
-        }
+
+        pickupMethod = pickupMethod.trimmingCharacters(in: .whitespacesAndNewlines)
     }
+
 
     /// ✅ No pickup fields here (pickup saved as nested object by DonationDraftSaver)
     func toFirestoreDict(isUpdate: Bool) -> [String: Any] {
-        normalizeBeforeSave()
+        var d: [String: Any] = [:]
 
-        var data: [String: Any] = [
-            "safetyConfirmed": safetyConfirmed
-        ]
+        d["itemName"] = itemName
+        d["quantityValue"] = quantityValue
+        d["quantityUnit"] = quantityUnit
 
-        // Details
-        if !itemName.isEmpty { data["itemName"] = itemName }
-        else if isUpdate { data["itemName"] = FieldValue.delete() }
+        if let expiryDate { d["expiryDate"] = expiryDate }
 
-        if !category.isEmpty { data["category"] = category }
-        else if isUpdate { data["category"] = FieldValue.delete() }
+        d["category"] = category
+        d["packagingType"] = packagingType
 
-        if !packagingType.isEmpty { data["packagingType"] = packagingType }
-        else if isUpdate { data["packagingType"] = FieldValue.delete() }
+        if let allergenInfo { d["allergenInfo"] = allergenInfo }
+        if let notes { d["notes"] = notes }
 
-        if quantityValue > 0 { data["quantityValue"] = quantityValue }
-        else if isUpdate { data["quantityValue"] = FieldValue.delete() }
+        d["safetyConfirmed"] = safetyConfirmed
 
-        if !quantityUnit.isEmpty { data["quantityUnit"] = quantityUnit }
-        else if isUpdate { data["quantityUnit"] = FieldValue.delete() }
-
-        if let expiryDate { data["expiryDate"] = expiryDate }
-        else if isUpdate { data["expiryDate"] = FieldValue.delete() }
-
-        if let allergenInfo { data["allergenInfo"] = allergenInfo }
-        else if isUpdate { data["allergenInfo"] = FieldValue.delete() }
-
-        if let notes { data["notes"] = notes }
-        else if isUpdate { data["notes"] = FieldValue.delete() }
-
-        // Photos
-        if !photoURLs.isEmpty || !imagePublicIds.isEmpty {
-            data["photoURLs"] = photoURLs
-            data["imagePublicIds"] = imagePublicIds
-            data["photoCount"] = photoURLs.count
-        } else if isUpdate {
-            data["photoURLs"] = FieldValue.delete()
-            data["imagePublicIds"] = FieldValue.delete()
-            data["photoCount"] = FieldValue.delete()
-        }
-
-        return data
+        return d
     }
+
 }
 

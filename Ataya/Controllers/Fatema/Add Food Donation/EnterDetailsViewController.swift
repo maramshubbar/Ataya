@@ -9,7 +9,7 @@ import UIKit
 import FirebaseFirestore
 import FirebaseAuth
 
-final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
+final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate, UITextFieldDelegate {
     
     var draft: DraftDonation!
     
@@ -76,7 +76,7 @@ final class EnterDetailsViewController: UIViewController, UIScrollViewDelegate {
             packagingTextField.delegate = self
             allergenTextField.delegate = self
             expiryTextField.delegate = self
-            descriptionTextView.delegate = self
+//            descriptionTextView.delegate = self
 
             // update itemName live
             foodItemTextField.addTarget(self, action: #selector(foodItemChanged), for: .editingChanged)

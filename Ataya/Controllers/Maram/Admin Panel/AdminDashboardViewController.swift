@@ -5,6 +5,8 @@
 //  Created by Maram on 24/11/2025.
 //
 
+
+
 import UIKit
 import FirebaseFirestore
 
@@ -40,10 +42,10 @@ final class AdminDashboardViewController: UIViewController {
     // MARK: - Firestore
     private let db = Firestore.firestore()
 
-    // ✅ Listeners (بدل admin_stats)
+    // ✅ Listeners
     private var registeredUsersListener: ListenerRegistration?
     private var totalDonationsListener: ListenerRegistration?
-    private var flaggedReportsListener: ListenerRegistration?
+    private var reportsListener: ListenerRegistration?
     private var verifiedCollectorsListener: ListenerRegistration?
     private var activityListener: ListenerRegistration?
 
@@ -126,7 +128,7 @@ final class AdminDashboardViewController: UIViewController {
     // MARK: - Firestore Listening (REAL DATA)
     private func startListening() {
 
-        // 1) Registered Users = donor + collector (من users)
+        // 1) Registered Users = donor + ngo (من users)
         registeredUsersListener = db.collection("users")
             .whereField("role", in: ["donor", "ngo"])
             .addSnapshotListener { [weak self] snap, err in
@@ -141,8 +143,7 @@ final class AdminDashboardViewController: UIViewController {
                 }
             }
 
-        // 2) Total Donations = COUNT documents in donations (مو مبلغ)
-        // إذا تبين فقط المكتملة: ضيفي whereField("status", isEqualTo: "completed")
+        // 2) Total Donations = COUNT documents in donations
         totalDonationsListener = db.collection("donations")
             .addSnapshotListener { [weak self] snap, err in
                 guard let self else { return }
@@ -156,13 +157,12 @@ final class AdminDashboardViewController: UIViewController {
                 }
             }
 
-        // 3) Flagged Reports = status == "flagged" (من reports)
-        flaggedReportsListener = db.collection("reports")
-            .whereField("status", isEqualTo: "flagged")
+        // ✅ 3) Reports = COUNT documents in reports (كلهم)
+        reportsListener = db.collection("reports")
             .addSnapshotListener { [weak self] snap, err in
                 guard let self else { return }
                 if let err {
-                    print("❌ FlaggedReports error:", err.localizedDescription)
+                    print("❌ Reports error:", err.localizedDescription)
                     return
                 }
                 let count = snap?.documents.count ?? 0
@@ -171,7 +171,7 @@ final class AdminDashboardViewController: UIViewController {
                 }
             }
 
-        // 4) Verified Collectors = role == collector AND isVerified == true (من users)
+        // 4) Verified Collectors = role == ngo AND isVerified == true (من users)
         verifiedCollectorsListener = db.collection("users")
             .whereField("role", isEqualTo: "ngo")
             .whereField("isVerified", isEqualTo: true)
@@ -206,7 +206,6 @@ final class AdminDashboardViewController: UIViewController {
                     let location = d["location"] as? String ?? ""
                     let category = d["category"] as? String ?? ""
 
-                    // مثال: "Donation Approved • Zahraa Ali • Manama, Bahrain"
                     var parts: [String] = []
                     if !title.isEmpty { parts.append(title) }
                     if !user.isEmpty { parts.append(user) }
@@ -227,7 +226,7 @@ final class AdminDashboardViewController: UIViewController {
     deinit {
         registeredUsersListener?.remove()
         totalDonationsListener?.remove()
-        flaggedReportsListener?.remove()
+        reportsListener?.remove()
         verifiedCollectorsListener?.remove()
         activityListener?.remove()
     }

@@ -5,12 +5,12 @@ import FirebaseFirestore
 struct NGO {
     let id: String
     let name: String
-    let type: String           // ✅ NEW
-    let description: String    // mission/description (لـ View Details)
+    let type: String
+    let description: String
     let email: String
     let phone: String
     let note: String?
-    let status: String         // pending / verified / rejected
+    let status: String         // pending / verified / rejected (بعد التطبيع)
     let createdAt: Date
 }
 
@@ -27,6 +27,14 @@ final class NGOVerificationViewController: UIViewController {
 
     private var allNGOs: [NGO] = []
     private var shownNGOs: [NGO] = []
+
+    // ✅ status values (الموحدة)
+    private enum Status {
+        static let pending  = "pending"
+        static let verified = "verified"
+        static let rejected = "rejected"
+        static let all      = "all"
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,6 +54,8 @@ final class NGOVerificationViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
 
+        // ✅ default segment = All
+        filterSegment.selectedSegmentIndex = 0
         filterSegment.addTarget(self, action: #selector(filterChanged), for: .valueChanged)
 
         let nib = UINib(nibName: "NGOVerificationTableViewCell", bundle: nil)
@@ -73,10 +83,40 @@ final class NGOVerificationViewController: UIViewController {
         listener = nil
     }
 
+    // MARK: - Normalize Status (الأهم)
+    // يحوّل أي قيمة إلى: pending / verified / rejected
+    private func normalizeStatus(_ raw: Any?) -> String {
+        let s = (raw as? String ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+
+        if s.isEmpty { return Status.pending }
+
+        // ✅ verified variations
+        if s == "verified" || s == "approve" || s == "approved" || s == "accept" || s == "accepted" {
+            return Status.verified
+        }
+
+        // ✅ rejected variations
+        if s == "rejected" || s == "reject" || s == "rejected " || s == "declined" || s == "denied" || s == "refused" {
+            return Status.rejected
+        }
+
+        // ✅ pending variations
+        if s == "pending" || s == "in review" || s == "review" || s == "submitted" || s == "waiting" {
+            return Status.pending
+        }
+
+        // أي شي غريب نخليه pending عشان ما يختفي من القائمة
+        return Status.pending
+    }
+
     // MARK: - Firestore Listener (USERS -> NGO)
     private func startListening() {
         stopListening()
 
+        // ✅ نخلي الفلترة كلها محلي (segments) عشان تكون مرنة
+        // (بدون whereField على status عشان ما نحتاج index إضافي)
         let query = db.collection(usersCollection)
             .whereField("role", isEqualTo: "ngo")
             .order(by: "createdAt", descending: true)
@@ -98,11 +138,9 @@ final class NGOVerificationViewController: UIViewController {
                 let email = data["email"] as? String ?? ""
                 let phone = data["phone"] as? String ?? ""
 
-                // ✅ type من Org Details
                 let type = (data["type"] as? String ?? "")
                     .trimmingCharacters(in: .whitespacesAndNewlines)
 
-                // description (mission/description/overview) للـ details
                 let description =
                     (data["mission"] as? String) ??
                     (data["description"] as? String) ??
@@ -113,14 +151,14 @@ final class NGOVerificationViewController: UIViewController {
                     (data["rejectionReason"] as? String) ??
                     (data["note"] as? String)
 
+                // ✅ اقرأ status من approvalStatus أولاً (مثل ما انتي تسوين update)
+                // وبعدين status كـ fallback
                 let statusRaw =
-                    (data["approvalStatus"] as? String) ??
-                    (data["status"] as? String) ??
+                    data["approvalStatus"] ??
+                    data["status"] ??
                     "pending"
 
-                let status = statusRaw
-                    .trimmingCharacters(in: .whitespacesAndNewlines)
-                    .lowercased()
+                let status = self.normalizeStatus(statusRaw)
 
                 let ts = data["createdAt"] as? Timestamp
                 let createdAt = ts?.dateValue() ?? Date.distantPast
@@ -128,7 +166,7 @@ final class NGOVerificationViewController: UIViewController {
                 return NGO(
                     id: doc.documentID,
                     name: name,
-                    type: type,                 // ✅ NEW
+                    type: type,
                     description: description,
                     email: email,
                     phone: phone,
@@ -151,11 +189,11 @@ final class NGOVerificationViewController: UIViewController {
 
     private func selectedStatusFromSegment() -> String {
         switch filterSegment.selectedSegmentIndex {
-        case 0: return "all"
-        case 1: return "pending"
-        case 2: return "verified"
-        case 3: return "rejected"
-        default: return "all"
+        case 0: return Status.all
+        case 1: return Status.pending
+        case 2: return Status.verified
+        case 3: return Status.rejected
+        default: return Status.all
         }
     }
 
@@ -167,15 +205,17 @@ final class NGOVerificationViewController: UIViewController {
 
         var items = allNGOs
 
-        if selectedStatus != "all" {
+        // ✅ فلتر حسب الستيتس (مضمون لأن status صار موحّد)
+        if selectedStatus != Status.all {
             items = items.filter { $0.status == selectedStatus }
         }
 
+        // ✅ Search
         if !searchText.isEmpty {
             items = items.filter { ngo in
                 let haystack = [
                     ngo.name,
-                    ngo.type,          // ✅ NEW
+                    ngo.type,
                     ngo.description,
                     ngo.email,
                     ngo.phone,
@@ -217,7 +257,7 @@ final class NGOVerificationViewController: UIViewController {
         let sheet = UIAlertController(title: ngo.name, message: message, preferredStyle: .actionSheet)
 
         sheet.addAction(UIAlertAction(title: "Approve (Verified)", style: .default, handler: { [weak self] _ in
-            self?.updateNGOStatus(ngoId: ngo.id, status: "verified", rejectionReason: nil)
+            self?.updateNGOStatus(ngoId: ngo.id, status: Status.verified, rejectionReason: nil)
         }))
 
         sheet.addAction(UIAlertAction(title: "Reject", style: .destructive, handler: { [weak self] _ in
@@ -242,20 +282,25 @@ final class NGOVerificationViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         alert.addAction(UIAlertAction(title: "Reject", style: .destructive, handler: { [weak self] _ in
             let reason = alert.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines)
-            self?.updateNGOStatus(ngoId: ngo.id, status: "rejected", rejectionReason: reason)
+            self?.updateNGOStatus(ngoId: ngo.id, status: Status.rejected, rejectionReason: reason)
         }))
         present(alert, animated: true)
     }
 
     private func updateNGOStatus(ngoId: String, status: String, rejectionReason: String?) {
+
+        // ✅ نحدث approvalStatus + (اختياري) status عشان لو فيه شاشات قديمة تقرأ status
         var data: [String: Any] = [
             "approvalStatus": status,
+            "status": status,
             "statusUpdatedAt": FieldValue.serverTimestamp()
         ]
 
-        if status == "rejected" {
+        if status == Status.rejected {
             if let r = rejectionReason, !r.isEmpty {
                 data["rejectionReason"] = r
+            } else {
+                data["rejectionReason"] = FieldValue.delete()
             }
         } else {
             data["rejectionReason"] = FieldValue.delete()
@@ -268,7 +313,7 @@ final class NGOVerificationViewController: UIViewController {
             }
 
             self?.db.collection("audit_logs").addDocument(data: [
-                "title": status == "verified" ? "NGO Verified" : "NGO Rejected",
+                "title": status == Status.verified ? "NGO Verified" : "NGO Rejected",
                 "user": "Admin",
                 "location": "",
                 "category": "verification",
@@ -306,10 +351,7 @@ extension NGOVerificationViewController: UITableViewDataSource, UITableViewDeleg
         let ngo = shownNGOs[indexPath.row]
 
         cell.nameLabel.text = ngo.name
-
-        // ✅ هنا التايب يطلع مكان الـ "—"
         cell.descriptionLabel.text = ngo.type.isEmpty ? "—" : ngo.type
-
         cell.emailLabel.text = ngo.email
 
         if let note = ngo.note, !note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -334,7 +376,6 @@ extension NGOVerificationViewController: UITableViewDataSource, UITableViewDeleg
 extension NGOVerificationViewController: UISearchBarDelegate {
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        // ✅ لا نعرض زر Cancel
         searchBar.showsCancelButton = false
     }
 

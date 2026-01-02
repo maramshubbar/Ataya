@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="collection view cell content view" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="BadgeCardCell" id="0T2-ze-Ysq" customClass="BadgeCardCell" customModule="Ataya" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="79" height="161"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="JgJ-6w-Hkb">
+                <rect key="frame" x="0.0" y="0.0" width="79" height="161"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="w4f-4z-8SM" userLabel="shadowView">
+                        <rect key="frame" x="0.0" y="0.0" width="78" height="161"/>
+                        <subviews>
+                            <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tp2-Np-cF4" userLabel="cardView">
+                                <rect key="frame" x="0.0" y="0.0" width="78" height="161"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="AG7-NZ-ShP">
+                                        <rect key="frame" x="14" y="22" width="50" height="102"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="tM1-CG-o3w">
+                                                <rect key="frame" x="0.0" y="0.0" width="50" height="47"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="47" id="KNd-qJ-7o1"/>
+                                                    <constraint firstAttribute="width" constant="67" id="W4K-ub-ArK"/>
+                                                </constraints>
+                                            </imageView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3M0-ZU-ArP" userLabel="titleLabel">
+                                                <rect key="frame" x="5" y="57" width="40" height="18"/>
+                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="u3S-0f-zeJ" userLabel="subtitleLabel">
+                                                <rect key="frame" x="6.6666666666666679" y="85" width="36.666666666666657" height="17"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="AG7-NZ-ShP" secondAttribute="trailing" constant="14" id="CbZ-ZO-lLE"/>
+                                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="AG7-NZ-ShP" secondAttribute="bottom" constant="18" id="Fsk-gP-dWE"/>
+                                    <constraint firstItem="AG7-NZ-ShP" firstAttribute="leading" secondItem="tp2-Np-cF4" secondAttribute="leading" constant="14" id="PMT-TS-D5M"/>
+                                    <constraint firstItem="AG7-NZ-ShP" firstAttribute="top" secondItem="tp2-Np-cF4" secondAttribute="top" constant="22" id="RoE-dd-yVH"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="24"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="tp2-Np-cF4" secondAttribute="bottom" id="5eE-2s-5pO"/>
+                            <constraint firstItem="tp2-Np-cF4" firstAttribute="top" secondItem="w4f-4z-8SM" secondAttribute="top" id="6Ci-7e-OkF"/>
+                            <constraint firstAttribute="trailing" secondItem="tp2-Np-cF4" secondAttribute="trailing" id="ArI-CA-ynm"/>
+                            <constraint firstItem="tp2-Np-cF4" firstAttribute="leading" secondItem="w4f-4z-8SM" secondAttribute="leading" id="hGq-tY-P8u"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="w4f-4z-8SM" firstAttribute="leading" secondItem="JgJ-6w-Hkb" secondAttribute="leading" id="8pA-9e-spx"/>
+                    <constraint firstItem="w4f-4z-8SM" firstAttribute="top" secondItem="JgJ-6w-Hkb" secondAttribute="top" id="I9Y-0w-Rus"/>
+                    <constraint firstAttribute="bottom" secondItem="w4f-4z-8SM" secondAttribute="bottom" id="Qjx-Is-GLx"/>
+                    <constraint firstAttribute="trailing" secondItem="w4f-4z-8SM" secondAttribute="trailing" id="iqV-z3-K6t"/>
+                </constraints>
+            </collectionViewCellContentView>
+            <size key="customSize" width="79" height="161"/>
+            <connections>
+                <outlet property="cardView" destination="tp2-Np-cF4" id="5gt-nm-7Sp"/>
+                <outlet property="iconImageView" destination="tM1-CG-o3w" id="nJC-Xf-yUj"/>
+                <outlet property="shadowView" destination="w4f-4z-8SM" id="a3B-kK-mHk"/>
+                <outlet property="subtitleLabel" destination="u3S-0f-zeJ" id="gNS-IE-t2c"/>
+                <outlet property="titleLabel" destination="3M0-ZU-ArP" id="EQC-fF-W8H"/>
+            </connections>
+            <point key="canvasLocation" x="6.8702290076335872" y="115.84507042253522"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

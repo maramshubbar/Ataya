@@ -14,7 +14,7 @@ struct AddressModel {
     var latitude: Double
     var longitude: Double
 
-    func toDict() -> [String: Any] {
+    func toFirestoreDict() -> [String: Any] {
         return [
             "title": title,
             "fullAddress": fullAddress,

@@ -6,8 +6,7 @@ final class MyAddressListViewController: UIViewController {
     @IBOutlet weak var myAddressButton: UIButton!
     @IBOutlet weak var ngoButton: UIButton!
     @IBOutlet weak var nextButton: UIButton!
-
-    // ❗️لا تخليه يسوي Draft جديد هنا
+    
     var draft: DraftDonation?
 
     private enum Choice { case myAddress, ngo }
@@ -22,11 +21,13 @@ final class MyAddressListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // ✅ لازم draft يوصل من قبل
-        guard draft != nil else {
-            showAlert(title: "Missing draft", message: "Draft not passed from previous screen. Go back and try again.")
-            navigationController?.popViewController(animated: true)
-            return
+        if draft == nil { draft = DraftSession.current }
+            DraftSession.current = draft
+
+            if draft == nil {
+                setNextEnabled(false)
+              
+                return
         }
 
         setupOptionButton(myAddressButton)
@@ -163,7 +164,7 @@ final class MyAddressListViewController: UIViewController {
             return
         }
 
-        // ما عنده صور أو الصور محفوظة URLs -> احفظ مباشرة
+        
         DonationDraftSaver.shared.saveAfterPickup(draft: draft) { err in
             completion(err)
         }
@@ -198,5 +199,15 @@ final class MyAddressListViewController: UIViewController {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.tabBar.isHidden = true
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
     }
 }

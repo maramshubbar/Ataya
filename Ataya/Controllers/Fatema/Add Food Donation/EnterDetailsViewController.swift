@@ -4,7 +4,6 @@
 //
 //  Created by Fatema Maitham on 28/11/2025.
 //
-
 import UIKit
 import FirebaseFirestore
 import FirebaseAuth
@@ -70,7 +69,11 @@ final class EnterDetailsViewController: UIViewController,
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if draft == nil { draft = DraftDonation() }
+        // ✅ لا تسوين draft جديد هنا — لازم ينمرر من قبل
+        guard draft != nil else {
+            showMissingDraftAndBack()
+            return
+        }
 
         scrollView.delegate = self
 
@@ -104,6 +107,30 @@ final class EnterDetailsViewController: UIViewController,
         fillUIFromDraft()
     }
 
+    // ✅ شبكة أمان: لو بالغلط كان فيه segue
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let dest = (segue.destination as? UINavigationController)?.topViewController ?? segue.destination
+        if let vc = dest as? PickUpDateViewController {
+            vc.draft = self.draft
+        }
+    }
+
+    // MARK: - Missing Draft
+    private func showMissingDraftAndBack() {
+        let ac = UIAlertController(title: "Missing draft",
+                                   message: "Draft not passed from previous screen.\nGo back and try again.",
+                                   preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+            guard let self else { return }
+            if let nav = self.navigationController {
+                nav.popViewController(animated: true)
+            } else {
+                self.dismiss(animated: true)
+            }
+        })
+        present(ac, animated: true)
+    }
+
     private func styleCard(_ v: UIView) {
         v.backgroundColor = .white
         v.layer.cornerRadius = 14
@@ -127,7 +154,6 @@ final class EnterDetailsViewController: UIViewController,
         allergenTextField.text = draft.allergenInfo ?? ""
         descriptionTextView.text = draft.notes ?? ""
 
-        // select picker rows
         if let i = categories.firstIndex(of: draft.category) {
             categoryPicker.selectRow(i, inComponent: 0, animated: false)
         }
@@ -232,7 +258,6 @@ final class EnterDetailsViewController: UIViewController,
         quantityTextField.text = "\(value) \(unit)"
     }
 
-    // ✅ prevent "opened picker but didn't move" issue
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if textField == quantityTextField {
             if draft.quantityValue <= 0 || draft.quantityUnit.isEmpty {
@@ -257,12 +282,10 @@ final class EnterDetailsViewController: UIViewController,
         } else if textField == allergenTextField {
             if (draft.allergenInfo ?? "").isEmpty {
                 allergenPicker.selectRow(0, inComponent: 0, animated: false)
-                let v = allergens[0] // None
+                let v = allergens[0]
                 draft.allergenInfo = (v == "None") ? nil : v
                 allergenTextField.text = v
             }
-        } else if textField == expiryTextField {
-            // optional: nothing
         }
     }
 
@@ -292,7 +315,6 @@ final class EnterDetailsViewController: UIViewController,
             allergenTextField.text = val
             draft.allergenInfo = (val == "None") ? nil : val
         }
-
         view.endEditing(true)
     }
 
@@ -372,6 +394,7 @@ final class EnterDetailsViewController: UIViewController,
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         syncDraftFromUI(forceCommitPickers: false)
+        tabBarController?.tabBar.isHidden = false
     }
 
     // MARK: - Validation UI
@@ -434,6 +457,9 @@ final class EnterDetailsViewController: UIViewController,
         view.endEditing(true)
         guard validateAndShowInlineErrors() else { return }
 
+        // ✅ ديبق يساعدنا نتأكد انه نفس الدرفت ينمرر
+        print("✅ EnterDetails draft id =", draft.id ?? "nil", "mem =", ObjectIdentifier(draft as AnyObject))
+
         let sb = UIStoryboard(name: "Pickup", bundle: nil)
         guard let vc = sb.instantiateViewController(withIdentifier: "PickUpDateViewController") as? PickUpDateViewController else {
             showAlert("Storyboard Error", "In Pickup.storyboard set Storyboard ID = PickUpDateViewController")
@@ -492,5 +518,10 @@ final class EnterDetailsViewController: UIViewController,
             allergenTextField.text = val
             draft.allergenInfo = (val == "None") ? nil : val
         }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.tabBar.isHidden = true
     }
 }

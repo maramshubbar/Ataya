@@ -5,31 +5,27 @@ final class DraftDonation {
 
     var id: String?
 
+    // Details
     var itemName: String = ""
-
-    // Quantity
     var quantityValue: Int = 0
     var quantityUnit: String = ""
-
     var expiryDate: Date?
     var category: String = ""
     var packagingType: String = ""
     var allergenInfo: String? = nil
     var notes: String? = nil
-
     var safetyConfirmed: Bool = false
 
     // Photos
-    var images: [UIImage] = []            // local only (before upload)
-    var photoURLs: [String] = []          // Cloudinary secure_url
-    var imagePublicIds: [String] = []     // Cloudinary public_id
-
+    var images: [UIImage] = []
+    var photoURLs: [String] = []
+    var imagePublicIds: [String] = []
     var photoCount: Int { photoURLs.count }
 
-    // Pickup
+    // Pickup (saved under "pickup" by DonationDraftSaver)
     var pickupDate: Date?
     var pickupTime: String?
-    var pickupMethod: String = ""
+    var pickupMethod: String = ""          // "ngo" or "myAddress"
     var pickupAddress: AddressModel?
 
     func applyCloudinaryUploads(urls: [String], publicIds: [String], replace: Bool = true) {
@@ -51,13 +47,12 @@ final class DraftDonation {
         if let a = allergenInfo?.trimmingCharacters(in: .whitespacesAndNewlines) {
             allergenInfo = a.isEmpty || a.lowercased() == "none" ? nil : a
         }
-
         if let n = notes?.trimmingCharacters(in: .whitespacesAndNewlines) {
             notes = n.isEmpty ? nil : n
         }
     }
 
-    /// ✅ FIXED: on update -> delete empty/invalid fields so old wrong values (0 / "") disappear
+    /// ✅ No pickup fields here (pickup saved as nested object by DonationDraftSaver)
     func toFirestoreDict(isUpdate: Bool) -> [String: Any] {
         normalizeBeforeSave()
 
@@ -65,7 +60,7 @@ final class DraftDonation {
             "safetyConfirmed": safetyConfirmed
         ]
 
-        // Required-ish fields: only write if not empty; if update and empty -> delete
+        // Details
         if !itemName.isEmpty { data["itemName"] = itemName }
         else if isUpdate { data["itemName"] = FieldValue.delete() }
 
@@ -75,14 +70,12 @@ final class DraftDonation {
         if !packagingType.isEmpty { data["packagingType"] = packagingType }
         else if isUpdate { data["packagingType"] = FieldValue.delete() }
 
-        // Quantity: delete wrong old values on update
         if quantityValue > 0 { data["quantityValue"] = quantityValue }
         else if isUpdate { data["quantityValue"] = FieldValue.delete() }
 
         if !quantityUnit.isEmpty { data["quantityUnit"] = quantityUnit }
         else if isUpdate { data["quantityUnit"] = FieldValue.delete() }
 
-        // Optional fields
         if let expiryDate { data["expiryDate"] = expiryDate }
         else if isUpdate { data["expiryDate"] = FieldValue.delete() }
 
@@ -92,7 +85,7 @@ final class DraftDonation {
         if let notes { data["notes"] = notes }
         else if isUpdate { data["notes"] = FieldValue.delete() }
 
-        // Photos: if empty on update -> delete old arrays + count
+        // Photos
         if !photoURLs.isEmpty || !imagePublicIds.isEmpty {
             data["photoURLs"] = photoURLs
             data["imagePublicIds"] = imagePublicIds
@@ -106,3 +99,4 @@ final class DraftDonation {
         return data
     }
 }
+

@@ -42,6 +42,7 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
         super.viewWillAppear(animated)
         updateButtons()
         tableView.reloadData()
+        tabBarController?.tabBar.isHidden = true
     }
 
     private func styleAddNewAddressButton() {
@@ -290,5 +291,11 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
         let a = UIAlertController(title: title, message: message, preferredStyle: .alert)
         a.addAction(UIAlertAction(title: "OK", style: .default))
         present(a, animated: true)
+    }
+    
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
     }
 }

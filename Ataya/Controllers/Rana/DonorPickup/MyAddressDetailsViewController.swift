@@ -71,6 +71,7 @@ final class MyAddressDetailsViewController: UIViewController {
             viewLocationtxt.setTitle(saved.address, for: .normal)
             LocationStorage.clear()
         }
+        tabBarController?.tabBar.isHidden = true
     }
 
     override func viewDidLayoutSubviews() {
@@ -200,5 +201,10 @@ final class MyAddressDetailsViewController: UIViewController {
             sender.transform = .identity
             sender.alpha = 1.0
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
     }
 }

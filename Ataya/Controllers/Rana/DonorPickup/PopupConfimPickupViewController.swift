@@ -7,7 +7,6 @@ final class PopupConfirmPickupViewController: UIViewController {
     @IBOutlet weak var giveFeedbackButton: UIButton?
     @IBOutlet weak var cardView: UIView?
 
-    // ✅ callback if you ever want to do something when button tapped
     var onDone: (() -> Void)?
 
     override func viewDidLoad() {
@@ -16,7 +15,7 @@ final class PopupConfirmPickupViewController: UIViewController {
         // transparent root
         view.backgroundColor = .clear
 
-        // ✅ Freeze: no swipe-down dismiss
+
         isModalInPresentation = true
 
         // Dim overlay (create if not exists)
@@ -53,4 +52,15 @@ final class PopupConfirmPickupViewController: UIViewController {
         // إذا تبين يسكر هنا حطي:
         // dismiss(animated: true)
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.tabBar.isHidden = true
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
+    }
+
 }

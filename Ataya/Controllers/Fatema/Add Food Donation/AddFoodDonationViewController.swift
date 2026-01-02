@@ -30,6 +30,7 @@ class AddFoodDonationViewController: UIViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        DraftSession.current = draft
         setupCards()
     }
     
@@ -56,5 +57,15 @@ class AddFoodDonationViewController: UIViewController{
         view.layer.borderColor = borderColor.cgColor
         view.backgroundColor = bgColor
         view.layer.masksToBounds = true
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.tabBar.isHidden = true
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
     }
 }

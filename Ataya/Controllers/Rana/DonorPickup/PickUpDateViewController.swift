@@ -12,7 +12,7 @@ final class PickUpDateViewController: UIViewController {
     @IBOutlet weak var timeSectionContainer: UIView!
     @IBOutlet weak var calenderCollectionView: UIDatePicker!
 
-    // ✅ خليها Optional عشان نتحكم
+ 
     var draft: DraftDonation?
 
     private var selectedDate: Date?
@@ -34,12 +34,9 @@ final class PickUpDateViewController: UIViewController {
 
         title = "Select Pickup Date"
 
-        // ✅ لازم draft يوصل من قبل
-        guard draft != nil else {
-            showAlert(title: "Missing draft", message: "Draft not passed from previous screen. Go back and try again.")
-            navigationController?.popViewController(animated: true)
-            return
-        }
+        if draft == nil { draft = DraftSession.current }
+        if draft == nil { draft = DraftDonation() }
+        DraftSession.current = draft
 
         setupDatePicker()
         setupNextButton()
@@ -66,6 +63,8 @@ final class PickUpDateViewController: UIViewController {
     private func setupNextButton() {
         nextButton.layer.cornerRadius = 12
         nextButton.clipsToBounds = true
+        nextButton.isEnabled = false
+        nextButton.alpha = 0.5
     }
 
     private func buildTimeUI() {
@@ -188,14 +187,10 @@ final class PickUpDateViewController: UIViewController {
             showAlert(title: "Choose a time", message: "Please select a pickup time before continuing.")
             return
         }
-        guard let draftObj = draft else {
-            showAlert(title: "Missing draft", message: "Draft not passed from previous screen. Go back and try again.")
-            navigationController?.popViewController(animated: true)
-            return
-        }
 
-        draftObj.pickupDate = date
-        draftObj.pickupTime = time
+
+        draft?.pickupDate = date
+        draft?.pickupTime = time
 
         let sb = UIStoryboard(name: "Pickup", bundle: nil)
         guard let vc = sb.instantiateViewController(withIdentifier: "MyAddressListViewController") as? MyAddressListViewController else {
@@ -203,7 +198,8 @@ final class PickUpDateViewController: UIViewController {
             return
         }
 
-        vc.draft = draftObj
+        vc.draft = draft
+        vc.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(vc, animated: true)
     }
 
@@ -217,5 +213,15 @@ final class PickUpDateViewController: UIViewController {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.tabBar.isHidden = true
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
     }
 }

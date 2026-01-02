@@ -168,17 +168,3 @@ private final class RoleStyleTileView: UIControl {
         }
     }
 }
-
-private extension UIColor {
-    convenience init(hex: String, alpha: CGFloat = 1) {
-        var h = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-        if h.hasPrefix("#") { h.removeFirst() }
-        guard h.count == 6 else { self.init(white: 0.5, alpha: alpha); return }
-        var rgb: UInt64 = 0
-        Scanner(string: h).scanHexInt64(&rgb)
-        let r = CGFloat((rgb & 0xFF0000) >> 16) / 255
-        let g = CGFloat((rgb & 0x00FF00) >> 8) / 255
-        let b = CGFloat(rgb & 0x0000FF) / 255
-        self.init(red: r, green: g, blue: b, alpha: alpha)
-    }
-}

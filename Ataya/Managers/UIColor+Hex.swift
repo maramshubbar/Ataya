@@ -1,26 +1,44 @@
-////
-////  UIColor+Hex.swift
-////  Ataya
-////
-////  Created by Fatema Maitham on 02/12/2025.
-////
 //
-//import Foundation
-//import UIKit
+//  UIColor+Hex.swift
+//  Ataya
 //
-//extension UIColor {
-//    convenience init(hex: String) {
-//        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
-//        hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
+//  Created by Fatema Maitham on 02/12/2025.
 //
-//        var rgb: UInt64 = 0
-//        Scanner(string: hexSanitized).scanHexInt64(&rgb)
-//
-//        let r = CGFloat((rgb & 0xFF0000) >> 16) / 255
-//        let g = CGFloat((rgb & 0x00FF00) >> 8) / 255
-//        let b = CGFloat(rgb & 0x0000FF) / 255
-//
-//        self.init(red: r, green: g, blue: b, alpha: 1.0)
-//    }
-//}
-//
+
+import UIKit
+
+extension UIColor {
+
+    /// Hex -> UIColor
+    /// يقبل: "#F7D44C" أو "F7D44C" أو "FFF" (اختصار)
+    convenience init(hex: String, alpha: CGFloat = 1.0) {
+        var s = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        if s.hasPrefix("#") { s.removeFirst() }
+
+        // دعم #RGB
+        if s.count == 3 {
+            let c = Array(s)
+            s = "\(c[0])\(c[0])\(c[1])\(c[1])\(c[2])\(c[2])"
+        }
+
+        var rgb: UInt64 = 0
+        Scanner(string: s).scanHexInt64(&rgb)
+
+        let r = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
+        let g = CGFloat((rgb & 0x00FF00) >> 8)  / 255.0
+        let b = CGFloat(rgb & 0x0000FF) / 255.0
+
+        self.init(red: r, green: g, blue: b, alpha: alpha)
+    }
+
+    /// عشان الأكواد القديمة اللي تستخدم atayaHex:
+    convenience init(atayaHex: String, alpha: CGFloat = 1.0) {
+        self.init(hex: atayaHex, alpha: alpha)
+    }
+
+    // MARK: - Ataya Brand Colors (استخدميهم كـ UIColor.atayaYellow ...)
+    static let atayaYellow     = UIColor(hex: "#F7D44C")
+    static let atayaSoftYellow = UIColor(hex: "#FFFBE7")
+    static let atayaGreen      = UIColor(hex: "#00A85C")
+    static let atayaBorderGray = UIColor(hex: "#999999")
+}

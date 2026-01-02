@@ -30,7 +30,6 @@ class AddFoodDonationViewController: UIViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        DraftSession.current = draft
         setupCards()
     }
     
@@ -38,17 +37,18 @@ class AddFoodDonationViewController: UIViewController{
 
         // Card 1 — Active (yellow border)
         styleCard(uploadPhotosCard,
-                  bgColor: UIColor.atayaHex("#FFFAE8"),
-                  borderColor: UIColor.atayaHex("#FFD83F"))
+                  bgColor: UIColor(hex: "#FFFAE8"),
+                  borderColor: UIColor(hex: "#FFD83F"))
 
+        // Card 2 — Inactive (gray border)
         styleCard(enterDetailsCard,
-                  bgColor: .white,
-                  borderColor: UIColor.atayaHex("#DADADA"))
+                  bgColor: UIColor.white,
+                  borderColor: UIColor(hex: "#DADADA"))
 
+        // Card 3 — Inactive (gray border)
         styleCard(safetySubmitCard,
-                  bgColor: .white,
-                  borderColor: UIColor.atayaHex("#DADADA"))
-
+                  bgColor: UIColor.white,
+                  borderColor: UIColor(hex: "#DADADA"))
     }
 
     func styleCard(_ view: UIView, bgColor: UIColor, borderColor: UIColor) {
@@ -57,15 +57,5 @@ class AddFoodDonationViewController: UIViewController{
         view.layer.borderColor = borderColor.cgColor
         view.backgroundColor = bgColor
         view.layer.masksToBounds = true
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        tabBarController?.tabBar.isHidden = true
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        tabBarController?.tabBar.isHidden = false
     }
 }

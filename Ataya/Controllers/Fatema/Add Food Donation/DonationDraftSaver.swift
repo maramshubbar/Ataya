@@ -1,10 +1,3 @@
-//
-//  DonationDraftSaver.swift
-//  Ataya
-//
-//  Created by Fatema Maitham on 01/01/2026.
-//
-
 import Foundation
 import FirebaseFirestore
 import FirebaseAuth
@@ -25,6 +18,9 @@ final class DonationDraftSaver {
 
         // ✅ Confirm safety before saving
         draft.safetyConfirmed = true
+
+        // ✅ normalize now (important)
+        draft.normalizeBeforeSave()
 
         // ✅ pickup map ONLY pickup fields
         let pickupMap = buildPickupDict(draft: draft)
@@ -48,7 +44,7 @@ final class DonationDraftSaver {
             ref.setData(data, merge: true) { error in
                 if let error { completion(error); return }
 
-                // 2) overwrite pickup بالكامل (يمسح المفاتيح الغلط القديمة داخل pickup)
+                // 2) overwrite pickup بالكامل
                 ref.updateData(["pickup": pickupMap]) { err2 in
                     completion(err2)
                 }

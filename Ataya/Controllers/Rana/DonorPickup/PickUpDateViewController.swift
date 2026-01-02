@@ -12,7 +12,6 @@ final class PickUpDateViewController: UIViewController {
     @IBOutlet weak var timeSectionContainer: UIView!
     @IBOutlet weak var calenderCollectionView: UIDatePicker!
 
- 
     var draft: DraftDonation?
 
     private var selectedDate: Date?
@@ -25,19 +24,21 @@ final class PickUpDateViewController: UIViewController {
         "6:00 PM", "8:00 PM"
     ]
 
-    private let borderGray = AppColors.grayBorder
-    private let selectedBorder = AppColors.selectedBorder
-    private let selectedBackground = AppColors.yellowBG
-
+    private let borderGray = UIColor(hex: "#999999")
+    private let selectedBorder = UIColor(hex: "#FEC400")
+    private let selectedBackground = UIColor(hex: "#FFFBE7")
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         title = "Select Pickup Date"
 
-        if draft == nil { draft = DraftSession.current }
-        if draft == nil { draft = DraftDonation() }
-        DraftSession.current = draft
+        // IMPORTANT: do NOT create a new draft here. It must be passed from EnterDetails.
+        if draft == nil {
+            
+            draft = DraftDonation()
+        }
+
 
         setupDatePicker()
         setupNextButton()
@@ -188,19 +189,29 @@ final class PickUpDateViewController: UIViewController {
             showAlert(title: "Choose a time", message: "Please select a pickup time before continuing.")
             return
         }
-
-
-        draft?.pickupDate = date
-        draft?.pickupTime = time
-
-        let sb = UIStoryboard(name: "Pickup", bundle: nil)
-        guard let vc = sb.instantiateViewController(withIdentifier: "MyAddressListViewController") as? MyAddressListViewController else {
-            showAlert(title: "Storyboard Error", message: "In Pickup.storyboard set Storyboard ID = MyAddressListViewController")
+        guard let draftObj = draft else {
+            showAlert(title: "Missing draft", message: "Draft not passed from previous screen. Go back and try again.")
+            navigationController?.popViewController(animated: true)
             return
         }
 
-        vc.draft = draft
-        vc.hidesBottomBarWhenPushed = true
+        draftObj.pickupDate = date
+        draftObj.pickupTime = time
+
+        let sb = UIStoryboard(name: "Pickup", bundle: nil)
+        guard let vc = sb.instantiateViewController(
+            withIdentifier: "MyAddressListViewController"
+        ) as? MyAddressListViewController else {
+            showAlert(
+                title: "Storyboard Error",
+                message: "In Pickup.storyboard set Storyboard ID = MyAddressListViewController"
+            )
+            return
+        }
+
+        
+        vc.draft = draft ?? DraftDonation()
+        
         navigationController?.pushViewController(vc, animated: true)
     }
 
@@ -226,3 +237,4 @@ final class PickUpDateViewController: UIViewController {
         tabBarController?.tabBar.isHidden = false
     }
 }
+

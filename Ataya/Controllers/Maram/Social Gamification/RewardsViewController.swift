@@ -5,6 +5,7 @@
 //  Created by Maram on 18/12/2025.
 //
 //
+
 import UIKit
 import FirebaseAuth
 import FirebaseFirestore
@@ -13,16 +14,13 @@ final class RewardsViewController: UIViewController {
 
     @IBOutlet weak var badgesCollectionView: UICollectionView!
 
-    // ✅ لازم تربطينهم من الستوريبورد
     @IBOutlet weak var donationsLabel: UILabel?
     @IBOutlet weak var livesLabel: UILabel?
     @IBOutlet weak var pointsLabel: UILabel?
     @IBOutlet weak var tierLabel: UILabel?
 
-    // ✅ اربطي صورة الميدالية الكبيرة اللي فوق
     @IBOutlet weak var tierMedalImageView: UIImageView?
 
-    // ✅ Outlet Collections
     @IBOutlet var rewardRowViews: [UIView]!
     // IMPORTANT order: [Coupon, Certificate, Booster]
     @IBOutlet var statusPillButtons: [UIButton]!
@@ -34,7 +32,7 @@ final class RewardsViewController: UIViewController {
     // MARK: - Rewards cache
     private var metrics = RewardsMetrics()
 
-    // ✅ throttle عشان ما يعيد يحسب كل شوي
+    // throttle
     private var isRecomputing = false
     private var lastRecomputeAt: Date = .distantPast
 
@@ -48,17 +46,18 @@ final class RewardsViewController: UIViewController {
         setupBadges()
         styleRewardsUI()
 
-        ensureRewardsSeededIfNeeded()
-        startListeningToRewards()
+        // ✅ هنا نزرع doc داخل rewards/{uid} لو مو موجود
+        ensureRewardsDocSeededIfNeeded()
 
-        // ✅ احسب مرة أول ما تفتح الصفحة
+        // ✅ نسمع من rewards collection
+        startListeningToRewardsCollection()
+
+        // لو عندج service يحسب ويكتب (تأكدي يكتب داخل rewards/{uid})
         recomputeRewardsNowIfAllowed()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        // ✅ إذا رجعتي للصفحة بعد تبرع، يحسب مرة ثانية
         recomputeRewardsNowIfAllowed()
     }
 
@@ -118,44 +117,50 @@ final class RewardsViewController: UIViewController {
         badgesCollectionView.decelerationRate = .fast
     }
 
-    // MARK: - Firebase (users/{uid}.rewards)
+    // MARK: - ✅ Firestore: rewards/{uid}
 
-    private func ensureRewardsSeededIfNeeded() {
+    /// يضمن وجود rewards/{uid} doc (isNew=true) عشان placeholder يطلع من الفايربيس
+    private func ensureRewardsDocSeededIfNeeded() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
-        let userRef = db.collection("users").document(uid)
+        let ref = db.collection("rewards").document(uid)
 
-        userRef.getDocument { snap, _ in
-            guard let snap, snap.exists else { return }
-            let rewards = snap.data()?["rewards"] as? [String: Any]
-            if rewards != nil { return }
+        ref.getDocument { doc, _ in
+            // إذا موجود خلاص
+            if let doc, doc.exists { return }
 
-            userRef.setData([
-                "rewards": RewardsMetrics.defaultFirestoreDict()
-            ], merge: true)
+            // إذا مو موجود: نسوي seed
+            ref.setData(RewardsMetrics.defaultFirestoreDict(), merge: true)
         }
     }
 
-    private func startListeningToRewards() {
+    private func startListeningToRewardsCollection() {
         guard let uid = Auth.auth().currentUser?.uid else {
             applyPlaceholders()
             return
         }
 
-        let userRef = db.collection("users").document(uid)
+        let ref = db.collection("rewards").document(uid)
 
         listener?.remove()
-        listener = userRef.addSnapshotListener { [weak self] snap, err in
+        listener = ref.addSnapshotListener { [weak self] snap, err in
             guard let self else { return }
 
             if let err {
-                print("❌ Rewards listen error:", err)
+                print("❌ Rewards listen error:", err.localizedDescription)
                 DispatchQueue.main.async { self.applyPlaceholders() }
                 return
             }
 
-            let data = snap?.data() ?? [:]
-            let rewards = data["rewards"] as? [String: Any] ?? [:]
-            self.metrics = RewardsMetrics(dict: rewards)
+            // إذا doc مو موجود -> placeholders
+            guard let data = snap?.data(), snap?.exists == true else {
+                DispatchQueue.main.async { self.applyPlaceholders() }
+                return
+            }
+
+            self.metrics = RewardsMetrics(dict: data)
+
+            // ✅ إذا صار في تقدم، طفي isNew في firebase تلقائيًا
+            self.autoDisableIsNewIfNeeded(uid: uid)
 
             DispatchQueue.main.async {
                 self.applyRewardsToUI()
@@ -164,25 +169,46 @@ final class RewardsViewController: UIViewController {
         }
     }
 
+    private func autoDisableIsNewIfNeeded(uid: String) {
+        guard metrics.isNew else { return }
+        let progressed = (metrics.points > 0) || (metrics.successfulDonations > 0) || (metrics.livesTouched > 0)
+        guard progressed else { return }
+
+        db.collection("rewards").document(uid).setData([
+            "isNew": false
+        ], merge: true)
+    }
+
+    // MARK: - UI
+
     private func applyPlaceholders() {
-        donationsLabel?.text = "—"
-        livesLabel?.text = "—"
-        pointsLabel?.text = "—"
-        tierLabel?.text = "—"
+        donationsLabel?.text = "— Successful Donations"
+        livesLabel?.text = "— Lives Touched"
+        pointsLabel?.text = "— pts"
+        tierLabel?.text = "Starter"
         tierMedalImageView?.image = UIImage(named: "tier_starter")
+
+        setPill(statusPillButtons[safe: 0], available: false)
+        setPill(statusPillButtons[safe: 1], available: false)
+        setPill(statusPillButtons[safe: 2], available: false)
     }
 
     private func applyRewardsToUI() {
+
+        // ✅ placeholder من firebase
+//        if metrics.isNew {
+//            applyPlaceholders()
+//            return
+//        }
+
         donationsLabel?.text = "\(metrics.successfulDonations) Successful Donations"
         livesLabel?.text = "\(metrics.livesTouched) Lives Touched"
         pointsLabel?.text = "\(formatNumber(metrics.points)) pts"
 
-        // ✅ خلي التيير + الصورة يعتمدون على النقاط (أضمن من firestore لو فيه غلط)
         let visual = TierVisual.from(points: metrics.points)
         tierLabel?.text = visual.title
         tierMedalImageView?.image = UIImage(named: visual.medalAssetName)
 
-        // ✅ Available/Locked (IMPORTANT order)
         let couponAvailable  = RewardsEngine.isCouponAvailable(points: metrics.points)
         let certAvailable    = RewardsEngine.isCertificateAvailable(points: metrics.points)
         let boosterAvailable = RewardsEngine.isBoosterAvailable(points: metrics.points)
@@ -205,13 +231,11 @@ final class RewardsViewController: UIViewController {
         return f.string(from: NSNumber(value: n)) ?? "\(n)"
     }
 
-    // MARK: - ✅ Recompute using RewardsSyncService
+    // MARK: - Recompute (اختياري)
 
     private func recomputeRewardsNowIfAllowed() {
-        // لازم تكونين مسجلة دخول
         guard Auth.auth().currentUser != nil else { return }
 
-        // throttle: لا تعيد خلال 5 ثواني
         let now = Date()
         if isRecomputing { return }
         if now.timeIntervalSince(lastRecomputeAt) < 5 { return }
@@ -263,12 +287,13 @@ extension RewardsViewController: UICollectionViewDataSource, UICollectionViewDel
     }
 }
 
-// MARK: - Helpers (no UI changes)
+// MARK: - Models / Helpers
 
 private struct RewardsMetrics {
     var successfulDonations: Int = 0
     var livesTouched: Int = 0
     var points: Int = 0
+    var isNew: Bool = true
 
     init() {}
 
@@ -276,6 +301,7 @@ private struct RewardsMetrics {
         successfulDonations = Self.intValue(dict["successfulDonations"])
         livesTouched = Self.intValue(dict["livesTouched"])
         points = Self.intValue(dict["points"])
+        isNew = (dict["isNew"] as? Bool) ?? true
     }
 
     static func defaultFirestoreDict() -> [String: Any] {
@@ -284,7 +310,8 @@ private struct RewardsMetrics {
             "livesTouched": 0,
             "points": 0,
             "tier": "Starter",
-            "campaignsSupported": 0
+            "campaignsSupported": 0,
+            "isNew": true
         ]
     }
 
@@ -292,7 +319,7 @@ private struct RewardsMetrics {
         if let i = any as? Int { return i }
         if let d = any as? Double { return Int(d) }
         if let n = any as? NSNumber { return n.intValue }
-        if let s = any as? String { return Int(s.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0 } // ✅ مهم
+        if let s = any as? String { return Int(s.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0 }
         return 0
     }
 }
@@ -322,9 +349,7 @@ private enum RewardsEngine {
 }
 
 private extension Array {
-    subscript(safe index: Int) -> Element? {
-        indices.contains(index) ? self[index] : nil
-    }
+    subscript(safe index: Int) -> Element? { indices.contains(index) ? self[index] : nil }
 }
 
 // ⚠️ إذا عندج نفس extension موجود بملف ثاني، احذفي واحد منهم

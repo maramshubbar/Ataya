@@ -1,38 +1,25 @@
-//
-//  RewardsNgoViewController.swift
-//  Ataya
-//
-//  Created by Maram on 19/12/2025.
-//
-//
-//  RewardsNgoViewController.swift
-//  Ataya
-//
-//  Created by Maram on 19/12/2025.
-//
-
 import UIKit
 import FirebaseAuth
 import FirebaseFirestore
 
 final class RewardsNgoViewController: UIViewController {
 
-    // MARK: - Outlets
     @IBOutlet weak var badgesCollectionView: UICollectionView!
     @IBOutlet weak var pickupsLabel: UILabel!
     @IBOutlet weak var livesLabel: UILabel!
     @IBOutlet weak var pointsLabel: UILabel!
-
-    // ✅ NEW (اختياري): اربطي لابل الـ Tier + صورة الميدالية الكبيرة
     @IBOutlet weak var tierLabel: UILabel?
     @IBOutlet weak var tierMedalImageView: UIImageView?
 
-    // MARK: - Firestore
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
-    private var didRecalculateOnce = false
 
-    // MARK: - Badge VM
+    private var metrics = NgoRewardsMetrics()
+
+    // ✅ throttle مثل الدونر
+    private var isRecomputing = false
+    private var lastRecomputeAt: Date = .distantPast
+
     private struct BadgeVM {
         let title: String
         let subtitle: String
@@ -48,22 +35,23 @@ final class RewardsNgoViewController: UIViewController {
     ]
 
     private var badges: [BadgeVM] = []
-    private var metrics = NgoRewardsMetrics()
 
-    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupBadges()
-        applyInitialPlaceholders()
+        applyInitialUI()
 
-        ensureNgoRewardsSeededIfNeeded()
+        ensureNgoRewardsDocSeededIfNeeded()
+        startListeningNgoRewards()
 
-        // ✅ يحسب من donations ويكتب داخل users/{uid}.rewardsNgo (مرة وحدة)
-        recalculateNgoRewardsFromDonationsIfNeeded()
+        // ✅ يحسب ويكتب كل مرة (مثل الدونر)
+        recomputeNgoRewardsNowIfAllowed()
+    }
 
-        // ✅ يسمع للتغييرات ويحدث الواجهة
-        startListeningToNgoRewards()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        recomputeNgoRewardsNowIfAllowed()
     }
 
     deinit { listener?.remove() }
@@ -73,35 +61,34 @@ final class RewardsNgoViewController: UIViewController {
         updateBadgesItemSizeIfNeeded()
     }
 
-    private func applyInitialPlaceholders() {
-        pickupsLabel.text = "—"
-        livesLabel.text = "—"
-        pointsLabel.text = "—"
+    private func applyInitialUI() {
+        // إذا تبين 0 بدل —
+        pickupsLabel.text = "0 Successful Pickups"
+        livesLabel.text = "0 Lives Impacted"
+        pointsLabel.text = "0 pts"
 
-        // ✅ Tier placeholders
-        tierLabel?.text = "Reliable NGO"
-        tierMedalImageView?.image = UIImage(named: "tier_starter") // نفس صور الدونر
+        let tier = NgoTier.from(points: 0)
+        tierLabel?.text = tier.title
+        tierMedalImageView?.image = UIImage(named: tier.medalAssetName)
 
         badges = defaultBadges
         badgesCollectionView.reloadData()
     }
 
-    // MARK: - Badges Layout
+    // MARK: - Badges
     private func setupBadges() {
         badgesCollectionView.register(
             UINib(nibName: "BadgeCardCell", bundle: nil),
             forCellWithReuseIdentifier: BadgeCardCell.reuseId
         )
-
         badgesCollectionView.dataSource = self
         badgesCollectionView.delegate = self
 
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumLineSpacing = 18
-        layout.minimumInteritemSpacing = 0
         layout.sectionInset = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
-        layout.itemSize = CGSize(width: 104, height: 194)
+        layout.itemSize = CGSize(width: 130, height: 190)
 
         badgesCollectionView.collectionViewLayout = layout
         badgesCollectionView.showsHorizontalScrollIndicator = false
@@ -121,55 +108,51 @@ final class RewardsNgoViewController: UIViewController {
         }
     }
 
-    // MARK: - ✅ users/{uid}.rewardsNgo
+    // MARK: - ✅ Firestore: rewardsNgo/{uid}
 
-    private func ensureNgoRewardsSeededIfNeeded() {
+    private func ensureNgoRewardsDocSeededIfNeeded() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
-        let userRef = db.collection("users").document(uid)
+        let ref = db.collection("rewardsNgo").document(uid)
 
-        userRef.getDocument { snap, _ in
-            let data = snap?.data() ?? [:]
-            if (data["rewardsNgo"] as? [String: Any]) != nil { return }
-
-            userRef.setData([
-                "rewardsNgo": NgoRewardsMetrics.defaultFirestoreDict()
-            ], merge: true)
+        ref.getDocument { doc, _ in
+            if let doc, doc.exists { return }
+            ref.setData(NgoRewardsMetrics.defaultFirestoreDict(), merge: true)
         }
     }
 
-    private func startListeningToNgoRewards() {
+    private func startListeningNgoRewards() {
         guard let uid = Auth.auth().currentUser?.uid else {
-            applyInitialPlaceholders()
+            applyInitialUI()
             return
         }
 
-        let userRef = db.collection("users").document(uid)
+        let ref = db.collection("rewardsNgo").document(uid)
         listener?.remove()
 
-        listener = userRef.addSnapshotListener { [weak self] snap, err in
+        listener = ref.addSnapshotListener { [weak self] snap, err in
             guard let self else { return }
 
             if let err {
                 print("❌ NGO rewards listen error:", err.localizedDescription)
-                DispatchQueue.main.async { self.applyInitialPlaceholders() }
                 return
             }
 
-            let data = snap?.data() ?? [:]
-            let rewardsNgo = (data["rewardsNgo"] as? [String: Any]) ?? [:]
-            self.metrics = NgoRewardsMetrics(dict: rewardsNgo)
+            guard let data = snap?.data(), snap?.exists == true else {
+                self.applyInitialUI()
+                return
+            }
+
+            self.metrics = NgoRewardsMetrics(dict: data)
 
             DispatchQueue.main.async {
                 self.pickupsLabel.text = "\(self.metrics.successfulPickups) Successful Pickups"
                 self.livesLabel.text = "\(self.metrics.livesImpacted) Lives Impacted"
                 self.pointsLabel.text = "\(self.formatNumber(self.metrics.points)) pts"
 
-                // ✅ حدّثي tier + medal من points
                 let tier = NgoTier.from(points: self.metrics.points)
                 self.tierLabel?.text = tier.title
                 self.tierMedalImageView?.image = UIImage(named: tier.medalAssetName)
 
-                // badges ثابتة (أو تقدرين تخليها من Firebase later)
                 self.badges = self.defaultBadges
                 self.badgesCollectionView.reloadData()
             }
@@ -182,129 +165,49 @@ final class RewardsNgoViewController: UIViewController {
         return f.string(from: NSNumber(value: n)) ?? "\(n)"
     }
 
-    // MARK: - ✅ Calculate from donations -> write users/{uid}.rewardsNgo
+    // MARK: - ✅ Recompute (مثل الدونر)
 
-    private func recalculateNgoRewardsFromDonationsIfNeeded() {
-        guard !didRecalculateOnce else { return }
-        didRecalculateOnce = true
+    private func recomputeNgoRewardsNowIfAllowed() {
+        guard Auth.auth().currentUser != nil else { return }
 
-        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let now = Date()
+        if isRecomputing { return }
+        if now.timeIntervalSince(lastRecomputeAt) < 5 { return }
 
-        // ✅ عدلي هذي لو عندكم أسماء مختلفة بالدونیشن:
-        // field: ngoId
-        // status: completed
-        let q = db.collection("donations")
-            .whereField("ngoId", isEqualTo: uid)
-            .whereField("status", isEqualTo: "completed")
+        isRecomputing = true
+        lastRecomputeAt = now
 
-        q.getDocuments { [weak self] snap, err in
+        NgoRewardsSyncService.shared.recomputeAndSaveCurrentNgo { [weak self] err in
             guard let self else { return }
+            self.isRecomputing = false
             if let err {
-                print("❌ NGO donations query:", err.localizedDescription)
-                return
+                print("❌ NGO recompute error:", err.localizedDescription)
+            } else {
+                print("✅ NGO rewards recomputed & saved")
             }
-
-            let docs = snap?.documents ?? []
-            let successfulPickups = docs.count
-
-            var lives = 0
-            var verifiedCount = 0
-            var photoCount = 0
-            var campaignIds = Set<String>()
-
-            for doc in docs {
-                let d = doc.data()
-
-                lives += NgoRewardsMetrics.intValue(d["livesImpacted"])
-                if lives == 0 { lives += NgoRewardsMetrics.intValue(d["livesTouched"]) }
-                if lives == 0 { lives += NgoRewardsMetrics.intValue(d["servings"]) }
-
-                if self.boolValue(d["verifiedFoodQuality"]) == true ||
-                    self.boolValue(d["foodQualityVerified"]) == true {
-                    verifiedCount += 1
-                }
-
-                if let arr = d["imageURLs"] as? [String], !arr.isEmpty { photoCount += 1 }
-                else if let arr = d["imageUrls"] as? [String], !arr.isEmpty { photoCount += 1 }
-
-                if let c = d["campaignId"] as? String, !c.isEmpty { campaignIds.insert(c) }
-            }
-
-            if lives == 0 { lives = successfulPickups }
-
-            var points = 0
-            points += successfulPickups * 100
-            points += verifiedCount * 50
-            if successfulPickups >= 10 { points += 200 }
-            points += photoCount * 30
-            points += campaignIds.count * 100
-
-            let tier = NgoTier.from(points: points)
-
-            let userRef = self.db.collection("users").document(uid)
-            userRef.setData([
-                "rewardsNgo": [
-                    "successfulPickups": successfulPickups,
-                    "livesImpacted": lives,
-                    "points": points,
-                    "tierTitle": tier.title,
-                    "campaignsSupported": campaignIds.count,
-                    "updatedAt": FieldValue.serverTimestamp()
-                ]
-            ], merge: true)
         }
-    }
-
-    private func boolValue(_ any: Any?) -> Bool? {
-        if let b = any as? Bool { return b }
-        if let n = any as? NSNumber { return n.boolValue }
-        if let s = any as? String {
-            let x = s.lowercased()
-            if x == "true" || x == "yes" || x == "1" { return true }
-            if x == "false" || x == "no" || x == "0" { return false }
-        }
-        return nil
     }
 }
 
-// MARK: - Collection
 extension RewardsNgoViewController: UICollectionViewDataSource, UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int { badges.count }
 
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return badges.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView,
-                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: BadgeCardCell.reuseId,
-            for: indexPath
-        ) as! BadgeCardCell
-
-        let badge = badges[indexPath.item]
-        let bgColor = UIColor(hex: badge.colorHex)
-
-        cell.configure(
-            title: badge.title,
-            subtitle: badge.subtitle,
-            iconName: badge.iconName,
-            bgColor: bgColor
-        )
-
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: BadgeCardCell.reuseId, for: indexPath) as! BadgeCardCell
+        let b = badges[indexPath.item]
+        cell.configure(title: b.title, subtitle: b.subtitle, iconName: b.iconName, bgColor: UIColor(hex: b.colorHex))
         cell.contentView.backgroundColor = .clear
         cell.backgroundColor = .clear
         return cell
     }
 }
 
-// MARK: - Helpers
+// MARK: - Models
 
 private struct NgoRewardsMetrics {
     var successfulPickups: Int = 0
     var livesImpacted: Int = 0
     var points: Int = 0
-    var tierTitle: String = "Reliable NGO"
 
     init() {}
 
@@ -312,7 +215,6 @@ private struct NgoRewardsMetrics {
         successfulPickups = Self.intValue(dict["successfulPickups"])
         livesImpacted = Self.intValue(dict["livesImpacted"])
         points = Self.intValue(dict["points"])
-        tierTitle = (dict["tierTitle"] as? String) ?? NgoTier.from(points: points).title
     }
 
     static func defaultFirestoreDict() -> [String: Any] {
@@ -320,11 +222,10 @@ private struct NgoRewardsMetrics {
             "successfulPickups": 0,
             "livesImpacted": 0,
             "points": 0,
-            "tierTitle": "Reliable NGO"
+            "updatedAt": FieldValue.serverTimestamp()
         ]
     }
 
-    // ✅ يدعم String "100" + Int + Double + NSNumber
     static func intValue(_ any: Any?) -> Int {
         if let i = any as? Int { return i }
         if let d = any as? Double { return Int(d) }
@@ -355,7 +256,6 @@ private enum NgoTier {
         }
     }
 
-    // ✅ نفس أسماء صور الميداليات في Assets (استخدمي نفس صور الدونر)
     var medalAssetName: String {
         switch self {
         case .starter: return "tier_starter"

@@ -4,6 +4,8 @@
 //
 //  Created by Maram on 02/01/2026.
 //
+
+
 import Foundation
 import FirebaseAuth
 import FirebaseFirestore
@@ -15,7 +17,7 @@ final class RewardsSyncService {
 
     private let db = Firestore.firestore()
 
-    // ✅ Rule settings (مثل اللي تحت بالصورة)
+    // ✅ Rule settings
     private let ptsPerSuccessfulDonation = 100
     private let ptsPerVerifiedFoodQuality = 50
     private let ptsAfter10DonationsMilestone = 200
@@ -27,7 +29,11 @@ final class RewardsSyncService {
 
     func recomputeAndSaveCurrentUser(completion: ((Error?) -> Void)? = nil) {
         guard let uid = Auth.auth().currentUser?.uid else {
-            completion?(NSError(domain: "Auth", code: 0, userInfo: [NSLocalizedDescriptionKey: "Not logged in"]))
+            completion?(NSError(
+                domain: "Auth",
+                code: 0,
+                userInfo: [NSLocalizedDescriptionKey: "Not logged in"]
+            ))
             return
         }
 
@@ -61,7 +67,7 @@ final class RewardsSyncService {
                     if isSuccessful {
                         successfulDonations += 1
 
-                        // livesTouched (optional): if you store it per donation
+                        // livesTouched (optional)
                         if let l = data["livesTouched"] as? Int { livesTouched += l }
                         else if let n = data["livesTouched"] as? NSNumber { livesTouched += n.intValue }
                     }
@@ -75,7 +81,7 @@ final class RewardsSyncService {
                         if isSuccessful { clearPhotosCount += 1 }
                     }
 
-                    // campaign supported: if donation has campaignId
+                    // campaign supported
                     if let campaignId = data["campaignId"] as? String, !campaignId.isEmpty {
                         if isSuccessful { campaignsSupported += 1 }
                     }
@@ -95,21 +101,24 @@ final class RewardsSyncService {
                 // tier from points
                 let tier = RewardTier.from(points: points).title
 
-                // ---------- save into users/{uid}.rewards ----------
+                // ✅ isNew من الفايربيس: إذا ما عنده أي تقدم
+                let isNew = (successfulDonations == 0 && livesTouched == 0 && points == 0)
+
+                // ---------- save into rewards/{uid} ----------
                 let rewardsDict: [String: Any] = [
+                    "userId": uid,                                 // ✅ اختياري (مفيد)
                     "successfulDonations": successfulDonations,
-                    "livesTouched": livesTouched,                    // إذا ما عندج field في donations بيظل 0
-                    "points": points,                               // ✅ لازم Number مو String
+                    "livesTouched": livesTouched,
+                    "points": points,
                     "tier": tier,
                     "campaignsSupported": campaignsSupported,
                     "verifiedFoodQualityCount": verifiedFoodQualityCount,
                     "clearPhotosCount": clearPhotosCount,
+                    "isNew": isNew,                                // ✅ هذا حق placeholder
                     "updatedAt": FieldValue.serverTimestamp()
                 ]
 
-                self.db.collection("users").document(uid).setData([
-                    "rewards": rewardsDict
-                ], merge: true) { saveErr in
+                self.db.collection("rewards").document(uid).setData(rewardsDict, merge: true) { saveErr in
                     completion?(saveErr)
                 }
             }

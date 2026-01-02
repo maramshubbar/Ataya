@@ -137,11 +137,24 @@ final class DonorCampaignsListViewController: UIViewController {
                     let imageUrl = self.readString(d["imageUrl"]) ?? self.readString(d["imageURL"])
 
                     // detail
-                    let overview = self.readString(d["overview"]) ?? (self.readString(d["story"]) ?? "")
-                    let quoteText = self.readString(d["quoteText"]) ?? ""
-                    let quoteAuthor = self.readString(d["quoteAuthor"]) ?? ""
-                    let org = self.readString(d["organization"]) ?? ""
-                    let orgAbout = self.readString(d["orgAbout"]) ?? ""
+//                    let overview = self.readString(d["overview"]) ?? (self.readString(d["story"]) ?? "")
+//                    let quoteText = self.readString(d["quoteText"]) ?? ""
+//                    let quoteAuthor = self.readString(d["quoteAuthor"]) ?? ""
+//                    let org = self.readString(d["organization"]) ?? ""
+//                    let orgAbout = self.readString(d["orgAbout"]) ?? ""
+
+                    
+                    // ✅ detail (FIX حسب حقول Firestore عندج)
+                    let overview = self.readString(d["overview"]) ?? ""
+
+                    let story = self.readString(d["story"]) ?? ""
+                    let from  = self.readString(d["from"]) ?? ""
+
+                    let quoteText = self.readString(d["quoteText"]) ?? story      // ✅ الصندوق الأصفر ياخذ story
+                    let quoteAuthor = self.readString(d["quoteAuthor"]) ?? from   // ✅ "from" يطلع تحت
+
+                    let org = self.readString(d["organization"]) ?? "LifeReach"
+                    let orgAbout = self.readString(d["orgAbout"]) ?? ""           // اذا مو موجود بيظل فاضي
 
                     return DonorCampaignItem(
                         id: doc.documentID,

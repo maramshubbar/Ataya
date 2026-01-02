@@ -1,24 +1,25 @@
 import UIKit
 
-final class DonateViewController: UIViewController {
-    
+final class DonateViewController: UIViewController, UIAdaptivePresentationControllerDelegate {
+
     @IBOutlet weak var foodDonationCardView: UIView!
     @IBOutlet weak var basketDonationCardView: UIView!
     @IBOutlet weak var fundsDonationCardView: UIView!
     @IBOutlet weak var campaignsCardView: UIView!
     @IBOutlet weak var advocacyCardView: UIView!
     @IBOutlet weak var giftOfMercyCardView: UIView!
-    
+
     var onSelect: ((DonateOption) -> Void)?
-    var onClose: (() -> Void)? 
-    
+    var onClose: (() -> Void)?
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        print("✅ DonateViewController loaded")
+
         view.backgroundColor = .systemBackground
         title = "Donate"
         navigationItem.largeTitleDisplayMode = .never
-        
+
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "xmark"),
             style: .plain,
@@ -26,7 +27,7 @@ final class DonateViewController: UIViewController {
             action: #selector(close)
         )
         navigationItem.rightBarButtonItem?.tintColor = .systemGray
-        
+
         let cards: [UIView] = [
             foodDonationCardView,
             basketDonationCardView,
@@ -38,7 +39,6 @@ final class DonateViewController: UIViewController {
 
         cards.forEach { styleCard($0) }
 
-        
         addTap(foodDonationCardView, action: #selector(foodTapped))
         addTap(basketDonationCardView, action: #selector(basketTapped))
         addTap(fundsDonationCardView, action: #selector(fundsTapped))
@@ -46,10 +46,18 @@ final class DonateViewController: UIViewController {
         addTap(advocacyCardView, action: #selector(advocacyTapped))
         addTap(giftOfMercyCardView, action: #selector(giftTapped))
     }
-    
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if let nav = navigationController {
+            nav.presentationController?.delegate = self
+        } else {
+            presentationController?.delegate = self
+        }
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
         let cards: [UIView] = [
             foodDonationCardView,
             basketDonationCardView,
@@ -58,7 +66,6 @@ final class DonateViewController: UIViewController {
             advocacyCardView,
             giftOfMercyCardView
         ]
-        
         for card in cards {
             card.layer.shadowPath = UIBezierPath(
                 roundedRect: card.bounds,
@@ -66,31 +73,37 @@ final class DonateViewController: UIViewController {
             ).cgPath
         }
     }
-    
-    // MARK: - Close
+
     @objc private func close() {
         dismiss(animated: true) { [weak self] in
             self?.onClose?()
         }
     }
-    
-    // MARK: - Selection
+
     private func didPick(_ option: DonateOption) {
+        print("✅ didPick:", option)
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
-        onSelect?(option)
+
+        dismiss(animated: true) { [weak self] in
+            print("✅ onSelect fired:", option)
+            self?.onSelect?(option)
+        }
     }
-    
-    // MARK: - Helpers
+
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        onClose?()
+    }
+
     private func addTap(_ view: UIView, action: Selector) {
         view.isUserInteractionEnabled = true
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: action))
+        let tap = UITapGestureRecognizer(target: self, action: action)
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
     }
-    
-    private func styleCard(_ card: UIView) {
 
+    private func styleCard(_ card: UIView) {
         card.layer.cornerRadius = 24
         card.layer.masksToBounds = false
-
         card.layer.borderWidth = 0.0
         card.layer.borderColor = UIColor.clear.cgColor
 
@@ -100,24 +113,10 @@ final class DonateViewController: UIViewController {
         card.layer.shadowRadius = 6
     }
 
-
-    
-    // MARK: - Actions
     @objc private func foodTapped()      { didPick(.food) }
     @objc private func basketTapped()    { didPick(.basket) }
     @objc private func fundsTapped()     { didPick(.funds) }
     @objc private func campaignsTapped() { didPick(.campaigns) }
     @objc private func advocacyTapped()  { didPick(.advocacy) }
     @objc private func giftTapped()      { didPick(.giftOfMercy) }
-}
-
-    // MARK: - Find first UIImageView inside card
-private extension UIView {
-    func findFirstImageView() -> UIImageView? {
-        if let iv = self as? UIImageView { return iv }
-        for sub in subviews {
-            if let found = sub.findFirstImageView() { return found }
-        }
-        return nil
-    }
 }

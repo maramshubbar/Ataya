@@ -2,13 +2,14 @@ import UIKit
 import Foundation
 
 final class DraftDonation {
+
     var id: String?
 
     var itemName: String = ""
 
-    // ✅ quantity as number + unit
-    var quantityValue: Int = 0         // 0 = not selected yet
-    var quantityUnit: String = "kg"
+    // ✅ Quantity (value + unit) from user picker
+    var quantityValue: Int = 0
+    var quantityUnit: String = ""
 
     var expiryDate: Date?
     var category: String = ""
@@ -17,29 +18,31 @@ final class DraftDonation {
     var notes: String? = nil
 
     var safetyConfirmed: Bool = false
-    
+
+    // Photos
     var images: [UIImage] = []
     var photoURLs: [String] = []
     var imagePublicIds: [String] = []
     var photoCount: Int { photoURLs.count }
 
+    // Pickup
     var pickupDate: Date?
     var pickupTime: String?
     var pickupMethod: String = ""
     var pickupAddress: AddressModel?
 
-    
     func toFirestoreDict() -> [String: Any] {
         var data: [String: Any] = [
             "itemName": itemName,
 
-            // ✅ store properly
             "quantityValue": quantityValue,
             "quantityUnit": quantityUnit,
 
             "category": category,
             "packagingType": packagingType,
+
             "safetyConfirmed": safetyConfirmed,
+
             "photoCount": photoCount,
             "photoURLs": photoURLs,
             "imagePublicIds": imagePublicIds

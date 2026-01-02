@@ -2,13 +2,6 @@
 //  CloudinaryUploadResponse.swift
 //  Ataya
 //
-//  Created by Maram on 27/12/2025.
-//
-
-//
-//  CloudinaryUploadResponse.swift
-//  Ataya
-//
 //  Created by Fatema Maitham on 27/12/2025.
 //
  

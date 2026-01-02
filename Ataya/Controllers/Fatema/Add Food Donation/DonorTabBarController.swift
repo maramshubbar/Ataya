@@ -165,47 +165,61 @@ final class DonorTabBarController: UITabBarController, UITabBarControllerDelegat
         present(nav, animated: true)
     }
 
-    // ✅ هذا اللي كان يعطي warning عندج — لازم @objc
     @objc func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
         isShowingDonateSheet = false
         donateNavController = nil
     }
-
     // MARK: - Navigate after choosing
     private func openDonate(_ option: DonateOption) {
-        let sb = UIStoryboard(name: "Main", bundle: nil)
-
+        
         let base = selectedViewController
         let nav = (base as? UINavigationController) ?? base?.navigationController
-
+        
+        func pushOrPresent(_ vc: UIViewController) {
+            if let nav {
+                nav.pushViewController(vc, animated: true)
+            } else {
+                present(UINavigationController(rootViewController: vc), animated: true)
+            }
+        }
+        
         switch option {
+            
         case .food:
-            nav?.pushViewController(sb.instantiateViewController(withIdentifier: "UploadPhotosViewController"), animated: true)
-
+            // ✅ هذا موجود في Add.storyboard (مو Main)
+            let sb = UIStoryboard(name: "Add", bundle: nil)
+            let vc = sb.instantiateViewController(withIdentifier: "AddFoodDonationViewController")
+            pushOrPresent(vc)
+            
         case .basket:
-            nav?.pushViewController(sb.instantiateViewController(withIdentifier: "BasketStartViewController"), animated: true)
-
+            let sb = UIStoryboard(name: "Main", bundle: nil)
+            pushOrPresent(sb.instantiateViewController(withIdentifier: "BasketStartViewController"))
+            
         case .funds:
-            nav?.pushViewController(sb.instantiateViewController(withIdentifier: "FundsStartViewController"), animated: true)
-
+            let sb = UIStoryboard(name: "Main", bundle: nil)
+            pushOrPresent(sb.instantiateViewController(withIdentifier: "FundsStartViewController"))
+            
         case .campaigns:
-            nav?.pushViewController(sb.instantiateViewController(withIdentifier: "CampaignsViewController"), animated: true)
-
+            let sb = UIStoryboard(name: "Main", bundle: nil)
+            pushOrPresent(sb.instantiateViewController(withIdentifier: "CampaignsViewController"))
+            
         case .advocacy:
-            nav?.pushViewController(sb.instantiateViewController(withIdentifier: "AdvocateForGazaViewController"), animated: true)
-
+            let sb = UIStoryboard(name: "Main", bundle: nil)
+            pushOrPresent(sb.instantiateViewController(withIdentifier: "AdvocacyDetailViewController"))
+            
         case .giftOfMercy:
-            nav?.pushViewController(sb.instantiateViewController(withIdentifier: "GiftViewController"), animated: true)
+            let sb = UIStoryboard(name: "Main", bundle: nil)
+            pushOrPresent(sb.instantiateViewController(withIdentifier: "GiftViewController"))
         }
     }
 }
 
 // MARK: - UIImage resize helper
-private extension UIImage {
-    func resized(to size: CGSize) -> UIImage {
-        let renderer = UIGraphicsImageRenderer(size: size)
-        return renderer.image { _ in
-            self.draw(in: CGRect(origin: .zero, size: size))
-        }
-    }
-}
+//private extension UIImage {
+//    func resized(to size: CGSize) -> UIImage {
+//        let renderer = UIGraphicsImageRenderer(size: size)
+//        return renderer.image { _ in
+//            self.draw(in: CGRect(origin: .zero, size: size))
+//        }
+//    }
+//}

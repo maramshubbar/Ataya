@@ -105,7 +105,7 @@ final class NGOTabBarController: UITabBarController, UITabBarControllerDelegate 
 }
 
 // MARK: - UIImage resize helper
-private extension UIImage {
+extension UIImage {
     func resized(to size: CGSize) -> UIImage {
         let renderer = UIGraphicsImageRenderer(size: size)
         return renderer.image { _ in

@@ -1,5 +1,5 @@
 //
-//  DonationService.swift
+//  DonationService 2.swift
 //  Ataya
 //
 //  Created by Fatema Maitham on 02/01/2026.
@@ -8,18 +8,17 @@
 
 import Foundation
 import FirebaseFirestore
-import FirebaseAuth
 
 final class DonationService {
-
+ 
     static let shared = DonationService()
     private init() {}
 
     private let db = Firestore.firestore()
 
-    // ✅ Listen NGO donations (Overview)
+    // ✅ NGO Overview
     func listenNGODonations(ngoId: String, completion: @escaping ([DonationItem]) -> Void) -> ListenerRegistration {
-        return db.collection("donations")
+        db.collection("donations")
             .whereField("ngoId", isEqualTo: ngoId)
             .order(by: "createdAt", descending: true)
             .addSnapshotListener { snap, _ in
@@ -28,17 +27,24 @@ final class DonationService {
             }
     }
 
-    // ✅ Get full donation doc for Details/Inspect
     func getDonation(donationId: String, completion: @escaping (DocumentSnapshot?) -> Void) {
         db.collection("donations").document(donationId).getDocument { doc, _ in
             completion(doc)
         }
     }
 
-    // ✅ Submit inspection (Accept/Reject) + Report + TrustScore + Analytics + Audit
+    // ✅ get user name (collector)
+    func fetchUserName(uid: String, completion: @escaping (String) -> Void) {
+        db.collection("users").document(uid).getDocument { snap, _ in
+            let name = (snap?.data()?["name"] as? String) ?? "—"
+            completion(name)
+        }
+    }
+
+    // ✅ Feature 11 step 2 + 3 + 4 + 5 + 6 (transaction)
     func submitInspection(
         donationId: String,
-        decision: String, // "accept" or "reject"
+        decision: String,   // "accept" / "reject"
         reason: String,
         description: String,
         collectorId: String,
@@ -47,24 +53,24 @@ final class DonationService {
         completion: @escaping (Error?) -> Void
     ) {
         let donationRef = db.collection("donations").document(donationId)
-        let reportRef = db.collection("reports").document() // auto id
+        let reportRef = db.collection("reports").document()
         let analyticsRef = db.collection("analytics").document("foodSafety")
         let auditRef = donationRef.collection("audit").document()
 
         db.runTransaction({ tx, errPtr -> Any? in
-
-            guard let donationSnap = try? tx.getDocument(donationRef),
-                  let donationData = donationSnap.data()
-            else {
-                errPtr?.pointee = NSError(domain: "Donation", code: 0, userInfo: [NSLocalizedDescriptionKey: "Donation not found"])
+            let donationSnap: DocumentSnapshot
+            do {
+                donationSnap = try tx.getDocument(donationRef)
+            } catch {
+                errPtr?.pointee = error as NSError
                 return nil
             }
 
+            let donationData = donationSnap.data() ?? [:]
             let donorId = (donationData["donorId"] as? String) ?? ""
-            let donorName = (donationData["donorName"] as? String) ?? ""
+            let donorName = (donationData["donorName"] as? String) ?? "—"
             let ngoId = (donationData["ngoId"] as? String) ?? ""
 
-            // ✅ update donation status
             let newStatus: String = (decision == "reject") ? "rejected" : "approved"
 
             var inspectionMap: [String: Any] = [
@@ -79,13 +85,14 @@ final class DonationService {
                 inspectionMap["evidenceUrl"] = evidenceUrl
             }
 
+            // ✅ update donation
             tx.updateData([
                 "status": newStatus,
                 "inspection": inspectionMap,
                 "updatedAt": FieldValue.serverTimestamp()
             ], forDocument: donationRef)
 
-            // ✅ audit trail (subcollection)
+            // ✅ audit trail
             tx.setData([
                 "action": "inspection_submitted",
                 "decision": decision,
@@ -96,7 +103,7 @@ final class DonationService {
                 "createdAt": FieldValue.serverTimestamp()
             ], forDocument: auditRef)
 
-            // ✅ analytics counters
+            // ✅ analytics
             let reasonKey = Self.slug(reason)
             tx.setData([
                 "totalInspections": FieldValue.increment(Int64(1)),
@@ -104,7 +111,7 @@ final class DonationService {
                 "reasons.\(reasonKey)": FieldValue.increment(Int64(decision == "reject" ? 1 : 0))
             ], forDocument: analyticsRef, merge: true)
 
-            // ✅ if reject → create report + reduce trustScore
+            // ✅ if reject -> reports + trustScore decrement
             if decision == "reject" {
                 tx.setData([
                     "donationId": donationId,
@@ -123,7 +130,6 @@ final class DonationService {
 
                 if !donorId.isEmpty {
                     let donorRef = self.db.collection("users").document(donorId)
-                    // trustScore decrement (مثال: -10)
                     tx.setData([
                         "trustScore": FieldValue.increment(Int64(-10)),
                         "rejectedCount": FieldValue.increment(Int64(1))
@@ -137,14 +143,14 @@ final class DonationService {
         })
     }
 
-    // helper: reason -> safe key
     private static func slug(_ s: String) -> String {
         let lower = s.lowercased()
         let allowed = lower.map { ch -> Character in
             if ch.isLetter || ch.isNumber { return ch }
             return "_"
         }
-        // remove repeating underscores roughly
-        return String(allowed).replacingOccurrences(of: "__", with: "_")
+        return String(allowed)
+            .replacingOccurrences(of: "__", with: "_")
+            .replacingOccurrences(of: "___", with: "_")
     }
 }

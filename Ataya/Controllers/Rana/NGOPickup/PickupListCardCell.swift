@@ -2,7 +2,6 @@
 
 
 
-
 import UIKit
 
 final class PickupListCardCell: UITableViewCell {
@@ -15,7 +14,7 @@ final class PickupListCardCell: UITableViewCell {
     private let dateLabel = UILabel()
 
     private let statusBadgeLabel = UILabel()
-    private let itemImageView = UIImageView()
+    private let itemImageView = UIImageView() // موجود بس بنخليه مخفي + بدون constraints مهمة
     private let viewDetailsButton = UIButton(type: .system)
 
     private var onTapDetails: (() -> Void)?
@@ -68,26 +67,27 @@ final class PickupListCardCell: UITableViewCell {
         statusBadgeLabel.layer.cornerRadius = 10
         statusBadgeLabel.layer.masksToBounds = true
 
-        // IMAGE
-        itemImageView.contentMode = .scaleAspectFit
+        // IMAGE (REMOVED UI)
         itemImageView.translatesAutoresizingMaskIntoConstraints = false
+        itemImageView.isHidden = true
+        itemImageView.alpha = 0
 
         // BUTTON (Primary Yellow)
         viewDetailsButton.setTitle("View Details", for: .normal)
         viewDetailsButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
         viewDetailsButton.setTitleColor(.black, for: .normal)
-        viewDetailsButton.backgroundColor = UIColor.hex("#F7D44C") // your primary yellow
+        viewDetailsButton.backgroundColor = UIColor.hex("#F7D44C")
         viewDetailsButton.layer.cornerRadius = 8
         viewDetailsButton.layer.masksToBounds = true
         viewDetailsButton.addTarget(self, action: #selector(detailsTapped), for: .touchUpInside)
 
-        // Add to card
-        [titleLabel, nameLabel, locationLabel, dateLabel, statusBadgeLabel, itemImageView, viewDetailsButton].forEach {
+        // Add to card (بدون الصورة)
+        [titleLabel, nameLabel, locationLabel, dateLabel, statusBadgeLabel, viewDetailsButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             cardView.addSubview($0)
         }
 
-        // Constraints (THIS IS THE MAGIC – no collapsing)
+        // Constraints
         NSLayoutConstraint.activate([
             // cardView inside cell
             cardView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
@@ -101,36 +101,30 @@ final class PickupListCardCell: UITableViewCell {
             statusBadgeLabel.heightAnchor.constraint(equalToConstant: 24),
             statusBadgeLabel.widthAnchor.constraint(equalToConstant: 95),
 
-            // image right
-            itemImageView.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -12),
-            itemImageView.topAnchor.constraint(equalTo: statusBadgeLabel.bottomAnchor, constant: 10),
-            itemImageView.widthAnchor.constraint(equalToConstant: 70),
-            itemImageView.heightAnchor.constraint(equalToConstant: 70),
-
             // title left
             titleLabel.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 12),
             titleLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 12),
             titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: statusBadgeLabel.leadingAnchor, constant: -10),
 
-            // details labels left
+            // details labels left (✅ now goes full width to cardView trailing)
             nameLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 6),
             nameLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            nameLabel.trailingAnchor.constraint(lessThanOrEqualTo: itemImageView.leadingAnchor, constant: -12),
+            nameLabel.trailingAnchor.constraint(lessThanOrEqualTo: cardView.trailingAnchor, constant: -12),
 
             locationLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 4),
             locationLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            locationLabel.trailingAnchor.constraint(lessThanOrEqualTo: itemImageView.leadingAnchor, constant: -12),
+            locationLabel.trailingAnchor.constraint(lessThanOrEqualTo: cardView.trailingAnchor, constant: -12),
 
             dateLabel.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: 4),
             dateLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            dateLabel.trailingAnchor.constraint(lessThanOrEqualTo: itemImageView.leadingAnchor, constant: -12),
+            dateLabel.trailingAnchor.constraint(lessThanOrEqualTo: cardView.trailingAnchor, constant: -12),
 
             // button bottom left
             viewDetailsButton.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 12),
             viewDetailsButton.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
             viewDetailsButton.heightAnchor.constraint(equalToConstant: 44),
             viewDetailsButton.widthAnchor.constraint(equalToConstant: 160),
-            viewDetailsButton.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -12) // ✅ key
+            viewDetailsButton.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -12)
         ])
     }
 
@@ -153,12 +147,9 @@ final class PickupListCardCell: UITableViewCell {
         statusBadgeLabel.text = status
         statusBadgeLabel.backgroundColor = badgeColor(for: status)
 
-        if let imageName, !imageName.isEmpty {
-            itemImageView.image = UIImage(named: imageName)
-        } else {
-            itemImageView.image = UIImage(systemName: "photo")
-            itemImageView.tintColor = .lightGray
-        }
+        // ✅ no image logic anymore
+        itemImageView.isHidden = true
+        itemImageView.image = nil
     }
 
     private func badgeColor(for status: String) -> UIColor {

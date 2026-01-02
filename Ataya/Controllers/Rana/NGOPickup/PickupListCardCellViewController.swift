@@ -11,11 +11,11 @@ final class PickupListCardCellViewController: UIViewController {
 
     private var allItems: [PickupItem] = []
     private var shownItems: [PickupItem] = []
-
     private var listener: ListenerRegistration?
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("🔥🔥 PICKUP VC LOADED")
         title = "My Pickups"
 
         setupSegmentUI()
@@ -26,9 +26,7 @@ final class PickupListCardCellViewController: UIViewController {
         startListening()
     }
 
-    deinit {
-        listener?.remove()
-    }
+    deinit { listener?.remove() }
 
     private func startListening() {
         listener?.remove()
@@ -36,13 +34,16 @@ final class PickupListCardCellViewController: UIViewController {
         listener = PickupFirestoreService.shared.listenMyPickups { [weak self] result in
             guard let self else { return }
 
-            switch result {
-            case .success(let items):
-                self.allItems = items
-                self.applyFilter()
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let items):
+                    print("✅ got pickups:", items.count)
+                    self.allItems = items
+                    self.applyFilter()
 
-            case .failure(let error):
-                print("❌ Firestore listen error:", error.localizedDescription)
+                case .failure(let error):
+                    print("❌ Firestore listen error:", error.localizedDescription)
+                }
             }
         }
     }
@@ -52,8 +53,8 @@ final class PickupListCardCellViewController: UIViewController {
         tableView.delegate = self
         tableView.separatorStyle = .none
         tableView.backgroundColor = .white
-        tableView.estimatedRowHeight = 190
-        tableView.rowHeight = UITableView.automaticDimension
+
+        tableView.rowHeight = 200  // ✅ force height (no hiding)
 
         tableView.register(PickupListCardCell.self, forCellReuseIdentifier: "PickupListCardCell")
     }
@@ -72,38 +73,30 @@ final class PickupListCardCellViewController: UIViewController {
 
     private func applyFilter() {
         switch statusSegment.selectedSegmentIndex {
-        case 1:
-            shownItems = allItems.filter { $0.status == .pending }
-        case 2:
-            shownItems = allItems.filter { $0.status == .accepted }
-        case 3:
-            shownItems = allItems.filter { $0.status == .completed }
-        default:
-            shownItems = allItems
+        case 1: shownItems = allItems.filter { $0.status == .pending }
+        case 2: shownItems = allItems.filter { $0.status == .accepted }
+        case 3: shownItems = allItems.filter { $0.status == .completed }
+        default: shownItems = allItems
         }
         tableView.reloadData()
     }
 
     private func openDetails(for pickupID: String) {
-        // Find item inside allItems (source of truth)
         guard let index = allItems.firstIndex(where: { $0.pickupID == pickupID }) else { return }
 
         let vc = storyboard?.instantiateViewController(withIdentifier: "PickupDetailsViewController") as! PickupDetailsViewController
         vc.item = allItems[index]
 
-
         vc.onStatusChanged = { newStatus in
             guard let docId = vc.item.id else {
-                print("❌ Missing Firestore docId (item.id is nil)")
+                print("Firestore docId missing – status update skipped")
                 return
             }
 
             PickupFirestoreService.shared.updateStatus(docId: docId, status: newStatus) { result in
                 switch result {
-                case .success:
-                    print("✅ Firestore updated:", newStatus.rawValue)
-                case .failure(let error):
-                    print("❌ Firestore update failed:", error.localizedDescription)
+                case .success: print("✅ Firestore updated:", newStatus.rawValue)
+                case .failure(let error): print("❌ Firestore update failed:", error.localizedDescription)
                 }
             }
         }
@@ -121,10 +114,7 @@ extension PickupListCardCellViewController: UITableViewDataSource, UITableViewDe
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         let item = shownItems[indexPath.row]
-
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "PickupListCardCell", for: indexPath) as? PickupListCardCell else {
-            return UITableViewCell()
-        }
+        let cell = tableView.dequeueReusableCell(withIdentifier: "PickupListCardCell", for: indexPath) as! PickupListCardCell
 
         cell.configure(
             title: item.title,
@@ -141,7 +131,7 @@ extension PickupListCardCellViewController: UITableViewDataSource, UITableViewDe
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let item = shownItems[indexPath.row]
-        openDetails(for: item.pickupID)
+        openDetails(for: shownItems[indexPath.row].pickupID)
     }
 }
+

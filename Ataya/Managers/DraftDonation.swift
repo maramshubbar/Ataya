@@ -1,5 +1,5 @@
 import UIKit
-import Foundation
+import FirebaseFirestore
 
 final class DraftDonation {
 
@@ -32,7 +32,6 @@ final class DraftDonation {
     var pickupMethod: String = ""
     var pickupAddress: AddressModel?
 
-    // ✅ IMPORTANT: Call this AFTER Cloudinary upload success
     func applyCloudinaryUploads(urls: [String], publicIds: [String], replace: Bool = true) {
         if replace {
             self.photoURLs = urls
@@ -43,7 +42,6 @@ final class DraftDonation {
         }
     }
 
-    // ✅ Clean empty strings -> nil
     func normalizeBeforeSave() {
         itemName = itemName.trimmingCharacters(in: .whitespacesAndNewlines)
         category = category.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -59,30 +57,50 @@ final class DraftDonation {
         }
     }
 
-    // ✅ CRITICAL FIX:
-    // لا ترسل قيم فاضية (0 أو "" أو []) عشان لا تمسحين قيم Cloudinary/Quantity القديمة بالـ merge
-    func toFirestoreDict() -> [String: Any] {
+    /// ✅ FIXED: on update -> delete empty/invalid fields so old wrong values (0 / "") disappear
+    func toFirestoreDict(isUpdate: Bool) -> [String: Any] {
         normalizeBeforeSave()
 
         var data: [String: Any] = [
-            "itemName": itemName,
-            "category": category,
-            "packagingType": packagingType,
             "safetyConfirmed": safetyConfirmed
         ]
 
+        // Required-ish fields: only write if not empty; if update and empty -> delete
+        if !itemName.isEmpty { data["itemName"] = itemName }
+        else if isUpdate { data["itemName"] = FieldValue.delete() }
+
+        if !category.isEmpty { data["category"] = category }
+        else if isUpdate { data["category"] = FieldValue.delete() }
+
+        if !packagingType.isEmpty { data["packagingType"] = packagingType }
+        else if isUpdate { data["packagingType"] = FieldValue.delete() }
+
+        // Quantity: delete wrong old values on update
         if quantityValue > 0 { data["quantityValue"] = quantityValue }
+        else if isUpdate { data["quantityValue"] = FieldValue.delete() }
+
         if !quantityUnit.isEmpty { data["quantityUnit"] = quantityUnit }
+        else if isUpdate { data["quantityUnit"] = FieldValue.delete() }
 
+        // Optional fields
         if let expiryDate { data["expiryDate"] = expiryDate }
-        if let allergenInfo { data["allergenInfo"] = allergenInfo }
-        if let notes { data["notes"] = notes }
+        else if isUpdate { data["expiryDate"] = FieldValue.delete() }
 
-        // photos ONLY if uploaded (so we don't overwrite existing with empty)
+        if let allergenInfo { data["allergenInfo"] = allergenInfo }
+        else if isUpdate { data["allergenInfo"] = FieldValue.delete() }
+
+        if let notes { data["notes"] = notes }
+        else if isUpdate { data["notes"] = FieldValue.delete() }
+
+        // Photos: if empty on update -> delete old arrays + count
         if !photoURLs.isEmpty || !imagePublicIds.isEmpty {
             data["photoURLs"] = photoURLs
             data["imagePublicIds"] = imagePublicIds
             data["photoCount"] = photoURLs.count
+        } else if isUpdate {
+            data["photoURLs"] = FieldValue.delete()
+            data["imagePublicIds"] = FieldValue.delete()
+            data["photoCount"] = FieldValue.delete()
         }
 
         return data

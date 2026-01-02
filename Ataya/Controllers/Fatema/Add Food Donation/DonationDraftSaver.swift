@@ -28,7 +28,7 @@ final class DonationDraftSaver {
         // ===== UPDATE existing =====
         if let existingId = draft.id, !existingId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
 
-            var data = draft.toFirestoreDict()
+            var data = draft.toFirestoreDict(isUpdate: true)
             data["id"] = existingId
             data["donorId"] = uid
             data["status"] = "pending"
@@ -64,7 +64,7 @@ final class DonationDraftSaver {
                 let docId = "DON-\(number)"
                 draft.id = docId
 
-                var data = draft.toFirestoreDict()
+                var data = draft.toFirestoreDict(isUpdate: false)
                 data["id"] = docId
                 data["donationNumber"] = number
                 data["donorId"] = uid

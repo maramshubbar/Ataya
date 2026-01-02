@@ -7,7 +7,7 @@ final class MyAddressListViewController: UIViewController {
     @IBOutlet weak var ngoButton: UIButton!
     @IBOutlet weak var nextButton: UIButton!
 
-    // ✅ optional عشان ما يطيح
+    // ❗️لا تخليه يسوي Draft جديد هنا
     var draft: DraftDonation?
 
     private enum Choice { case myAddress, ngo }
@@ -17,11 +17,17 @@ final class MyAddressListViewController: UIViewController {
     private let selectedBorder = UIColor(hex: "#FEC400")
     private let selectedBG = UIColor(hex: "#FFFBE7")
 
-    // ✅ always from Pickup storyboard
     private let pickupSB = UIStoryboard(name: "Pickup", bundle: nil)
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        // ✅ لازم draft يوصل من قبل
+        guard draft != nil else {
+            showAlert(title: "Missing draft", message: "Draft not passed from previous screen. Go back and try again.")
+            navigationController?.popViewController(animated: true)
+            return
+        }
 
         setupOptionButton(myAddressButton)
         setupOptionButton(ngoButton)
@@ -35,9 +41,6 @@ final class MyAddressListViewController: UIViewController {
         applyDefaultStyle(myAddressButton)
         applyDefaultStyle(ngoButton)
         setNextEnabled(false)
-
-        // ✅ Safety: if draft not passed, create one to avoid "draft missing"
-        if draft == nil { draft = DraftDonation() }
     }
 
     private func setupOptionButton(_ button: UIButton) {
@@ -97,9 +100,10 @@ final class MyAddressListViewController: UIViewController {
             return
         }
 
-        // ✅ always have draft
-        let draftObj = draft ?? DraftDonation()
-        self.draft = draftObj
+        guard let draftObj = draft else {
+            showAlert(title: "Missing draft", message: "Draft not found. Please go back and try again.")
+            return
+        }
 
         switch choice {
 
@@ -107,21 +111,18 @@ final class MyAddressListViewController: UIViewController {
             draftObj.pickupMethod = "ngo"
             draftObj.pickupAddress = nil
 
-            nextButton.isEnabled = false
-            nextButton.alpha = 0.5
+            setNextEnabled(false)
 
-            DonationDraftSaver.shared.saveAfterPickup(draft: draftObj) { [weak self] error in
+            // ✅ Upload (if needed) ثم Save ثم Popup
+            uploadThenSave(draftObj) { [weak self] error in
                 guard let self else { return }
-
-                self.nextButton.isEnabled = true
-                self.nextButton.alpha = 1.0
+                self.setNextEnabled(true)
 
                 if let error {
                     self.showAlert(title: "Save failed", message: error.localizedDescription)
                     return
                 }
 
-                // ✅ go to popup after save
                 self.presentThankYouPopup()
             }
 
@@ -135,6 +136,36 @@ final class MyAddressListViewController: UIViewController {
 
             vc.draft = draftObj
             navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    // MARK: - ✅ Upload then Save
+    private func uploadThenSave(_ draft: DraftDonation, completion: @escaping (Error?) -> Void) {
+
+        // إذا عنده صور محلية بس ما عنده روابط كلاودينري -> ارفع أول
+        if !draft.images.isEmpty && draft.photoURLs.isEmpty {
+
+            CloudinaryUploader.shared.uploadImages(draft.images, folder: "donations") { res in
+                switch res {
+                case .success(let items):
+                    let urls = items.map { $0.secureUrl }
+                    let ids  = items.map { $0.publicId }
+                    draft.applyCloudinaryUploads(urls: urls, publicIds: ids, replace: true)
+
+                    DonationDraftSaver.shared.saveAfterPickup(draft: draft) { err in
+                        completion(err)
+                    }
+
+                case .failure(let err):
+                    completion(err)
+                }
+            }
+            return
+        }
+
+        // ما عنده صور أو الصور محفوظة URLs -> احفظ مباشرة
+        DonationDraftSaver.shared.saveAfterPickup(draft: draft) { err in
+            completion(err)
         }
     }
 

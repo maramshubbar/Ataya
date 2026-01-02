@@ -9,55 +9,24 @@ final class NotificationCardCell: UITableViewCell {
 
     private let borderGray = UIColor(hex: "#B8B8B8")
 
-    // spacing below card (gap between cards)
-    private var bottomConstraint: NSLayoutConstraint?
-
     override func awakeFromNib() {
         super.awakeFromNib()
 
         selectionStyle = .none
         backgroundColor = .clear
         contentView.backgroundColor = .clear
-        contentView.clipsToBounds = false
-        clipsToBounds = false
 
-        // Card style
         cardView.backgroundColor = .white
         cardView.layer.cornerRadius = 8
         cardView.layer.borderWidth = 1
         cardView.layer.borderColor = borderGray.cgColor
         cardView.layer.masksToBounds = true
 
-        // Text
-        titleLabel.textColor = .black
         titleLabel.font = .systemFont(ofSize: 14, weight: .semibold)
-
-        messageLabel.textColor = .black
         messageLabel.font = .systemFont(ofSize: 12, weight: .regular)
         messageLabel.numberOfLines = 2
-
-        timeLabel.textColor = borderGray
         timeLabel.font = .systemFont(ofSize: 11, weight: .regular)
-
-
-        pinCardToContent(gap: 12)
-    }
-
-    private func pinCardToContent(gap: CGFloat) {
-        guard let cardView else { return }
-        cardView.translatesAutoresizingMaskIntoConstraints = false
-
-        // remove existing if any (safe)
-        NSLayoutConstraint.deactivate(cardView.constraints)
-
-        // pin to contentView
-        let top = cardView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0)
-        let leading = cardView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0)
-        let trailing = cardView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0)
-        let bottom = cardView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -gap)
-        bottomConstraint = bottom
-
-        NSLayoutConstraint.activate([top, leading, trailing, bottom])
+        timeLabel.textColor = borderGray
     }
 
     func configure(title: String, message: String, timeText: String) {
@@ -67,7 +36,6 @@ final class NotificationCardCell: UITableViewCell {
     }
 }
 
-// MARK: - Hex helper
 private extension UIColor {
     convenience init(hex: String, alpha: CGFloat = 1.0) {
         var h = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
@@ -84,3 +52,4 @@ private extension UIColor {
         self.init(red: r, green: g, blue: b, alpha: alpha)
     }
 }
+

@@ -5,6 +5,8 @@
 //  Created by BP-36-224-09 on 28/12/2025.
 //
 import UIKit
+import FirebaseAuth
+import FirebaseFirestore
 
 final class NotificationSettingsViewController: UIViewController {
 
@@ -25,15 +27,15 @@ final class NotificationSettingsViewController: UIViewController {
     private let yellow = UIColor(hex: "#F7D44C")
     private let borderGray = UIColor(hex: "#B8B8B8")
 
-    // MARK: - Storage Keys
-    private enum Keys {
-        static let allowNotifications = "settings_allow_notifications"
-        static let silentMode = "settings_silent_mode"
-    }
-
     // MARK: - State
     private var initialAllow: Bool = true
     private var initialSilent: Bool = false
+
+    // Role comes from NotificationViewController
+    var role: AppRole = .donor
+
+    // Firestore live listener
+    private var settingsListener: ListenerRegistration?
 
     // MARK: - Layout
     private var cardsStack: UIStackView?
@@ -45,37 +47,37 @@ final class NotificationSettingsViewController: UIViewController {
         view.backgroundColor = .white
 
         applyDesign()
-
-        // ✅ THIS is the fix: force correct runtime layout even if storyboard is “lying”
         forceTwoSeparateCardsLayout()
 
-        loadSavedValues()
         wireActions()
+
+        // ✅ Firestore load + listen
+        loadSettingsFromFirestore()
         refreshSaveButtonState()
+    }
+
+    deinit {
+        settingsListener?.remove()
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        // Keep multiline wrapping stable
         allowDescLabel.preferredMaxLayoutWidth = allowDescLabel.bounds.width
         silentDescLabel.preferredMaxLayoutWidth = silentDescLabel.bounds.width
 
-        // Shadow path after layout
         cardAllowView.layer.shadowPath = UIBezierPath(roundedRect: cardAllowView.bounds, cornerRadius: 10).cgPath
         cardSilentView.layer.shadowPath = UIBezierPath(roundedRect: cardSilentView.bounds, cornerRadius: 10).cgPath
     }
 
-    // MARK: - ✅ HARD LAYOUT FIX
+    // MARK: - ✅ HARD LAYOUT FIX (kept as you had)
     private func forceTwoSeparateCardsLayout() {
 
-        // They must share a parent (same superview)
         guard let parent = cardAllowView.superview,
               parent === cardSilentView.superview else {
             return
         }
 
-        // 1) Deactivate constraints in parent that touch either card (kills overlap / pinned-to-same-edges bug)
         let kill = parent.constraints.filter { c in
             let a = (c.firstItem as AnyObject?) === cardAllowView || (c.secondItem as AnyObject?) === cardAllowView
             let s = (c.firstItem as AnyObject?) === cardSilentView || (c.secondItem as AnyObject?) === cardSilentView
@@ -83,11 +85,9 @@ final class NotificationSettingsViewController: UIViewController {
         }
         NSLayoutConstraint.deactivate(kill)
 
-        // 2) Remove any stack we created before (safety)
         cardsStack?.removeFromSuperview()
         cardsStack = nil
 
-        // 3) Remove cards from parent then re-add inside a fresh stack
         cardAllowView.removeFromSuperview()
         cardSilentView.removeFromSuperview()
 
@@ -100,7 +100,6 @@ final class NotificationSettingsViewController: UIViewController {
 
         parent.addSubview(stack)
 
-        // ✅ pin stack to parent exactly like storyboard intended
         NSLayoutConstraint.activate([
             stack.leadingAnchor.constraint(equalTo: parent.leadingAnchor),
             stack.trailingAnchor.constraint(equalTo: parent.trailingAnchor),
@@ -108,11 +107,10 @@ final class NotificationSettingsViewController: UIViewController {
             stack.bottomAnchor.constraint(lessThanOrEqualTo: parent.bottomAnchor)
         ])
 
-        // 4) Force equal heights even if one label wraps (super stable)
         cardAllowView.translatesAutoresizingMaskIntoConstraints = false
         cardSilentView.translatesAutoresizingMaskIntoConstraints = false
 
-        let minH: CGFloat = 118 // match your figma vibe
+        let minH: CGFloat = 118
         NSLayoutConstraint.activate([
             cardAllowView.heightAnchor.constraint(greaterThanOrEqualToConstant: minH),
             cardSilentView.heightAnchor.constraint(greaterThanOrEqualToConstant: minH),
@@ -124,7 +122,6 @@ final class NotificationSettingsViewController: UIViewController {
 
     // MARK: - Design
     private func applyDesign() {
-
         styleTitleLabel(allowTitleLabel)
         styleDescLabel(allowDescLabel)
 
@@ -169,35 +166,42 @@ final class NotificationSettingsViewController: UIViewController {
         v.layer.shadowOffset = CGSize(width: 0, height: 2)
     }
 
-    // MARK: - Load/Save
-    private func loadSavedValues() {
-        let defaults = UserDefaults.standard
-
-        if defaults.object(forKey: Keys.allowNotifications) == nil {
-            defaults.set(true, forKey: Keys.allowNotifications)
-        }
-        if defaults.object(forKey: Keys.silentMode) == nil {
-            defaults.set(false, forKey: Keys.silentMode)
+    // MARK: - ✅ Firestore Load/Listen
+    private func loadSettingsFromFirestore() {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("No user logged in (settings screen).")
+            return
         }
 
-        let allow = defaults.bool(forKey: Keys.allowNotifications)
-        let silent = defaults.bool(forKey: Keys.silentMode)
+        // Create defaults once if missing
+        NotificationService.shared.ensureDefaultSettings(uid: uid, role: role)
 
-        allowSwitch.isOn = allow
-        silentSwitch.isOn = silent
+        // Listen realtime
+        settingsListener?.remove()
+        settingsListener = NotificationService.shared.listenSettings(uid: uid, role: role) { [weak self] s in
+            guard let self else { return }
 
-        initialAllow = allow
-        initialSilent = silent
+            self.allowSwitch.isOn = s.allow
+            self.silentSwitch.isOn = s.silent
+
+            self.initialAllow = s.allow
+            self.initialSilent = s.silent
+            self.refreshSaveButtonState()
+        }
     }
 
-    private func persistValues(allow: Bool, silent: Bool) {
-        let defaults = UserDefaults.standard
-        defaults.set(allow, forKey: Keys.allowNotifications)
-        defaults.set(silent, forKey: Keys.silentMode)
+    private func persistValuesToFirestore(allow: Bool, silent: Bool) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
 
-        initialAllow = allow
-        initialSilent = silent
-        refreshSaveButtonState()
+        NotificationService.shared.saveSettings(uid: uid, role: role, allow: allow, silent: silent) { [weak self] err in
+            if let err = err {
+                print("saveSettings error:", err.localizedDescription)
+                return
+            }
+            self?.initialAllow = allow
+            self?.initialSilent = silent
+            self?.refreshSaveButtonState()
+        }
     }
 
     // MARK: - Actions
@@ -232,10 +236,12 @@ final class NotificationSettingsViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
 
         alert.addAction(UIAlertAction(title: "Save", style: .default, handler: { [weak self] _ in
-            guard let self = self else { return }
+            guard let self else { return }
 
-            self.persistValues(allow: self.allowSwitch.isOn,
-                               silent: self.silentSwitch.isOn)
+            self.persistValuesToFirestore(
+                allow: self.allowSwitch.isOn,
+                silent: self.silentSwitch.isOn
+            )
 
             let done = UIAlertController(
                 title: "Changes Saved",

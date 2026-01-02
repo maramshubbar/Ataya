@@ -4,7 +4,6 @@
 //
 //  Created by BP-36-224-16 on 18/12/2025.
 //
-
 import UIKit
 
 final class PickUpDateViewController: UIViewController {
@@ -13,7 +12,8 @@ final class PickUpDateViewController: UIViewController {
     @IBOutlet weak var timeSectionContainer: UIView!
     @IBOutlet weak var calenderCollectionView: UIDatePicker!
 
-    var draft: DraftDonation!
+    // ✅ خليها Optional عشان نتحكم
+    var draft: DraftDonation?
 
     private var selectedDate: Date?
     private var selectedTime: String?
@@ -21,7 +21,7 @@ final class PickUpDateViewController: UIViewController {
 
     private let times: [String] = [
         "8:00 AM", "10:00 AM", "11:00 AM",
-        "12:00 AM", "1:00 PM", "3:00 PM",
+        "12:00 PM", "1:00 PM", "3:00 PM",
         "6:00 PM", "8:00 PM"
     ]
 
@@ -33,6 +33,13 @@ final class PickUpDateViewController: UIViewController {
         super.viewDidLoad()
 
         title = "Select Pickup Date"
+
+        // ✅ لازم draft يوصل من قبل
+        guard draft != nil else {
+            showAlert(title: "Missing draft", message: "Draft not passed from previous screen. Go back and try again.")
+            navigationController?.popViewController(animated: true)
+            return
+        }
 
         setupDatePicker()
         setupNextButton()
@@ -93,9 +100,7 @@ final class PickUpDateViewController: UIViewController {
             row.spacing = 16
             row.distribution = .fillEqually
 
-            if rowButtons.count == 2 {
-                row.addArrangedSubview(UIView())
-            }
+            if rowButtons.count == 2 { row.addArrangedSubview(UIView()) }
             grid.addArrangedSubview(row)
         }
 
@@ -123,7 +128,6 @@ final class PickUpDateViewController: UIViewController {
     private func makeTimeButton(title: String) -> UIButton {
         let b = UIButton(type: .system)
         b.setTitle(title, for: .normal)
-
         b.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
         b.setTitleColor(.label, for: .normal)
 
@@ -134,7 +138,6 @@ final class PickUpDateViewController: UIViewController {
         b.layer.borderColor = borderGray.cgColor
 
         b.addTarget(self, action: #selector(timeTapped(_:)), for: .touchUpInside)
-
         b.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
         b.addTarget(self, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchCancel, .touchDragExit])
 
@@ -178,28 +181,30 @@ final class PickUpDateViewController: UIViewController {
 
     @IBAction func nextButtonTapped(_ sender: UIButton) {
         guard let date = selectedDate else {
-                showAlert(title: "Choose a date", message: "Please select a pickup date before continuing.")
-                return
-            }
-            guard let time = selectedTime else {
-                showAlert(title: "Choose a time", message: "Please select a pickup time before continuing.")
-                return
-            }
+            showAlert(title: "Choose a date", message: "Please select a pickup date before continuing.")
+            return
+        }
+        guard let time = selectedTime else {
+            showAlert(title: "Choose a time", message: "Please select a pickup time before continuing.")
+            return
+        }
+        guard let draftObj = draft else {
+            showAlert(title: "Missing draft", message: "Draft not passed from previous screen. Go back and try again.")
+            navigationController?.popViewController(animated: true)
+            return
+        }
 
-            if draft == nil { draft = DraftDonation() }
-            draft.pickupDate = date
-            draft.pickupTime = time
+        draftObj.pickupDate = date
+        draftObj.pickupTime = time
 
-            // ✅ ALWAYS open from Pickup storyboard
-            let sb = UIStoryboard(name: "Pickup", bundle: nil)
+        let sb = UIStoryboard(name: "Pickup", bundle: nil)
+        guard let vc = sb.instantiateViewController(withIdentifier: "MyAddressListViewController") as? MyAddressListViewController else {
+            showAlert(title: "Storyboard Error", message: "In Pickup.storyboard set Storyboard ID = MyAddressListViewController")
+            return
+        }
 
-            guard let vc = sb.instantiateViewController(withIdentifier: "MyAddressListViewController") as? MyAddressListViewController else {
-                showAlert(title: "Storyboard Error", message: "In Pickup.storyboard set Storyboard ID = MyAddressListViewController")
-                return
-            }
-
-            vc.draft = draft
-            navigationController?.pushViewController(vc, animated: true)
+        vc.draft = draftObj
+        navigationController?.pushViewController(vc, animated: true)
     }
 
     private func updateNextButtonState() {

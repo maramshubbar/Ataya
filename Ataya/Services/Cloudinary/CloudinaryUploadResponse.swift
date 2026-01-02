@@ -2,13 +2,6 @@
 //  CloudinaryUploadResponse.swift
 //  Ataya
 //
-//  Created by Maram on 27/12/2025.
-//
-
-//
-//  CloudinaryUploadResponse.swift
-//  Ataya
-//
 //  Created by Fatema Maitham on 27/12/2025.
 //
  
@@ -134,6 +127,38 @@ final class CloudinaryUploader {
             }
         }.resume()
     }
+    
+    // ✅ NEW: Upload multiple images
+    func uploadImages(
+        _ images: [UIImage],
+        folder: String? = nil,
+        completion: @escaping (Result<[(secureUrl: String, publicId: String)], Error>) -> Void
+    ) {
+        guard !images.isEmpty else { completion(.success([])); return }
+
+        var results: [(secureUrl: String, publicId: String)] = []
+        var firstError: Error?
+        let group = DispatchGroup()
+
+        for img in images {
+            group.enter()
+            uploadImage(img, folder: folder) { res in
+                switch res {
+                case .success(let item):
+                    results.append(item)
+                case .failure(let err):
+                    if firstError == nil { firstError = err }
+                }
+                group.leave()
+            }
+        }
+
+        group.notify(queue: .main) {
+            if let e = firstError { completion(.failure(e)); return }
+            completion(.success(results))
+        }
+    }
+
 }
  
 // MARK: - Multipart Helpers
@@ -165,6 +190,3 @@ private extension Data {
         if let d = string.data(using: .utf8) { append(d) }
     }
 }
- 
-
- 

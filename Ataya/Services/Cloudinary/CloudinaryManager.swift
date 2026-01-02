@@ -1,12 +1,4 @@
 //
-//  File.swift
-//  Ataya
-//
-//  Created by Maram on 27/12/2025.
-//
-
-import Foundation
-//
 //  CloudinaryManager.swift
 //  Ataya
 //

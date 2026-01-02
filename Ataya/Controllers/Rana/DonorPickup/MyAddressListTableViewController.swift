@@ -10,9 +10,10 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
 
     private let store = AddressRuntimeStore.shared
 
-    private let yellow = UIColor(hex: "#F7D44C")
-    private let yellowBG = UIColor(hex: "#FFFBE7")
-    private let grayBorder = UIColor(hex: "#B8B8B8")
+    private let yellow = AppColors.brandYellow
+    private let yellowBG = AppColors.yellowBG
+    private let grayBorder = AppColors.grayBorder
+
 
     override func viewDidLoad() {
         super.viewDidLoad()

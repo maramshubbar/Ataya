@@ -25,9 +25,10 @@ final class PickUpDateViewController: UIViewController {
         "6:00 PM", "8:00 PM"
     ]
 
-    private let borderGray = UIColor(hex: "#999999")
-    private let selectedBorder = UIColor(hex: "#FEC400")
-    private let selectedBackground = UIColor(hex: "#FFFBE7")
+    private let borderGray = AppColors.grayBorder
+    private let selectedBorder = AppColors.selectedBorder
+    private let selectedBackground = AppColors.yellowBG
+
 
     override func viewDidLoad() {
         super.viewDidLoad()

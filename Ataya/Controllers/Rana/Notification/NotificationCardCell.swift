@@ -7,7 +7,8 @@ final class NotificationCardCell: UITableViewCell {
     @IBOutlet weak var messageLabel: UILabel!
     @IBOutlet weak var timeLabel: UILabel!
 
-    private let borderGray = UIColor(hex: "#B8B8B8")
+    private let borderGray = AppColors.grayBorder
+
 
     // spacing below card (gap between cards)
     private var bottomConstraint: NSLayoutConstraint?

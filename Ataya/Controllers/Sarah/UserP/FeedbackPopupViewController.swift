@@ -33,7 +33,12 @@ class FeedbackPopupViewController: UIViewController, UITextViewDelegate {
     private var selectedRating = 0
     var collectorID = "collector_1"
 
-    private let goldColor = UIColor(hex: "#F7D44C")
+    private let goldColor = UIColor(
+        red: 247/255,
+        green: 212/255,
+        blue: 76/255,
+        alpha: 1
+    ) // #F7D44C
 
     // MARK: - Lifecycle
     override func viewDidLoad() {

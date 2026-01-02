@@ -23,7 +23,7 @@ final class RewardsNgoViewController: UIViewController {
     @IBOutlet weak var livesLabel: UILabel!
     @IBOutlet weak var pointsLabel: UILabel!
 
-    // ✅ NEW (اختياري): اربطي لابل الـ Tier + صورة الميدالية الكبيرة
+    // اختياري
     @IBOutlet weak var tierLabel: UILabel?
     @IBOutlet weak var tierMedalImageView: UIImageView?
 
@@ -41,10 +41,10 @@ final class RewardsNgoViewController: UIViewController {
     }
 
     private let defaultBadges: [BadgeVM] = [
-        .init(title: "Fast Responder", subtitle: "Accepted pickups quickly", iconName: "Heart", colorHex: "#fff8ed"),
-        .init(title: "Meal Hero", subtitle: "Handled donations safely", iconName: "meal", colorHex: "#FBF9FF"),
-        .init(title: "Community Helper", subtitle: "Supported 3 campaigns", iconName: "community", colorHex: "#F6FCF3"),
-        .init(title: "Trusted Partner", subtitle: "Maintained high reliability", iconName: "last", colorHex: "#fffbfb")
+        .init(title: "Fast Responder", subtitle: "Accepted pickups quickly", iconName: "Heart",      colorHex: "#fff8ed"),
+        .init(title: "Meal Hero",      subtitle: "Handled donations safely",  iconName: "meal",      colorHex: "#FBF9FF"),
+        .init(title: "Community Helper", subtitle: "Supported 3 campaigns",   iconName: "community", colorHex: "#F6FCF3"),
+        .init(title: "Trusted Partner",  subtitle: "Maintained high reliability", iconName: "last",  colorHex: "#fffbfb")
     ]
 
     private var badges: [BadgeVM] = []
@@ -58,11 +58,7 @@ final class RewardsNgoViewController: UIViewController {
         applyInitialPlaceholders()
 
         ensureNgoRewardsSeededIfNeeded()
-
-        // ✅ يحسب من donations ويكتب داخل users/{uid}.rewardsNgo (مرة وحدة)
         recalculateNgoRewardsFromDonationsIfNeeded()
-
-        // ✅ يسمع للتغييرات ويحدث الواجهة
         startListeningToNgoRewards()
     }
 
@@ -73,14 +69,26 @@ final class RewardsNgoViewController: UIViewController {
         updateBadgesItemSizeIfNeeded()
     }
 
+    // MARK: - ✅ HEX -> UIColor (بدون UIColor(hex:))
+    private func color(fromHex hexString: String,
+                       fallback: UIColor = UIColor(white: 0.95, alpha: 1)) -> UIColor {
+        var s = hexString.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        if s.hasPrefix("#") { s.removeFirst() }
+        guard s.count == 6 else { return fallback }
+
+        let r = CGFloat(Int(s.prefix(2), radix: 16) ?? 0) / 255
+        let g = CGFloat(Int(s.dropFirst(2).prefix(2), radix: 16) ?? 0) / 255
+        let b = CGFloat(Int(s.dropFirst(4).prefix(2), radix: 16) ?? 0) / 255
+        return UIColor(red: r, green: g, blue: b, alpha: 1)
+    }
+
     private func applyInitialPlaceholders() {
         pickupsLabel.text = "—"
         livesLabel.text = "—"
         pointsLabel.text = "—"
 
-        // ✅ Tier placeholders
         tierLabel?.text = "Reliable NGO"
-        tierMedalImageView?.image = UIImage(named: "tier_starter") // نفس صور الدونر
+        tierMedalImageView?.image = UIImage(named: "tier_starter")
 
         badges = defaultBadges
         badgesCollectionView.reloadData()
@@ -164,12 +172,10 @@ final class RewardsNgoViewController: UIViewController {
                 self.livesLabel.text = "\(self.metrics.livesImpacted) Lives Impacted"
                 self.pointsLabel.text = "\(self.formatNumber(self.metrics.points)) pts"
 
-                // ✅ حدّثي tier + medal من points
                 let tier = NgoTier.from(points: self.metrics.points)
                 self.tierLabel?.text = tier.title
                 self.tierMedalImageView?.image = UIImage(named: tier.medalAssetName)
 
-                // badges ثابتة (أو تقدرين تخليها من Firebase later)
                 self.badges = self.defaultBadges
                 self.badgesCollectionView.reloadData()
             }
@@ -190,9 +196,6 @@ final class RewardsNgoViewController: UIViewController {
 
         guard let uid = Auth.auth().currentUser?.uid else { return }
 
-        // ✅ عدلي هذي لو عندكم أسماء مختلفة بالدونیشن:
-        // field: ngoId
-        // status: completed
         let q = db.collection("donations")
             .whereField("ngoId", isEqualTo: uid)
             .whereField("status", isEqualTo: "completed")
@@ -283,7 +286,7 @@ extension RewardsNgoViewController: UICollectionViewDataSource, UICollectionView
         ) as! BadgeCardCell
 
         let badge = badges[indexPath.item]
-        let bgColor = UIColor(hex: badge.colorHex)
+        let bgColor = color(fromHex: badge.colorHex) // ✅ FIX (no UIColor(hex:))
 
         cell.configure(
             title: badge.title,
@@ -324,7 +327,6 @@ private struct NgoRewardsMetrics {
         ]
     }
 
-    // ✅ يدعم String "100" + Int + Double + NSNumber
     static func intValue(_ any: Any?) -> Int {
         if let i = any as? Int { return i }
         if let d = any as? Double { return Int(d) }
@@ -355,7 +357,6 @@ private enum NgoTier {
         }
     }
 
-    // ✅ نفس أسماء صور الميداليات في Assets (استخدمي نفس صور الدونر)
     var medalAssetName: String {
         switch self {
         case .starter: return "tier_starter"

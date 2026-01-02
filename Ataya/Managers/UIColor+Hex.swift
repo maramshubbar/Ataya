@@ -37,8 +37,32 @@ extension UIColor {
     }
 
     // MARK: - Ataya Brand Colors (استخدميهم كـ UIColor.atayaYellow ...)
-    static let atayaYellow     = UIColor(hex: "#F7D44C")
-    static let atayaSoftYellow = UIColor(hex: "#FFFBE7")
-    static let atayaGreen      = UIColor(hex: "#00A85C")
-    static let atayaBorderGray = UIColor(hex: "#999999")
+    static let atayaYellow = UIColor(
+        red: 247/255,
+        green: 212/255,
+        blue: 76/255,
+        alpha: 1
+    ) // #F7D44C
+
+    static let atayaSoftYellow = UIColor(
+        red: 255/255,
+        green: 251/255,
+        blue: 231/255,
+        alpha: 1
+    ) // #FFFBE7
+
+    static let atayaGreen = UIColor(
+        red: 0/255,
+        green: 168/255,
+        blue: 92/255,
+        alpha: 1
+    ) // #00A85C
+
+    static let atayaBorderGray = UIColor(
+        red: 153/255,
+        green: 153/255,
+        blue: 153/255,
+        alpha: 1
+    ) // #999999
+
 }

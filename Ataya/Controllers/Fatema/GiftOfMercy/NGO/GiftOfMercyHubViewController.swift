@@ -106,7 +106,7 @@ private final class RoleStyleTileView: UIControl {
     private let iconView = UIImageView()
     private let titleLabel = UILabel()
 
-    private let brandYellow = UIColor(hex: "F7D44C")
+    private let brandYellow = AppColors.brandYellow
 
     override var isHighlighted: Bool {
         didSet { applyStyle() }

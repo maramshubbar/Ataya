@@ -11,7 +11,8 @@ import FirebaseFirestore
 final class MySupportTicketsViewController: UIViewController {
 
     private let sidePadding: CGFloat = 36
-    private let yellow = UIColor(hex: "#F7D44C")
+    private let yellow = UIColor(red: 247/255, green: 212/255, blue: 76/255, alpha: 1) // #F7D44C
+
 
     private let headerContainer = UIView()
     private let backButton = UIButton(type: .system)
@@ -384,9 +385,26 @@ private final class TicketCard: UIView {
         idLabel.text = ticket.displayId
 
         let resolved = (ticket.status == .resolved)
+
         statusPill.text = " \(ticket.status.rawValue) "
         statusPill.textColor = UIColor(white: 0.15, alpha: 1)
-        statusPill.backgroundColor = resolved ? UIColor(hex: "#EAF8EF") : UIColor(hex: "#FFF6DD")
+
+        // بديل hex → RGB (عشان يختفي Ambiguous init)
+        let resolvedBG = UIColor(
+            red: 234/255,
+            green: 248/255,
+            blue: 239/255,
+            alpha: 1
+        ) // #EAF8EF
+
+        let pendingBG = UIColor(
+            red: 255/255,
+            green: 246/255,
+            blue: 221/255,
+            alpha: 1
+        ) // #FFF6DD
+
+        statusPill.backgroundColor = resolved ? resolvedBG : pendingBG
 
         metaLabel.text = "Category: \(ticket.category)"
         issueBody.text = ticket.userIssue

@@ -12,9 +12,10 @@ final class MyAddressListViewController: UIViewController {
     private enum Choice { case myAddress, ngo }
     private var selectedChoice: Choice?
 
-    private let grayBorder = UIColor(hex: "#999999")
-    private let selectedBorder = UIColor(hex: "#FEC400")
-    private let selectedBG = UIColor(hex: "#FFFBE7")
+    private let grayBorder    = UIColor(red: 153/255, green: 153/255, blue: 153/255, alpha: 1) // #999999
+    private let selectedBorder = UIColor(red: 254/255, green: 196/255, blue: 0/255,   alpha: 1) // #FEC400
+    private let selectedBG     = UIColor(red: 255/255, green: 251/255, blue: 231/255, alpha: 1) // #FFFBE7
+
 
     private let pickupSB = UIStoryboard(name: "Pickup", bundle: nil)
 

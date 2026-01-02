@@ -22,7 +22,7 @@ class NGOProfileViewController: UIViewController {
     @IBOutlet weak var activitesValues: UITextView!
     @IBOutlet weak var missionValue: UITextView!
     //Data Model
-    var ngo: NGO?
+    var ngo: NGOdiscover?
     
     override func viewDidLoad() {
         super.viewDidLoad()

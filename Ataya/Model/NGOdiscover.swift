@@ -6,7 +6,7 @@
 //
 import UIKit
 
-struct NGO {
+struct NGOdiscover {
     let name: String
     let category: String
     let email: String

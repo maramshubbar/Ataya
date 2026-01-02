@@ -14,8 +14,8 @@ class DiscoverNGOViewController: UIViewController, UITableViewDataSource, UITabl
     
     @IBOutlet weak var filterNGO: UISegmentedControl!
     
-    let ngos: [NGO] = [
-        NGO(
+    let ngos: [NGOdiscover] = [
+        NGOdiscover(
             name: "BrightImpact",
             category: "Community Support",
             email: "support@brightimpact.org",
@@ -30,7 +30,7 @@ class DiscoverNGOViewController: UIViewController, UITableViewDataSource, UITabl
             ],
             imageName: "image1" ,
         ),
-        NGO(
+        NGOdiscover(
             name: "GlobalReach",
             category: "Education & Relief",
             email: "info@globalreach.org",
@@ -45,7 +45,7 @@ class DiscoverNGOViewController: UIViewController, UITableViewDataSource, UITabl
             ],
             imageName: "image2",
         ),
-        NGO(
+        NGOdiscover(
             name: "NextGen Giving",
             category: "Children & Youth Support",
             email: "info@nextgen.org",
@@ -60,7 +60,7 @@ class DiscoverNGOViewController: UIViewController, UITableViewDataSource, UITabl
             ],
             imageName: "Image3",
         ),
-        NGO(
+        NGOdiscover(
             name: "PillarSupport",
             category: "Refugee & Poverty Assistance",
             email: "contact@pillarsupport.org",
@@ -75,7 +75,7 @@ class DiscoverNGOViewController: UIViewController, UITableViewDataSource, UITabl
             ],
             imageName: "Image4",
         ),
-        NGO(
+        NGOdiscover(
             name: "EcoFuture",
             category: "Environmental Protection",
             email: "eco@future.org",
@@ -91,7 +91,7 @@ class DiscoverNGOViewController: UIViewController, UITableViewDataSource, UITabl
             imageName: "Data 5",
         ),
         
-        NGO(
+        NGOdiscover(
             name: "EcoFuture",
             category: "Environmental Protection",
             email: "eco@future.org",
@@ -110,7 +110,7 @@ class DiscoverNGOViewController: UIViewController, UITableViewDataSource, UITabl
 
     
     // This array will hold NGOs after filtering (e.g., search)
-    var filteredNGOs: [NGO] = []
+    var filteredNGOs: [NGOdiscover] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -168,7 +168,7 @@ class DiscoverNGOViewController: UIViewController, UITableViewDataSource, UITabl
        override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
            if segue.identifier == "ShowNGODetails",
               let destination = segue.destination as? NGOProfileViewController,
-              let ngo = sender as? NGO {
+              let ngo = sender as? NGOdiscover {
                destination.ngo = ngo
            }
        }

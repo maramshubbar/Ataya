@@ -66,7 +66,7 @@ class NGOCardCell: UITableViewCell {
     }
 
     //Fill the cell with NGO data
-    func configure(with ngo: NGO) {
+    func configure(with ngo: NGOdiscover) {
            ngoName.text = ngo.name
            ngoType.text = ngo.category
            ngoEmail.text = ngo.email

@@ -1,7 +1,7 @@
 import Foundation
 import FirebaseFirestore
 
-struct Report {
+struct SupportReport {
     let id: String
     let title: String
     let type: String

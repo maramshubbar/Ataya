@@ -32,7 +32,7 @@ class ReportReviewViewController: UIViewController {
     @IBOutlet weak var markResolvedButton: UIButton!
     
     var reportId: String?   // Must be set before presenting this VC
-        var report: Report?
+        var report: SupportReport?
         let db = Firestore.firestore()
 
         override func viewDidLoad() {
@@ -59,33 +59,40 @@ class ReportReviewViewController: UIViewController {
                 }
 
                 // Map Firestore data to Report model
-                let report = Report(id: reportId, data: data)
+                let report = SupportReport(id: reportId, data: data)
                 self.report = report
                 self.populateUI(with: report)
             }
         }
     
     // MARK: - Populate UI
-    private func populateUI(with report: Report) { reportTitleValue.text = report.title
+    private func populateUI(with report: SupportReport) {
+
+        reportTitleValue.text = report.title
         reportIdValue.text = report.id
         reportTypeValue.text = report.type
         dateValue.text = report.date
         reportDetailsTextView.text = report.details
         statusLabel.text = report.status
         feedbackTextView.text = report.feedback.isEmpty ? "No feedback yet" : report.feedback
-        
-        switch report.status { case "Resolved": feedbackTextView.isEditable = false
+
+        switch report.status {
+        case "Resolved":
+            feedbackTextView.isEditable = false
             suspendButton.isHidden = true
             blockButton.isHidden = true
             issueButton.isHidden = true
             markResolvedButton.isHidden = true
             statusView.backgroundColor = UIColor.systemGreen
+
         case "Pending":
             statusView.backgroundColor = UIColor.systemYellow
+
         default:
-            statusView.backgroundColor = UIColor.systemGray }
+            statusView.backgroundColor = UIColor.systemGray
+        }
     }
-    
+
     
     
     private func setupUI() {

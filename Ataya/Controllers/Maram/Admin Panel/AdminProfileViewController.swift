@@ -4,13 +4,13 @@
 //
 //  Created by Maram on 24/11/2025.
 //
-
 //
 //  AdminProfileViewController.swift
 //  Ataya
 //
 //  Created by Maram on 24/11/2025.
 //
+
 import UIKit
 import FirebaseAuth
 import FirebaseFirestore
@@ -119,10 +119,6 @@ final class AdminProfileViewController: UIViewController {
                 return
             }
 
-            // ✅ اطبع الداتا لو تبين تشوفين شنو موجود (اختياري)
-            // print("🔥 \(collection) DATA:", data)
-
-            // اسم المستخدم (نشيك على أكثر من key)
             let fetchedName =
                 (data["fullName"] as? String)
                 ?? (data["fullname"] as? String)
@@ -132,8 +128,6 @@ final class AdminProfileViewController: UIViewController {
                 ?? Auth.auth().currentUser?.displayName
                 ?? "—"
 
-            // ✅ لو بالغلط الاسم محفوظ "Admin" في وثيقة الأدمن،
-            // نخليه يحاول ياخذ اسم ثاني لو موجود
             let finalName: String = {
                 let trimmed = fetchedName.trimmingCharacters(in: .whitespacesAndNewlines)
                 if trimmed.lowercased() == "admin" {
@@ -155,7 +149,7 @@ final class AdminProfileViewController: UIViewController {
                 self.nameLabel.text = finalName
                 self.roleLabel.text = "Admin"
 
-                // لو عندج ImageLoader
+                // لو عندج ImageLoader (اختياري)
                 // ImageLoader.shared.setImage(
                 //     on: self.profileImageView,
                 //     from: photoUrl,
@@ -177,7 +171,7 @@ final class AdminProfileViewController: UIViewController {
             return
         }
 
-        let sb = UIStoryboard(name: "Main", bundle: nil)
+        let sb = UIStoryboard(name: "Admin", bundle: nil)
         let vc = sb.instantiateViewController(withIdentifier: "AboutMeViewController")
         navigationController?.pushViewController(vc, animated: true)
 
@@ -223,23 +217,24 @@ final class AdminProfileViewController: UIViewController {
             return
         }
 
-        goToAdminLoginRoot()
+        // ✅✅✅ هنا التعديل: بعد logout يروح UserSelection
+        goToUserSelectionRoot()
     }
 
-    private func goToAdminLoginRoot() {
+    // ✅✅✅ NEW: UserSelection root
+    private func goToUserSelectionRoot() {
         let sb = UIStoryboard(name: "Main", bundle: nil)
-        let loginVC = sb.instantiateViewController(withIdentifier: "AdminLoginViewController")
+        let vc = sb.instantiateViewController(withIdentifier: "UserSelectionViewController")
 
-        let nav = UINavigationController(rootViewController: loginVC)
-        nav.navigationBar.isHidden = false
+        let nav = UINavigationController(rootViewController: vc)
+        nav.setNavigationBarHidden(true, animated: false) // تقدرين تخليها false إذا تبين nav
 
         if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let window = scene.windows.first {
             window.rootViewController = nav
             window.makeKeyAndVisible()
         } else {
-            UIApplication.shared.windows.first?.rootViewController = nav
-            UIApplication.shared.windows.first?.makeKeyAndVisible()
+            present(nav, animated: true)
         }
     }
 }

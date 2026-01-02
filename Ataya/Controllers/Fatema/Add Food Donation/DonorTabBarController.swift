@@ -1,0 +1,218 @@
+import UIKit
+
+final class DonorTabBarController: UITabBarController, UITabBarControllerDelegate, UIAdaptivePresentationControllerDelegate {
+
+    private let centerButton = UIButton(type: .custom)
+    private var centerButtonConstraints: [NSLayoutConstraint] = []
+
+    private var isShowingDonateSheet = false
+    private weak var donateNavController: UINavigationController?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        definesPresentationContext = true
+        delegate = self
+
+        if #available(iOS 18.0, *), UIDevice.current.userInterfaceIdiom == .pad {
+            traitOverrides.horizontalSizeClass = .compact
+        }
+
+        setupTabLook()
+        setupTabIconSizes()
+        setupCenterButton()
+    }
+
+    private func setupTabLook() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .white
+        appearance.shadowColor = .clear
+
+        tabBar.standardAppearance = appearance
+        if #available(iOS 15.0, *) { tabBar.scrollEdgeAppearance = appearance }
+
+        tabBar.isTranslucent = false
+        tabBar.tintColor = UIColor(red: 0.96, green: 0.84, blue: 0.36, alpha: 1.0)
+        tabBar.unselectedItemTintColor = UIColor.systemGray2
+    }
+
+    private func setupTabIconSizes() {
+        guard let items = tabBar.items, items.count >= 5 else { return }
+        let size = CGSize(width: 30, height: 30)
+
+        items[0].image = UIImage(named: "housefillgrey")?.resized(to: size).withRenderingMode(.alwaysTemplate)
+        items[0].selectedImage = UIImage(named: "housefillgrey")?.resized(to: size).withRenderingMode(.alwaysTemplate)
+
+        items[1].image = UIImage(named: "earthglobegrey")?.resized(to: size).withRenderingMode(.alwaysTemplate)
+        items[1].selectedImage = UIImage(named: "earthglobegrey")?.resized(to: size).withRenderingMode(.alwaysTemplate)
+
+        // center dummy
+        items[2].image = UIImage(named: "tab_empty")?.withRenderingMode(.alwaysOriginal)
+        items[2].selectedImage = UIImage(named: "tab_empty")?.withRenderingMode(.alwaysOriginal)
+
+        items[3].image = UIImage(named: "prizegrey")?.resized(to: size).withRenderingMode(.alwaysTemplate)
+        items[3].selectedImage = UIImage(named: "prizegrey")?.resized(to: size).withRenderingMode(.alwaysTemplate)
+
+        items[4].image = UIImage(named: "usergrey")?.resized(to: size).withRenderingMode(.alwaysTemplate)
+        items[4].selectedImage = UIImage(named: "usergrey")?.resized(to: size).withRenderingMode(.alwaysTemplate)
+    }
+
+    private func setupCenterButton() {
+        centerButton.setBackgroundImage(UIImage(named: "hex_report_bg"), for: .normal)
+        centerButton.setImage(UIImage(named: "ic_donate_center"), for: .normal)
+        centerButton.addTarget(self, action: #selector(centerTapped), for: .touchUpInside)
+
+        if centerButton.superview == nil {
+            tabBar.addSubview(centerButton)
+        }
+        tabBar.bringSubviewToFront(centerButton)
+
+        centerButton.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.deactivate(centerButtonConstraints)
+        centerButtonConstraints = [
+            centerButton.centerXAnchor.constraint(equalTo: tabBar.centerXAnchor),
+            centerButton.centerYAnchor.constraint(equalTo: tabBar.topAnchor, constant: -7),
+            centerButton.widthAnchor.constraint(equalToConstant: 90),
+            centerButton.heightAnchor.constraint(equalTo: centerButton.widthAnchor)
+        ]
+        NSLayoutConstraint.activate(centerButtonConstraints)
+    }
+
+    // MARK: - Intercept center tab
+    func tabBarController(_ tabBarController: UITabBarController,
+                          shouldSelect viewController: UIViewController) -> Bool {
+        if let idx = viewControllers?.firstIndex(of: viewController), idx == 2 {
+            presentDonateSheet()
+            return false
+        }
+        return true
+    }
+
+    @objc private func centerTapped() {
+        presentDonateSheet()
+    }
+
+
+    private func presentDonateSheet() {
+        guard !isShowingDonateSheet else { return }
+        isShowingDonateSheet = true
+
+        // ✅ FIX: DonateViewController موجود في DonorDashboard.storyboard (مو Main)
+        let sb = UIStoryboard(name: "DonorDashboard", bundle: .main)
+
+        // ✅ FIX: ID لازم يطابق اللي بالستوريبورد
+        let vc = sb.instantiateViewController(withIdentifier: "DonateViewController")
+        guard let donateVC = vc as? DonateViewController else {
+            assertionFailure("❌ Found 'DonateViewController' but class is not DonateViewController")
+            isShowingDonateSheet = false
+            return
+        }
+
+        let nav = UINavigationController(rootViewController: donateVC)
+        nav.modalPresentationStyle = .pageSheet
+        nav.presentationController?.delegate = self
+        donateNavController = nav
+
+        if let sheet = nav.sheetPresentationController {
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 28
+            sheet.largestUndimmedDetentIdentifier = nil
+
+            if #available(iOS 16.0, *) {
+                let midID = UISheetPresentationController.Detent.Identifier("donateMedium")
+                sheet.detents = [
+                    .custom(identifier: midID) { ctx in
+                        min(800, ctx.maximumDetentValue * 0.85)
+                    },
+                    .large()
+                ]
+                sheet.selectedDetentIdentifier = midID
+                sheet.prefersScrollingExpandsWhenScrolledToEdge = true
+                sheet.prefersEdgeAttachedInCompactHeight = true
+                sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true
+            } else {
+                sheet.detents = [.medium(), .large()]
+                sheet.selectedDetentIdentifier = .medium
+                sheet.prefersScrollingExpandsWhenScrolledToEdge = true
+            }
+        }
+
+        donateVC.onClose = { [weak self] in
+            self?.isShowingDonateSheet = false
+            self?.donateNavController = nil
+        }
+
+        donateVC.onSelect = { [weak self] option in
+            guard let self else { return }
+            nav.dismiss(animated: true) {
+                self.isShowingDonateSheet = false
+                self.donateNavController = nil
+                self.openDonate(option)
+            }
+        }
+
+        present(nav, animated: true)
+    }
+
+    
+
+    @objc func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        isShowingDonateSheet = false
+        donateNavController = nil
+    }
+    // MARK: - Navigate after choosing
+    private func openDonate(_ option: DonateOption) {
+        
+        let base = selectedViewController
+        let nav = (base as? UINavigationController) ?? base?.navigationController
+        
+        func pushOrPresent(_ vc: UIViewController) {
+            if let nav {
+                nav.pushViewController(vc, animated: true)
+            } else {
+                present(UINavigationController(rootViewController: vc), animated: true)
+            }
+        }
+        
+        switch option {
+            
+        case .food:
+            // ✅ هذا موجود في Add.storyboard (مو Main)
+            let sb = UIStoryboard(name: "Add", bundle: nil)
+            let vc = sb.instantiateViewController(withIdentifier: "AddFoodDonationViewController")
+            pushOrPresent(vc)
+            
+        case .basket:
+            let sb = UIStoryboard(name: "Main", bundle: nil)
+            pushOrPresent(sb.instantiateViewController(withIdentifier: "BasketStartViewController"))
+            
+        case .funds:
+            let sb = UIStoryboard(name: "Main", bundle: nil)
+            pushOrPresent(sb.instantiateViewController(withIdentifier: "FundsStartViewController"))
+            
+        case .campaigns:
+            let sb = UIStoryboard(name: "Main", bundle: nil)
+            pushOrPresent(sb.instantiateViewController(withIdentifier: "CampaignsViewController"))
+            
+        case .advocacy:
+            let sb = UIStoryboard(name: "Main", bundle: nil)
+            pushOrPresent(sb.instantiateViewController(withIdentifier: "AdvocacyDetailViewController"))
+            
+        case .giftOfMercy:
+            let sb = UIStoryboard(name: "Main", bundle: nil)
+            pushOrPresent(sb.instantiateViewController(withIdentifier: "GiftViewController"))
+        }
+    }
+}
+
+// MARK: - UIImage resize helper
+//private extension UIImage {
+//    func resized(to size: CGSize) -> UIImage {
+//        let renderer = UIGraphicsImageRenderer(size: size)
+//        return renderer.image { _ in
+//            self.draw(in: CGRect(origin: .zero, size: size))
+//        }
+//    }
+//}

@@ -94,18 +94,14 @@ final class DonorTabBarController: UITabBarController, UITabBarControllerDelegat
         presentDonateSheet()
     }
 
-
+    // MARK: - Apple Sheet
     private func presentDonateSheet() {
         guard !isShowingDonateSheet else { return }
         isShowingDonateSheet = true
 
-        // ✅ FIX: DonateViewController موجود في DonorDashboard.storyboard (مو Main)
-        let sb = UIStoryboard(name: "DonorDashboard", bundle: .main)
-
-        // ✅ FIX: ID لازم يطابق اللي بالستوريبورد
-        let vc = sb.instantiateViewController(withIdentifier: "DonateViewController")
-        guard let donateVC = vc as? DonateViewController else {
-            assertionFailure("❌ Found 'DonateViewController' but class is not DonateViewController")
+        let sb = UIStoryboard(name: "Main", bundle: nil)
+        guard let donateVC = sb.instantiateViewController(withIdentifier: "DonateViewController") as? DonateViewController else {
+            assertionFailure("DonateViewController Storyboard ID not found")
             isShowingDonateSheet = false
             return
         }
@@ -116,26 +112,39 @@ final class DonorTabBarController: UITabBarController, UITabBarControllerDelegat
         donateNavController = nav
 
         if let sheet = nav.sheetPresentationController {
-            sheet.prefersGrabberVisible = true
-            sheet.preferredCornerRadius = 28
+            if let sheet = nav.sheetPresentationController {
+                sheet.prefersGrabberVisible = true
+                sheet.preferredCornerRadius = 28
+                sheet.largestUndimmedDetentIdentifier = nil
+
+                if #available(iOS 16.0, *) {
+                    let midID = UISheetPresentationController.Detent.Identifier("donateMedium")
+
+                    sheet.detents = [
+                        .custom(identifier: midID) { ctx in
+                            min(800, ctx.maximumDetentValue * 0.85)
+                        },
+                        .large()
+                    ]
+
+                    sheet.selectedDetentIdentifier = midID
+                    sheet.prefersScrollingExpandsWhenScrolledToEdge = true
+
+                    sheet.prefersEdgeAttachedInCompactHeight = true
+                    sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true
+                } else {
+                    sheet.detents = [.medium(), .large()]
+                    sheet.selectedDetentIdentifier = .medium
+                    sheet.prefersScrollingExpandsWhenScrolledToEdge = true
+                }
+            }
+
             sheet.largestUndimmedDetentIdentifier = nil
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
 
             if #available(iOS 16.0, *) {
-                let midID = UISheetPresentationController.Detent.Identifier("donateMedium")
-                sheet.detents = [
-                    .custom(identifier: midID) { ctx in
-                        min(800, ctx.maximumDetentValue * 0.85)
-                    },
-                    .large()
-                ]
-                sheet.selectedDetentIdentifier = midID
-                sheet.prefersScrollingExpandsWhenScrolledToEdge = true
                 sheet.prefersEdgeAttachedInCompactHeight = true
                 sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true
-            } else {
-                sheet.detents = [.medium(), .large()]
-                sheet.selectedDetentIdentifier = .medium
-                sheet.prefersScrollingExpandsWhenScrolledToEdge = true
             }
         }
 
@@ -156,63 +165,38 @@ final class DonorTabBarController: UITabBarController, UITabBarControllerDelegat
         present(nav, animated: true)
     }
 
-    
-
+    // ✅ هذا اللي كان يعطي warning عندج — لازم @objc
     @objc func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
         isShowingDonateSheet = false
         donateNavController = nil
     }
+
     // MARK: - Navigate after choosing
     private func openDonate(_ option: DonateOption) {
-        
+        let sb = UIStoryboard(name: "Main", bundle: nil)
+
         let base = selectedViewController
         let nav = (base as? UINavigationController) ?? base?.navigationController
-        
-        func pushOrPresent(_ vc: UIViewController) {
-            if let nav {
-                nav.pushViewController(vc, animated: true)
-            } else {
-                present(UINavigationController(rootViewController: vc), animated: true)
-            }
-        }
-        
+
         switch option {
-            
         case .food:
-            // ✅ هذا موجود في Add.storyboard (مو Main)
-            let sb = UIStoryboard(name: "Add", bundle: nil)
-            let vc = sb.instantiateViewController(withIdentifier: "AddFoodDonationViewController")
-            pushOrPresent(vc)
-            
+            nav?.pushViewController(sb.instantiateViewController(withIdentifier: "UploadPhotosViewController"), animated: true)
+
         case .basket:
-            let sb = UIStoryboard(name: "Main", bundle: nil)
-            pushOrPresent(sb.instantiateViewController(withIdentifier: "BasketStartViewController"))
-            
+            nav?.pushViewController(sb.instantiateViewController(withIdentifier: "BasketStartViewController"), animated: true)
+
         case .funds:
-            let sb = UIStoryboard(name: "Main", bundle: nil)
-            pushOrPresent(sb.instantiateViewController(withIdentifier: "FundsStartViewController"))
-            
+            nav?.pushViewController(sb.instantiateViewController(withIdentifier: "FundsStartViewController"), animated: true)
+
         case .campaigns:
-            let sb = UIStoryboard(name: "Main", bundle: nil)
-            pushOrPresent(sb.instantiateViewController(withIdentifier: "CampaignsViewController"))
-            
+            nav?.pushViewController(sb.instantiateViewController(withIdentifier: "CampaignsViewController"), animated: true)
+
         case .advocacy:
-            let sb = UIStoryboard(name: "Main", bundle: nil)
-            pushOrPresent(sb.instantiateViewController(withIdentifier: "AdvocacyDetailViewController"))
-            
+            nav?.pushViewController(sb.instantiateViewController(withIdentifier: "AdvocateForGazaViewController"), animated: true)
+
         case .giftOfMercy:
-            let sb = UIStoryboard(name: "Main", bundle: nil)
-            pushOrPresent(sb.instantiateViewController(withIdentifier: "GiftViewController"))
+            nav?.pushViewController(sb.instantiateViewController(withIdentifier: "GiftViewController"), animated: true)
         }
     }
 }
 
-// MARK: - UIImage resize helper
-//private extension UIImage {
-//    func resized(to size: CGSize) -> UIImage {
-//        let renderer = UIGraphicsImageRenderer(size: size)
-//        return renderer.image { _ in
-//            self.draw(in: CGRect(origin: .zero, size: size))
-//        }
-//    }
-//}

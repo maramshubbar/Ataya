@@ -275,7 +275,7 @@ final class RecurringDonationDetailsViewController: UIViewController {
         draft.description = donationNotes
 
         // Navigate forward (Storyboard-based)
-        performSegue(withIdentifier: "goToSummary", sender: self)
+        performSegue(withIdentifier: "goToPickupLocation", sender: self)
     }
 
     // MARK: - Navigation

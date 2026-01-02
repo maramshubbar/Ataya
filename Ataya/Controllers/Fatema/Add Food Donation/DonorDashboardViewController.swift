@@ -233,9 +233,11 @@ final class DonorDashboardViewController: UIViewController,
                 let docs = snap?.documents ?? []
                 var items: [OngoingDonationItem] = docs.map { d in
                     let data = d.data()
-                    return OngoingDonationItem.fromFirestore(data: data)
+                    return OngoingDonationItem.fromFirestore(docId: d.documentID, data: data)
                 }
 
+
+                
                 items.sort(by: { (a: OngoingDonationItem, b: OngoingDonationItem) -> Bool in
                     (a.updatedAt ?? .distantPast) > (b.updatedAt ?? .distantPast)
                 })

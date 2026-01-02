@@ -1,3 +1,4 @@
+// MyAddressListTableViewController.swift
 import UIKit
 
 final class MyAddressListTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
@@ -13,6 +14,8 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
     private let yellow = UIColor(hex: "#F7D44C")
     private let yellowBG = UIColor(hex: "#FFFBE7")
     private let grayBorder = UIColor(hex: "#B8B8B8")
+
+    private let pickupSB = UIStoryboard(name: "Pickup", bundle: nil)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -67,7 +70,6 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
 
     @objc private func confirmTappedProgrammatic() {
 
-        // ✅ prevent crash if draft not passed
         guard let draft = self.draft else {
             showAlert("Error", "Draft is missing. Go back and try again.")
             return
@@ -84,19 +86,32 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
         confirmButton.isEnabled = false
         confirmButton.alpha = 0.5
 
-        DonationDraftSaver.shared.saveAfterPickup(draft: draft) { [weak self] error in
+        // ✅ TRY AUTH, but if it fails -> DEMO fallback (no error popup, just show your popup)
+        AuthGate.ensureLoggedIn { [weak self] ok in
             guard let self else { return }
 
-            self.confirmButton.isEnabled = true
-            self.confirmButton.alpha = 1.0
+            DonationDraftSaver.shared.saveAfterPickup(draft: draft) { [weak self] error in
+                guard let self else { return }
 
-            if let error {
-                self.showAlert("Save failed", error.localizedDescription)
-                return
+                self.confirmButton.isEnabled = true
+                self.confirmButton.alpha = 1.0
+
+                // DEMO fallback: not logged in -> show popup anyway
+                if !ok {
+                    self.store.confirmedAddress = address
+                    self.presentThankYouPopup()
+                    return
+                }
+
+                // Real error
+                if let error {
+                    self.showAlert("Save failed", error.localizedDescription)
+                    return
+                }
+
+                self.store.confirmedAddress = address
+                self.presentThankYouPopup()
             }
-
-            self.store.confirmedAddress = address
-            self.presentThankYouPopup()
         }
     }
 
@@ -120,8 +135,6 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
         openDetailsForEdit(row)
     }
 
-    private let pickupSB = UIStoryboard(name: "Pickup", bundle: nil)
-
     private func presentThankYouPopup() {
         guard let popup = pickupSB.instantiateViewController(withIdentifier: "PopupConfirmPickupViewController") as? PopupConfirmPickupViewController else {
             showAlert("Storyboard Error", "In Pickup.storyboard set Storyboard ID = PopupConfirmPickupViewController")
@@ -134,10 +147,8 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
         present(popup, animated: true)
     }
 
-
     private func openDetailsForAdd() {
-        let sb = UIStoryboard(name: "Pickup", bundle: nil)
-        guard let vc = sb.instantiateViewController(withIdentifier: "MyAddressDetailsViewController") as? MyAddressDetailsViewController else {
+        guard let vc = pickupSB.instantiateViewController(withIdentifier: "MyAddressDetailsViewController") as? MyAddressDetailsViewController else {
             showAlert("Storyboard Error", "Set Details Storyboard ID = MyAddressDetailsViewController")
             return
         }
@@ -159,8 +170,7 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
     private func openDetailsForEdit(_ index: Int) {
         guard index >= 0, index < store.addresses.count else { return }
 
-        let sb = UIStoryboard(name: "Pickup", bundle: nil)
-        guard let vc = sb.instantiateViewController(withIdentifier: "MyAddressDetailsViewController") as? MyAddressDetailsViewController else {
+        guard let vc = pickupSB.instantiateViewController(withIdentifier: "MyAddressDetailsViewController") as? MyAddressDetailsViewController else {
             showAlert("Storyboard Error", "Set Details Storyboard ID = MyAddressDetailsViewController")
             return
         }
@@ -179,8 +189,9 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
         navigationController?.pushViewController(vc, animated: true)
     }
 
+    // MARK: - TableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return store.addresses.count
+        store.addresses.count
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -206,7 +217,6 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
         let card = UIView()
         card.tag = 999
         card.translatesAutoresizingMaskIntoConstraints = false
-
         card.layer.cornerRadius = 12
         card.layer.masksToBounds = false
 
@@ -292,10 +302,10 @@ final class MyAddressListTableViewController: UIViewController, UITableViewDataS
         a.addAction(UIAlertAction(title: "OK", style: .default))
         present(a, animated: true)
     }
-    
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         tabBarController?.tabBar.isHidden = false
     }
 }
+

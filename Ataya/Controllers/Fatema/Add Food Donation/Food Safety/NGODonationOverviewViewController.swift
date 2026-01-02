@@ -6,23 +6,30 @@
 //
 
 import UIKit
-import FirebaseAuth
 import FirebaseFirestore
 
 final class NGODonationOverviewViewController: UIViewController {
 
-    @IBOutlet weak var filterSegment: UISegmentedControl!
-    @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var searchBar: UISearchBar!
 
+    private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
-    private var allDonations: [DonationItem] = []
-    private var shownDonations: [DonationItem] = []
+
+    private var allItems: [DonationItem] = []
+    private var shownItems: [DonationItem] = []
+
+    private static let dateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateStyle = .medium
+        f.timeStyle = .none
+        return f
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = "Donation Overview"
 
-        // Search UI
         searchBar.backgroundImage = UIImage()
         searchBar.searchBarStyle = .minimal
         if let searchField = searchBar.value(forKey: "searchField") as? UITextField {
@@ -30,103 +37,148 @@ final class NGODonationOverviewViewController: UIViewController {
             searchField.layer.cornerRadius = 10
             searchField.clipsToBounds = true
         }
-
-        tableView.separatorStyle = .none
-        tableView.backgroundColor = .clear
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 200
+        searchBar.delegate = self
 
         tableView.dataSource = self
         tableView.delegate = self
-        searchBar.delegate = self
+        tableView.allowsSelection = false
 
-        filterSegment.addTarget(self, action: #selector(filterChanged), for: .valueChanged)
+        // ✅ نفس admin cell
+        tableView.register(UINib(nibName: "DonationOverviewCell", bundle: nil),
+                           forCellReuseIdentifier: DonationOverviewCell.reuseId)
 
-        tableView.register(
-            UINib(nibName: "NGODonationOverviewCell", bundle: nil),
-            forCellReuseIdentifier: NGODonationOverviewCell.reuseId
-        )
+        tableView.separatorStyle = .none
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 190
+        tableView.keyboardDismissMode = .onDrag
+    }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         startListening()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        listener?.remove()
+        listener = nil
     }
 
     deinit { listener?.remove() }
 
     private func startListening() {
-        guard let ngoId = Auth.auth().currentUser?.uid else { return }
+        listener?.remove()
+        listener = nil
 
-        listener = DonationService.shared.listenNGODonations(ngoId: ngoId) { [weak self] items in
-            guard let self else { return }
-            self.allDonations = items
-            self.applyFilterAndSearch()
+        listener = db.collection("donations")
+            .order(by: "createdAt", descending: true)
+            .limit(to: 200)
+            .addSnapshotListener { [weak self] snap, err in
+                guard let self else { return }
+
+                if let err = err {
+                    print("❌ donations error:", err.localizedDescription)
+                    return
+                }
+
+                let docs = snap?.documents ?? []
+
+                self.allItems = docs.compactMap { doc in
+                    let data = doc.data()
+
+                    let donationId = data["id"] as? String ?? doc.documentID
+                    let itemName   = data["itemName"] as? String ?? ""
+                    let statusStr  = data["status"] as? String ?? "pending"
+
+                    let donorName  = data["donorName"] as? String ?? "Donor"
+                    let donorId    = data["donorId"] as? String ?? "—"
+                    let donorText  = "\(donorName) (ID: \(donorId))"
+                        .replacingOccurrences(of: "— (ID: —)", with: "—")
+
+                    let city    = data["donorCity"] as? String ?? "—"
+                    let country = data["donorCountry"] as? String ?? "—"
+                    let locationText = "\(city), \(country)".replacingOccurrences(of: "—, —", with: "—")
+
+                    let ts = data["createdAt"] as? Timestamp
+                    let createdAt = ts?.dateValue() ?? Date.distantPast
+                    let dateText = Self.dateFormatter.string(from: createdAt)
+
+                    let photoURLs = data["photoURLs"] as? [String] ?? []
+                    let imageUrl = photoURLs.first ?? ""
+
+                    let clean = itemName.trimmingCharacters(in: .whitespacesAndNewlines)
+                    let title = clean.isEmpty ? donationId : "\(clean) (\(donationId))"
+
+                    return DonationItem(
+                        docId: doc.documentID,
+                        title: title,
+                        donorText: donorText,
+                        ngoText: "NGO (ID: —)",
+                        locationText: locationText,
+                        dateText: dateText,
+                        imageUrl: imageUrl,
+                        status: self.mapStatus(statusStr)
+                    )
+                }
+
+                DispatchQueue.main.async { self.applySearchAndReload() }
+            }
+    }
+
+    private func mapStatus(_ s: String) -> DonationItem.Status {
+        switch s.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() {
+        case "approved": return .approved
+        case "rejected": return .rejected
+        default: return .pending
         }
     }
 
-    @objc private func filterChanged() {
-        applyFilterAndSearch()
-    }
-
-    private func applyFilterAndSearch() {
-        let seg = filterSegment.selectedSegmentIndex
-        let q = (searchBar.text ?? "").lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-
-        var filtered = allDonations
-
-        // 0 All, 1 Pending, 2 Approved, 3 Rejected (عدلي حسب ترتيب segments عندج)
-        if seg == 1 { filtered = filtered.filter { $0.status == .pending } }
-        if seg == 2 { filtered = filtered.filter { $0.status == .approved } }
-        if seg == 3 { filtered = filtered.filter { $0.status == .rejected } }
-
-        if !q.isEmpty {
-            filtered = filtered.filter {
-                $0.title.lowercased().contains(q)
-                || $0.donorText.lowercased().contains(q)
-                || $0.locationText.lowercased().contains(q)
+    private func applySearchAndReload() {
+        let q = (searchBar.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        if q.isEmpty {
+            shownItems = allItems
+        } else {
+            shownItems = allItems.filter {
+                [$0.title, $0.donorText, $0.locationText, $0.dateText, $0.status.rawValue]
+                    .joined(separator: " ")
+                    .lowercased()
+                    .contains(q)
             }
         }
-
-        shownDonations = filtered
         tableView.reloadData()
     }
-
-    private func openDetails(donationId: String) {
-        let sb = UIStoryboard(name: "Main", bundle: nil)
-        let vc = sb.instantiateViewController(withIdentifier: "NGODonationDetailsViewController") as! NGODonationDetailsViewController
-        vc.donationId = donationId
+    
+    private func openDetails(docId: String) {
+        let vc = storyboard!.instantiateViewController(withIdentifier: "NGODonationDetailsViewController") as! NGODonationDetailsViewController
+        vc.donationId = docId
+        print("➡️ opening Details with docId:", docId)
         navigationController?.pushViewController(vc, animated: true)
     }
 }
 
 extension NGODonationOverviewViewController: UITableViewDataSource, UITableViewDelegate {
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        shownDonations.count
-    }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { shownItems.count }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
         let cell = tableView.dequeueReusableCell(
-            withIdentifier: NGODonationOverviewCell.reuseId,
+            withIdentifier: DonationOverviewCell.reuseId,
             for: indexPath
-        ) as! NGODonationOverviewCell
-
-        let d = shownDonations[indexPath.row]
-        cell.configure(item: d)
-
+        ) as! DonationOverviewCell
+        
+        let item = shownItems[indexPath.row]
+        cell.configure(item: item)
         cell.onViewDetailsTapped = { [weak self] in
-            self?.openDetails(donationId: d.docId)
+            self?.openDetails(docId: item.docId)
         }
 
         return cell
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        openDetails(donationId: shownDonations[indexPath.row].docId)
     }
 }
 
 extension NGODonationOverviewViewController: UISearchBarDelegate {
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        applyFilterAndSearch()
-    }
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) { applySearchAndReload() }
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) { searchBar.resignFirstResponder() }
 }

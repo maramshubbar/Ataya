@@ -5,18 +5,17 @@
 //  Created by Fatema Maitham on 02/01/2026.
 //
 
-
 import Foundation
 import FirebaseFirestore
 
 final class DonationService {
- 
+
     static let shared = DonationService()
     private init() {}
 
     private let db = Firestore.firestore()
 
-    // ✅ NGO Overview
+    // NGO Overview
     func listenNGODonations(ngoId: String, completion: @escaping ([DonationItem]) -> Void) -> ListenerRegistration {
         db.collection("donations")
             .whereField("ngoId", isEqualTo: ngoId)
@@ -53,7 +52,10 @@ final class DonationService {
         completion: @escaping (Error?) -> Void
     ) {
         let donationRef = db.collection("donations").document(donationId)
-        let reportRef = db.collection("reports").document()
+
+        // ✅ CHANGED: reports -> ngo-reports
+        let reportRef = db.collection("ngo-reports").document()
+
         let analyticsRef = db.collection("analytics").document("foodSafety")
         let auditRef = donationRef.collection("audit").document()
 
@@ -71,10 +73,11 @@ final class DonationService {
             let donorName = (donationData["donorName"] as? String) ?? "—"
             let ngoId = (donationData["ngoId"] as? String) ?? ""
 
-            let newStatus: String = (decision == "reject") ? "rejected" : "approved"
+            let d = decision.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            let newStatus: String = (d == "reject") ? "rejected" : "approved"
 
             var inspectionMap: [String: Any] = [
-                "decision": decision,
+                "decision": d,
                 "reason": reason,
                 "description": description,
                 "collectorId": collectorId,
@@ -95,7 +98,7 @@ final class DonationService {
             // ✅ audit trail
             tx.setData([
                 "action": "inspection_submitted",
-                "decision": decision,
+                "decision": d,
                 "reason": reason,
                 "byId": collectorId,
                 "byName": collectorName,
@@ -103,16 +106,23 @@ final class DonationService {
                 "createdAt": FieldValue.serverTimestamp()
             ], forDocument: auditRef)
 
-            // ✅ analytics
-            let reasonKey = Self.slug(reason)
+            // ✅ analytics (SAFE حتى لو accept والـ reason فاضي)
             tx.setData([
                 "totalInspections": FieldValue.increment(Int64(1)),
-                "totalRejected": FieldValue.increment(Int64(decision == "reject" ? 1 : 0)),
-                "reasons.\(reasonKey)": FieldValue.increment(Int64(decision == "reject" ? 1 : 0))
+                "totalRejected": FieldValue.increment(Int64(d == "reject" ? 1 : 0))
             ], forDocument: analyticsRef, merge: true)
 
-            // ✅ if reject -> reports + trustScore decrement
-            if decision == "reject" {
+            // ✅ reasons count فقط إذا reject + key مو فاضي
+            if d == "reject" {
+                let trimmedReason = reason.trimmingCharacters(in: .whitespacesAndNewlines)
+                let reasonKey = Self.slug(trimmedReason)
+                if !reasonKey.isEmpty {
+                    tx.setData([
+                        "reasons.\(reasonKey)": FieldValue.increment(Int64(1))
+                    ], forDocument: analyticsRef, merge: true)
+                }
+
+                // ✅ if reject -> ngo-reports + trustScore decrement
                 tx.setData([
                     "donationId": donationId,
                     "donorId": donorId,

@@ -9,11 +9,11 @@ import FirebaseFirestore
 import FirebaseAuth
 
 final class EnterDetailsViewController: UIViewController,
-                                        UIScrollViewDelegate,
-                                        UITextFieldDelegate,
-                                        UITextViewDelegate,
-                                        UIPickerViewDelegate,
-                                        UIPickerViewDataSource {
+                                       UIScrollViewDelegate,
+                                       UITextFieldDelegate,
+                                       UITextViewDelegate,
+                                       UIPickerViewDelegate,
+                                       UIPickerViewDataSource {
 
     var draft: DraftDonation!
 
@@ -77,7 +77,6 @@ final class EnterDetailsViewController: UIViewController,
 
         scrollView.delegate = self
 
-        // delegates
         foodItemTextField.delegate = self
         quantityTextField.delegate = self
         categoryTextField.delegate = self
@@ -86,12 +85,12 @@ final class EnterDetailsViewController: UIViewController,
         expiryTextField.delegate = self
         descriptionTextView.delegate = self
 
-        // update itemName live
         foodItemTextField.addTarget(self, action: #selector(foodItemChanged), for: .editingChanged)
 
         nextButton.isHidden = true
         nextButton.alpha = 0
 
+        hideAllErrors()
         styleCard(descriptionTextView)
 
         // tags for right icon taps (set BEFORE adding icons)
@@ -117,9 +116,11 @@ final class EnterDetailsViewController: UIViewController,
 
     // MARK: - Missing Draft
     private func showMissingDraftAndBack() {
-        let ac = UIAlertController(title: "Missing draft",
-                                   message: "Draft not passed from previous screen.\nGo back and try again.",
-                                   preferredStyle: .alert)
+        let ac = UIAlertController(
+            title: "Missing draft",
+            message: "Draft not passed from previous screen.\nGo back and try again.",
+            preferredStyle: .alert
+        )
         ac.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
             guard let self else { return }
             if let nav = self.navigationController {
@@ -137,6 +138,10 @@ final class EnterDetailsViewController: UIViewController,
         v.layer.borderWidth = 1
         v.layer.borderColor = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1).cgColor
         v.clipsToBounds = true
+
+        if let tv = v as? UITextView {
+            tv.textContainerInset = UIEdgeInsets(top: 12, left: 10, bottom: 12, right: 10)
+        }
     }
 
     private func fillUIFromDraft() {
@@ -199,10 +204,14 @@ final class EnterDetailsViewController: UIViewController,
     }
 
     @objc private func expiryDoneTapped() {
+        commitExpirySelection()
+        view.endEditing(true)
+    }
+
+    private func commitExpirySelection() {
         let picked = expiryDatePicker.date
         draft.expiryDate = picked
         expiryTextField.text = expiryFormatter.string(from: picked)
-        view.endEditing(true)
     }
 
     // MARK: - Dropdowns
@@ -246,7 +255,7 @@ final class EnterDetailsViewController: UIViewController,
         quantityTextField.tintColor = .clear
     }
 
-    private func updateQuantityFromPicker() {
+    private func commitQuantitySelection() {
         let valueRow = max(0, min(quantityPicker.selectedRow(inComponent: 0), quantityValues.count - 1))
         let unitRow  = max(0, min(quantityPicker.selectedRow(inComponent: 1), quantityUnits.count - 1))
 
@@ -258,33 +267,49 @@ final class EnterDetailsViewController: UIViewController,
         quantityTextField.text = "\(value) \(unit)"
     }
 
+    private func commitCategorySelection() {
+        let row = max(0, min(categoryPicker.selectedRow(inComponent: 0), categories.count - 1))
+        let val = categories[row]
+        categoryTextField.text = val
+        draft.category = val
+    }
+
+    private func commitPackagingSelection() {
+        let row = max(0, min(packagingPicker.selectedRow(inComponent: 0), packagings.count - 1))
+        let val = packagings[row]
+        packagingTextField.text = val
+        draft.packagingType = val
+    }
+
+    private func commitAllergenSelection() {
+        let row = max(0, min(allergenPicker.selectedRow(inComponent: 0), allergens.count - 1))
+        let val = allergens[row]
+        allergenTextField.text = val
+        draft.allergenInfo = (val == "None") ? nil : val
+    }
+
+    // ✅ prevent "opened picker but didn't move" issue
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if textField == quantityTextField {
             if draft.quantityValue <= 0 || draft.quantityUnit.isEmpty {
                 quantityPicker.selectRow(0, inComponent: 0, animated: false)
                 quantityPicker.selectRow(0, inComponent: 1, animated: false)
-                updateQuantityFromPicker()
+                commitQuantitySelection()
             }
         } else if textField == categoryTextField {
             if draft.category.isEmpty {
                 categoryPicker.selectRow(0, inComponent: 0, animated: false)
-                let v = categories[0]
-                draft.category = v
-                categoryTextField.text = v
+                commitCategorySelection()
             }
         } else if textField == packagingTextField {
             if draft.packagingType.isEmpty {
                 packagingPicker.selectRow(0, inComponent: 0, animated: false)
-                let v = packagings[0]
-                draft.packagingType = v
-                packagingTextField.text = v
+                commitPackagingSelection()
             }
         } else if textField == allergenTextField {
             if (draft.allergenInfo ?? "").isEmpty {
                 allergenPicker.selectRow(0, inComponent: 0, animated: false)
-                let v = allergens[0]
-                draft.allergenInfo = (v == "None") ? nil : v
-                allergenTextField.text = v
+                commitAllergenSelection()
             }
         }
     }
@@ -298,22 +323,13 @@ final class EnterDetailsViewController: UIViewController,
 
     @objc private func closePicker() {
         if quantityTextField.isFirstResponder {
-            updateQuantityFromPicker()
+            commitQuantitySelection()
         } else if categoryTextField.isFirstResponder {
-            let row = max(0, categoryPicker.selectedRow(inComponent: 0))
-            let val = categories[row]
-            categoryTextField.text = val
-            draft.category = val
+            commitCategorySelection()
         } else if packagingTextField.isFirstResponder {
-            let row = max(0, packagingPicker.selectedRow(inComponent: 0))
-            let val = packagings[row]
-            packagingTextField.text = val
-            draft.packagingType = val
+            commitPackagingSelection()
         } else if allergenTextField.isFirstResponder {
-            let row = max(0, allergenPicker.selectedRow(inComponent: 0))
-            let val = allergens[row]
-            allergenTextField.text = val
-            draft.allergenInfo = (val == "None") ? nil : val
+            commitAllergenSelection()
         }
         view.endEditing(true)
     }
@@ -367,22 +383,15 @@ final class EnterDetailsViewController: UIViewController,
         draft.notes = t.isEmpty ? nil : t
     }
 
-    private func syncDraftFromUI(forceCommitPickers: Bool) {
-        if forceCommitPickers {
-            if quantityTextField.isFirstResponder { updateQuantityFromPicker() }
-            if categoryTextField.isFirstResponder { closePicker() }
-            if packagingTextField.isFirstResponder { closePicker() }
-            if allergenTextField.isFirstResponder { closePicker() }
-            if expiryTextField.isFirstResponder { expiryDoneTapped() }
-        }
+    private func syncDraftFromUI() {
+        // commit current picker selections without needing to press Done
+        commitQuantitySelection()
+        commitCategorySelection()
+        commitPackagingSelection()
+        commitAllergenSelection()
+        commitExpirySelection()
 
         draft.itemName = (foodItemTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-
-        let expiryText = (expiryTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-        draft.expiryDate = expiryText.isEmpty ? nil : expiryDatePicker.date
-
-        draft.category = (categoryTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-        draft.packagingType = (packagingTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
 
         let a = (allergenTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         draft.allergenInfo = (a.isEmpty || a == "None") ? nil : a
@@ -393,7 +402,7 @@ final class EnterDetailsViewController: UIViewController,
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        syncDraftFromUI(forceCommitPickers: false)
+        syncDraftFromUI()
         tabBarController?.tabBar.isHidden = false
     }
 
@@ -413,7 +422,7 @@ final class EnterDetailsViewController: UIViewController,
 
     private func validateAndShowInlineErrors() -> Bool {
         hideAllErrors()
-        syncDraftFromUI(forceCommitPickers: true)
+        syncDraftFromUI()
 
         var firstInvalidField: UIView?
         var ok = true
@@ -501,22 +510,16 @@ final class EnterDetailsViewController: UIViewController,
 
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if pickerView == quantityPicker {
-            updateQuantityFromPicker()
+            commitQuantitySelection()
             return
         }
 
         if pickerView == categoryPicker {
-            let val = categories[row]
-            categoryTextField.text = val
-            draft.category = val
+            commitCategorySelection()
         } else if pickerView == packagingPicker {
-            let val = packagings[row]
-            packagingTextField.text = val
-            draft.packagingType = val
+            commitPackagingSelection()
         } else {
-            let val = allergens[row]
-            allergenTextField.text = val
-            draft.allergenInfo = (val == "None") ? nil : val
+            commitAllergenSelection()
         }
     }
 

@@ -7,30 +7,29 @@ final class DonationDraftSaver {
     static let shared = DonationDraftSaver()
     private init() {}
 
-    // MARK: - Public
     func saveAfterPickup(draft: DraftDonation, completion: @escaping (Error?) -> Void) {
 
         let db = Firestore.firestore()
 
         guard let uid = Auth.auth().currentUser?.uid, !uid.isEmpty else {
-            completion(NSError(domain: "Auth", code: 401, userInfo: [NSLocalizedDescriptionKey: "Not logged in"]))
+            completion(NSError(domain: "Auth", code: 0, userInfo: [
+                NSLocalizedDescriptionKey: "Not logged in"
+            ]))
             return
         }
 
+        // Confirm safety before saving
         draft.safetyConfirmed = true
         draft.normalizeBeforeSave()
+
+        // pickup map (nested pickup only)
         let pickupMap = buildPickupDict(draft: draft)
 
         // ===== UPDATE existing =====
-        if let existingId = draft.id, !existingId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        if let existingId = draft.id,
+           !existingId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
 
             var data = draft.toFirestoreDict(isUpdate: true)
-
-            data["pickupDate"] = FieldValue.delete()
-            data["pickupTime"] = FieldValue.delete()
-            data["pickupMethod"] = FieldValue.delete()
-            data["pickupAddress"] = FieldValue.delete()
-
             data["id"] = existingId
             data["donorId"] = uid
             data["status"] = "pending"
@@ -42,10 +41,11 @@ final class DonationDraftSaver {
 
             let ref = db.collection("donations").document(existingId)
 
-            data["pickup"] = pickupMap
-
             ref.setData(data, merge: true) { error in
-                completion(error)
+                if let error { completion(error); return }
+                ref.updateData(["pickup": pickupMap]) { err2 in
+                    completion(err2)
+                }
             }
             return
         }
@@ -63,13 +63,6 @@ final class DonationDraftSaver {
                 draft.id = docId
 
                 var data = draft.toFirestoreDict(isUpdate: false)
-
-
-                data.removeValue(forKey: "pickupDate")
-                data.removeValue(forKey: "pickupTime")
-                data.removeValue(forKey: "pickupMethod")
-                data.removeValue(forKey: "pickupAddress")
-
                 data["id"] = docId
                 data["donationNumber"] = number
                 data["donorId"] = uid
@@ -77,34 +70,27 @@ final class DonationDraftSaver {
                 data["createdAt"] = FieldValue.serverTimestamp()
                 data["updatedAt"] = FieldValue.serverTimestamp()
 
-
-                data["pickup"] = pickupMap
-
                 let ref = db.collection("donations").document(docId)
 
                 ref.setData(data, merge: true) { error in
-                    completion(error)
+                    if let error { completion(error); return }
+                    ref.updateData(["pickup": pickupMap]) { err2 in
+                        completion(err2)
+                    }
                 }
             }
         }
     }
 
-    // MARK: - Pickup Map
     private func buildPickupDict(draft: DraftDonation) -> [String: Any] {
         var pickup: [String: Any] = [:]
-
         if let d = draft.pickupDate { pickup["date"] = d }
         if let t = draft.pickupTime, !t.isEmpty { pickup["time"] = t }
         if !draft.pickupMethod.isEmpty { pickup["method"] = draft.pickupMethod }
-
-        if let a = draft.pickupAddress {
-            pickup["address"] = a.toFirestoreDict()   // ✅ unified name
-        }
-
+        if let a = draft.pickupAddress { pickup["address"] = a.toFirestoreDict() }
         return pickup
     }
 
-    // MARK: - Helpers
     private func parseDonationNumber(from id: String) -> Int? {
         let trimmed = id.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.uppercased().hasPrefix("DON-") {
@@ -154,4 +140,3 @@ final class DonationDraftSaver {
         })
     }
 }
-

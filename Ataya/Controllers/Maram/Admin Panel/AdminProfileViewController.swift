@@ -11,7 +11,6 @@
 //
 //  Created by Maram on 24/11/2025.
 //
-
 import UIKit
 import FirebaseAuth
 import FirebaseFirestore
@@ -31,17 +30,18 @@ final class AdminProfileViewController: UIViewController {
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
 
+    // ✅ قفل يمنع تكرار فتح AboutMe
+    private var isNavigating = false
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // ✅ title فوق
-        self.title = "Admin Profile"
+        title = "Admin Profile"
 
-        // placeholders
         nameLabel.text = "—"
-        roleLabel.text = "—"
+        roleLabel.text = "Admin"   // ✅ ثابت
 
-        loadProfileFromFirestore()
+        loadAdminProfile()
     }
 
     deinit {
@@ -58,6 +58,14 @@ final class AdminProfileViewController: UIViewController {
         makeProfileImageCircular()
     }
 
+    // ✅ يمنع أي Segue بالغلط من زر About me
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        if let btn = sender as? UIButton, btn === aboutMeButton {
+            return false
+        }
+        return true
+    }
+
     // MARK: - UI Styling
     private func styleBoxButton(_ button: UIButton) {
         button.layer.cornerRadius = 8
@@ -72,15 +80,33 @@ final class AdminProfileViewController: UIViewController {
         profileImageView.contentMode = .scaleAspectFill
     }
 
-    // MARK: - Firestore Load
-    private func loadProfileFromFirestore() {
+    // MARK: - Load Profile (admins -> fallback users)
+    private func loadAdminProfile() {
         guard let uid = Auth.auth().currentUser?.uid else {
             print("❌ No logged-in user")
             return
         }
 
+        // شيل أي listener قديم
         listener?.remove()
-        listener = db.collection("users").document(uid).addSnapshotListener { [weak self] snap, error in
+        listener = nil
+
+        // ✅ جرّبي أولًا admins/{uid}
+        db.collection("admins").document(uid).getDocument { [weak self] doc, _ in
+            guard let self else { return }
+
+            if let doc, doc.exists {
+                self.listenProfile(from: "admins", uid: uid)
+            } else {
+                // ✅ إذا ما موجود، روحي users/{uid}
+                self.listenProfile(from: "users", uid: uid)
+            }
+        }
+    }
+
+    private func listenProfile(from collection: String, uid: String) {
+        listener?.remove()
+        listener = db.collection(collection).document(uid).addSnapshotListener { [weak self] snap, error in
             guard let self else { return }
 
             if let error = error {
@@ -89,26 +115,47 @@ final class AdminProfileViewController: UIViewController {
             }
 
             guard let data = snap?.data() else {
-                print("⚠️ No user document in /users/\(uid)")
+                print("⚠️ No user doc at /\(collection)/\(uid)")
                 return
             }
 
-            let fullName = (data["fullName"] as? String)
+            // ✅ اطبع الداتا لو تبين تشوفين شنو موجود (اختياري)
+            // print("🔥 \(collection) DATA:", data)
+
+            // اسم المستخدم (نشيك على أكثر من key)
+            let fetchedName =
+                (data["fullName"] as? String)
+                ?? (data["fullname"] as? String)
+                ?? (data["displayName"] as? String)
+                ?? (data["username"] as? String)
                 ?? (data["name"] as? String)
+                ?? Auth.auth().currentUser?.displayName
                 ?? "—"
 
-            let role = (data["role"] as? String) ?? "admin"
+            // ✅ لو بالغلط الاسم محفوظ "Admin" في وثيقة الأدمن،
+            // نخليه يحاول ياخذ اسم ثاني لو موجود
+            let finalName: String = {
+                let trimmed = fetchedName.trimmingCharacters(in: .whitespacesAndNewlines)
+                if trimmed.lowercased() == "admin" {
+                    let alt =
+                        (data["realName"] as? String)
+                        ?? (data["full_name"] as? String)
+                        ?? trimmed
+                    return alt
+                }
+                return trimmed.isEmpty ? "—" : trimmed
+            }()
 
-            let photoUrl = (data["photoUrl"] as? String)
+            let photoUrl =
+                (data["photoUrl"] as? String)
                 ?? (data["profileImageUrl"] as? String)
                 ?? ""
 
             DispatchQueue.main.async {
-                // ✅ هذا اللي تبينه: الاسم اللي bold
-                self.nameLabel.text = fullName
-                self.roleLabel.text = role.capitalized
+                self.nameLabel.text = finalName
+                self.roleLabel.text = "Admin"
 
-                // ✅ إذا عندج ImageLoader.swift فكّي التعليق
+                // لو عندج ImageLoader
                 // ImageLoader.shared.setImage(
                 //     on: self.profileImageView,
                 //     from: photoUrl,
@@ -120,15 +167,31 @@ final class AdminProfileViewController: UIViewController {
 
     // MARK: - Actions
 
-    @IBAction func aboutMeButtonTapped(_ sender: Any) {
-        // ✅ افتح AboutMe
+    @IBAction func aboutMeButtonTapped(_ sender: UIButton) {
+        guard !isNavigating else { return }
+        isNavigating = true
+        sender.isEnabled = false
+
+        if navigationController?.topViewController is AboutMeViewController {
+            unlockNav(sender)
+            return
+        }
+
         let sb = UIStoryboard(name: "Main", bundle: nil)
         let vc = sb.instantiateViewController(withIdentifier: "AboutMeViewController")
         navigationController?.pushViewController(vc, animated: true)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            self.unlockNav(sender)
+        }
+    }
+
+    private func unlockNav(_ sender: UIButton) {
+        isNavigating = false
+        sender.isEnabled = true
     }
 
     @IBAction func logoutButtonTapped(_ sender: Any) {
-
         let alert = UIAlertController(
             title: "Logout",
             message: "Are you sure you want to logout?",
@@ -136,7 +199,6 @@ final class AdminProfileViewController: UIViewController {
         )
 
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-
         alert.addAction(UIAlertAction(title: "Logout", style: .destructive) { [weak self] _ in
             self?.performLogout()
         })
@@ -166,11 +228,8 @@ final class AdminProfileViewController: UIViewController {
 
     private func goToAdminLoginRoot() {
         let sb = UIStoryboard(name: "Main", bundle: nil)
-
-        // ✅ Storyboard ID حق صفحة اللوجن
         let loginVC = sb.instantiateViewController(withIdentifier: "AdminLoginViewController")
 
-        // ✅ يخليه Root عشان ما يرجع Back
         let nav = UINavigationController(rootViewController: loginVC)
         nav.navigationBar.isHidden = false
 
@@ -179,7 +238,6 @@ final class AdminProfileViewController: UIViewController {
             window.rootViewController = nav
             window.makeKeyAndVisible()
         } else {
-            // fallback
             UIApplication.shared.windows.first?.rootViewController = nav
             UIApplication.shared.windows.first?.makeKeyAndVisible()
         }

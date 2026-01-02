@@ -136,7 +136,7 @@ final class OngoingDonationCell: UITableViewCell {
 
         // ✅ Image: placeholder from assets + URL if exists
         let placeholder = UIImage(named: item.imageName)
-        ImageLoader.shared.setImage(on: productImageView, from: item.imageUrl, placeholder: placeholder)
+        Ataya.ImageLoader.shared.setImage(on: productImageView, from: item.imageUrl, placeholder: placeholder)
 
         // UI colors by status
         switch item.status {

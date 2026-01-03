@@ -1,37 +1,50 @@
-//// MyAddressListViewController.swift
-//// MyAddressListViewController.swift
-//import UIKit
+//
+//  RecurringLocationChoiceViewController.swift
+//  Ataya
+//
+//  Created by Zahraa Ahmed on 02/01/2026.
 //
 
+// MyAddressListViewController.swift
 import UIKit
 
-final class MyAddressListViewController: UIViewController {
+final class RecurringAddressListViewController: UIViewController {
 
+    // MARK: - Outlets
     @IBOutlet weak var buttonContainer: UIView!
     @IBOutlet weak var myAddressButton: UIButton!
     @IBOutlet weak var ngoButton: UIButton!
     @IBOutlet weak var nextButton: UIButton!
 
-    // Do NOT create new draft here
+    // Shared donation draft (must be injected from previous screen)
     var draft: DraftDonation?
 
-    private enum Choice { case myAddress, ngo }
+    // MARK: - Selection State
+    private enum Choice {
+        case myAddress
+        case ngo
+    }
+
     private var selectedChoice: Choice?
 
+    // MARK: - Styling
     private let grayBorder = UIColor(hex: "#999999")
     private let selectedBorder = UIColor(hex: "#FEC400")
     private let selectedBG = UIColor(hex: "#FFFBE7")
 
+    // Storyboard reference for pickup flow
     private let pickupSB = UIStoryboard(name: "Pickup", bundle: nil)
 
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
 
         title = "Pickup Location"
 
+        // Safety fallback (should normally be injected)
         if draft == nil {
-                draft = DraftDonation()
-            }
+            draft = DraftDonation()
+        }
 
         setupOptionButton(myAddressButton)
         setupOptionButton(ngoButton)
@@ -39,6 +52,7 @@ final class MyAddressListViewController: UIViewController {
         myAddressButton.addTarget(self, action: #selector(myAddressTapped), for: .touchUpInside)
         ngoButton.addTarget(self, action: #selector(ngoTapped), for: .touchUpInside)
 
+        // Ensure button has only one action
         nextButton.removeTarget(nil, action: nil, for: .allEvents)
         nextButton.addTarget(self, action: #selector(nextTappedProgrammatic), for: .touchUpInside)
 
@@ -47,6 +61,7 @@ final class MyAddressListViewController: UIViewController {
         setNextEnabled(false)
     }
 
+    // MARK: - Button Setup
     private func setupOptionButton(_ button: UIButton) {
         button.setTitleColor(.black, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
@@ -63,8 +78,14 @@ final class MyAddressListViewController: UIViewController {
         button.addTarget(self, action: #selector(pressUp(_:)), for: [.touchUpInside, .touchCancel, .touchDragExit])
     }
 
-    @objc private func myAddressTapped() { select(.myAddress) }
-    @objc private func ngoTapped() { select(.ngo) }
+    // MARK: - Selection Actions
+    @objc private func myAddressTapped() {
+        select(.myAddress)
+    }
+
+    @objc private func ngoTapped() {
+        select(.ngo)
+    }
 
     private func select(_ choice: Choice) {
         selectedChoice = choice
@@ -73,13 +94,16 @@ final class MyAddressListViewController: UIViewController {
         applyDefaultStyle(ngoButton)
 
         switch choice {
-        case .myAddress: applySelectedStyle(myAddressButton)
-        case .ngo: applySelectedStyle(ngoButton)
+        case .myAddress:
+            applySelectedStyle(myAddressButton)
+        case .ngo:
+            applySelectedStyle(ngoButton)
         }
 
         setNextEnabled(true)
     }
 
+    // MARK: - Styling Helpers
     private func applyDefaultStyle(_ button: UIButton) {
         button.backgroundColor = .white
         button.layer.borderWidth = 1
@@ -97,13 +121,18 @@ final class MyAddressListViewController: UIViewController {
         nextButton.alpha = enabled ? 1.0 : 0.5
     }
 
+    // MARK: - Navigation
     @objc private func nextTappedProgrammatic() {
+
         guard let choice = selectedChoice else {
-            showAlert(title: "Choose an option", message: "Select My Address or NGO first.")
+            showAlert(title: "Choose an option",
+                      message: "Select My Address or NGO first.")
             return
         }
+
         guard let draftObj = draft else {
-            showAlert(title: "Missing draft", message: "Draft not found. Please go back and try again.")
+            showAlert(title: "Missing draft",
+                      message: "Draft not found. Please go back and try again.")
             navigationController?.popViewController(animated: true)
             return
         }
@@ -113,10 +142,9 @@ final class MyAddressListViewController: UIViewController {
         case .ngo:
             draftObj.pickupMethod = "ngo"
             draftObj.pickupAddress = nil
-
             setNextEnabled(false)
 
-            // ✅ TRY AUTH, but if it fails -> DEMO fallback (no error popup, just show your popup)
+            // Authentication check with demo fallback
             AuthGate.ensureLoggedIn { [weak self] ok in
                 guard let self else { return }
 
@@ -124,15 +152,14 @@ final class MyAddressListViewController: UIViewController {
                     guard let self else { return }
                     self.setNextEnabled(true)
 
-                    // DEMO fallback
                     if !ok {
                         self.presentThankYouPopup()
                         return
                     }
 
-                    // Real error (not login)
                     if let error {
-                        self.showAlert(title: "Save failed", message: error.localizedDescription)
+                        self.showAlert(title: "Save failed",
+                                       message: error.localizedDescription)
                         return
                     }
 
@@ -143,8 +170,12 @@ final class MyAddressListViewController: UIViewController {
         case .myAddress:
             draftObj.pickupMethod = "myAddress"
 
-            guard let vc = pickupSB.instantiateViewController(withIdentifier: "MyAddressListTableViewController") as? MyAddressListTableViewController else {
-                showAlert(title: "Storyboard Error", message: "In Pickup.storyboard set Storyboard ID = MyAddressListTableViewController")
+            guard let vc = pickupSB.instantiateViewController(
+                withIdentifier: "MyAddressListTableViewController"
+            ) as? MyAddressListTableViewController else {
+
+                showAlert(title: "Storyboard Error",
+                          message: "Set Storyboard ID = MyAddressListTableViewController in Pickup.storyboard")
                 return
             }
 
@@ -153,17 +184,20 @@ final class MyAddressListViewController: UIViewController {
         }
     }
 
-    // MARK: - Upload then Save
-    private func uploadThenSave(_ draft: DraftDonation, completion: @escaping (Error?) -> Void) {
+    // MARK: - Upload & Save
+    private func uploadThenSave(_ draft: DraftDonation,
+                               completion: @escaping (Error?) -> Void) {
 
-        // If has local images and no URLs -> upload first
+        // Upload images first if needed
         if !draft.images.isEmpty && draft.photoURLs.isEmpty {
             CloudinaryUploader.shared.uploadImages(draft.images, folder: "donations") { res in
                 switch res {
                 case .success(let items):
                     let urls = items.map { $0.secureUrl }
                     let ids  = items.map { $0.publicId }
-                    draft.applyCloudinaryUploads(urls: urls, publicIds: ids, replace: true)
+                    draft.applyCloudinaryUploads(urls: urls,
+                                                 publicIds: ids,
+                                                 replace: true)
 
                     DonationDraftSaver.shared.saveAfterPickup(draft: draft) { err in
                         completion(err)
@@ -176,15 +210,20 @@ final class MyAddressListViewController: UIViewController {
             return
         }
 
-        // No images / already have URLs -> save directly
+        // Save directly if no upload needed
         DonationDraftSaver.shared.saveAfterPickup(draft: draft) { err in
             completion(err)
         }
     }
 
+    // MARK: - Popup
     private func presentThankYouPopup() {
-        guard let popup = pickupSB.instantiateViewController(withIdentifier: "PopupConfirmPickupViewController") as? PopupConfirmPickupViewController else {
-            showAlert(title: "Storyboard Error", message: "In Pickup.storyboard set Storyboard ID = PopupConfirmPickupViewController")
+        guard let popup = pickupSB.instantiateViewController(
+            withIdentifier: "PopupConfirmPickupViewController"
+        ) as? PopupConfirmPickupViewController else {
+
+            showAlert(title: "Storyboard Error",
+                      message: "Set Storyboard ID = PopupConfirmPickupViewController in Pickup.storyboard")
             return
         }
 
@@ -193,6 +232,7 @@ final class MyAddressListViewController: UIViewController {
         present(popup, animated: true)
     }
 
+    // MARK: - Button Animations
     @objc private func pressDown(_ sender: UIButton) {
         UIView.animate(withDuration: 0.10) {
             sender.transform = CGAffineTransform(scaleX: 0.98, y: 0.98)
@@ -207,12 +247,16 @@ final class MyAddressListViewController: UIViewController {
         }
     }
 
+    // MARK: - Alerts
     private func showAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let alert = UIAlertController(title: title,
+                                      message: message,
+                                      preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
 
+    // MARK: - Tab Bar Handling
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.tabBar.isHidden = true
@@ -223,3 +267,5 @@ final class MyAddressListViewController: UIViewController {
         tabBarController?.tabBar.isHidden = false
     }
 }
+
+

@@ -55,7 +55,6 @@ final class InspectDonationViewController: UIViewController {
         photoImageView.contentMode = .scaleAspectFill
         photoImageView.clipsToBounds = true
 
-        // ✅ إذا ما وصل id: وقف وطلع رسالة
         let id = (donationId ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         guard !id.isEmpty else {
             confirmButton.isEnabled = false
@@ -220,7 +219,13 @@ final class InspectDonationViewController: UIViewController {
     @IBAction private func acceptTapped(_ sender: UIButton) { decision = .accept }
 
     @IBAction private func confirmInspectionTapped(_ sender: UIButton) {
-        guard let collectorId = Auth.auth().currentUser?.uid else { return }
+
+        print("🟣 ConfirmInspection tapped ✅")
+
+        guard let collectorId = Auth.auth().currentUser?.uid else {
+            showAlert("You are not logged in.")
+            return
+        }
 
         let id = (donationId ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         guard !id.isEmpty else {
@@ -241,6 +246,7 @@ final class InspectDonationViewController: UIViewController {
 
         confirmButton.isEnabled = false
 
+        // ✅ get collector name ثم submit
         DonationService.shared.fetchUserName(uid: collectorId) { [weak self] collectorName in
             guard let self else { return }
 
@@ -255,16 +261,18 @@ final class InspectDonationViewController: UIViewController {
                 collectorName: collectorName,
                 evidenceUrl: evidenceUrl
             ) { [weak self] error in
-                guard let self else { return }
-                self.confirmButton.isEnabled = true
+                DispatchQueue.main.async {
+                    guard let self else { return }
+                    self.confirmButton.isEnabled = true
 
-                if let error {
-                    self.showAlert("Failed: \(error.localizedDescription)")
-                    return
-                }
+                    if let error {
+                        self.showAlert("Failed: \(error.localizedDescription)")
+                        return
+                    }
 
-                self.showAlert("Inspection saved ✅") {
-                    self.navigationController?.popToRootViewController(animated: true)
+                    self.showAlert("Inspection saved ✅") {
+                        self.navigationController?.popToRootViewController(animated: true)
+                    }
                 }
             }
         }

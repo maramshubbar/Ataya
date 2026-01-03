@@ -1,5 +1,5 @@
 //
-//  DonationService 2.swift
+//  DonationService.swift
 //  Ataya
 //
 //  Created by Fatema Maitham on 02/01/2026.
@@ -32,7 +32,7 @@ final class DonationService {
         }
     }
 
-    // ✅ get user name (collector)
+    // get user name (collector)
     func fetchUserName(uid: String, completion: @escaping (String) -> Void) {
         db.collection("users").document(uid).getDocument { snap, _ in
             let name = (snap?.data()?["name"] as? String) ?? "—"
@@ -40,7 +40,7 @@ final class DonationService {
         }
     }
 
-    // ✅ Feature 11 step 2 + 3 + 4 + 5 + 6 (transaction)
+    // Feature 11 (inspection) - transaction
     func submitInspection(
         donationId: String,
         decision: String,   // "accept" / "reject"
@@ -53,8 +53,7 @@ final class DonationService {
     ) {
         let donationRef = db.collection("donations").document(donationId)
 
-        // ✅ CHANGED: reports -> ngo-reports
-        let reportRef = db.collection("ngo-reports").document()
+        let reportRef = db.collection("reports").document()
 
         let analyticsRef = db.collection("analytics").document("foodSafety")
         let auditRef = donationRef.collection("audit").document()
@@ -68,13 +67,25 @@ final class DonationService {
                 return nil
             }
 
+            // ✅ optional safety: if donation not found
+            guard donationSnap.exists else {
+                errPtr?.pointee = NSError(domain: "Donation", code: 404, userInfo: [
+                    NSLocalizedDescriptionKey: "Donation not found"
+                ])
+                return nil
+            }
+
             let donationData = donationSnap.data() ?? [:]
             let donorId = (donationData["donorId"] as? String) ?? ""
             let donorName = (donationData["donorName"] as? String) ?? "—"
             let ngoId = (donationData["ngoId"] as? String) ?? ""
 
             let d = decision.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-            let newStatus: String = (d == "reject") ? "rejected" : "approved"
+
+            // ✅ YOUR REQUIRED STATUS VALUES:
+            // accept -> successful
+            // reject -> reject
+            let newStatus: String = (d == "reject") ? "reject" : "successful"
 
             var inspectionMap: [String: Any] = [
                 "decision": d,
@@ -106,13 +117,13 @@ final class DonationService {
                 "createdAt": FieldValue.serverTimestamp()
             ], forDocument: auditRef)
 
-            // ✅ analytics (SAFE حتى لو accept والـ reason فاضي)
+            // ✅ analytics
             tx.setData([
                 "totalInspections": FieldValue.increment(Int64(1)),
                 "totalRejected": FieldValue.increment(Int64(d == "reject" ? 1 : 0))
             ], forDocument: analyticsRef, merge: true)
 
-            // ✅ reasons count فقط إذا reject + key مو فاضي
+            // ✅ reasons count only if reject + key not empty
             if d == "reject" {
                 let trimmedReason = reason.trimmingCharacters(in: .whitespacesAndNewlines)
                 let reasonKey = Self.slug(trimmedReason)
@@ -122,7 +133,6 @@ final class DonationService {
                     ], forDocument: analyticsRef, merge: true)
                 }
 
-                // ✅ if reject -> ngo-reports + trustScore decrement
                 tx.setData([
                     "donationId": donationId,
                     "donorId": donorId,

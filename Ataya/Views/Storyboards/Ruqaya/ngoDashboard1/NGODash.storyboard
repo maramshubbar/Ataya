@@ -163,6 +163,16 @@
             </objects>
             <point key="canvasLocation" x="26" y="-355"/>
         </scene>
+        <!--GiftOfMercyHubViewController-->
+        <scene sceneID="hqq-Bk-o5u">
+            <objects>
+                <viewControllerPlaceholder storyboardName="NGO" referencedIdentifier="GiftOfMercyHubViewController" id="DLI-MX-q8V" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="C3j-c7-yoT"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="OQh-Lf-7nW" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2774" y="24"/>
+        </scene>
         <!--Ngo Dashboard View Controller-->
         <scene sceneID="ubg-Eo-bGs">
             <objects>
@@ -513,17 +523,29 @@
                                                                             <constraint firstAttribute="height" constant="40" id="D29-jv-JK2"/>
                                                                         </constraints>
                                                                     </imageView>
+                                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CKR-jt-f45">
+                                                                        <rect key="frame" x="0.0" y="0.0" width="400" height="65"/>
+                                                                        <state key="normal" title="Button"/>
+                                                                        <buttonConfiguration key="configuration" style="plain"/>
+                                                                        <connections>
+                                                                            <segue destination="DLI-MX-q8V" kind="show" id="y6q-Xl-hrh"/>
+                                                                        </connections>
+                                                                    </button>
                                                                 </subviews>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="65" id="0OS-bs-y62"/>
+                                                                    <constraint firstItem="CKR-jt-f45" firstAttribute="top" secondItem="D7s-uo-SNy" secondAttribute="top" id="30A-PQ-E6R"/>
+                                                                    <constraint firstAttribute="bottom" secondItem="CKR-jt-f45" secondAttribute="bottom" id="6Xj-jN-7ip"/>
                                                                     <constraint firstItem="U1P-24-jQe" firstAttribute="centerY" secondItem="D7s-uo-SNy" secondAttribute="centerY" id="Clr-r0-zcN"/>
+                                                                    <constraint firstItem="CKR-jt-f45" firstAttribute="leading" secondItem="D7s-uo-SNy" secondAttribute="leading" id="Dru-rw-wDy"/>
                                                                     <constraint firstItem="FzG-Jo-o55" firstAttribute="centerY" secondItem="D7s-uo-SNy" secondAttribute="centerY" id="E8C-JZ-fml"/>
                                                                     <constraint firstItem="IBv-L2-YB8" firstAttribute="centerY" secondItem="D7s-uo-SNy" secondAttribute="centerY" id="UoD-Fg-Jhm"/>
                                                                     <constraint firstAttribute="trailing" secondItem="IBv-L2-YB8" secondAttribute="trailing" constant="16" id="btq-NV-Hq7"/>
                                                                     <constraint firstItem="U1P-24-jQe" firstAttribute="leading" secondItem="D7s-uo-SNy" secondAttribute="leading" constant="24" id="joV-xn-fp3"/>
                                                                     <constraint firstItem="IBv-L2-YB8" firstAttribute="leading" secondItem="FzG-Jo-o55" secondAttribute="trailing" constant="-12" id="k7B-ua-KJU"/>
                                                                     <constraint firstItem="FzG-Jo-o55" firstAttribute="leading" secondItem="U1P-24-jQe" secondAttribute="trailing" constant="19" id="s0h-a6-M20"/>
+                                                                    <constraint firstAttribute="trailing" secondItem="CKR-jt-f45" secondAttribute="trailing" id="ya1-of-H6O"/>
                                                                 </constraints>
                                                             </view>
                                                         </subviews>

@@ -6,700 +6,437 @@
 import UIKit
 import FirebaseAuth
 import FirebaseFirestore
-import MessageUI
-
-// MARK: - Model (UNIQUE names to avoid ambiguity)
-
-enum NGOGiftOrderStatus: String {
-    case pending
-    case sent
-    case processing
-    case failed
-    case cancelled
-
-    var title: String {
-        switch self {
-        case .pending: return "Pending"
-        case .sent: return "Sent"
-        case .processing: return "Processing"
-        case .failed: return "Failed"
-        case .cancelled: return "Cancelled"
-        }
-    }
-
-    static func fromFirestore(_ value: Any?) -> NGOGiftOrderStatus {
-        let raw = (value as? String ?? "pending")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            .lowercased()
-        return NGOGiftOrderStatus(rawValue: raw) ?? .pending
-    }
-}
-
-struct NGOGiftOrder {
-    let id: String
-    let ngoId: String
-    let donorId: String
-    let recipientName: String
-    let recipientEmail: String
-    let personalMessage: String
-    let cardId: String
-    let status: NGOGiftOrderStatus
-    let createdAt: Date
-
-    init?(doc: QueryDocumentSnapshot) {
-        let d = doc.data()
-
-        guard
-            let ngoId = d["ngoId"] as? String,
-            let donorId = d["donorId"] as? String
-        else { return nil }
-
-        self.id = doc.documentID
-        self.ngoId = ngoId
-        self.donorId = donorId
-
-        self.recipientName = d["recipientName"] as? String ?? "—"
-        self.recipientEmail = d["recipientEmail"] as? String ?? "—"
-        self.personalMessage = d["personalMessage"] as? String ?? ""
-
-        self.cardId = d["cardId"] as? String ?? ""
-
-        self.status = NGOGiftOrderStatus.fromFirestore(d["status"])
-
-        if let ts = d["createdAt"] as? Timestamp {
-            self.createdAt = ts.dateValue()
-        } else {
-            self.createdAt = Date()
-        }
-    }
-}
-
-// MARK: - Service (UNIQUE name)
-
-final class NGOGiftOrderService {
-
-    static let shared = NGOGiftOrderService()
-    private init() {}
-
-    private let db = Firestore.firestore()
-
-    // ✅ IMPORTANT: must match your Firestore collection name
-    private let ordersCollection = "gift_orders"
-
-    // ✅ IMPORTANT: must match your card designs collection name (based on your screenshot)
-    private let cardDesignsCollection = "cardDesigns"
-
-    func listenOrdersForNGO(ngoUid: String,
-                            completion: @escaping (Result<[NGOGiftOrder], Error>) -> Void) -> ListenerRegistration {
-
-        let q = db.collection(ordersCollection)
-            .whereField("ngoId", isEqualTo: ngoUid)
-            .order(by: "createdAt", descending: true)
-
-        print("✅ Listening orders for NGO:", ngoUid, "collection:", ordersCollection)
-
-        return q.addSnapshotListener { snap, err in
-            if let err = err {
-                print("❌ listenOrdersForNGO error:", err.localizedDescription)
-                completion(.failure(err))
-                return
-            }
-
-            let items = snap?.documents.compactMap { NGOGiftOrder(doc: $0) } ?? []
-            print("✅ Orders fetched:", items.count)
-            completion(.success(items))
-        }
-    }
-
-    func updateStatus(orderId: String,
-                      status: NGOGiftOrderStatus,
-                      completion: @escaping (Error?) -> Void) {
-
-        db.collection(ordersCollection).document(orderId).setData([
-            "status": status.rawValue,
-            "updatedAt": FieldValue.serverTimestamp()
-        ], merge: true, completion: completion)
-    }
-
-    // Fetch card imageURL from cardDesigns/{cardId}
-    func fetchCardImageURL(cardId: String, completion: @escaping (Result<String, Error>) -> Void) {
-        guard !cardId.isEmpty else {
-            completion(.failure(NSError(domain: "Card", code: 0, userInfo: [NSLocalizedDescriptionKey: "cardId is empty"])))
-            return
-        }
-
-        db.collection(cardDesignsCollection).document(cardId).getDocument { snap, err in
-            if let err = err {
-                completion(.failure(err)); return
-            }
-            let data = snap?.data() ?? [:]
-            if let url = data["imageURL"] as? String, !url.isEmpty {
-                completion(.success(url))
-            } else {
-                completion(.failure(NSError(domain: "Card", code: 0, userInfo: [NSLocalizedDescriptionKey: "imageURL missing in cardDesigns"])))
-            }
-        }
-    }
-}
-
-// MARK: - GiftOrdersListViewController
 
 final class GiftOrdersListViewController: UIViewController {
 
-    // UI
-    private let filterControl: UISegmentedControl = {
-        let sc = UISegmentedControl(items: ["All", "Pending", "Sent"])
-        sc.selectedSegmentIndex = 0
-        return sc
-    }()
+    // MARK: - Outlets (optional: works with or without storyboard connections)
+    @IBOutlet private weak var segmentedOutlet: UISegmentedControl?
+    @IBOutlet private weak var tableViewOutlet: UITableView?
+    @IBOutlet private weak var emptyLabelOutlet: UILabel?
 
-    private let tableView = UITableView(frame: .zero, style: .plain)
+    // MARK: - UI (real used refs)
+    private var segmented: UISegmentedControl!
+    private var tableView: UITableView!
+    private var emptyLabel: UILabel!
 
-    private let emptyStateLabel: UILabel = {
-        let lbl = UILabel()
-        lbl.text = "No orders yet."
-        lbl.textAlignment = .center
-        lbl.textColor = .secondaryLabel
-        lbl.numberOfLines = 0
-        lbl.isHidden = true
-        return lbl
-    }()
-
+    // MARK: - Data
+    private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
 
-    // Data
-    private var allOrders: [NGOGiftOrder] = []
-    private var filteredOrders: [NGOGiftOrder] = []
+    private var allOrders: [Order] = []
+    private var shownOrders: [Order] = []
 
+    // MARK: - Types (nested => no name conflicts)
+    private enum Filter: Int {
+        case all = 0
+        case pending = 1
+        case sent = 2
+    }
+
+    fileprivate enum Status: String {
+        case pending
+        case sent
+
+        static func fromFirestore(_ data: [String: Any]) -> Status {
+            if let s = (data["status"] as? String)?.lowercased(),
+               let st = Status(rawValue: s) {
+                return st
+            }
+            if let isSent = data["isSent"] as? Bool, isSent { return .sent }
+            if data["sentAt"] != nil { return .sent }
+            return .pending
+        }
+    }
+
+    private struct Recipient {
+        let name: String
+        let email: String
+
+        static func from(_ raw: Any?) -> Recipient {
+            guard let dict = raw as? [String: Any] else {
+                return Recipient(name: "", email: "")
+            }
+            let name =
+            (dict["name"] as? String) ??
+            (dict["fullName"] as? String) ??
+            (dict["recipientName"] as? String) ?? ""
+
+            let email =
+            (dict["email"] as? String) ??
+            (dict["recipientEmail"] as? String) ?? ""
+
+            return Recipient(name: name, email: email)
+        }
+    }
+
+    private struct Order {
+        let id: String
+        let amount: Double
+        let currency: String
+
+        let giftId: String
+        let giftTitle: String
+
+        let cardDesignId: String
+        let cardDesignTitle: String
+
+        let createdAt: Timestamp?
+        let createdByUid: String
+
+        let fromName: String
+        let message: String
+        let pricingMode: String
+
+        let recipient: Recipient
+        let status: Status
+
+        static func fromFirestore(docId: String, data: [String: Any]) -> Order? {
+            let amount: Double = {
+                if let d = data["amount"] as? Double { return d }
+                if let i = data["amount"] as? Int { return Double(i) }
+                if let n = data["amount"] as? NSNumber { return n.doubleValue }
+                return 0
+            }()
+
+            let currency = (data["currency"] as? String) ?? "BHD"
+
+            let giftId = (data["giftId"] as? String) ?? ""
+            let giftTitle = (data["giftTitle"] as? String) ?? "Gift Certificate"
+
+            let cardDesignId = (data["cardDesignId"] as? String) ?? ""
+            let cardDesignTitle = (data["cardDesignTitle"] as? String) ?? ""
+
+            let createdAt = data["createdAt"] as? Timestamp
+            let createdByUid = (data["createdByUid"] as? String) ?? ""
+
+            let fromName = (data["fromName"] as? String) ?? ""
+            let message = (data["message"] as? String) ?? ""
+            let pricingMode = (data["pricingMode"] as? String) ?? "fixed"
+
+            let recipient = Recipient.from(data["recipient"])
+            let status = Status.fromFirestore(data)
+
+            return Order(
+                id: docId,
+                amount: amount,
+                currency: currency,
+                giftId: giftId,
+                giftTitle: giftTitle,
+                cardDesignId: cardDesignId,
+                cardDesignTitle: cardDesignTitle,
+                createdAt: createdAt,
+                createdByUid: createdByUid,
+                fromName: fromName,
+                message: message,
+                pricingMode: pricingMode,
+                recipient: recipient,
+                status: status
+            )
+        }
+    }
+
+    // MARK: - Cell (nested => NO conflicts)
+    final class OrderCell: UITableViewCell {
+        static let reuseID = "GiftOrdersListViewController.OrderCell"
+
+        private let card = UIView()
+        private let titleLabel = UILabel()
+        private let subtitleLabel = UILabel()
+        private let recipientLabel = UILabel()
+        private let statusBadge = UILabel()
+
+        override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+            super.init(style: style, reuseIdentifier: reuseIdentifier)
+            setup()
+        }
+
+        required init?(coder: NSCoder) {
+            super.init(coder: coder)
+            setup()
+        }
+
+        private func setup() {
+            selectionStyle = .none
+            backgroundColor = .clear
+            contentView.backgroundColor = .clear
+
+            card.translatesAutoresizingMaskIntoConstraints = false
+            card.backgroundColor = .secondarySystemBackground
+            card.layer.cornerRadius = 16
+
+            titleLabel.translatesAutoresizingMaskIntoConstraints = false
+            titleLabel.font = .systemFont(ofSize: 17, weight: .semibold)
+            titleLabel.textColor = .label
+            titleLabel.numberOfLines = 1
+
+            subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+            subtitleLabel.font = .systemFont(ofSize: 13, weight: .regular)
+            subtitleLabel.textColor = .secondaryLabel
+            subtitleLabel.numberOfLines = 2
+
+            recipientLabel.translatesAutoresizingMaskIntoConstraints = false
+            recipientLabel.font = .systemFont(ofSize: 13, weight: .regular)
+            recipientLabel.textColor = .secondaryLabel
+            recipientLabel.numberOfLines = 1
+
+            statusBadge.translatesAutoresizingMaskIntoConstraints = false
+            statusBadge.font = .systemFont(ofSize: 12, weight: .semibold)
+            statusBadge.textAlignment = .center
+            statusBadge.layer.cornerRadius = 10
+            statusBadge.clipsToBounds = true
+
+            contentView.addSubview(card)
+            card.addSubview(titleLabel)
+            card.addSubview(subtitleLabel)
+            card.addSubview(recipientLabel)
+            card.addSubview(statusBadge)
+
+            NSLayoutConstraint.activate([
+                card.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+                card.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+                card.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+                card.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
+
+                titleLabel.topAnchor.constraint(equalTo: card.topAnchor, constant: 14),
+                titleLabel.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 14),
+                titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: statusBadge.leadingAnchor, constant: -10),
+
+                statusBadge.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
+                statusBadge.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -14),
+                statusBadge.widthAnchor.constraint(equalToConstant: 72),
+                statusBadge.heightAnchor.constraint(equalToConstant: 20),
+
+                subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 6),
+                subtitleLabel.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 14),
+                subtitleLabel.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -14),
+
+                recipientLabel.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 6),
+                recipientLabel.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 14),
+                recipientLabel.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -14),
+                recipientLabel.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -14)
+            ])
+        }
+
+        fileprivate func configure(title: String, subtitle: String, recipient: String, status: Status) {
+            titleLabel.text = title
+            subtitleLabel.text = subtitle
+            recipientLabel.text = recipient
+
+            switch status {
+            case .pending:
+                statusBadge.text = "Pending"
+                statusBadge.backgroundColor = UIColor.systemOrange.withAlphaComponent(0.18)
+                statusBadge.textColor = .systemOrange
+            case .sent:
+                statusBadge.text = "Sent"
+                statusBadge.backgroundColor = UIColor.systemGreen.withAlphaComponent(0.18)
+                statusBadge.textColor = .systemGreen
+            }
+        }
+    }
+
+    // MARK: - Formatters
+    private let moneyFormatter: NumberFormatter = {
+        let f = NumberFormatter()
+        f.numberStyle = .currency
+        f.maximumFractionDigits = 2
+        f.currencyCode = "BHD"
+        return f
+    }()
+
+    // MARK: - LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNav()
         setupUI()
-        setupActions()
         startListening()
     }
 
     deinit { listener?.remove() }
 
+    // MARK: - Setup
     private func setupNav() {
-        view.backgroundColor = .systemBackground
         title = "Orders"
         navigationItem.largeTitleDisplayMode = .never
+        view.backgroundColor = .systemBackground
     }
 
     private func setupUI() {
-        filterControl.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(filterControl)
+        // If you already have UI in storyboard, use it.
+        if let seg = segmentedOutlet, let tv = tableViewOutlet {
+            segmented = seg
+            tableView = tv
+            emptyLabel = emptyLabelOutlet ?? UILabel()
 
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.separatorStyle = .none
+            if segmented.numberOfSegments == 0 {
+                segmented.insertSegment(withTitle: "All", at: 0, animated: false)
+                segmented.insertSegment(withTitle: "Pending", at: 1, animated: false)
+                segmented.insertSegment(withTitle: "Sent", at: 2, animated: false)
+            }
+            if segmented.selectedSegmentIndex < 0 { segmented.selectedSegmentIndex = 0 }
+        } else {
+            // Build UI programmatically if no storyboard outlets
+            segmented = UISegmentedControl(items: ["All", "Pending", "Sent"])
+            tableView = UITableView(frame: .zero, style: .plain)
+            emptyLabel = UILabel()
+
+            segmented.translatesAutoresizingMaskIntoConstraints = false
+            tableView.translatesAutoresizingMaskIntoConstraints = false
+            emptyLabel.translatesAutoresizingMaskIntoConstraints = false
+
+            segmented.selectedSegmentIndex = 0
+            segmented.backgroundColor = .systemGray6
+            segmented.selectedSegmentTintColor = .white
+
+            emptyLabel.text = "No orders yet."
+            emptyLabel.textColor = .secondaryLabel
+            emptyLabel.font = .systemFont(ofSize: 16, weight: .regular)
+            emptyLabel.textAlignment = .center
+
+            view.addSubview(segmented)
+            view.addSubview(tableView)
+            view.addSubview(emptyLabel)
+
+            NSLayoutConstraint.activate([
+                segmented.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+                segmented.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+                segmented.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+                segmented.heightAnchor.constraint(equalToConstant: 32),
+
+                tableView.topAnchor.constraint(equalTo: segmented.bottomAnchor, constant: 8),
+                tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+
+                emptyLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                emptyLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            ])
+        }
+
+        segmented.addTarget(self, action: #selector(segChanged), for: .valueChanged)
+
         tableView.backgroundColor = .clear
+        tableView.separatorStyle = .none
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 110
+        tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 16, right: 0)
+
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.register(NGOOrderCell.self, forCellReuseIdentifier: NGOOrderCell.reuseID)
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 150
-        view.addSubview(tableView)
+        tableView.register(OrderCell.self, forCellReuseIdentifier: OrderCell.reuseID)
 
-        emptyStateLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(emptyStateLabel)
-
-        NSLayoutConstraint.activate([
-            filterControl.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
-            filterControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            filterControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-
-            tableView.topAnchor.constraint(equalTo: filterControl.bottomAnchor, constant: 12),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-
-            emptyStateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            emptyStateLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            emptyStateLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-            emptyStateLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24)
-        ])
+        updateEmptyState()
     }
 
-    private func setupActions() {
-        filterControl.addTarget(self, action: #selector(filterChanged), for: .valueChanged)
-    }
-
+    // MARK: - Firestore
     private func startListening() {
         listener?.remove()
 
-        guard let ngoUid = Auth.auth().currentUser?.uid else {
-            print("❌ NGO not logged in")
-            allOrders = []
-            applyFilter()
-            return
-        }
+        // ✅ your collection is giftCertificates (from your screenshot)
+        let q: Query = db.collection("giftCertificates")
+            .order(by: "createdAt", descending: true)
 
-        listener = NGOGiftOrderService.shared.listenOrdersForNGO(ngoUid: ngoUid) { [weak self] result in
+        listener = q.addSnapshotListener { [weak self] snap, err in
             guard let self else { return }
-            switch result {
-            case .failure(let err):
+
+            if let err {
                 print("❌ Orders listen error:", err.localizedDescription)
-                self.allOrders = []
-                self.applyFilter()
-            case .success(let items):
+                return
+            }
+            guard let snap else { return }
+
+            print("📌 giftCertificates docs:", snap.documents.count)
+
+            var items: [Order] = []
+            for doc in snap.documents {
+                let data = doc.data()
+                if let order = Order.fromFirestore(docId: doc.documentID, data: data) {
+                    items.append(order)
+                } else {
+                    print("❌ skipped order:", doc.documentID, "keys:", Array(data.keys))
+                }
+            }
+
+            DispatchQueue.main.async {
                 self.allOrders = items
                 self.applyFilter()
             }
         }
     }
 
-    @objc private func filterChanged() {
+    // MARK: - Filtering
+    @objc private func segChanged() {
         applyFilter()
     }
 
     private func applyFilter() {
-        switch filterControl.selectedSegmentIndex {
-        case 1: // Pending
-            filteredOrders = allOrders.filter { $0.status == .pending }
-        case 2: // Sent
-            filteredOrders = allOrders.filter { $0.status == .sent }
-        default:
-            filteredOrders = allOrders
+        let f = Filter(rawValue: segmented.selectedSegmentIndex) ?? .all
+
+        switch f {
+        case .all:
+            shownOrders = allOrders
+        case .pending:
+            shownOrders = allOrders.filter { $0.status == .pending }
+        case .sent:
+            shownOrders = allOrders.filter { $0.status == .sent }
         }
 
-        emptyStateLabel.isHidden = !filteredOrders.isEmpty
         tableView.reloadData()
+        updateEmptyState()
     }
 
-    private func openDetails(order: NGOGiftOrder) {
-        let vc = NGOGiftOrderDetailsViewController(order: order)
-        vc.onStatusUpdated = { [weak self] orderId, newStatus in
-            guard let self else { return }
-            if let idx = self.allOrders.firstIndex(where: { $0.id == orderId }) {
-                var old = self.allOrders[idx]
-                old = NGOGiftOrder(
-                    id: old.id,
-                    ngoId: old.ngoId,
-                    donorId: old.donorId,
-                    recipientName: old.recipientName,
-                    recipientEmail: old.recipientEmail,
-                    personalMessage: old.personalMessage,
-                    cardId: old.cardId,
-                    status: newStatus,
-                    createdAt: old.createdAt
-                )!
-                self.allOrders[idx] = old
-                self.applyFilter()
-            }
-        }
-        navigationController?.pushViewController(vc, animated: true)
+    private func updateEmptyState() {
+        let isEmpty = shownOrders.isEmpty
+        emptyLabel.isHidden = !isEmpty
+        tableView.isHidden = isEmpty
+    }
+
+    private func moneyText(amount: Double, currency: String) -> String {
+        moneyFormatter.currencyCode = currency
+        return moneyFormatter.string(from: NSNumber(value: amount)) ?? "\(currency) \(amount)"
     }
 }
 
 // MARK: - Table
-
 extension GiftOrdersListViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        filteredOrders.count
+        shownOrders.count
     }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView,
+                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let order = filteredOrders[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: NGOOrderCell.reuseID, for: indexPath) as! NGOOrderCell
+        let item = shownOrders[indexPath.row]
 
-        let dateText = order.createdAt.formatted(date: .abbreviated, time: .omitted)
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: OrderCell.reuseID,
+            for: indexPath
+        ) as! OrderCell
+
+        let amountLine = "\(moneyText(amount: item.amount, currency: item.currency)) • \(item.pricingMode.capitalized)"
+        let subtitle = item.cardDesignTitle.isEmpty ? amountLine : "\(item.cardDesignTitle) • \(amountLine)"
+
+        let recipientName = item.recipient.name.isEmpty ? "-" : item.recipient.name
+        let recipientLine = "Recipient: \(recipientName)"
 
         cell.configure(
-            title: order.recipientName,
-            subtitle: order.recipientEmail,
-            dateText: dateText,
-            statusText: order.status.title,
-            statusStyle: .init(from: order.status)
+            title: item.giftTitle,
+            subtitle: subtitle,
+            recipient: recipientLine,
+            status: item.status
         )
-
-        cell.onViewDetails = { [weak self] in
-            self?.openDetails(order: order)
-        }
 
         return cell
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        openDetails(order: filteredOrders[indexPath.row])
-    }
-}
-
-// MARK: - Cell
-
-private final class NGOOrderCell: UITableViewCell {
-
-    static let reuseID = "NGOOrderCell"
-    var onViewDetails: (() -> Void)?
-
-    private let card = UIView()
-    private let titleLabel = UILabel()
-    private let subtitleLabel = UILabel()
-    private let dateLabel = UILabel()
-
-    private let badge = StatusBadgeView()
-    private let viewButton = UIButton(type: .system)
-
-    private let brandYellow = UIColor(red: 247/255, green: 212/255, blue: 76/255, alpha: 1)
-
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setup()
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setup()
-    }
-
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        onViewDetails = nil
-    }
-
-    private func setup() {
-        selectionStyle = .none
-        backgroundColor = .clear
-        contentView.backgroundColor = .clear
-
-        card.translatesAutoresizingMaskIntoConstraints = false
-        card.backgroundColor = .systemBackground
-        card.layer.cornerRadius = 16
-        card.layer.borderWidth = 1
-        card.layer.borderColor = UIColor.systemGray4.cgColor
-        contentView.addSubview(card)
-
-        [titleLabel, subtitleLabel, dateLabel].forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            $0.numberOfLines = 1
-        }
-
-        titleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
-        subtitleLabel.font = .systemFont(ofSize: 13.5)
-        subtitleLabel.textColor = .secondaryLabel
-        dateLabel.font = .systemFont(ofSize: 13.5)
-        dateLabel.textColor = .label
-
-        badge.translatesAutoresizingMaskIntoConstraints = false
-
-        viewButton.translatesAutoresizingMaskIntoConstraints = false
-        viewButton.setTitle("View Details", for: .normal)
-        viewButton.setTitleColor(.black, for: .normal)
-        viewButton.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
-        viewButton.layer.cornerRadius = 10
-        if #available(iOS 15.0, *) {
-            var config = UIButton.Configuration.filled()
-            config.baseBackgroundColor = brandYellow
-            config.baseForegroundColor = .black
-            config.cornerStyle = .medium
-            config.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 22, bottom: 10, trailing: 22)
-            viewButton.configuration = config
-        } else {
-            viewButton.backgroundColor = brandYellow
-            viewButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 22, bottom: 10, right: 22)
-        }
-        viewButton.addTarget(self, action: #selector(viewTapped), for: .touchUpInside)
-
-        [titleLabel, subtitleLabel, dateLabel, badge, viewButton].forEach(card.addSubview)
-
-        NSLayoutConstraint.activate([
-            card.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            card.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            card.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            card.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
-
-            badge.topAnchor.constraint(equalTo: card.topAnchor, constant: 14),
-            badge.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -14),
-            badge.heightAnchor.constraint(equalToConstant: 31),
-
-            titleLabel.topAnchor.constraint(equalTo: card.topAnchor, constant: 14),
-            titleLabel.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: badge.leadingAnchor, constant: -10),
-
-            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 6),
-            subtitleLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            subtitleLabel.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
-
-            dateLabel.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 6),
-            dateLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            dateLabel.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
-
-            viewButton.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 12),
-            viewButton.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            viewButton.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -14)
-        ])
-    }
-
-    @objc private func viewTapped() {
-        onViewDetails?()
-    }
-
-    struct StatusStyle {
-        let bg: UIColor
-        let text: UIColor
-
-        init(from status: NGOGiftOrderStatus) {
-            let pendingBg   = UIColor(red: 1.0, green: 0.95, blue: 0.70, alpha: 1)
-            let approvedBg  = UIColor(red: 0.82, green: 0.95, blue: 0.80, alpha: 1)
-            let blueBg      = UIColor(red: 0.82, green: 0.90, blue: 1.0, alpha: 1)
-            let redBg       = UIColor(red: 1.0, green: 0.85, blue: 0.85, alpha: 1)
-            let grayBg      = UIColor(red: 0.92, green: 0.92, blue: 0.92, alpha: 1)
-
-            switch status {
-            case .pending: bg = pendingBg; text = .black
-            case .sent: bg = approvedBg; text = .black
-            case .processing: bg = blueBg; text = .black
-            case .failed: bg = redBg; text = .black
-            case .cancelled: bg = grayBg; text = .black
-            }
-        }
-    }
-
-    func configure(title: String, subtitle: String, dateText: String, statusText: String, statusStyle: StatusStyle) {
-        titleLabel.text = title
-        subtitleLabel.text = subtitle
-        dateLabel.text = dateText
-        badge.apply(text: statusText, bg: statusStyle.bg, textColor: statusStyle.text)
-    }
-}
-
-private final class StatusBadgeView: UIView {
-
-    private let label = UILabel()
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setup()
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setup()
-    }
-
-    private func setup() {
-        layer.cornerRadius = 15.5
-        clipsToBounds = true
-
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textAlignment = .center
-        label.font = .systemFont(ofSize: 14, weight: .semibold)
-        addSubview(label)
-
-        NSLayoutConstraint.activate([
-            label.centerXAnchor.constraint(equalTo: centerXAnchor),
-            label.centerYAnchor.constraint(equalTo: centerYAnchor),
-            label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            label.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16)
-        ])
-    }
-
-    func apply(text: String, bg: UIColor, textColor: UIColor) {
-        label.text = text
-        label.textColor = textColor
-        backgroundColor = bg
-    }
-}
-
-// MARK: - Details VC (inside same file, NO other dependencies)
-
-final class NGOGiftOrderDetailsViewController: UIViewController, MFMailComposeViewControllerDelegate {
-
-    private let order: NGOGiftOrder
-    var onStatusUpdated: ((String, NGOGiftOrderStatus) -> Void)?
-
-    private let stack = UIStackView()
-    private let infoLabel = UILabel()
-    private let sendButton = UIButton(type: .system)
-    private let markSentButton = UIButton(type: .system)
-
-    private let brandYellow = UIColor(red: 247/255, green: 212/255, blue: 76/255, alpha: 1)
-
-    init(order: NGOGiftOrder) {
-        self.order = order
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .systemBackground
-        title = "Order Details"
-        setupUI()
-    }
-
-    private func setupUI() {
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        stack.axis = .vertical
-        stack.spacing = 12
-        view.addSubview(stack)
-
-        infoLabel.numberOfLines = 0
-        infoLabel.font = .systemFont(ofSize: 15)
-        infoLabel.text = """
-        Recipient: \(order.recipientName)
-        Email: \(order.recipientEmail)
-        Status: \(order.status.title)
-        Date: \(order.createdAt.formatted(date: .abbreviated, time: .omitted))
-
-        Message:
-        \(order.personalMessage.isEmpty ? "—" : order.personalMessage)
-        """
-
-        sendButton.setTitle("Send Certificate Email", for: .normal)
-        sendButton.setTitleColor(.black, for: .normal)
-        sendButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
-        sendButton.backgroundColor = brandYellow
-        sendButton.layer.cornerRadius = 14
-        sendButton.contentEdgeInsets = UIEdgeInsets(top: 14, left: 16, bottom: 14, right: 16)
-        sendButton.addTarget(self, action: #selector(sendEmailTapped), for: .touchUpInside)
-
-        markSentButton.setTitle("Mark as Sent", for: .normal)
-        markSentButton.setTitleColor(.white, for: .normal)
-        markSentButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
-        markSentButton.backgroundColor = .systemGreen
-        markSentButton.layer.cornerRadius = 14
-        markSentButton.contentEdgeInsets = UIEdgeInsets(top: 14, left: 16, bottom: 14, right: 16)
-        markSentButton.addTarget(self, action: #selector(markSentTapped), for: .touchUpInside)
-
-        stack.addArrangedSubview(infoLabel)
-        stack.addArrangedSubview(sendButton)
-        stack.addArrangedSubview(markSentButton)
-
-        NSLayoutConstraint.activate([
-            stack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
-            stack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            stack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
-        ])
-    }
-
-    @objc private func markSentTapped() {
-        NGOGiftOrderService.shared.updateStatus(orderId: order.id, status: .sent) { [weak self] err in
-            guard let self else { return }
-            if let err = err {
-                self.alert("Error", err.localizedDescription)
-                return
-            }
-            self.onStatusUpdated?(self.order.id, .sent)
-            self.alert("Done ✅", "Marked as Sent.")
-        }
-    }
-
-    @objc private func sendEmailTapped() {
-        guard MFMailComposeViewController.canSendMail() else {
-            alert("Mail not available", "Mail is not configured on this device/simulator.")
-            return
-        }
-
-        // 1) Get card imageURL from cardDesigns
-        NGOGiftOrderService.shared.fetchCardImageURL(cardId: order.cardId) { [weak self] result in
-            guard let self else { return }
-            switch result {
-            case .failure(let err):
-                DispatchQueue.main.async { self.alert("Card error", err.localizedDescription) }
-            case .success(let url):
-                self.downloadImage(urlString: url) { imgResult in
-                    switch imgResult {
-                    case .failure(let err):
-                        DispatchQueue.main.async { self.alert("Image error", err.localizedDescription) }
-                    case .success(let baseImg):
-                        let finalImg = self.drawNameOnCertificate(base: baseImg, name: self.order.recipientName)
-
-                        DispatchQueue.main.async {
-                            let mail = MFMailComposeViewController()
-                            mail.mailComposeDelegate = self
-                            mail.setToRecipients([self.order.recipientEmail])
-                            mail.setSubject("Gift of Mercy Certificate ✅")
-                            mail.setMessageBody("Hi \(self.order.recipientName),\n\nPlease find your certificate attached.\n\nRegards,\nAtaya", isHTML: false)
-
-                            if let data = finalImg.pngData() {
-                                mail.addAttachmentData(data, mimeType: "image/png", fileName: "certificate.png")
-                            }
-                            self.present(mail, animated: true)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // Put the name on the lines (adjust Y if needed)
-    private func drawNameOnCertificate(base: UIImage, name: String) -> UIImage {
-        let format = UIGraphicsImageRendererFormat()
-        format.scale = base.scale
-        let renderer = UIGraphicsImageRenderer(size: base.size, format: format)
-
-        return renderer.image { _ in
-            base.draw(in: CGRect(origin: .zero, size: base.size))
-
-            let font = UIFont.systemFont(ofSize: base.size.width * 0.035, weight: .semibold)
-            let attrs: [NSAttributedString.Key: Any] = [
-                .font: font,
-                .foregroundColor: UIColor.black
-            ]
-
-            // ✅ مكان الخطوط (يمّين تحت)
-            let x = base.size.width * 0.36
-            let w = base.size.width * 0.56
-            let h = base.size.height * 0.04
-            let y = base.size.height * 0.855  // عدّليها إذا تبينه أعلى/أوطى
-
-            (name as NSString).draw(in: CGRect(x: x, y: y, width: w, height: h), withAttributes: attrs)
-        }
-    }
-
-    private func downloadImage(urlString: String, completion: @escaping (Result<UIImage, Error>) -> Void) {
-        guard let url = URL(string: urlString) else {
-            completion(.failure(NSError(domain: "URL", code: 0, userInfo: [NSLocalizedDescriptionKey: "Bad imageURL"])))
-            return
-        }
-        URLSession.shared.dataTask(with: url) { data, _, err in
-            if let err = err { completion(.failure(err)); return }
-            guard let data, let img = UIImage(data: data) else {
-                completion(.failure(NSError(domain: "IMG", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to decode image"])))
-                return
-            }
-            completion(.success(img))
-        }.resume()
-    }
-
-    private func alert(_ title: String, _ msg: String) {
-        let ac = UIAlertController(title: title, message: msg, preferredStyle: .alert)
-        ac.addAction(UIAlertAction(title: "OK", style: .default))
-        present(ac, animated: true)
-    }
-
-    func mailComposeController(_ controller: MFMailComposeViewController,
-                               didFinishWith result: MFMailComposeResult,
-                               error: Error?) {
-        controller.dismiss(animated: true)
-        alert("Done ✅", "Email screen closed.")
-    }
-}
-
-// MARK: - Helper init to allow updating in callback (optional)
-private extension NGOGiftOrder {
-    init?(id: String,
-          ngoId: String,
-          donorId: String,
-          recipientName: String,
-          recipientEmail: String,
-          personalMessage: String,
-          cardId: String,
-          status: NGOGiftOrderStatus,
-          createdAt: Date) {
-        self.id = id
-        self.ngoId = ngoId
-        self.donorId = donorId
-        self.recipientName = recipientName
-        self.recipientEmail = recipientEmail
-        self.personalMessage = personalMessage
-        self.cardId = cardId
-        self.status = status
-        self.createdAt = createdAt
+        let order = shownOrders[indexPath.row]
+        print("✅ Selected order:", order.id)
+
+        // If you have details VC, push here.
+        // let vc = GiftOrderDetailsViewController(orderId: order.id)
+        // navigationController?.pushViewController(vc, animated: true)
     }
 }

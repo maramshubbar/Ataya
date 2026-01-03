@@ -1,74 +1,73 @@
-//
-//  OrdersListView.swift
-//  Ataya
-//
-//  Created by Fatema Maitham on 03/01/2026.
-//
-
-
 import SwiftUI
 
 struct OrdersListView: View {
 
     @StateObject private var store = GiftCertificatesOrdersStore()
 
+    private static let amountFormatter: NumberFormatter = {
+        let f = NumberFormatter()
+        f.numberStyle = .currency
+        f.maximumFractionDigits = 2
+        return f
+    }()
+
+    private func money(_ o: GiftCertificateOrder) -> String {
+        let f = Self.amountFormatter
+        f.currencyCode = o.currency.isEmpty ? "BHD" : o.currency
+        return f.string(from: NSNumber(value: o.amount)) ?? "\(o.amount) \(o.currency)"
+    }
+
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 10) {
+        ZStack {
+            AtayaTheme.bg.ignoresSafeArea()
 
-                // Search
-                HStack {
-                    Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
-                    TextField("Search", text: $store.searchText)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
-                }
-                .padding(.vertical, 10)
-                .padding(.horizontal, 12)
-                .background(Color(.systemGray6))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .padding(.horizontal, 16)
-                .padding(.top, 10)
-                .onChange(of: store.searchText) { _ in store.apply() }
+            if store.isLoading {
+                ProgressView()
 
-                // Segmented
-                Picker("", selection: $store.filter) {
-                    ForEach(GiftCertificatesOrdersStore.Filter.allCases, id: \.self) { f in
-                        Text(f.title).tag(f)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .padding(.horizontal, 16)
-                .onChange(of: store.filter) { _ in store.apply() }
+            } else if let err = store.errorMessage {
+                Text(err)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding()
 
-                // List
-                ScrollView {
-                    LazyVStack(spacing: 10) {
-                        if store.shown.isEmpty {
-                            Text("No orders yet.")
-                                .foregroundStyle(.secondary)
-                                .padding(.top, 30)
-                        } else {
-                            ForEach(store.shown) { order in
-                                NavigationLink {
-                                    OrderDetailsView(order: order)
-                                        .environmentObject(store)
-                                } label: {
-                                    OrderCardView(order: order) { }
-                                }
-                                .buttonStyle(.plain)
-                                .padding(.horizontal, 16)
+            } else if store.items.isEmpty {
+                Text("No gift orders yet")
+                    .foregroundStyle(.secondary)
+
+            } else {
+                List {
+                    ForEach(store.items) { o in
+                        NavigationLink {
+                            OrderDetailsView(order: o)
+                        } label: {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(o.giftTitle.isEmpty ? "Gift" : o.giftTitle)
+                                    .font(.headline)
+
+                                Text(money(o))
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+
+                                Text("Card: \(o.cardDesignTitle)")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+
+                                Text("Status: \(o.status.rawValue.capitalized)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
                             }
+                            .padding(.vertical, 6)
                         }
                     }
-                    .padding(.vertical, 10)
                 }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
             }
-            .background(AtayaTheme.bg)
-            .navigationTitle("Orders")
-            .navigationBarTitleDisplayMode(.inline)
         }
-        .onAppear { store.start() }
-        .onDisappear { store.stop() }
+        .navigationTitle("Gift Orders")
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            store.startListening()
+        }
     }
 }

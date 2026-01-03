@@ -9,18 +9,19 @@ import MessageUI
 
 // MARK: - Small UI helpers
 
-extension UIColor {
-    static var atayaBG: UIColor { UIColor.systemGroupedBackground }
-}
-
 final class InsetsLabel: UILabel {
     var insets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
+
     override func drawText(in rect: CGRect) {
         super.drawText(in: rect.inset(by: insets))
     }
+
     override var intrinsicContentSize: CGSize {
         let s = super.intrinsicContentSize
-        return CGSize(width: s.width + insets.left + insets.right, height: s.height + insets.top + insets.bottom)
+        return CGSize(
+            width: s.width + insets.left + insets.right,
+            height: s.height + insets.top + insets.bottom
+        )
     }
 }
 
@@ -43,6 +44,10 @@ final class NGOGiftCertificateOrderDetailsViewController: UIViewController, MFMa
 
     private var order: GiftCertificateOrder
 
+    // Firestore
+    private let db = Firestore.firestore()
+    private let col = "giftCertificates"
+
     // UI
     private let scrollView = UIScrollView()
     private let contentStack = UIStackView()
@@ -53,7 +58,6 @@ final class NGOGiftCertificateOrderDetailsViewController: UIViewController, MFMa
 
     private let titleLabel = UILabel()
     private let subLabel = UILabel()
-
     private let statusPill = InsetsLabel()
 
     private let infoStack = UIStackView()
@@ -90,12 +94,14 @@ final class NGOGiftCertificateOrderDetailsViewController: UIViewController, MFMa
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .atayaBG
+        view.backgroundColor = .systemGroupedBackground
         title = "Order Details"
         navigationItem.largeTitleDisplayMode = .never
         setupUI()
         render()
     }
+
+    // MARK: UI setup
 
     private func setupUI() {
         // Scroll + Stack
@@ -122,7 +128,6 @@ final class NGOGiftCertificateOrderDetailsViewController: UIViewController, MFMa
         ])
 
         // Header Card
-        headerCard.translatesAutoresizingMaskIntoConstraints = false
         let headerInner = UIStackView()
         headerInner.axis = .vertical
         headerInner.spacing = 10
@@ -167,6 +172,7 @@ final class NGOGiftCertificateOrderDetailsViewController: UIViewController, MFMa
         headerInner.addArrangedSubview(infoStack)
 
         headerCard.addSubview(headerInner)
+        headerInner.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             headerInner.topAnchor.constraint(equalTo: headerCard.topAnchor, constant: 14),
             headerInner.leadingAnchor.constraint(equalTo: headerCard.leadingAnchor, constant: 14),
@@ -239,7 +245,7 @@ final class NGOGiftCertificateOrderDetailsViewController: UIViewController, MFMa
 
     private func stylePrimary(_ b: UIButton) {
         b.translatesAutoresizingMaskIntoConstraints = false
-        b.backgroundColor = .atayaYellow
+        b.backgroundColor = UIColor(red: 247/255, green: 212/255, blue: 76/255, alpha: 1) // Ataya Yellow
         b.setTitleColor(.black, for: .normal)
         b.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
         b.layer.cornerRadius = 12
@@ -288,6 +294,8 @@ final class NGOGiftCertificateOrderDetailsViewController: UIViewController, MFMa
         return row
     }
 
+    // MARK: Render
+
     private func render() {
         titleLabel.text = order.giftTitle.isEmpty ? "Gift Certificate" : order.giftTitle
 
@@ -310,28 +318,35 @@ final class NGOGiftCertificateOrderDetailsViewController: UIViewController, MFMa
 
         messageLabel.text = order.message.isEmpty ? "-" : order.message
 
-        // Buttons + Pill based on status
         switch order.status {
         case .pending:
-            setPill(text: "Pending", bg: UIColor.systemOrange.withAlphaComponent(0.18), fg: .systemOrange)
+            setPill(text: "Pending",
+                    bg: UIColor.systemOrange.withAlphaComponent(0.18),
+                    fg: .systemOrange)
             approveButton.isHidden = false
             rejectButton.isHidden = false
             sendEmailButton.isHidden = true
 
         case .rejected:
-            setPill(text: "Rejected", bg: UIColor.systemRed.withAlphaComponent(0.18), fg: .systemRed)
+            setPill(text: "Rejected",
+                    bg: UIColor.systemRed.withAlphaComponent(0.18),
+                    fg: .systemRed)
             approveButton.isHidden = true
             rejectButton.isHidden = true
             sendEmailButton.isHidden = true
 
         case .approved:
-            setPill(text: "Approved", bg: UIColor.systemGreen.withAlphaComponent(0.18), fg: .systemGreen)
+            setPill(text: "Approved",
+                    bg: UIColor.systemGreen.withAlphaComponent(0.18),
+                    fg: .systemGreen)
             approveButton.isHidden = true
             rejectButton.isHidden = true
             sendEmailButton.isHidden = false
 
         case .sent:
-            setPill(text: "Sent", bg: UIColor.systemBlue.withAlphaComponent(0.16), fg: .systemBlue)
+            setPill(text: "Sent",
+                    bg: UIColor.systemBlue.withAlphaComponent(0.16),
+                    fg: .systemBlue)
             approveButton.isHidden = true
             rejectButton.isHidden = true
             sendEmailButton.isHidden = true
@@ -359,19 +374,57 @@ final class NGOGiftCertificateOrderDetailsViewController: UIViewController, MFMa
     }
 
     private func moneyText(amount: Double, currency: String) -> String {
-        moneyFormatter.currencyCode = currency
+        moneyFormatter.currencyCode = currency.isEmpty ? "BHD" : currency
         return moneyFormatter.string(from: NSNumber(value: amount)) ?? "\(currency) \(amount)"
+    }
+
+    // MARK: Firestore Actions (NO Service needed)
+
+    private func approveInFirestore(orderId: String, completion: @escaping (Error?) -> Void) {
+        db.collection(col).document(orderId).setData([
+            "status": GiftCertificateOrderStatus.approved.rawValue,
+            "approvedAt": FieldValue.serverTimestamp(),
+            "updatedAt": FieldValue.serverTimestamp()
+        ], merge: true, completion: completion)
+    }
+
+    private func rejectInFirestore(orderId: String, reason: String?, completion: @escaping (Error?) -> Void) {
+        var payload: [String: Any] = [
+            "status": GiftCertificateOrderStatus.rejected.rawValue,
+            "rejectedAt": FieldValue.serverTimestamp(),
+            "updatedAt": FieldValue.serverTimestamp()
+        ]
+
+        let r = (reason ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        if !r.isEmpty { payload["rejectedReason"] = r }
+
+        db.collection(col).document(orderId).setData(payload, merge: true, completion: completion)
+    }
+
+    private func markSentInFirestore(orderId: String, completion: @escaping (Error?) -> Void) {
+        db.collection(col).document(orderId).setData([
+            "status": GiftCertificateOrderStatus.sent.rawValue,
+            "isSent": true,
+            "sentAt": FieldValue.serverTimestamp(),
+            "updatedAt": FieldValue.serverTimestamp()
+        ], merge: true, completion: completion)
     }
 
     // MARK: Actions
 
     @objc private func tapApprove() {
         setLoading(true)
-        GiftCertificatesService.shared.approve(orderId: order.id) { [weak self] err in
+
+        approveInFirestore(orderId: order.id) { [weak self] (err: Error?) in
             DispatchQueue.main.async {
                 guard let self else { return }
                 self.setLoading(false)
-                if let err { self.alert("Approve failed", err.localizedDescription); return }
+
+                if let err {
+                    self.alert("Approve failed", err.localizedDescription)
+                    return
+                }
+
                 self.order = GiftCertificateOrder(
                     id: self.order.id,
                     amount: self.order.amount,
@@ -388,27 +441,38 @@ final class NGOGiftCertificateOrderDetailsViewController: UIViewController, MFMa
                     recipient: self.order.recipient,
                     status: .approved
                 )
+
                 self.render()
             }
         }
     }
 
     @objc private func tapReject() {
-        let ac = UIAlertController(title: "Reject Order", message: "Optional: add a reason", preferredStyle: .alert)
+        let ac = UIAlertController(
+            title: "Reject Order",
+            message: "Optional: add a reason",
+            preferredStyle: .alert
+        )
         ac.addTextField { $0.placeholder = "Reason (optional)" }
         ac.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+
         ac.addAction(UIAlertAction(title: "Reject", style: .destructive) { [weak self] _ in
             guard let self else { return }
             let reason = ac.textFields?.first?.text
             self.setLoading(true)
-            GiftCertificatesService.shared.reject(orderId: self.order.id, reason: reason) { err in
+
+            self.rejectInFirestore(orderId: self.order.id, reason: reason) { (err: Error?) in
                 DispatchQueue.main.async {
                     self.setLoading(false)
-                    if let err { self.alert("Reject failed", err.localizedDescription); return }
+                    if let err {
+                        self.alert("Reject failed", err.localizedDescription)
+                        return
+                    }
                     self.navigationController?.popViewController(animated: true)
                 }
             }
         })
+
         present(ac, animated: true)
     }
 
@@ -420,10 +484,14 @@ final class NGOGiftCertificateOrderDetailsViewController: UIViewController, MFMa
 
         let mail = MFMailComposeViewController()
         mail.mailComposeDelegate = self
-        mail.setToRecipients([order.recipient.email].filter { !$0.isEmpty })
+
+        let to = order.recipient.email
+        if !to.isEmpty { mail.setToRecipients([to]) }
+
         mail.setSubject("Gift of Mercy Certificate ✅")
 
         let amountText = moneyText(amount: order.amount, currency: order.currency)
+
         let body =
         """
         Hi \(order.recipient.name.isEmpty ? "there" : order.recipient.name),
@@ -439,11 +507,13 @@ final class NGOGiftCertificateOrderDetailsViewController: UIViewController, MFMa
         Regards,
         Ataya
         """
+
         mail.setMessageBody(body, isHTML: false)
         present(mail, animated: true)
     }
 
     // MARK: Mail delegate
+
     func mailComposeController(_ controller: MFMailComposeViewController,
                                didFinishWith result: MFMailComposeResult,
                                error: Error?) {
@@ -451,14 +521,20 @@ final class NGOGiftCertificateOrderDetailsViewController: UIViewController, MFMa
         controller.dismiss(animated: true) { [weak self] in
             guard let self else { return }
 
-            if let error { self.alert("Mail error", error.localizedDescription); return }
+            if let error {
+                self.alert("Mail error", error.localizedDescription)
+                return
+            }
 
             if result == .sent {
                 self.setLoading(true)
-                GiftCertificatesService.shared.markSent(orderId: self.order.id) { err in
+                self.markSentInFirestore(orderId: self.order.id) { (err: Error?) in
                     DispatchQueue.main.async {
                         self.setLoading(false)
-                        if let err { self.alert("Update failed", err.localizedDescription); return }
+                        if let err {
+                            self.alert("Update failed", err.localizedDescription)
+                            return
+                        }
                         self.navigationController?.popViewController(animated: true)
                     }
                 }
@@ -466,10 +542,11 @@ final class NGOGiftCertificateOrderDetailsViewController: UIViewController, MFMa
         }
     }
 
+    // MARK: Alerts
+
     private func alert(_ title: String, _ msg: String) {
         let ac = UIAlertController(title: title, message: msg, preferredStyle: .alert)
         ac.addAction(UIAlertAction(title: "OK", style: .default))
         present(ac, animated: true)
     }
 }
-

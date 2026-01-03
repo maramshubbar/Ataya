@@ -10,6 +10,12 @@
 //
 //  Created by Maram on 19/12/2025.
 //
+//
+//  RewardsNgoViewController.swift
+//  Ataya
+//
+//  Created by Maram on 19/12/2025.
+//
 
 import UIKit
 import FirebaseAuth
@@ -27,10 +33,13 @@ final class RewardsNgoViewController: UIViewController {
     @IBOutlet weak var tierLabel: UILabel?
     @IBOutlet weak var tierMedalImageView: UIImageView?
 
-    // MARK: - Firestore
+    // MARK: - Firestore (موجود بس ما راح نستخدمه في الديمو)
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
     private var didRecalculateOnce = false
+
+    // ✅ DEMO PLACEHOLDER MODE
+    private let useDemoPlaceholder = true   // خليها true الحين
 
     // MARK: - Badge VM
     private struct BadgeVM {
@@ -55,8 +64,15 @@ final class RewardsNgoViewController: UIViewController {
         super.viewDidLoad()
 
         setupBadges()
-        applyInitialPlaceholders()
 
+        // ✅ Placeholder ثابت (2000 pts) - بدون Firebase
+        if useDemoPlaceholder {
+            applyDemoNgoPlaceholder2000()
+            return
+        }
+
+        // ---- Firebase mode (لما تبين بعدين) ----
+        applyInitialPlaceholders()
         ensureNgoRewardsSeededIfNeeded()
         recalculateNgoRewardsFromDonationsIfNeeded()
         startListeningToNgoRewards()
@@ -80,6 +96,23 @@ final class RewardsNgoViewController: UIViewController {
         let g = CGFloat(Int(s.dropFirst(2).prefix(2), radix: 16) ?? 0) / 255
         let b = CGFloat(Int(s.dropFirst(4).prefix(2), radix: 16) ?? 0) / 255
         return UIColor(red: r, green: g, blue: b, alpha: 1)
+    }
+
+    // ✅ DEMO PLACEHOLDER (2000 pts)
+    private func applyDemoNgoPlaceholder2000() {
+        let demoPickups = 20
+        let demoLives = 200
+        let demoPoints = 2000
+
+        pickupsLabel.text = "\(demoPickups) Successful Pickups"
+        livesLabel.text = "\(demoLives) Lives Impacted"
+        pointsLabel.text = "\(formatNumber(demoPoints)) pts"
+
+        tierLabel?.text = "Diamond Partner"
+        tierMedalImageView?.image = UIImage(named: "tier_diamond")
+
+        badges = defaultBadges
+        badgesCollectionView.reloadData()
     }
 
     private func applyInitialPlaceholders() {
@@ -129,7 +162,7 @@ final class RewardsNgoViewController: UIViewController {
         }
     }
 
-    // MARK: - ✅ users/{uid}.rewardsNgo
+    // MARK: - ✅ users/{uid}.rewardsNgo (Firebase mode only)
 
     private func ensureNgoRewardsSeededIfNeeded() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
@@ -188,7 +221,7 @@ final class RewardsNgoViewController: UIViewController {
         return f.string(from: NSNumber(value: n)) ?? "\(n)"
     }
 
-    // MARK: - ✅ Calculate from donations -> write users/{uid}.rewardsNgo
+    // MARK: - ✅ Calculate from donations -> write users/{uid}.rewardsNgo (Firebase mode only)
 
     private func recalculateNgoRewardsFromDonationsIfNeeded() {
         guard !didRecalculateOnce else { return }
@@ -286,7 +319,7 @@ extension RewardsNgoViewController: UICollectionViewDataSource, UICollectionView
         ) as! BadgeCardCell
 
         let badge = badges[indexPath.item]
-        let bgColor = color(fromHex: badge.colorHex) // ✅ FIX (no UIColor(hex:))
+        let bgColor = color(fromHex: badge.colorHex)
 
         cell.configure(
             title: badge.title,

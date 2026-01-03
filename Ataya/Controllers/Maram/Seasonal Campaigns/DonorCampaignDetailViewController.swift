@@ -486,8 +486,11 @@ final class DonorCampaignDetailViewController: UIViewController {
         quoteLabel.text = model.quoteText.isEmpty ? "—" : model.quoteText
         quoteAuthorLabel.text = model.quoteAuthor.isEmpty ? "—" : model.quoteAuthor
 
-        aboutTitle.text = "About \(model.orgName.isEmpty ? "Organization" : model.orgName)"
-        aboutBody.text = model.orgAbout.isEmpty ? "—" : model.orgAbout
+        aboutTitle.text = "About HopPal"
+        aboutBody.text = """
+        HopPal is a humanitarian organization dedicated to helping families in crisis rebuild their lives with dignity. We deliver urgent medical aid, food, water, and long-term recovery support to those affected by conflict and disaster. Guided by compassion and transparency, we work to restore hope where it’s needed most.
+        """
+
 
         loadHeroImage(urlString: model.imageURL)
     }

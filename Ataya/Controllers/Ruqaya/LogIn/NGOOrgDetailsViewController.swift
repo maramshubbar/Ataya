@@ -4,7 +4,7 @@ import FirebaseFirestore
 
 final class NGOOrgDetailsViewController: UIViewController {
 
-    // ✅ نفس الأوتلتس اللي عندج
+    
     @IBOutlet weak var missionCard: UIView!
     @IBOutlet weak var personalIDCard: UIView!
     @IBOutlet weak var trainingCard: UIView!
@@ -14,7 +14,6 @@ final class NGOOrgDetailsViewController: UIViewController {
     private let db = Firestore.firestore()
     private var isSubmitting = false
 
-    // ✅ فقط 3 خيارات مثل ما تبين
     private let types = [
         "Humanitarian / Non-Profit",
         "Medical & Psychological",
@@ -26,23 +25,22 @@ final class NGOOrgDetailsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // ستايل الكروت
         [missionCard, personalIDCard, trainingCard].forEach { card in
             card.layer.cornerRadius = 12
             card.clipsToBounds = true
         }
 
-        // ستايل زر السبمت
+
         submitButton.layer.cornerRadius = 12
         submitButton.clipsToBounds = true
 
-        // ستايل زر الدروب داون (بوكس + سهم)
+
         styleTypeDropdownButton()
 
-        // ✅ أهم شي: نخلي الدروب داون يشتغل تلقائي بدون أي ربط من الستوريبورد
+
         setupTypeMenu()
 
-        // ✅ إذا تبين يعرض النوع المحفوظ مسبقاً
+
         loadSavedTypeIfAny()
     }
 
@@ -68,7 +66,7 @@ final class NGOOrgDetailsViewController: UIViewController {
         }
     }
 
-    // ✅ الدروب داون الحقيقي (Menu)
+
     private func setupTypeMenu() {
         let actions = types.map { t in
             UIAction(title: t) { [weak self] _ in
@@ -79,7 +77,7 @@ final class NGOOrgDetailsViewController: UIViewController {
         }
 
         typeButton.menu = UIMenu(title: "Select Type", children: actions)
-        typeButton.showsMenuAsPrimaryAction = true   // ✅ يفتح من أول ضغطه
+        typeButton.showsMenuAsPrimaryAction = true
     }
 
     private func loadSavedTypeIfAny() {
@@ -120,7 +118,7 @@ final class NGOOrgDetailsViewController: UIViewController {
             "orgDetailsSubmittedAt": FieldValue.serverTimestamp()
         ]
 
-        // ✅ نخزن type (اختياري) عشان تحتاجينه بصفحات ثانية
+
         if !typeText.isEmpty, typeText.lowercased() != "select type" {
             update["type"] = typeText
         }

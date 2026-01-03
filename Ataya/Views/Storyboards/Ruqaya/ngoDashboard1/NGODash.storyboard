@@ -50,7 +50,7 @@
         <scene sceneID="pAG-xW-nkz">
             <objects>
                 <navigationController title="Pickups" id="Ouh-XS-ScB" userLabel="Pickups" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Pickups" id="lzm-uT-1Cw"/>
+                    <tabBarItem key="tabBarItem" title="Pickups" selectedImage="Deliverytime" id="lzm-uT-1Cw"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="DEs-6O-fgB">
                         <rect key="frame" x="0.0" y="124" width="440" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -101,10 +101,23 @@
                         <rect key="frame" x="0.0" y="124" width="440" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
+                    <connections>
+                        <segue destination="ECt-hO-9mq" kind="relationship" relationship="rootViewController" id="qtG-6I-dIp"/>
+                    </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lGN-Zr-Eyk" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="776" y="-1095"/>
+        </scene>
+        <!--RewardsNgoViewController-->
+        <scene sceneID="VXq-Fj-lMX">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Gamification" referencedIdentifier="RewardsNgoViewController" id="ECt-hO-9mq" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="vgc-af-B7x"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="q2o-Tq-Of4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="995" y="-635"/>
         </scene>
         <!--Routes-->
         <scene sceneID="gDX-XM-3wT">
@@ -175,7 +188,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bell.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="3Fm-gq-NcF" userLabel="btnNotifications">
-                                        <rect key="frame" x="396" y="16.333333333333332" width="24" height="23.333333333333353"/>
+                                        <rect key="frame" x="396" y="16.333333333333332" width="24" height="23.333333333333339"/>
                                         <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="24" id="Tif-rP-Idx"/>
@@ -403,22 +416,34 @@
                                                                             <constraint firstAttribute="height" constant="25" id="9xd-v0-AHV"/>
                                                                         </constraints>
                                                                     </imageView>
-                                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Screenshot 2025-12-27 at 2.47.42 PM copy" translatesAutoresizingMaskIntoConstraints="NO" id="BLx-1J-fth" userLabel="imgDonationIcon">
+                                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icons8-world-markets-50" translatesAutoresizingMaskIntoConstraints="NO" id="BLx-1J-fth" userLabel="imgDonationIcon">
                                                                         <rect key="frame" x="22" y="12.666666666666629" width="40" height="40"/>
                                                                         <constraints>
                                                                             <constraint firstAttribute="width" constant="40" id="HCe-hz-2bn"/>
                                                                             <constraint firstAttribute="height" constant="40" id="L8F-1B-Nop"/>
                                                                         </constraints>
                                                                     </imageView>
+                                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="C1M-Ge-X31">
+                                                                        <rect key="frame" x="0.0" y="0.0" width="400" height="65"/>
+                                                                        <state key="normal" title="Button"/>
+                                                                        <buttonConfiguration key="configuration" style="plain"/>
+                                                                        <connections>
+                                                                            <segue destination="yXX-KO-4kP" kind="show" id="8S2-qd-IFo"/>
+                                                                        </connections>
+                                                                    </button>
                                                                 </subviews>
                                                                 <gestureRecognizers/>
                                                                 <constraints>
+                                                                    <constraint firstItem="C1M-Ge-X31" firstAttribute="top" secondItem="Pr8-Ze-EAD" secondAttribute="top" id="13I-Bv-IDE"/>
                                                                     <constraint firstAttribute="height" constant="65" id="3gR-sP-pYJ"/>
                                                                     <constraint firstAttribute="trailing" secondItem="Ynn-2j-5Jf" secondAttribute="trailing" constant="16" id="4q4-Th-yxc"/>
+                                                                    <constraint firstAttribute="bottom" secondItem="C1M-Ge-X31" secondAttribute="bottom" id="NxH-0l-4pF"/>
                                                                     <constraint firstItem="CAd-bn-SEf" firstAttribute="centerY" secondItem="Pr8-Ze-EAD" secondAttribute="centerY" id="S3p-9e-kTT"/>
                                                                     <constraint firstItem="BLx-1J-fth" firstAttribute="centerY" secondItem="Pr8-Ze-EAD" secondAttribute="centerY" id="V1f-7J-egB"/>
+                                                                    <constraint firstItem="C1M-Ge-X31" firstAttribute="leading" secondItem="Pr8-Ze-EAD" secondAttribute="leading" id="Zfq-sH-1L4"/>
                                                                     <constraint firstItem="Ynn-2j-5Jf" firstAttribute="centerY" secondItem="Pr8-Ze-EAD" secondAttribute="centerY" id="aJD-PZ-Lhi"/>
                                                                     <constraint firstItem="Ynn-2j-5Jf" firstAttribute="leading" relation="lessThanOrEqual" secondItem="CAd-bn-SEf" secondAttribute="trailing" constant="-12" id="bRd-EP-3cL"/>
+                                                                    <constraint firstAttribute="trailing" secondItem="C1M-Ge-X31" secondAttribute="trailing" id="kEt-iR-ALd"/>
                                                                     <constraint firstItem="CAd-bn-SEf" firstAttribute="leading" secondItem="BLx-1J-fth" secondAttribute="trailing" constant="21" id="kK8-KY-zZ1"/>
                                                                     <constraint firstItem="BLx-1J-fth" firstAttribute="leading" secondItem="Pr8-Ze-EAD" secondAttribute="leading" constant="22" id="s69-tv-0hn"/>
                                                                 </constraints>
@@ -573,6 +598,16 @@
             </objects>
             <point key="canvasLocation" x="-2164.0909090909095" y="-377.19665271966528"/>
         </scene>
+        <!--NGODonationOverviewViewController-->
+        <scene sceneID="wOl-oM-KEy">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Safety" referencedIdentifier="NGODonationOverviewViewController" id="yXX-KO-4kP" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="249-F3-0YC"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="V9h-YX-JF1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1662" y="35"/>
+        </scene>
         <!--Assigned Pickup View Controller-->
         <scene sceneID="eD1-sW-LZW">
             <objects>
@@ -606,14 +641,15 @@
     </scenes>
     <resources>
         <image name="C" width="260" height="240"/>
+        <image name="Deliverytime" width="23" height="23"/>
         <image name="Logo" width="45" height="45"/>
-        <image name="Screenshot 2025-12-27 at 2.47.42 PM copy" width="230" height="207"/>
         <image name="agreement copy" width="512" height="512"/>
         <image name="bell.fill" catalog="system" width="123" height="128"/>
         <image name="chevron.right" catalog="system" width="97" height="128"/>
         <image name="file" width="512" height="512"/>
         <image name="gift-box" width="512" height="512"/>
         <image name="housefillgrey" width="20" height="20"/>
+        <image name="icons8-world-markets-50" width="50" height="50"/>
         <image name="location (1)" width="512" height="512"/>
         <image name="package" width="512" height="512"/>
         <image name="prizegrey" width="20" height="20"/>

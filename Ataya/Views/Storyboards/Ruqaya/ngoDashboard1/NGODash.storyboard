@@ -101,10 +101,23 @@
                         <rect key="frame" x="0.0" y="124" width="440" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
+                    <connections>
+                        <segue destination="ECt-hO-9mq" kind="relationship" relationship="rootViewController" id="qtG-6I-dIp"/>
+                    </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lGN-Zr-Eyk" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="776" y="-1095"/>
+        </scene>
+        <!--RewardsNgoViewController-->
+        <scene sceneID="VXq-Fj-lMX">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Gamification" referencedIdentifier="RewardsNgoViewController" id="ECt-hO-9mq" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="vgc-af-B7x"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="q2o-Tq-Of4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="995" y="-635"/>
         </scene>
         <!--Routes-->
         <scene sceneID="gDX-XM-3wT">
@@ -606,7 +619,7 @@
     </scenes>
     <resources>
         <image name="C" width="260" height="240"/>
-        <image name="Deliverytime" width="90" height="90"/>
+        <image name="Deliverytime" width="23" height="23"/>
         <image name="Logo" width="45" height="45"/>
         <image name="agreement copy" width="512" height="512"/>
         <image name="bell.fill" catalog="system" width="123" height="128"/>

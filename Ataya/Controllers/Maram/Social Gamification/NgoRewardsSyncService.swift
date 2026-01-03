@@ -16,99 +16,212 @@ final class NgoRewardsSyncService {
     private let db = Firestore.firestore()
 
     // Points rules
-    private let ptsPerSuccessfulPickup = 100
-    private let ptsPerVerifiedFoodQuality = 50
+    private let ptsPerPickup = 100
     private let ptsAfter10PickupsMilestone = 200
-    private let ptsForPhotos = 30
-    private let ptsPerCampaignSupported = 100
+    private let ptsForPhoto = 30
 
-    // what counts as successful
-    private let successfulStatuses: Set<String> = ["completed", "delivered", "success"]
+    // شنو نعتبره Pickup ينحسب؟
+    // عندج status = "Accepted" فـ لازم تكون موجودة
+    private let countedStatuses: Set<String> = [
+        "accepted", "completed", "collected", "delivered", "successful", "success"
+    ]
 
-    func recomputeAndSaveCurrentNgo(completion: ((Error?) -> Void)? = nil) {
+//    func recomputeAndSaveCurrentNgo(completion: ((Error?) -> Void)? = nil) {
+//
+//        guard let uid = Auth.auth().currentUser?.uid else {
+//            completion?(NSError(domain: "Auth", code: 0,
+//                                userInfo: [NSLocalizedDescriptionKey: "Not logged in"]))
+//            return
+//        }
+//
+//        // نجيب user doc عشان لو عندها ngoId مثل "ngo_demo_1"
+//        let userRef = db.collection("users").document(uid)
+//        userRef.getDocument { [weak self] snap, err in
+//            guard let self else { return }
+//            if let err { completion?(err); return }
+//
+//            let data = snap?.data() ?? [:]
+//
+//            // جرّبي أكثر من مفتاح محتمل
+//            var keys: [String] = [uid]
+//            let possibleNgoKey =
+//                (data["ngoId"] as? String) ??
+//                (data["ngoCode"] as? String) ??
+//                (data["ngoPublicId"] as? String) ??
+//                (data["assignedNgoId"] as? String)
+//
+//            if let k = possibleNgoKey, !k.isEmpty, k != uid {
+//                keys.append(k)
+//            }
+//
+//            self.fetchPickups(forNgoKeys: keys) { result in
+//                switch result {
+//                case .failure(let e):
+//                    completion?(e)
+//
+//                case .success(let docs):
+//                    self.computeAndSave(uid: uid, pickupDocs: docs, completion: completion)
+//                }
+//            }
+//        }
+//    }
 
-        guard let uid = Auth.auth().currentUser?.uid else {
-            completion?(NSError(domain: "Auth", code: 0,
-                                userInfo: [NSLocalizedDescriptionKey: "Not logged in"]))
-            return
+    // MARK: - Fetch pickups (يجمع من أكثر key إذا احتجنا)
+
+    private func fetchPickups(forNgoKeys keys: [String],
+                              completion: @escaping (Result<[QueryDocumentSnapshot], Error>) -> Void) {
+
+        let group = DispatchGroup()
+        var allDocsById: [String: QueryDocumentSnapshot] = [:]
+        var firstError: Error?
+
+        for key in keys {
+            group.enter()
+            db.collection("pickups")
+                .whereField("assignedNgoId", isEqualTo: key)
+                .getDocuments { snap, err in
+                    defer { group.leave() }
+
+                    if let err {
+                        firstError = firstError ?? err
+                        return
+                    }
+
+                    for doc in snap?.documents ?? [] {
+                        allDocsById[doc.documentID] = doc
+                    }
+                }
         }
 
-        db.collection("donations")
-            .whereField("ngoId", isEqualTo: uid) // ✅ تأكدي هذا اسم الحقل عندكم
-            .getDocuments { [weak self] snap, err in
-                guard let self else { return }
-
-                if let err {
-                    completion?(err)
-                    return
-                }
-
-                let docs = snap?.documents ?? []
-
-                var successfulPickups = 0
-                var lives = 0
-                var verifiedCount = 0
-                var photoCount = 0
-                var campaignIds = Set<String>()
-
-                for doc in docs {
-                    let d = doc.data()
-
-                    let status = (d["status"] as? String ?? "").lowercased()
-                    let isSuccessful = self.successfulStatuses.contains(status)
-                    if !isSuccessful { continue }
-
-                    successfulPickups += 1
-
-                    // lives
-                    lives += self.intValue(d["livesImpacted"])
-                    if lives == 0 { lives += self.intValue(d["livesTouched"]) }
-                    if lives == 0 { lives += self.intValue(d["servings"]) }
-
-                    // verified
-                    let verified =
-                        (d["verifiedFoodQuality"] as? Bool)
-                        ?? (d["foodQualityVerified"] as? Bool)
-                        ?? false
-                    if verified { verifiedCount += 1 }
-
-                    // photos
-                    if let arr = d["imageUrls"] as? [String], !arr.isEmpty { photoCount += 1 }
-                    else if let arr = d["imageURLs"] as? [String], !arr.isEmpty { photoCount += 1 }
-
-                    // campaigns
-                    if let c = d["campaignId"] as? String, !c.isEmpty { campaignIds.insert(c) }
-                }
-
-                if lives == 0 { lives = successfulPickups }
-
-                var points = 0
-                points += successfulPickups * self.ptsPerSuccessfulPickup
-                points += verifiedCount * self.ptsPerVerifiedFoodQuality
-                points += photoCount * self.ptsForPhotos
-                points += campaignIds.count * self.ptsPerCampaignSupported
-                if successfulPickups >= 10 { points += self.ptsAfter10PickupsMilestone }
-
-                // ✅ نحفظ في rewardsNgo/{uid}
-                let ref = self.db.collection("rewardsNgo").document(uid)
-                ref.setData([
-                    "successfulPickups": successfulPickups,
-                    "livesImpacted": lives,
-                    "points": points,
-                    "campaignsSupported": campaignIds.count,
-                    "updatedAt": FieldValue.serverTimestamp()
-                ], merge: true) { saveErr in
-                    completion?(saveErr)
-                }
-            }
+        group.notify(queue: .main) {
+            if let firstError { completion(.failure(firstError)); return }
+            completion(.success(Array(allDocsById.values)))
+        }
     }
 
-    // ✅ helper هنا بدل NgoRewardsMetrics.intValue
+    // MARK: - Compute + Save users/{uid}.rewardsNgo
+
+    private func computeAndSave(uid: String,
+                                pickupDocs: [QueryDocumentSnapshot],
+                                completion: ((Error?) -> Void)?) {
+
+        var countedPickups = 0
+        var lives = 0
+        var photoCount = 0
+
+        for doc in pickupDocs {
+            let d = doc.data()
+
+            let status = (d["status"] as? String ?? "").lowercased()
+            guard countedStatuses.contains(status) else { continue }
+
+            countedPickups += 1
+
+            // lives from quantity مثل "6 Boxes"
+            lives += estimateLives(from: d)
+
+            // photo: عندج imageName (string)
+            let imageName = (d["imageName"] as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            if !imageName.isEmpty { photoCount += 1 }
+        }
+
+        // fallback لو ما قدرنا نحسب
+        if lives == 0, countedPickups > 0 {
+            lives = countedPickups * 10
+        }
+
+        var points = 0
+        points += countedPickups * ptsPerPickup
+        points += photoCount * ptsForPhoto
+        if countedPickups >= 10 { points += ptsAfter10PickupsMilestone }
+
+        let tier = NgoTier.from(points: points)
+
+        db.collection("users").document(uid).setData([
+            "rewardsNgo": [
+                "successfulPickups": countedPickups,
+                "livesImpacted": lives,
+                "points": points,
+                "tierTitle": tier.title,
+                "updatedAt": FieldValue.serverTimestamp()
+            ]
+        ], merge: true) { err in
+            completion?(err)
+        }
+    }
+
+    // MARK: - lives estimation from quantity string
+
+    /// quantity عندج String مثل: "6 Boxes"
+    private func estimateLives(from d: [String: Any]) -> Int {
+
+        // إذا عندج رقم جاهز (اختياري)
+        let ready = intValue(d["livesImpacted"])
+        if ready > 0 { return ready }
+
+        let qStr = (d["quantity"] as? String ?? "").lowercased()
+        let number = extractFirstNumber(from: qStr)
+
+        // قواعد بسيطة:
+        // Boxes: كل box = 10 lives
+        if qStr.contains("box") || qStr.contains("boxes") {
+            return max(1, number * 10)
+        }
+
+        // pcs / pieces: كل قطعة = 1
+        if qStr.contains("pc") || qStr.contains("pcs") || qStr.contains("piece") {
+            return max(1, number)
+        }
+
+        // إذا بس رقم وما نعرف الوحدة
+        if number > 0 { return max(1, number * 5) } // تقدير: كل رقم = 5
+
+        // fallback
+        return 10
+    }
+
+    private func extractFirstNumber(from s: String) -> Int {
+        // يلقط أول رقم في string مثل "6 boxes"
+        let digits = s.split { !$0.isNumber }
+        if let first = digits.first, let n = Int(first) { return n }
+        return 0
+    }
+
     private func intValue(_ any: Any?) -> Int {
         if let i = any as? Int { return i }
         if let d = any as? Double { return Int(d) }
         if let n = any as? NSNumber { return n.intValue }
         if let s = any as? String { return Int(s.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0 }
         return 0
+    }
+}
+private enum NgoTier {
+    case starter, silver, gold, diamond
+
+    static func from(points: Int) -> NgoTier {
+        switch points {
+        case 0..<500: return .starter
+        case 500..<1500: return .silver
+        case 1500..<2500: return .gold
+        default: return .diamond
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .starter: return "Reliable NGO"
+        case .silver:  return "Silver Partner"
+        case .gold:    return "Gold Partner"
+        case .diamond: return "Diamond Partner"
+        }
+    }
+
+    var medalAssetName: String {
+        switch self {
+        case .starter: return "tier_starter"
+        case .silver:  return "tier_silver"
+        case .gold:    return "tier_gold"
+        case .diamond: return "tier_diamond"
+        }
     }
 }

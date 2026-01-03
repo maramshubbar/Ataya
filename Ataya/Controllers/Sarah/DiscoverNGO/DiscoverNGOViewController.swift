@@ -20,43 +20,41 @@ class DiscoverNGOViewController: UIViewController, UITableViewDataSource, UITabl
             category: "Community Support",
             email: "support@brightimpact.org",
             location: "Riyadh, Saudi Arabia",
-            rating: 5.0,
+            rating: 5,
             impact: 5000,
-            mission: "Our mission is to empower communities by addressing social, educational, and humanitarian challenges through sustainable and inclusive initiatives.",
+            mission: "Our mission is to empower communities in Saudi Arabia by providing essential resources, education, and support, while fostering long-term growth through skills training, youth engagement, and community development",
             activities: [
-                "Food distribution",
-                "Donation drives",
-                "Volunteer programs"
+                "Weekly food distribution to families in need.",
+                "Donation drives including clothes, school supplies, and medical aid.",
+                
             ],
-            imageName: "image1" ,
+            imageName: "Image1" ,
         ),
         NGOdiscover(
             name: "GlobalReach",
             category: "Education & Relief",
             email: "info@globalreach.org",
             location: "Manama, Bahrain",
-            rating: 4.2,
+            rating: 4,
             impact: 2300,
-            mission: "Providing education and emergency relief worldwide.",
+            mission:"Our mission is to provide education and emergency relief worldwide, giving children and families access to learning, safe environments, and immediate humanitarian support.",
             activities: [
                 "School support",
                 "Emergency aid",
-                "Community workshops"
             ],
-            imageName: "image2",
+            imageName: "Image2",
         ),
         NGOdiscover(
             name: "NextGen Giving",
             category: "Children & Youth Support",
             email: "info@nextgen.org",
             location: "Doha, Qatar",
-            rating: 4.5,
+            rating: 5,
             impact: 1200,
-            mission: "Empowering the next generation through education and mentorship.",
+            mission: "Our mission is to empower the next generation by providing access to quality education, mentorship opportunities, and programs that develop leadership and life skills in children and youth.",
             activities: [
                 "Scholarship programs",
                 "Mentorship sessions",
-                "Youth leadership camps"
             ],
             imageName: "Image3",
         ),
@@ -65,13 +63,12 @@ class DiscoverNGOViewController: UIViewController, UITableViewDataSource, UITabl
             category: "Refugee & Poverty Assistance",
             email: "contact@pillarsupport.org",
             location: "Amman, Jordan",
-            rating: 4.9,
+            rating: 5,
             impact: 8000,
             mission: "Supporting displaced families with shelter, food, and healthcare.",
             activities: [
                 "Shelter building",
                 "Medical aid",
-                "Job training"
             ],
             imageName: "Image4",
         ),
@@ -80,31 +77,29 @@ class DiscoverNGOViewController: UIViewController, UITableViewDataSource, UITabl
             category: "Environmental Protection",
             email: "eco@future.org",
             location: "Dubai, UAE",
-            rating: 4.7,
+            rating: 4,
             impact: 3500,
             mission: "Promoting sustainability and protecting natural habitats.",
             activities: [
                 "Tree planting",
-                "Beach cleanups",
                 "Renewable energy workshops"
             ],
-            imageName: "Data 5",
+            imageName: "Image6",
         ),
         
         NGOdiscover(
-            name: "EcoFuture",
+            name: "HelpHands",
             category: "Environmental Protection",
-            email: "eco@future.org",
+            email: "support@HelpHands.org",
             location: "Dubai, UAE",
-            rating: 4.7,
+            rating: 5,
             impact: 3500,
-            mission: "Promoting sustainability and protecting natural habitats.",
+            mission: "To protect the environment by empowering communities through sustainable action, education, and eco-friendly initiatives.",
             activities: [
-                "Tree planting",
-                "Beach cleanups",
-                "Renewable energy workshops"
+                "Tree planting initiatives",
+                "Beach and public area cleanups",
             ],
-            imageName: "Data 2",
+            imageName: "Image7",
         ),
     ]
 

@@ -20,7 +20,7 @@ class ReviewsListViewController: UIViewController, UITableViewDelegate, UITableV
                    for: indexPath
                )
         let review = reviews[indexPath.row]
-             cell.textLabel?.text = "\(review.reviewerName) ⭐️\(review.rating)"
+             cell.textLabel?.text = "\(review.reviewerName) \(review.rating)"
              cell.detailTextLabel?.text = review.comment
 
              return cell

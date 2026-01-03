@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import FirebaseAuth
+import FirebaseFirestore
 
 class DonorProfileViewController: UIViewController {
     
@@ -43,9 +45,9 @@ class DonorProfileViewController: UIViewController {
         darkModeSwitch.isOn = isDarkMode
         
         // Dummy profile data
-        donorName.text = "Zahra Ahmed"
-        ratingValue.text = "4.7"
-        imageProfile.image = UIImage(named: "donor_Image") // Add this image to Assets
+        donorName.text = "Ameena"
+        ratingValue.text = "4"
+        imageProfile.image = UIImage(named: "donorProfile") // Add this image to Assets
         
         //styling
         imageProfile.layer.cornerRadius = imageProfile.frame.width / 2
@@ -66,15 +68,6 @@ class DonorProfileViewController: UIViewController {
             themeToggleImage.image = UIImage(
                 systemName: isDarkMode ? "sun.max.fill" : "moon.fill"
             )
-    }
-
-   
- 
-    @IBAction func testingPopupTapped(_ sender: UIButton) {
-        let vc = FeedbackPopupViewController()
-            vc.modalPresentationStyle = .overFullScreen
-            vc.modalTransitionStyle = .crossDissolve
-            present(vc, animated: true)
     }
     
 }

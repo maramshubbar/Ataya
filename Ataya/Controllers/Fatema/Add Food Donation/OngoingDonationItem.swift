@@ -14,11 +14,10 @@ struct OngoingDonationItem {
     let id: String
     let title: String
     let ngoName: String
-    let statusText: String          // النص اللي يظهر بالـ UI
-    let imageUrl: String?           // أول صورة من Cloudinary (اختياري)
+    let statusText: String    
+    let imageUrl: String?
     let updatedAt: Date?
 
-    // ✅ هذا اللي كان ناقص عندج
     static func fromFirestore(docId: String, data: [String: Any]) -> OngoingDonationItem {
 
         let id = (data["id"] as? String) ?? docId

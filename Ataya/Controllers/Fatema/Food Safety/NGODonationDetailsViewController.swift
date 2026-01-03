@@ -10,7 +10,7 @@ import FirebaseFirestore
 
 final class NGODonationDetailsViewController: UIViewController {
 
-    // ✅ يجي من Overview (docId)
+
     var donationId: String?
 
     private let db = Firestore.firestore()
@@ -121,11 +121,10 @@ final class NGODonationDetailsViewController: UIViewController {
 
     private var currentStatus: DonationStatus = .pending
 
-    // ✅ يخلي زر proceed يختفي بدون يترك مساحة (اختياري)
     private var proceedHeightConstraint: NSLayoutConstraint?
     private var proceedOriginalHeight: CGFloat = 0
 
-    // ✅ caching عشان لا يسوي fetch كل مرة
+
     private var lastDonorUid: String?
     private var lastPickupKeySig: String?
     private var lastReportKeySig: String?
@@ -306,21 +305,20 @@ final class NGODonationDetailsViewController: UIViewController {
                     self.locationTypeLabel?.text = locationTypeText
                 }
 
-                // ✅ مفاتيح البحث (أحيانًا collections ثانية تستخدم donationCode بدل docId)
+
                 let keys = [docId, donationCode].filter { !$0.isEmpty }
 
-                // ✅ fetch donor from users/{donorId} (يحسّن البيانات إذا موجودة)
+                // ✅ fetch donor from users/{donorId}
                 self.fetchDonorFromUsersIfNeeded(uid: donorUid, fallbackPublicId: donorPublicId)
 
                 // ✅ fetch pickup from pickups
                 self.fetchPickupIfNeeded(keys: keys)
 
-                // ✅ fetch inspection/report (reports) عشان يعبي Collection Info + Notes
+                // ✅ fetch inspection/report (reports) Notes
                 self.fetchLatestNgoReportIfNeeded(keys: keys, currentStatus: status)
             }
     }
 
-    // ✅ هنا “المود” حق الثلاث حالات
     private func applyMode(_ status: DonationStatus) {
         currentStatus = status
 
@@ -343,7 +341,7 @@ final class NGODonationDetailsViewController: UIViewController {
         }
     }
 
-    // ✅ Proceed -> Inspect (Push ONLY) + ممنوع إذا مو Pending
+    // ✅ Proceed -> Inspect (Push ONLY)
     @IBAction func proceedToInspectionTapped(_ sender: UIButton) {
 
         guard currentStatus.canProceedToInspection else {
@@ -387,7 +385,6 @@ final class NGODonationDetailsViewController: UIViewController {
             }
 
             guard let u = snap?.data() else {
-                // إذا users ناقص، خلاص خليه على بيانات donation
                 return
             }
 

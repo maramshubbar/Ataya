@@ -24,8 +24,8 @@ final class DonationCell: UITableViewCell {
     
     @IBOutlet weak var detailsButton: UIButton!
     
-    // ✅ لازم تكون var عشان نستخدمها من الـ VC
-       var onTapDetails: (() -> Void)?
+
+    var onTapDetails: (() -> Void)?
 
        private let atayaYellow  = UIColor(red: 0xF7/255, green: 0xD4/255, blue: 0x4C/255, alpha: 1)
        private let completedBg  = UIColor(red: 0xD2/255, green: 0xF2/255, blue: 0xC1/255, alpha: 1)
@@ -102,7 +102,7 @@ final class DonationCell: UITableViewCell {
            detailsButton.layer.masksToBounds = true
        }
 
-       // ✅ configure بدون closure (عشان ما يطلع Extra trailing closure)
+
     func configure(with item: DonationHistoryItem) {
         titleLabel.text = item.title
         ngoLabel.text = "NGO: \(item.ngoName)"

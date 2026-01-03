@@ -8,6 +8,16 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--HelpSupportViewController-->
+        <scene sceneID="N0H-6L-UIj">
+            <objects>
+                <viewControllerPlaceholder storyboardName="helpSupport" referencedIdentifier="HelpSupportViewController" id="bas-E7-5pJ" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="MtU-vN-ynd"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="KgP-1j-hDg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1512" y="1124"/>
+        </scene>
         <!--Profile View Controller-->
         <scene sceneID="olO-hg-FLr">
             <objects>
@@ -157,6 +167,9 @@
                                             </backgroundConfiguration>
                                             <color key="baseBackgroundColor" systemColor="secondarySystemGroupedBackgroundColor"/>
                                         </buttonConfiguration>
+                                        <connections>
+                                            <segue destination="bas-E7-5pJ" kind="show" id="L5X-E8-oTh"/>
+                                        </connections>
                                     </button>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="questionmark.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="LaC-rI-bpm">
                                         <rect key="frame" x="16" y="17.666666666666657" width="21" height="22"/>
@@ -446,7 +459,7 @@
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="secondaryLabelColor">
-            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="secondarySystemGroupedBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

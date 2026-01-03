@@ -30,8 +30,8 @@ final class DonorDashboardViewController: UIViewController,
     private let advocacyStoryboardName = "DonorDashboard"
     private let advocacyStoryboardID   = "AdvocacyViewController"
     
-    private let discoverStoryboardName = "DiscoverNGO"
-    private let discoverStoryboardID   = "DiscoverNGOViewController"
+    private let discoverStoryboardName = "DiscoverNGOs"
+    private let discoverStoryboardID   = "DiscoverNgoVC"
 
     private let recurringStoryboardName = "Recurring"              // عدّليه إذا اسم الستوريبورد غير
     private let recurringStoryboardID   = "RecurringViewController" // عدّليه لِـStoryboard ID الحقيقي
@@ -162,20 +162,21 @@ final class DonorDashboardViewController: UIViewController,
     }
     
     private func setupQuickToolsTaps() {
-        // لازم عشان الستاك يستقبل لمس
         recurringStackView.isUserInteractionEnabled = true
         discoverStackView.isUserInteractionEnabled = true
         historyStackView.isUserInteractionEnabled = true
-
-        let recurringTap = UITapGestureRecognizer(target: self, action: #selector(recurringTapped))
-        recurringStackView.addGestureRecognizer(recurringTap)
-
+     
+        recurringStackView.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(recurringTapped))
+        )
+     
         discoverStackView.addGestureRecognizer(
-             UITapGestureRecognizer(target: self, action: #selector(openDiscoverNGOs))
-         )
-
-        let historyTap = UITapGestureRecognizer(target: self, action: #selector(historyTapped))
-        historyStackView.addGestureRecognizer(historyTap)
+            UITapGestureRecognizer(target: self, action: #selector(discoverTapped))
+        )
+     
+        historyStackView.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(historyTapped))
+        )
     }
 
     @objc private func recurringTapped() {
@@ -185,8 +186,14 @@ final class DonorDashboardViewController: UIViewController,
     
 
     @objc private func historyTapped() {
-        // إذا عندج Donation History
-        // pushVC(storyboardName: "DonHist", storyboardID: "DonationHistoryViewController")
+        pushVC(storyboardName: "DonationHist", storyboardID: "DonationHistoryViewController")
+    }
+    
+    @objc private func discoverTapped() {
+        pushVC(
+            storyboardName: discoverStoryboardName,
+            storyboardID: discoverStoryboardID
+        )
     }
 
 

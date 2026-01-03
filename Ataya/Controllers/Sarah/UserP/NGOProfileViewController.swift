@@ -226,6 +226,8 @@ extension NGOProfileViewController: UIImagePickerControllerDelegate, UINavigatio
     
     
     
+    
+    
 }
 
 

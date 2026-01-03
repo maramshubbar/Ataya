@@ -5,6 +5,7 @@
 //  Created by BP-36-224-15 on 02/01/2026.
 //
 
+// AuthGate.swift
 import FirebaseAuth
 
 enum AuthGate {

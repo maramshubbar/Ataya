@@ -31,67 +31,68 @@ class ReportReviewViewController: UIViewController {
     @IBOutlet weak var issueButton: UIButton!
     @IBOutlet weak var markResolvedButton: UIButton!
     
-    var reportId: String?   // Must be set before presenting this VC
-        var report: SupportReport?
-        let db = Firestore.firestore()
+ /*var reportId: String? */
+//        var report: SupportReport?
+//        let db = Firestore.firestore()
 
+    var report: SupportReport?
+    var reportId: String?
         override func viewDidLoad() {
             super.viewDidLoad()
             setupUI()
-            fetchReport()
+//            fetchReport()
+            loadDummyReport()
         }
 
-    private func fetchReport() {
-            guard let reportId = reportId else {
-                print("Error: reportId not set")
-                return
-            }
-
-            db.collection("supportTickets").document(reportId).getDocument { snapshot, error in
-                if let error = error {
-                    print("Error fetching report: \(error.localizedDescription)")
-                    return
-                }
-
-                guard let data = snapshot?.data() else {
-                    print("No data found for reportId: \(reportId)")
-                    return
-                }
-
-                // Map Firestore data to Report model
-                let report = SupportReport(id: reportId, data: data)
-                self.report = report
-                self.populateUI(with: report)
-            }
-        }
+//    private func fetchReport() {
+//            guard let reportId = reportId else {
+//                print("Error: reportId not set")
+//                return
+//            }
+//
+//            db.collection("supportTickets").document(reportId).getDocument { snapshot, error in
+//                if let error = error {
+//                    print("Error fetching report: \(error.localizedDescription)")
+//                    return
+//                }
+//
+//                guard let data = snapshot?.data() else {
+//                    print("No data found for reportId: \(reportId)")
+//                    return
+//                }
+//
+//                // Map Firestore data to Report model
+//                let report = SupportReport(id: reportId, data: data)
+//                self.report = report
+//                self.populateUI(with: report)
+//            }
+//        }
     
-    // MARK: - Populate UI
     private func populateUI(with report: SupportReport) {
+           reportTitleValue.text = report.title
+           reportIdValue.text = report.id
+           reportTypeValue.text = report.type
+           dateValue.text = report.date
+           reportDetailsTextView.text = report.details
+           statusLabel.text = report.status
+           feedbackTextView.text = report.feedback.isEmpty ? "No feedback yet" : report.feedback
 
-        reportTitleValue.text = report.title
-        reportIdValue.text = report.id
-        reportTypeValue.text = report.type
-        dateValue.text = report.date
-        reportDetailsTextView.text = report.details
-        statusLabel.text = report.status
-        feedbackTextView.text = report.feedback.isEmpty ? "No feedback yet" : report.feedback
+           switch report.status {
+           case "Resolved":
+               feedbackTextView.isEditable = false
+               suspendButton.isHidden = true
+               blockButton.isHidden = true
+               issueButton.isHidden = true
+               markResolvedButton.isHidden = true
+               statusView.backgroundColor = UIColor.systemGreen
 
-        switch report.status {
-        case "Resolved":
-            feedbackTextView.isEditable = false
-            suspendButton.isHidden = true
-            blockButton.isHidden = true
-            issueButton.isHidden = true
-            markResolvedButton.isHidden = true
-            statusView.backgroundColor = UIColor.systemGreen
+           case "Pending":
+               statusView.backgroundColor = UIColor.systemYellow
 
-        case "Pending":
-            statusView.backgroundColor = UIColor.systemYellow
-
-        default:
-            statusView.backgroundColor = UIColor.systemGray
-        }
-    }
+           default:
+               statusView.backgroundColor = UIColor.systemGray
+           }
+       }
 
     
     
@@ -118,85 +119,69 @@ class ReportReviewViewController: UIViewController {
     }
 
    
-//    private func loadDummyReport() {
-//        let dummy = Report(
-//            id: "RPT-001",
-//            title: "Damaged Food Donation",
-//            type: "Donation Issue",
-//            date: "2025-12-27",
-//            details: "The package collected during the recent donation pickup was damaged and unusable.", status: "Pending",
-//            feedback: "" )
-//        
-//        // Fill UI
-//        reportTitleValue.text = dummy.title
-//        reportIdValue.text = dummy.id
-//        reportTypeValue.text = dummy.type
-//        dateValue.text = dummy.date
-//        reportDetailsTextView.text = dummy.details
-//        statusLabel.text = dummy.status
-//        feedbackTextView.text = dummy.feedback
-//
-//    }
+    // MARK: - Dummy Data
+       private func loadDummyReport() {
+           let dummy = SupportReport(
+                     id: "RPT-001",
+                     title: "Damaged Food Donation",
+                     type: "Donation Issue",
+                     date: "2025-12-27",
+                     details: "The package collected during the recent donation pickup was damaged and unusable.",
+                     status: "Pending",
+                     feedback: "",
+                     userId: "USR-001"
+                 )
+                 self.report = dummy
+                 populateUI(with: dummy)
+       }
     
     
     // MARK: - Firestore Updates
-    func saveFeedback(forReportId reportId: String, feedback: String) {
-        db.collection("supportTickets").document(reportId).updateData([
-            "adminReply": feedback,
-            "status": "Resolved", "updatedAt": FieldValue.serverTimestamp() ]) {
-                error in if let error = error {
-                    print("Error saving feedback: \(error.localizedDescription)")
-                } else {
-                    print("Feedback saved successfully for report \(reportId)")
-                }
-            }
-    }
-    
-    func updateUserStatus(userId: String, status: String) {
-        db.collection("users").document(userId).updateData([
-                   "accountStatus": status,
-                   "updatedAt": FieldValue.serverTimestamp()
-               ]) { error in
-                   if let error = error {
-                       print("Error updating user status: \(error.localizedDescription)")
-                   } else {
-                       print("User status updated to \(status)")
-                   }
-               }
-     }
+//    func saveFeedback(forReportId reportId: String, feedback: String) {
+//        db.collection("supportTickets").document(reportId).updateData([
+//            "adminReply": feedback,
+//            "status": "Resolved", "updatedAt": FieldValue.serverTimestamp() ]) {
+//                error in if let error = error {
+//                    print("Error saving feedback: \(error.localizedDescription)")
+//                } else {
+//                    print("Feedback saved successfully for report \(reportId)")
+//                }
+//            }
+//    }
+//    
+//    func updateUserStatus(userId: String, status: String) {
+//        db.collection("users").document(userId).updateData([
+//                   "accountStatus": status,
+//                   "updatedAt": FieldValue.serverTimestamp()
+//               ]) { error in
+//                   if let error = error {
+//                       print("Error updating user status: \(error.localizedDescription)")
+//                   } else {
+//                       print("User status updated to \(status)")
+//                   }
+//               }
+//     }
     @IBAction func suspendAccountTapped(_ sender: UIButton!) {
-        guard let userId = report?.userId else { return }
-             updateUserStatus(userId: userId, status: "Suspended")
-             showPopup(title: "Account Suspended Successfully!", description: "This account is now suspended and access has been restricted.")
+        guard let _ = report else { return }
+               showPopup(title: "Account Suspended!", description: "This account is now suspended.")
     }
     
     @IBAction func blockPermanentlyTapped(_ sender: UIButton) {
-        guard let userId = report?.userId else { return }
-        updateUserStatus(userId: userId, status: "Blocked")
-        showPopup(title: "Account Blocked Successfully!", description: "This account is now blocked and access has been restricted.")
+        showPopup(title: "Account Blocked!", description: "This account is now blocked permanently.")
     }
     
     @IBAction func issueWarningTapped(_ sender: UIButton!) {
-        showPopup(title: "Warning Issued!", description: "The warning has been issued successfully.")
-           
+        showPopup(title: "Warning Issued!", description: "A warning has been issued successfully.")
     }
     
-    
     @IBAction func markResolvedTapped(_ sender: UIButton) {
-        guard let report = report else { return }
-          let feedbackMessage = feedbackTextView.text ?? ""
-
-          // Update UI immediately
-          statusLabel.text = "Resolved"
-          statusView.backgroundColor = UIColor(hex: "D2F2C1")
+        statusLabel.text = "Resolved"
+          statusView.backgroundColor = UIColor.systemGreen
           feedbackTextView.isEditable = false
           suspendButton.isHidden = true
           blockButton.isHidden = true
           issueButton.isHidden = true
           markResolvedButton.isHidden = true
-
-          // Save feedback & status to Firestore
-          saveFeedback(forReportId: report.id, feedback: feedbackMessage)
 
           showPopup(title: "Report Resolved!", description: "This report has been marked as resolved.")
     }

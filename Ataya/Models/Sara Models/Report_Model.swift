@@ -1,5 +1,4 @@
 import Foundation
-import FirebaseFirestore
 
 struct SupportReport {
     let id: String
@@ -11,23 +10,22 @@ struct SupportReport {
     var feedback: String
     let userId: String
 
-    init(id: String, data: [String: Any]) {
+    // Dummy initializer only
+    init(id: String,
+         title: String,
+         type: String,
+         date: String,
+         details: String,
+         status: String = "Pending",
+         feedback: String = "",
+         userId: String) {
         self.id = id
-        self.title = data["ticketLabel"] as? String ?? "No Title"
-        self.type = data["category"] as? String ?? "No Type"
-
-        if let timestamp = data["createdAt"] as? Timestamp {
-            let formatter = DateFormatter()
-            formatter.dateStyle = .medium
-            formatter.timeStyle = .short
-            self.date = formatter.string(from: timestamp.dateValue())
-        } else {
-            self.date = "No Date"
-        }
-
-        self.details = data["userIssue"] as? String ?? ""
-        self.status = data["status"] as? String ?? "Pending"
-        self.feedback = data["adminReply"] as? String ?? ""
-        self.userId = data["userId"] as? String ?? ""
+        self.title = title
+        self.type = type
+        self.date = date
+        self.details = details
+        self.status = status
+        self.feedback = feedback
+        self.userId = userId
     }
 }

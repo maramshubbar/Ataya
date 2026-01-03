@@ -243,10 +243,10 @@
                                 <rect key="frame" x="0.0" y="224" width="440" height="615"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Wcx-mQ-0wX" userLabel="contentView">
-                                        <rect key="frame" x="0.0" y="0.0" width="440" height="1102"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="440" height="1095.6666666666667"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="MFu-E0-EmL" userLabel="mainStack">
-                                                <rect key="frame" x="16" y="16" width="408" height="1062"/>
+                                                <rect key="frame" x="16" y="16" width="408" height="1055.6666666666667"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Ready to make a difference today?" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R43-Yp-3od" userLabel="subTitle">
                                                         <rect key="frame" x="0.0" y="0.0" width="408" height="20.333333333333332"/>
@@ -255,16 +255,18 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AAg-tJ-eEE">
-                                                        <rect key="frame" x="0.0" y="35.333333333333314" width="408" height="38.333333333333343"/>
+                                                        <rect key="frame" x="0.0" y="35.333333333333314" width="408" height="32"/>
                                                         <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <state key="normal" title="Button"/>
-                                                        <buttonConfiguration key="configuration" style="plain" title="See All"/>
+                                                        <buttonConfiguration key="configuration" style="plain" title="See All">
+                                                            <fontDescription key="titleFontDescription" type="system" pointSize="15"/>
+                                                        </buttonConfiguration>
                                                         <connections>
                                                             <segue destination="mVJ-Bl-dWy" kind="show" identifier="DonorCampaignsListViewController" id="FgL-ee-Jrn"/>
                                                         </connections>
                                                     </button>
                                                     <collectionView multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="5uq-M6-2cJ">
-                                                        <rect key="frame" x="0.0" y="88.666666666666686" width="408" height="370"/>
+                                                        <rect key="frame" x="0.0" y="82.333333333333314" width="408" height="370"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="370" id="xIa-Kk-6WF"/>
@@ -278,13 +280,13 @@
                                                         <cells/>
                                                     </collectionView>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Quick Tools" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7BZ-wo-hb7">
-                                                        <rect key="frame" x="0.0" y="473.66666666666663" width="408" height="21.666666666666686"/>
+                                                        <rect key="frame" x="0.0" y="467.33333333333337" width="408" height="21.666666666666686"/>
                                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="9Ld-Rx-40F">
-                                                        <rect key="frame" x="0.0" y="510.33333333333337" width="408" height="80"/>
+                                                        <rect key="frame" x="0.0" y="504" width="408" height="80"/>
                                                         <subviews>
                                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="IdX-Ve-f3H" userLabel="recurring stack view">
                                                                 <rect key="frame" x="0.0" y="0.66666666666662877" width="136" height="79"/>
@@ -356,13 +358,13 @@ History</string>
                                                         </constraints>
                                                     </stackView>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Ongoing Donation" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b8v-wd-hqM">
-                                                        <rect key="frame" x="0.0" y="605.33333333333337" width="408" height="21.666666666666629"/>
+                                                        <rect key="frame" x="0.0" y="599" width="408" height="21.666666666666629"/>
                                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="zUI-fq-8Gn">
-                                                        <rect key="frame" x="0.0" y="642" width="408" height="420"/>
+                                                        <rect key="frame" x="0.0" y="635.66666666666663" width="408" height="419.99999999999989"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="420" id="RgV-6d-WAD"/>

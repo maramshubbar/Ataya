@@ -165,7 +165,6 @@ final class DonorTabBarController: UITabBarController, UITabBarControllerDelegat
         present(nav, animated: true)
     }
 
-    // ✅ هذا اللي كان يعطي warning عندج — لازم @objc
     @objc func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
         isShowingDonateSheet = false
         donateNavController = nil

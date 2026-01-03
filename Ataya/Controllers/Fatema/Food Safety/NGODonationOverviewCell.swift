@@ -29,7 +29,7 @@ final class NGODonationOverviewCell: UITableViewCell {
 
     private var currentImageUrl: String?
     private var imageTask: URLSessionDataTask?
-    private var lastStatusKey: String?   // ✅ عشان نعمل animation فقط لو تغير
+    private var lastStatusKey: String?
 
     // ✅ badge colors
     private let pendingBg  = UIColor(red: 0xFF/255, green: 0xFB/255, blue: 0xCC/255, alpha: 1) // #FFFBCC
@@ -108,7 +108,6 @@ final class NGODonationOverviewCell: UITableViewCell {
     private func applyStatus(_ status: String, animated: Bool) {
         let key = status.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
 
-        // ✅ display text (تبين "Approved" حتى لو stored "successful")
         let displayText: String
         let bg: UIColor
         let textColor: UIColor
@@ -135,7 +134,6 @@ final class NGODonationOverviewCell: UITableViewCell {
             textColor = .black
         }
 
-        // ✅ إذا ما تغير، لا تسوي animation
         let shouldAnimate = animated && (lastStatusKey != nil) && (lastStatusKey != key)
         lastStatusKey = key
 

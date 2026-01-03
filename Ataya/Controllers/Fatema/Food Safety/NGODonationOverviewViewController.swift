@@ -20,7 +20,6 @@ final class NGODonationOverviewViewController: UIViewController {
     private var allItems: [DonationItem] = []
     private var shownItems: [DonationItem] = []
 
-    // ✅ Storyboard IDs (لازم نفسهم بالـ storyboard)
     private enum DetailsVCId {
         static let pending  = "PendingDonationDetailsVC"
         static let approved = "ApprovedDonationDetailsVC"
@@ -121,7 +120,7 @@ final class NGODonationOverviewViewController: UIViewController {
                     let title = clean.isEmpty ? donationId : "\(clean) (\(donationId))"
 
                     return DonationItem(
-                        docId: doc.documentID,          // ✅ هذا docId اللي نمرره للـ details
+                        docId: doc.documentID,
                         title: title,
                         donorText: donorText,
                         ngoText: "NGO (ID: —)",
@@ -166,7 +165,6 @@ final class NGODonationOverviewViewController: UIViewController {
         tableView.reloadData()
     }
 
-    // ✅ مود خيار ٢: افتح تفاصيل حسب الحالة (3 scenes)
     private func openDetails(item: DonationItem) {
 
         let vcId: String
@@ -203,7 +201,6 @@ extension NGODonationOverviewViewController: UITableViewDataSource, UITableViewD
         let item = shownItems[indexPath.row]
         cell.configure(item: item)
 
-        // ✅ زر View Details داخل السيل
         cell.onViewDetailsTapped = { [weak self] in
             self?.openDetails(item: item)
         }

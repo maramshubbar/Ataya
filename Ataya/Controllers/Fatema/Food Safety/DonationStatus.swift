@@ -31,11 +31,10 @@ extension DonationItem {
 
         let img = (data["imageUrl"] as? String) ?? ""
 
-        // ✅ IMPORTANT: this matches YOUR DonationItem fields exactly
         self.docId = doc.documentID
         self.title = "\(itemName) (\(code))"
         self.donorText = "\(donorName) (ID: \(donorId))"
-        self.ngoText = ""                 // إذا عندج ngoName خزنيه وغيّريها
+        self.ngoText = ""
         self.locationText = city
         self.dateText = f.string(from: created)
         self.imageUrl = img
@@ -43,7 +42,6 @@ extension DonationItem {
     }
 }
 
-// ✅ Keep this if you need it for details/rejected view
 struct FoodInspection {
     let decision: String   // "none" / "accept" / "reject"
     let reason: String

@@ -33,8 +33,8 @@ final class DonorDashboardViewController: UIViewController,
     private let discoverStoryboardName = "DiscoverNGOs"
     private let discoverStoryboardID   = "DiscoverNgoVC"
 
-    private let recurringStoryboardName = "Recurring"              // عدّليه إذا اسم الستوريبورد غير
-    private let recurringStoryboardID   = "RecurringViewController" // عدّليه لِـStoryboard ID الحقيقي
+    private let recurringStoryboardName = "Recurring"
+    private let recurringStoryboardID   = "RecurringViewController"
 
     // Firestore
     private let db = Firestore.firestore()
@@ -58,8 +58,8 @@ final class DonorDashboardViewController: UIViewController,
 
     @IBOutlet weak var campaignsCollectionView: UICollectionView!
     
-    private let historyStoryboardName = "DonationHist" // عدليها لو اسم الستوريبورد غير
-    private let historyStoryboardID   = "DonationHistoryViewController" // لازم نفس Storyboard ID بالضبط
+    private let historyStoryboardName = "DonationHist"
+    private let historyStoryboardID   = "DonationHistoryViewController"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -124,7 +124,6 @@ final class DonorDashboardViewController: UIViewController,
         scrollView.setContentOffset(.zero, animated: false)
     }
 
-    // ✅ اربطي زر الـ + / Donate Button بهذي الـIBAction
     @IBAction func openDonateSheetTapped(_ sender: Any) {
         openDonateSheet()
     }
@@ -219,7 +218,7 @@ final class DonorDashboardViewController: UIViewController,
     }
     
     private func setupQuickToolTaps() {
-        // مهم: StackView أحيانًا ما تستقبل لمس إذا عناصرها بس labels/images
+
         recurringStackView.isUserInteractionEnabled = true
         discoverStackView.isUserInteractionEnabled = true
         historyStackView.isUserInteractionEnabled = true
@@ -244,7 +243,7 @@ final class DonorDashboardViewController: UIViewController,
     }
 
     @objc private func openRecurring() {
-        // عدليهم حسب صفحتكم (إذا عندكم ستوريبورد/ID حق recurring)
+
         showNotReady("Recurring Donation page not linked yet")
     }
 
@@ -314,7 +313,6 @@ final class DonorDashboardViewController: UIViewController,
                 for d in docs {
                     let data = d.data()
 
-                    // ✅ أهم سطر: الهوم يعرض بس اللي showOnHome = true
                     let showOnHome = (data["showOnHome"] as? Bool) ?? false
                     guard showOnHome else { continue }
 

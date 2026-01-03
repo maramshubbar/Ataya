@@ -222,7 +222,7 @@ final class RecurringDonationDetailsViewController: UIViewController {
             unit != unitsPlaceholder &&
             !qty.isEmpty
 
-        nextButton.isEnabled = true
+        nextButton.isEnabled = ok
         nextButton.alpha = ok ? 1.0 : 0.6
     }
 
@@ -280,7 +280,7 @@ final class RecurringDonationDetailsViewController: UIViewController {
 
     // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard segue.identifier == "goToSummary" else { return }
+        guard segue.identifier == "goToPickupLocation" else { return }
 
         // Example:
         // let vc = segue.destination as! RecurringDonationSummaryViewController

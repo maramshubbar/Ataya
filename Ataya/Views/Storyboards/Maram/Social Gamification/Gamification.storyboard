@@ -505,10 +505,10 @@
                                 </segments>
                             </segmentedControl>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FqS-NI-JtB" userLabel="vwCountryCard">
-                                <rect key="frame" x="12" y="213" width="369" height="900"/>
+                                <rect key="frame" x="12" y="213" width="369" height="624"/>
                                 <subviews>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="JjZ-N9-BFo" userLabel="tblList">
-                                        <rect key="frame" x="12" y="12" width="345" height="813.33333333333337"/>
+                                        <rect key="frame" x="12" y="12" width="345" height="564"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <prototypes>
                                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ListCell" rowHeight="44" id="p1l-Jc-qxJ" customClass="SpacedListCell" customModule="Ataya" customModuleProvider="target">
@@ -575,7 +575,6 @@
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="900" id="CfI-Gg-Ge3"/>
                                     <constraint firstAttribute="trailing" secondItem="JjZ-N9-BFo" secondAttribute="trailing" constant="12" id="EEn-Dr-Tww"/>
                                     <constraint firstAttribute="height" secondItem="JjZ-N9-BFo" secondAttribute="height" multiplier="1.10657" id="PdL-t0-J3c"/>
                                     <constraint firstItem="JjZ-N9-BFo" firstAttribute="leading" secondItem="FqS-NI-JtB" secondAttribute="leading" constant="12" id="nEe-gH-TLd"/>
@@ -588,6 +587,7 @@
                         <constraints>
                             <constraint firstItem="pFa-Al-XJH" firstAttribute="trailing" secondItem="FqS-NI-JtB" secondAttribute="trailing" constant="12" id="AQ3-Mw-uWd"/>
                             <constraint firstItem="vsB-fQ-95s" firstAttribute="top" secondItem="pFa-Al-XJH" secondAttribute="top" constant="8" id="AaU-tg-ntA"/>
+                            <constraint firstAttribute="bottom" secondItem="FqS-NI-JtB" secondAttribute="bottom" constant="15" id="Srq-B8-Ety"/>
                             <constraint firstItem="FqS-NI-JtB" firstAttribute="leading" secondItem="pFa-Al-XJH" secondAttribute="leading" constant="12" id="YnC-FU-x6I"/>
                             <constraint firstItem="vsB-fQ-95s" firstAttribute="centerX" secondItem="pFa-Al-XJH" secondAttribute="centerX" id="enT-N0-ggP"/>
                             <constraint firstItem="FqS-NI-JtB" firstAttribute="top" secondItem="vsB-fQ-95s" secondAttribute="bottom" constant="12" id="gH4-hk-KOA"/>

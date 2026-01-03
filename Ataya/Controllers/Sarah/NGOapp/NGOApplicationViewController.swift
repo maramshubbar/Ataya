@@ -26,16 +26,14 @@ class NGOApplicationViewController: UIViewController {
     
     //var applicationStatus: String = "Pending"
     
-    //properties
-    let db = Firestore.firestore()
-    var applicationId : String?
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupUI()
-        fetchApplication()
-        //loadDummyApplication()
-    }
+    var application: NGOApplication?
+
+        // MARK: - Lifecycle
+        override func viewDidLoad() {
+            super.viewDidLoad()
+            setupUI()
+            loadDummyApplication()
+        }
 
     //ui setup
     private func setupUI() {
@@ -64,23 +62,28 @@ override func viewDidLayoutSubviews() {
 //    notesTextView.textContainerInset = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
 }
     
-    //fetch backend data
-    private func fetchApplication() {
-        db.collection("ngo_applications")
-                 .document("N-1") //dynamic
-                 .getDocument { snapshot, error in
+    private func loadDummyApplication() {
+            let dummyDocuments = [
+                NGODocument(name: "Personal_Identification.pdf", url: ""),
+                NGODocument(name: "Training_Certificate.docx", url: "")
+            ]
 
-                     if let error = error {
-                         print("Fetch error:", error.localizedDescription)
-                         return
-                     }
+            let dummyApp = NGOApplication(
+                uid: "N-001",
+                name: "HealBridge",
+                type: "Medical & Psychological Support",
+                email: "support@healbridge.org",
+                phone: "+973 33490231",
+                notes: "",
+                approveStatus: "pending",
+                createdAt: Date(),
+                documents: dummyDocuments,
+                profile: "Image3"
+            )
 
-                     guard let snapshot,
-                           let application = NGOApplication(snapshot: snapshot) else { return }
-
-                     self.bind(application)
-                 }
-      }
+            self.application = dummyApp
+            bind(dummyApp)
+        }
     
     //bind data to ui
     private func bind(_ app: NGOApplication) {
@@ -99,6 +102,10 @@ override func viewDidLayoutSubviews() {
 
            loadDocuments(app.documents)
 
+        if let image = UIImage(named: app.profile) {
+            self.profile.image = image
+        }
+
         if let url = URL(string: app.profile) {
             // Simple async image loading
             DispatchQueue.global().async {
@@ -115,99 +122,19 @@ override func viewDidLayoutSubviews() {
                lockUI()
            }
        }
-
-    
-    
-//// Dummy Data Loader
-//private func loadDummyApplication() {
-//    nameValue.text = "HealBridge"
-//    typeValue.text = "Medical & Psychological Support"
-//    emailValue.text = "support@healbridge.org"
-//    phoneValue.text = "+973 33490231" 
-//    dateValue.text = "Oct 10, 2025"
-//    statusValue.text = "Pending"
-//    profile.image = UIImage(named: "ngo_profile")
-//    notesTextView.text = "Add note"
-//    addDummyDocuments()
-//}
-//
-//    //Documents
-//    private func addDummyDocuments() {
-//        let documents = [
-//            ("Personal_Identification.pdf", "pdf"),
-//            ("Training_Certificate.docx", "doc")
-//        ]
-//        
-//        for (name, type) in documents {
-//            // Icon
-//            let icon = UIImageView()
-//            icon.image = UIImage(named: type == "pdf" ? "icon_pdf" : "icon_word")
-//            icon.contentMode = .scaleAspectFit
-//            icon.translatesAutoresizingMaskIntoConstraints = false
-//            icon.widthAnchor.constraint(equalToConstant: 24).isActive = true
-//            icon.heightAnchor.constraint(equalToConstant: 24).isActive = true
-//            
-//            // Label
-//            let label = UILabel()
-//            label.text = name
-//            label.textColor = .label
-//            label.font = UIFont.systemFont(ofSize: 16)
-//            label.numberOfLines = 1
-//            
-//            // Horizontal row
-//            let row = UIStackView(arrangedSubviews: [icon, label])
-//            row.axis = .horizontal
-//            row.spacing = 8
-//            row.alignment = .center
-//            row.distribution = .fill
-//            row.translatesAutoresizingMaskIntoConstraints = false
-//            
-//            // Container view for height + border
-//            let container = UIView()
-//            container.addSubview(row)
-//            container.translatesAutoresizingMaskIntoConstraints = false
-//            container.layer.borderColor = UIColor.systemGray.cgColor
-//            container.layer.borderWidth = 1.0
-//            container.layer.cornerRadius = 8
-//            container.backgroundColor = .systemBackground
-//            
-//            // Constraints for row inside container
-//            NSLayoutConstraint.activate([
-//                row.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 12),
-//                row.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -12),
-//                row.topAnchor.constraint(equalTo: container.topAnchor, constant: 8),
-//                row.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: 8),
-//                container.heightAnchor.constraint(equalToConstant: 48) // fixed height
-//            ])
-//            
-//            // Tap-to-download
-//            container.isUserInteractionEnabled = true
-//            let tap = UITapGestureRecognizer(target: self, action: #selector(handleDocumentTap(_:)))
-//            container.addGestureRecognizer(tap)
-//            container.accessibilityLabel = name
-//            
-//            docStackView.addArrangedSubview(container)
-//        }
-//    }
-
-    
-//documents
+ 
     private func loadDocuments(_ documents: [NGODocument]) {
             docStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
             for doc in documents {
-                let iconName = doc.name.hasSuffix(".pdf") ? "icon_pdf" : "icon_word"
-
+                let iconName = doc.name.hasSuffix(".pdf") ? "pdf" : "doc"
                 let icon = UIImageView(image: UIImage(named: iconName))
                 icon.translatesAutoresizingMaskIntoConstraints = false
-                icon.contentMode = .scaleAspectFit   // ✅ IMPORTANT
-                icon.clipsToBounds = true
-
+                icon.contentMode = .scaleAspectFit
                 NSLayoutConstraint.activate([
                     icon.widthAnchor.constraint(equalToConstant: 24),
                     icon.heightAnchor.constraint(equalToConstant: 24)
                 ])
-
 
                 let label = UILabel()
                 label.text = doc.name
@@ -236,6 +163,7 @@ override func viewDidLayoutSubviews() {
             }
         }
 
+
     //STATUS COLOR
       private func updateStatusColor(_ status: String) {
           switch status {
@@ -249,42 +177,34 @@ override func viewDidLayoutSubviews() {
       }
 
     //update decision
-    private func updateApplicationDecision(status: String) {
-        let notes = notesTextView.text ?? ""
-
-               db.collection("ngo_applications")
-                   .document("N-1")
-                   .updateData([
-                       "approveStatus": status,
-                       "notes": notes,
-                       "reviewedAt": FieldValue.serverTimestamp()
-                   ])
-    }
+//    private func updateApplicationDecision(status: String) {
+//        let notes = notesTextView.text ?? ""
+//
+//               db.collection("ngo_applications")
+//                   .document("N-1")
+//                   .updateData([
+//                       "approveStatus": status,
+//                       "notes": notes,
+//                       "reviewedAt": FieldValue.serverTimestamp()
+//                   ])
+//    }
 
     //approve and reject action with popup
     @IBAction func approveTapped(_ sender: UIButton) {
-        updateApplicationDecision(status: "approved")
-        
-                statusValue.text = "Verified"
-                statusView.backgroundColor = UIColor(hex: "D2F2C1")
-                lockUI()
-                showPopup(
-                    title: "Application Successfully Verified",
-                    description: "The Application has been approved and marked as verified."
-                )
+        statusValue.text = "Verified"
+              statusView.backgroundColor = UIColor(hex: "D2F2C1")
+              lockUI()
+              showPopup(title: "Application Successfully Verified",
+                        description: "The Application has been approved and marked as verified.")
     }
    
 
     @IBAction func rejectedTapped(_ sender: UIButton) {
-        updateApplicationDecision(status: "rejected")
-        
-               statusValue.text = "Rejected"
-               statusView.backgroundColor = UIColor(hex: "F44336")
-               lockUI()
-               showPopup(
-                   title: "Application Successfully Rejected",
-                   description: "The application has been rejected successfully."
-               )
+        statusValue.text = "Rejected"
+        statusView.backgroundColor = UIColor(hex: "F44336")
+        lockUI()
+        showPopup(title: "Application Successfully Rejected",
+                  description: "The application has been rejected successfully.")
     }
   
 

@@ -39,10 +39,10 @@ class NGOProfileViewController: UIViewController, NGOAboutMeDelegate {
     
     
     var ngo = Ngo(
-        name: "Hope Foundation",
+        name: "Hoppal",
         type: "Ngo",
         rating: "5.0",
-        email: "contact@hopefoundation.org",
+        email: "hoppal@gmail.com",
         phone: "+973 9876 5432",
         mission: "Our mission is to uplift vulnerable families by providing access to food, shelter, and education. We believe that every individual deserves dignity and opportunity, and we work hand in hand with local communities to create sustainable solutions that address immediate needs while building long‑term resilience." )
     
@@ -57,7 +57,7 @@ class NGOProfileViewController: UIViewController, NGOAboutMeDelegate {
         if let image = ngo.profileImage {
             profileView.image = image
         } else {
-            profileView.image = UIImage(named: "donor_Image")
+            profileView.image = UIImage(named: "Image6")
         }
         profileView.layer.cornerRadius = profileView.frame.width / 2
         profileView.clipsToBounds = true

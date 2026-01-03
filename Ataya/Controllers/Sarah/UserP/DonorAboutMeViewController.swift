@@ -21,9 +21,9 @@ class DonorAboutMeViewController: UIViewController {
         super.viewDidLoad()
 
         // Dummy donor info
-        fullnameTextBox.text = "Zahra Ahmed"
-        emailTextBox.text = "zahra.ahmed@example.com"
-        phoneTextBox.text = "+973 1234 5678"
+        fullnameTextBox.text = "Ameena"
+        emailTextBox.text = "amoonz4905@gmail.com"
+        phoneTextBox.text = "32179321"
     }
     
 

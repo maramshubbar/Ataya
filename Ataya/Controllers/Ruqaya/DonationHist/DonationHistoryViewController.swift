@@ -11,12 +11,10 @@ class DonationHistoryViewController: UIViewController {
 
 
     @IBOutlet weak var searchBar: UISearchBar!
-    
-
     @IBOutlet weak var filterSegment: UISegmentedControl!
-    
     @IBOutlet weak var tableView: UITableView!
     
+    private var selectedItem: DonationHistoryItem?
     
     private var allItems: [DonationHistoryItem] = []
        private var filteredItems: [DonationHistoryItem] = []
@@ -36,159 +34,236 @@ class DonationHistoryViewController: UIViewController {
            applyFiltersAndReload()
        }
 
-       private func setupTable() {
-           tableView.dataSource = self
-           tableView.delegate = self
-           tableView.separatorStyle = .none
-           tableView.rowHeight = UITableView.automaticDimension
-           tableView.estimatedRowHeight = 215
-           tableView.keyboardDismissMode = .onDrag
-           tableView.backgroundColor = .systemBackground
-           tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 20, right: 0)
-       }
+    private func setupTable() {
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.separatorStyle = .none
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 215
+        tableView.keyboardDismissMode = .onDrag
+        tableView.backgroundColor = .systemBackground
+        tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 20, right: 0)
+    }
 
-       private func setupSearch() {
-           searchBar.delegate = self
-           searchBar.placeholder = "Search"
-           searchBar.autocapitalizationType = .none
-           searchBar.backgroundImage = UIImage()
-           searchBar.searchTextField.backgroundColor = .systemGray6
-           searchBar.searchTextField.layer.cornerRadius = 10
-           searchBar.searchTextField.clipsToBounds = true
-       }
+    private func setupSearch() {
+        searchBar.delegate = self
+        searchBar.placeholder = "Search"
+        searchBar.autocapitalizationType = .none
+        searchBar.backgroundImage = UIImage()
+        searchBar.searchTextField.backgroundColor = .systemGray6
+        searchBar.searchTextField.layer.cornerRadius = 10
+        searchBar.searchTextField.clipsToBounds = true
+    }
 
-       private func setupFilter() {
-           filterSegment.selectedSegmentIndex = 0
-           filterSegment.addTarget(self, action: #selector(filterChanged), for: .valueChanged)
+    private func setupFilter() {
+        filterSegment.selectedSegmentIndex = 0
+        filterSegment.addTarget(self, action: #selector(filterChanged), for: .valueChanged)
 
-           filterSegment.backgroundColor = .systemGray6
-           filterSegment.selectedSegmentTintColor = .white
+        filterSegment.backgroundColor = .systemGray6
+        filterSegment.selectedSegmentTintColor = .white
 
-           // ✅ صيغة مضمونة لإخفاء الديفايدر
-           filterSegment.setDividerImage(UIImage(),
-                                         forLeftSegmentState: .normal,
-                                         rightSegmentState: .normal,
-                                         barMetrics: .default)
+        filterSegment.setDividerImage(
+            UIImage(),
+            forLeftSegmentState: .normal,
+            rightSegmentState: .normal,
+            barMetrics: .default
+        )
 
-           // Text attributes — all BLACK
-           let normalText: [NSAttributedString.Key: Any] = [
-               .font: UIFont.systemFont(ofSize: 13, weight: .regular),
-               .foregroundColor: UIColor.black
-           ]
+        let normalText: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 13, weight: .regular),
+            .foregroundColor: UIColor.black
+        ]
 
-           let selectedText: [NSAttributedString.Key: Any] = [
-               .font: UIFont.systemFont(ofSize: 13, weight: .semibold),
-               .foregroundColor: UIColor.black
-           ]
+        let selectedText: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 13, weight: .semibold),
+            .foregroundColor: UIColor.black
+        ]
 
-           filterSegment.setTitleTextAttributes(normalText, for: .normal)
-           filterSegment.setTitleTextAttributes(normalText, for: .highlighted) // ✅ يمنع الأبيض وقت الضغط
-           filterSegment.setTitleTextAttributes(selectedText, for: .selected)
-           filterSegment.setTitleTextAttributes(selectedText, for: [.selected, .highlighted])
-       }
+        filterSegment.setTitleTextAttributes(normalText, for: .normal)
+        filterSegment.setTitleTextAttributes(normalText, for: .highlighted)
+        filterSegment.setTitleTextAttributes(selectedText, for: .selected)
+        filterSegment.setTitleTextAttributes(selectedText, for: [.selected, .highlighted])
+    }
 
-       private func loadDummy() {
-           allItems = [
-               DonationHistoryItem(title: "Chicken Box", ngoName: "HopPal", location: "Manama, Bahrain", dateText: "Aug 22, 2025", status: .completed),
-               DonationHistoryItem(title: "Canned beans", ngoName: "PureRelief", location: "Ottawa, Canada", dateText: "Jun 03, 2025", status: .completed),
-               DonationHistoryItem(title: "Frozen fruits", ngoName: "AidBridge", location: "Berlin, Germany", dateText: "Feb 12, 2025", status: .rejected)
-           ]
-       }
+    // MARK: - Dummy Data
 
-       @objc private func filterChanged() {
-           applyFiltersAndReload()
-       }
+    private func loadDummy() {
+        allItems = [
 
-       private func applyFiltersAndReload() {
-           let q = (searchBar.text ?? "")
-               .trimmingCharacters(in: .whitespacesAndNewlines)
-               .lowercased()
+            DonationHistoryItem(
+                title: "Chicken Box",
+                ngoName: "HopPal",
+                location: "Manama, Bahrain",
+                dateText: "Aug 22, 2025",
+                status: .completed,
 
-           let selected = filterSegment.selectedSegmentIndex
+                donationId: "DON-101",
+                quantity: "2 boxes",
+                category: "Prepared Food",
+                expiryDate: "Aug 25, 2025",
+                packaging: "Sealed",
+                allergenInfo: "None",
 
-           filteredItems = allItems.filter { item in
-               let matchStatus: Bool
-               switch selected {
-               case 1: matchStatus = (item.status == .completed)
-               case 2: matchStatus = (item.status == .rejected)
-               default: matchStatus = true
-               }
+                collectorName: "Ali Ahmed",
+                assignedDate: "Aug 22, 2025",
+                pickupStatus: "Picked up",
+                phone: "+973 3333 3333",
+                email: "ali@hopal.org",
+                collectorNotes: "Handle with care",
 
-               let matchSearch: Bool
-               if q.isEmpty { matchSearch = true }
-               else {
-                   matchSearch =
-                       item.title.lowercased().contains(q) ||
-                       item.ngoName.lowercased().contains(q) ||
-                       item.location.lowercased().contains(q)
-               }
+                reviewDate: "Aug 23, 2025",
+                decision: "Approved",
+                remarks: "All good",
 
-               return matchStatus && matchSearch
-           }
+                imageName: nil
+            ),
 
-           tableView.reloadData()
-       }
+            DonationHistoryItem(
+                title: "Canned beans",
+                ngoName: "PureRelief",
+                location: "Ottawa, Canada",
+                dateText: "Jun 03, 2025",
+                status: .completed,
 
-       // (موجودة الحين مثل ما عندك)
-       private func showDetails(for item: DonationHistoryItem) {
-           let msg = """
-           \(item.title)
-           NGO: \(item.ngoName)
-           \(item.location)
-           \(item.dateText)
-           Status: \(item.status.rawValue)
-           """
-           let alert = UIAlertController(title: "Donation Details", message: msg, preferredStyle: .alert)
-           alert.addAction(UIAlertAction(title: "OK", style: .default))
-           present(alert, animated: true)
-       }
-   }
+                donationId: "DON-102",
+                quantity: "12 packs (400g)",
+                category: "Canned Goods",
+                expiryDate: "11/2028",
+                packaging: "Sealed & Intact",
+                allergenInfo: "Soy",
 
-   // MARK: - UITableView
-   extension DonationHistoryViewController: UITableViewDataSource, UITableViewDelegate {
+                collectorName: "Mariam Hassan",
+                assignedDate: "Jun 03, 2025",
+                pickupStatus: "Picked up",
+                phone: "+973 3444 4444",
+                email: "mariam@purerelief.org",
+                collectorNotes: "Box is heavy",
 
-       func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-           filteredItems.count
-       }
+                reviewDate: "Jun 04, 2025",
+                decision: "Approved",
+                remarks: "OK",
 
-       func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+                imageName: nil
+            ),
 
-           let item = filteredItems[indexPath.row]
+            DonationHistoryItem(
+                title: "Frozen fruits",
+                ngoName: "AidBridge",
+                location: "Berlin, Germany",
+                dateText: "Feb 12, 2025",
+                status: .rejected,
 
-           guard let cell = tableView.dequeueReusableCell(withIdentifier: "DonationCell", for: indexPath) as? DonationCell else {
-               return UITableViewCell()
-           }
+                donationId: "DON-103",
+                quantity: "5 bags",
+                category: "Frozen",
+                expiryDate: "Mar 01, 2025",
+                packaging: "Frozen bags",
+                allergenInfo: "None",
 
-           cell.configure(with: item)
+                collectorName: "Sara Ali",
+                assignedDate: "Feb 12, 2025",
+                pickupStatus: "Cancelled",
+                phone: "+973 3555 5555",
+                email: "sara@aidbridge.org",
+                collectorNotes: "Not suitable",
 
-           cell.onTapDetails = { [weak self] in
-               self?.openDetails(item)
-           }
+                reviewDate: "Feb 12, 2025",
+                decision: "Rejected",
+                remarks: "Temperature issue",
 
+                imageName: nil
+            )
+        ]
+    }
 
-           return cell
-       }
+    // MARK: - Filtering
 
-       func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat { 0.01 }
-       func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? { UIView() }
-   }
+    @objc private func filterChanged() {
+        applyFiltersAndReload()
+    }
 
-   // MARK: - UISearchBar
-   extension DonationHistoryViewController: UISearchBarDelegate {
+    private func applyFiltersAndReload() {
+        let q = (searchBar.text ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
 
-       func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-           applyFiltersAndReload()
-       }
+        let selected = filterSegment.selectedSegmentIndex
 
-       func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-           searchBar.resignFirstResponder()
-       }
-       
-       private func openDetails(_ item: DonationHistoryItem) {
-           let sb = UIStoryboard(name: "Main", bundle: nil)
-           let vc = sb.instantiateViewController(withIdentifier: "DonationDetailsViewController")
-           navigationController?.pushViewController(vc, animated: true)
-       }
+        filteredItems = allItems.filter { item in
+            let matchStatus: Bool
+            switch selected {
+            case 1: matchStatus = (item.status == .completed)
+            case 2: matchStatus = (item.status == .rejected)
+            default: matchStatus = true
+            }
+
+            let matchSearch: Bool
+            if q.isEmpty { matchSearch = true }
+            else {
+                matchSearch =
+                    item.title.lowercased().contains(q) ||
+                    item.ngoName.lowercased().contains(q) ||
+                    item.location.lowercased().contains(q)
+            }
+
+            return matchStatus && matchSearch
+        }
+
+        tableView.reloadData()
+    }
+
+    // MARK: - Segue
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "showDonationDetails",
+           let vc = segue.destination as? DonationDetailsRViewControllerViewController {
+            vc.item = selectedItem
+        }
+    }
+}
+
+    // MARK: - UITableView
+    extension DonationHistoryViewController: UITableViewDataSource, UITableViewDelegate {
+
+        func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+            filteredItems.count
+        }
+
+        func tableView(_ tableView: UITableView,
+            cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+
+        let item = filteredItems[indexPath.row]
+
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: "DonationCell",
+            for: indexPath
+        )
+                as? DonationCell else {
+            
+                    return UITableViewCell()
+        }
+
+        cell.configure(with: item)
+
+        cell.onTapDetails = { [weak self] in
+            self?.selectedItem = item
+            self?.performSegue(withIdentifier: "showDonationDetails", sender: nil)
+        }
+
+        return cell
+    }
+}
+
+        // MARK: - UISearchBar
+        extension DonationHistoryViewController: UISearchBarDelegate {
+
+        func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+            applyFiltersAndReload()
+        }
+
+        func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+            searchBar.resignFirstResponder()
+        }
 
   }
 

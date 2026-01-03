@@ -103,22 +103,24 @@ final class DonationCell: UITableViewCell {
        }
 
        // ✅ configure بدون closure (عشان ما يطلع Extra trailing closure)
-       func configure(with item: DonationHistoryItem) {
-           titleLabel.text = item.title
-           ngoLabel.text = "NGO: \(item.ngoName)"
-           locationLabel.text = item.location
-           dateLabel.text = item.dateText
+    func configure(with item: DonationHistoryItem) {
+        titleLabel.text = item.title
+        ngoLabel.text = "NGO: \(item.ngoName)"
+        locationLabel.text = item.location
+        dateLabel.text = item.dateText
 
-           statusLabel.text = item.status.rawValue
-           switch item.status {
-           case .completed:
-               statusLabel.backgroundColor = completedBg
-               statusLabel.textColor = .black
-           case .rejected:
-               statusLabel.backgroundColor = rejectedBg
-               statusLabel.textColor = .black
-           }
-       }
+        statusLabel.text = item.status.rawValue
+        switch item.status {
+        case .completed:
+            statusLabel.backgroundColor = completedBg
+            statusLabel.textColor = .black
+        case .rejected:
+            statusLabel.backgroundColor = rejectedBg
+            statusLabel.textColor = .black
+        }
+    }
+
+
 
     @IBAction func detailsTapped(_ sender: UIButton) {
         onTapDetails?()

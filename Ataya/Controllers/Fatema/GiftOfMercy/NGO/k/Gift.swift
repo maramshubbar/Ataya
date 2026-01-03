@@ -18,6 +18,9 @@ struct Gift {
     var description: String
     var isActive: Bool
 
+    // ✅ Asset fallback (مثل الصور اللي في Manage Gifts)
+    var imageName: String
+
     // Pricing
     var pricingMode: PricingMode
     var fixedAmount: Double?
@@ -38,6 +41,7 @@ struct Gift {
         title: String,
         description: String,
         isActive: Bool = true,
+        imageName: String = "gift1",
         pricingMode: PricingMode,
         fixedAmount: Double? = nil,
         minAmount: Double? = nil,
@@ -52,6 +56,7 @@ struct Gift {
         self.title = title
         self.description = description
         self.isActive = isActive
+        self.imageName = imageName
         self.pricingMode = pricingMode
         self.fixedAmount = fixedAmount
         self.minAmount = minAmount
@@ -63,9 +68,26 @@ struct Gift {
         self.updatedAt = updatedAt
     }
 
-    /// ✅ Kept name to avoid breaking your existing GiftManagementCell.ViewModel(imageName: ...)
-    /// Now it returns the Cloudinary URL (not a placeholder).
-    var displayImageName: String { imageURL ?? "" }
+    /// ✅ Compatibility: يرجّع URL إذا موجود، وإلا asset
+    /// (علشان أي ViewModel قديم عندج يعتمد على "imageName String")
+    var displayImageName: String {
+        if let url = imageURL, !url.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty {
+            return url
+        }
+        return displayAssetName
+    }
+
+    /// ✅ دايمًا asset (آمن لـ UIImage(named:))
+    var displayAssetName: String {
+        imageName.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty ? "gift1" : imageName
+    }
+
+    /// ✅ URL فقط (حق ImageLoader)
+    var displayRemoteURL: String? {
+        guard let url = imageURL?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines),
+              !url.isEmpty else { return nil }
+        return url
+    }
 }
 
 // MARK: - Firestore keys
@@ -74,6 +96,7 @@ extension Gift {
         static let title = "title"
         static let description = "description"
         static let isActive = "isActive"
+        static let imageName = "imageName"
         static let pricingMode = "pricingMode"
         static let fixedAmount = "fixedAmount"
         static let minAmount = "minAmount"
@@ -95,6 +118,7 @@ extension Gift {
             Keys.title: title,
             Keys.description: description,
             Keys.isActive: isActive,
+            Keys.imageName: imageName,
             Keys.pricingMode: pricingMode.rawValue,
             Keys.updatedAt: FieldValue.serverTimestamp()
         ]
@@ -104,10 +128,12 @@ extension Gift {
             data[Keys.createdAt] = FieldValue.serverTimestamp()
         }
 
-        if let ngoId { data[Keys.ngoId] = ngoId }
+        if let ngoId, !ngoId.isEmpty {
+            data[Keys.ngoId] = ngoId
+        }
 
-        if let imageURL { data[Keys.imageURL] = imageURL }
-        if let imagePublicId { data[Keys.imagePublicId] = imagePublicId }
+        if let imageURL, !imageURL.isEmpty { data[Keys.imageURL] = imageURL }
+        if let imagePublicId, !imagePublicId.isEmpty { data[Keys.imagePublicId] = imagePublicId }
 
         // Pricing fields (delete irrelevant ones to avoid stale values)
         switch pricingMode {
@@ -137,6 +163,8 @@ extension Gift {
         self.title = title
         self.description = d[Keys.description] as? String ?? ""
         self.isActive = d[Keys.isActive] as? Bool ?? true
+
+        self.imageName = (d[Keys.imageName] as? String) ?? "gift1"
 
         let raw = d[Keys.pricingMode] as? String ?? PricingMode.fixed.rawValue
         self.pricingMode = PricingMode(rawValue: raw) ?? .fixed

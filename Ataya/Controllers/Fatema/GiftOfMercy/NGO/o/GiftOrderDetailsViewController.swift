@@ -1,10 +1,3 @@
-//
-// GiftOrderDetailsViewController.swift
-// Ataya
-//
-//  Created by Fatema Maitham on 02/01/2026.
-//
-//
 //import UIKit
 //import Foundation
 //import MessageUI

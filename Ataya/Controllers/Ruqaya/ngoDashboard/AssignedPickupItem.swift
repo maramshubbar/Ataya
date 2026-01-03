@@ -9,14 +9,12 @@ import Foundation
 
 struct AssignedPickupItem {
 
-    // ✅ Dashboard fields (لازم يكونون أول وبنفس ترتيب الinit)
     let title: String
     let donor: String
     let location: String
     let status: String
     let imageName: String
 
-    // ✅ Details page fields
     let donationId: String
     let itemName: String
     let quantity: String

@@ -44,7 +44,7 @@ final class NGOTabBarController: UITabBarController, UITabBarControllerDelegate 
         items[1].image = UIImage(named: "Deliverytime")?.resized(to: size).withRenderingMode(.alwaysTemplate)
         items[1].selectedImage = UIImage(named: "Deliverytime")?.resized(to: size).withRenderingMode(.alwaysTemplate)
 
-        // center dummy (بس عشان يحجز مكان الزر)
+
         items[2].image = UIImage(named: "tab_empty")?.withRenderingMode(.alwaysOriginal)
         items[2].selectedImage = UIImage(named: "tab_empty")?.withRenderingMode(.alwaysOriginal)
 

@@ -87,7 +87,7 @@ final class GiftOfMercyHubViewController: UIViewController {
     @objc private func openDesigns() { openScreen(id: DestID.designs, title: "Card Designs") }
 
     private func openScreen(id: String, title: String) {
-        let sb = UIStoryboard(name: "Main", bundle: nil)
+        let sb = UIStoryboard(name: "NGO", bundle: nil)
         let vc = sb.instantiateViewController(withIdentifier: id)
         vc.title = title
 

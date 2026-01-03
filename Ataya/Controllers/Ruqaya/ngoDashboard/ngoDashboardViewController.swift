@@ -18,8 +18,14 @@ final class ngoDashboardViewController: UIViewController, UITableViewDataSource,
     
     @IBAction func campaignManagementTapped(_ sender: Any) {
 
-            let sb = UIStoryboard(name: "Campaigns", bundle: nil) 
-            let vc = sb.instantiateViewController(withIdentifier: "CampaignManagementVC")
+        let sb = UIStoryboard(name: "Campaigns", bundle: nil)
+
+           guard let vc = sb.instantiateViewController(withIdentifier: "CampaignManagementVC") as? CampaignManagementViewController else {
+               assertionFailure("Check Storyboard ID = CampaignManagementVC and Class = CampaignManagementViewController")
+               return
+           }
+
+           navigationController?.pushViewController(vc, animated: true)
         }
 
     

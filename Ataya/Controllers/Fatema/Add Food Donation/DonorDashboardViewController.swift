@@ -30,6 +30,9 @@ final class DonorDashboardViewController: UIViewController,
     private let advocacyStoryboardName = "DonorDashboard"
     private let advocacyStoryboardID   = "AdvocacyViewController"
     
+    private let discoverStoryboardName = "DiscoverNGO"
+    private let discoverStoryboardID   = "DiscoverNGOViewController"
+
     private let recurringStoryboardName = "Recurring"              // عدّليه إذا اسم الستوريبورد غير
     private let recurringStoryboardID   = "RecurringViewController" // عدّليه لِـStoryboard ID الحقيقي
 
@@ -41,7 +44,7 @@ final class DonorDashboardViewController: UIViewController,
     private var campaigns: [DashboardCampaign] = []
     private var ongoing: [OngoingDonationItem] = []
 
-    // Outlets (لا تمسحينهم)
+    // Outlets
     @IBOutlet weak var recurringStackView: UIStackView!
     @IBOutlet weak var discoverStackView: UIStackView!
     @IBOutlet weak var historyStackView: UIStackView!
@@ -167,8 +170,9 @@ final class DonorDashboardViewController: UIViewController,
         let recurringTap = UITapGestureRecognizer(target: self, action: #selector(recurringTapped))
         recurringStackView.addGestureRecognizer(recurringTap)
 
-        let discoverTap = UITapGestureRecognizer(target: self, action: #selector(discoverTapped))
-        discoverStackView.addGestureRecognizer(discoverTap)
+        discoverStackView.addGestureRecognizer(
+             UITapGestureRecognizer(target: self, action: #selector(openDiscoverNGOs))
+         )
 
         let historyTap = UITapGestureRecognizer(target: self, action: #selector(historyTapped))
         historyStackView.addGestureRecognizer(historyTap)
@@ -178,10 +182,7 @@ final class DonorDashboardViewController: UIViewController,
         pushVC(storyboardName: recurringStoryboardName, storyboardID: recurringStoryboardID)
     }
 
-    @objc private func discoverTapped() {
-        // إذا عندج صفحة Discover NGOs
-        // pushVC(storyboardName: "DiscoverNGO", storyboardID: "DiscoverNGOViewController")
-    }
+    
 
     @objc private func historyTapped() {
         // إذا عندج Donation History
@@ -227,6 +228,8 @@ final class DonorDashboardViewController: UIViewController,
         historyStackView.addGestureRecognizer(
             UITapGestureRecognizer(target: self, action: #selector(openDonationHistory))
         )
+        
+        
     }
 
     @objc private func openDonationHistory() {
@@ -239,8 +242,10 @@ final class DonorDashboardViewController: UIViewController,
     }
 
     @objc private func openDiscoverNGOs() {
-        // عدليهم حسب صفحتكم (إذا عندكم ستوريبورد/ID حق discover)
-        showNotReady("Discover NGOs page not linked yet")
+        pushVC(
+               storyboardName: discoverStoryboardName,
+               storyboardID: discoverStoryboardID
+           )
     }
 
 
@@ -403,4 +408,6 @@ final class DonorDashboardViewController: UIViewController,
         tableView.layoutIfNeeded()
         tableHeightConstraint.constant = tableView.contentSize.height
     }
+    
+    
 }

@@ -77,30 +77,17 @@
         <!--Profile-->
         <scene sceneID="fR2-g2-ONc">
             <objects>
-                <navigationController title="Profile" hidesBarsWhenVerticallyCompact="YES" id="Ecc-pn-ioB" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="ProfileTabVC" title="Profile" useStoryboardIdentifierAsRestorationIdentifier="YES" hidesBarsWhenVerticallyCompact="YES" id="Ecc-pn-ioB" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Profile" image="usergrey" id="5J7-Ts-jOk"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Fo4-hj-TO3">
                         <rect key="frame" x="0.0" y="124" width="440" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="barTintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                     </navigationBar>
-                    <connections>
-                        <segue destination="dro-km-b25" kind="show" id="UDK-Bi-YKv"/>
-                    </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CSW-Ue-UVT" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2146" y="-1095"/>
-        </scene>
-        <!--DonorProfileVC-->
-        <scene sceneID="gkh-8c-Hd4">
-            <objects>
-                <viewControllerPlaceholder storyboardName="DonorProfileViewController" referencedIdentifier="DonorProfileVC" id="dro-km-b25" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="cP8-5V-XYG"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="BWa-sB-ecn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2625" y="-1024"/>
         </scene>
         <!--Rewards-->
         <scene sceneID="Ztu-vA-S6T">
@@ -425,7 +412,7 @@ History</string>
                     <navigationItem key="navigationItem" id="qLU-kK-UPs"/>
                     <connections>
                         <outlet property="campaignsCollectionView" destination="5uq-M6-2cJ" id="6ct-9f-ZpA"/>
-                        <outlet property="discoverStackView" destination="kgz-vZ-Nt7" id="4Im-Lp-INU"/>
+                        <outlet property="discoverStackView" destination="kgz-vZ-Nt7" id="n2b-fu-B6A"/>
                         <outlet property="historyStackView" destination="8pl-yZ-xkE" id="bYG-Yx-8wE"/>
                         <outlet property="ongoingDonationTitleLabel" destination="b8v-wd-hqM" id="RmM-1r-n8h"/>
                         <outlet property="quickToolsTitleLabel" destination="7BZ-wo-hb7" id="xQf-Ju-5I1"/>

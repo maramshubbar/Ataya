@@ -23,7 +23,7 @@ final class NGOTabBarController: UITabBarController, UITabBarControllerDelegate 
     private func setupTabLook() {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = .white
+        appearance.backgroundColor = .secondarySystemGroupedBackground
         appearance.shadowColor = .clear
 
         tabBar.standardAppearance = appearance
@@ -102,6 +102,54 @@ final class NGOTabBarController: UITabBarController, UITabBarControllerDelegate 
         let nav = (base as? UINavigationController) ?? base?.navigationController
         nav?.pushViewController(routesVC, animated: true)
     }
+   
+
+       // MARK: - Load tabs dynamically
+       func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+
+           let deliveryIndex = 1
+           let profileIndex = 4
+
+           if selectedIndex == deliveryIndex {
+               loadPickupIntoDeliveryTab()
+           } else if selectedIndex == profileIndex {
+               loadNGOProfileIntoProfileTab()
+           }
+       }
+
+    private func loadPickupIntoDeliveryTab() {
+           let deliveryIndex = 1
+           guard let deliveryTabNav = viewControllers?[deliveryIndex] as? UINavigationController else { return }
+
+           let sb = UIStoryboard(name: "Pickup", bundle: nil)
+           guard let pickupVC = sb.instantiateInitialViewController() else { return }
+
+           if let nav = pickupVC as? UINavigationController {
+               // Avoid nested navigation
+               if let root = nav.viewControllers.first {
+                   deliveryTabNav.setViewControllers([root], animated: false)
+               }
+           } else {
+               deliveryTabNav.setViewControllers([pickupVC], animated: false)
+           }
+       }
+       private func loadNGOProfileIntoProfileTab() {
+           let profileIndex = 4
+           guard let profileTabNav = viewControllers?[profileIndex] as? UINavigationController else { return }
+
+           let sb = UIStoryboard(name: "NGOProfile", bundle: nil)
+           guard let initialVC = sb.instantiateInitialViewController() else { return }
+
+           // Avoid UINavigationController inside UINavigationController
+           if let nav = initialVC as? UINavigationController {
+               if let root = nav.viewControllers.first {
+                   profileTabNav.setViewControllers([root], animated: false)
+               }
+           } else {
+               profileTabNav.setViewControllers([initialVC], animated: false)
+           }
+       }
+
 }
 
 // MARK: - UIImage resize helper
@@ -112,4 +160,7 @@ extension UIImage {
             self.draw(in: CGRect(origin: .zero, size: size))
         }
     }
+    
+    
+    
 }

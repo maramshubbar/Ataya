@@ -26,7 +26,7 @@ final class DonorTabBarController: UITabBarController, UITabBarControllerDelegat
     private func setupTabLook() {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = .white
+        appearance.backgroundColor = .secondarySystemGroupedBackground
         appearance.shadowColor = .clear
 
         tabBar.standardAppearance = appearance
@@ -201,29 +201,65 @@ final class DonorTabBarController: UITabBarController, UITabBarControllerDelegat
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        // تأكدي إننا على تبويب Impact (index حسب ترتيب التبويبات)
-        let impactIndex = 1 // عدّليه إذا Impact مو ثاني تبويب
+
+    }
+    
+    private func loadImpactIntoImpactTab() {
+        let impactIndex = 1 // adjust if Impact tab is not the 2nd tab
+        guard let impactTabNav = viewControllers?[impactIndex] as? UINavigationController else {
+            print("No nav controller at Impact tab")
+            return
+        }
+
+        let sb = UIStoryboard(name: "Impact", bundle: nil)
+        if let impactInitial = sb.instantiateInitialViewController() {
+            if let impactNav = impactInitial as? UINavigationController {
+                // Initial is a Navigation Controller: copy its stack
+                impactTabNav.setViewControllers(impactNav.viewControllers, animated: false)
+                print("Loaded Impact (nav stack) into Impact tab")
+            } else {
+                // Initial is a plain VC: set it directly
+                impactTabNav.setViewControllers([impactInitial], animated: false)
+                print("Loaded Impact (VC) into Impact tab")
+            }
+        } else {
+            print("Could not instantiate initial VC from Impact.storyboard")
+        }
+    }
+
+
+    
+    func tabBarController(_ tabBarController: UITabBarController,
+                          didSelect viewController: UIViewController) {
+
+        let impactIndex = 1
+        let profileIndex = 4
 
         if selectedIndex == impactIndex {
-            openImpactDashboardIfNeeded()
+            loadImpactIntoImpactTab()
+        } else if selectedIndex == profileIndex {
+            loadDonorProfileIntoProfileTab()
         }
     }
 
-    private func openImpactDashboardIfNeeded() {
-        // إذا فيه NavigationController
-        if let nav = viewControllers?[selectedIndex] as? UINavigationController {
 
-            // إذا ما فيه ViewControllers (صفحة فاضية)
-            if nav.viewControllers.isEmpty {
+    private func loadDonorProfileIntoProfileTab() {
+        let profileIndex = 4
+        guard let profileTabNav = viewControllers?[profileIndex] as? UINavigationController else {
+            return
+        }
 
-                let sb = UIStoryboard(name: "Impact", bundle: nil)
-
-                // نفتح الـInitial View Controller من Impact.storyboard
-                if let vc = sb.instantiateInitialViewController() {
-                    nav.setViewControllers([vc], animated: false)
+        let sb = UIStoryboard(name: "DonorProfile", bundle: nil)
+        if let donorProfileInitial = sb.instantiateInitialViewController() {
+            if let donorProfileNav = donorProfileInitial as? UINavigationController {
+                // Initial is a Navigation Controller: copy its stack
+                profileTabNav.setViewControllers(donorProfileNav.viewControllers, animated: false)
                 }
             }
-        }
+        
     }
+
+
+
 }
 

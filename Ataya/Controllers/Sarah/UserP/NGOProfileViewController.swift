@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class NGOProfileViewController: UIViewController, NGOAboutMeDelegate {
 
@@ -75,6 +76,28 @@ class NGOProfileViewController: UIViewController, NGOAboutMeDelegate {
         ngoName.text = ngo.name
     }
     
+    @IBAction func ratingTapped(_ sender: UIButton) {
+       
+        // Use the correct storyboard name
+           let storyboard = UIStoryboard(name: "MyReviews", bundle: nil) // ← your storyboard
+           guard let reviewsVC = storyboard.instantiateViewController(
+               withIdentifier: "DonorReview" 
+           ) as? MyReviewsViewController else {
+           
+               return
+           }
+        
+        let nav = UINavigationController(rootViewController: reviewsVC)
+        nav.modalPresentationStyle = .pageSheet
+        if let sheet = nav.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+            sheet.prefersGrabberVisible = true
+        }
+        self.navigationController?.pushViewController(reviewsVC, animated: true)
+    
+    }
+    
+    
         
         @IBAction func darkModeToggled(_ sender: UISwitch) {
             let isDarkMode = sender.isOn
@@ -102,19 +125,10 @@ class NGOProfileViewController: UIViewController, NGOAboutMeDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        let collector = DummyDatabase.shared.collectors["collector_1"]
-        ratingValue.text = String(format: "%.1f", collector?.averageRating ?? 0)
+        ratingValue.text = ngo.rating
     }
 
  
-    @IBAction func ratingTapped(_ sender: UIButton) {
-        let vc = storyboard?.instantiateViewController(
-            withIdentifier: "ReviewsListViewController"
-        ) as! ReviewsListViewController
-
-        navigationController?.pushViewController(vc, animated: true)
-    }
     
         
     @IBAction func editProfileTapped(_ sender: UIBarButtonItem) {
@@ -139,6 +153,60 @@ class NGOProfileViewController: UIViewController, NGOAboutMeDelegate {
         ngo.profileImage = profileView.image
     }
     
+    @IBAction func logoutButtonTapped(_ sender: Any) {
+        let alert = UIAlertController(
+                title: "Logout",
+                message: "Are you sure you want to logout?",
+                preferredStyle: .alert
+            )
+
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            alert.addAction(UIAlertAction(title: "Logout", style: .destructive) { [weak self] _ in
+                self?.performLogout()
+            })
+
+            present(alert, animated: true)
+        }
+
+        private func performLogout() {
+            do {
+                try Auth.auth().signOut()
+            } catch {
+                let alert = UIAlertController(
+                    title: "Error",
+                    message: "Couldn't logout. Try again.",
+                    preferredStyle: .alert
+                )
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                present(alert, animated: true)
+                return
+            }
+
+            goToUserSelectionRoot()
+        }
+
+        private func goToUserSelectionRoot() {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "UserSelectionViewController")
+
+            let nav = UINavigationController(rootViewController: vc)
+            nav.setNavigationBarHidden(true, animated: false)
+
+            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = scene.windows.first {
+                window.rootViewController = nav
+                window.makeKeyAndVisible()
+            } else {
+                present(nav, animated: true)
+            }
+    }
+    
+    
+    
+    
+    
+    
+    
     
 }
 extension NGOProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
@@ -155,6 +223,9 @@ extension NGOProfileViewController: UIImagePickerControllerDelegate, UINavigatio
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
     }
+    
+    
+    
 }
 
 

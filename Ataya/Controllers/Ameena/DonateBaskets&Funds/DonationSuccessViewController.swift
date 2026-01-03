@@ -36,7 +36,7 @@ final class DonationSuccessViewController: UIViewController {
         view.addSubview(cardView)
 
         // Icon (from Assets: "success icon")
-        iconImageView.image = UIImage(named: "Succes icon")
+        iconImageView.image = UIImage(named: "checkmark")
         iconImageView.contentMode = .scaleAspectFit
         iconImageView.translatesAutoresizingMaskIntoConstraints = false
         cardView.addSubview(iconImageView)

@@ -115,7 +115,7 @@ class DonationHistoryViewController: UIViewController {
                 decision: "Approved",
                 remarks: "All good",
 
-                imageName: nil
+                imageName: "ChickenBox"
             ),
 
             DonationHistoryItem(
@@ -143,7 +143,7 @@ class DonationHistoryViewController: UIViewController {
                 decision: "Approved",
                 remarks: "OK",
 
-                imageName: nil
+                imageName: "CB"
             ),
 
             DonationHistoryItem(
@@ -171,7 +171,7 @@ class DonationHistoryViewController: UIViewController {
                 decision: "Rejected",
                 remarks: "Temperature issue",
 
-                imageName: nil
+                imageName: "Frozen"
             )
         ]
     }

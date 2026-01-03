@@ -102,20 +102,6 @@ final class RecurringHistoryCell: UITableViewCell {
         }
     }
 
-    final class RecurringHistoryCell: UITableViewCell {
-
-        var onPauseTapped: (() -> Void)?
-        var onResumeTapped: (() -> Void)?
-
-        @IBAction func pauseTapped(_ sender: UIButton) {
-            onPauseTapped?()
-        }
-
-        @IBAction func resumeTapped(_ sender: UIButton) {
-            onResumeTapped?()
-        }
-    }
-
     @objc private func editPressed() { onEdit?() }
     @objc private func resumePressed() { onResume?() }
     @objc private func pausePressed() { onPause?() }

@@ -5,6 +5,12 @@
 //  Created by Maram on 25/12/2025.
 //
 
+//
+//  DonorCampaignDetailViewController.swift
+//  Ataya
+//
+//  Created by Maram on 25/12/2025.
+//
 
 import UIKit
 
@@ -56,6 +62,10 @@ final class DonorCampaignDetailViewController: UIViewController {
         self.onDonate = nil
         super.init(coder: coder)
     }
+
+    // ✅ PAYMENT (Storyboard file name + VC Storyboard ID)
+    private let paymentStoryboardName = "BasketFunds"   // اسم ملف الستوريبورد
+    private let paymentStoryboardID   = "FundsDonation" // Storyboard ID داخل Identity Inspector
 
     // MARK: - Local Hex Color Helper
     private func color(hex: String, alpha: CGFloat = 1) -> UIColor {
@@ -374,7 +384,7 @@ final class DonorCampaignDetailViewController: UIViewController {
 
         quoteAuthorLabel.font = .systemFont(ofSize: 16, weight: .regular)
         quoteAuthorLabel.textColor = .secondaryLabel
-        quoteAuthorLabel.textAlignment = .right              // ✅ يمين
+        quoteAuthorLabel.textAlignment = .right
         quoteAuthorLabel.semanticContentAttribute = .forceLeftToRight
 
         [quoteIcon, quoteLabel, quoteAuthorLabel].forEach {
@@ -392,7 +402,6 @@ final class DonorCampaignDetailViewController: UIViewController {
             quoteLabel.leadingAnchor.constraint(equalTo: quoteCard.leadingAnchor, constant: 70),
             quoteLabel.trailingAnchor.constraint(equalTo: quoteCard.trailingAnchor, constant: -24),
 
-            // ✅ FIX: author ياخذ نفس عرض quoteLabel ويصير يمين
             quoteAuthorLabel.topAnchor.constraint(equalTo: quoteLabel.bottomAnchor, constant: 18),
             quoteAuthorLabel.leadingAnchor.constraint(equalTo: quoteLabel.leadingAnchor),
             quoteAuthorLabel.trailingAnchor.constraint(equalTo: quoteLabel.trailingAnchor),
@@ -491,7 +500,6 @@ final class DonorCampaignDetailViewController: UIViewController {
         HopPal is a humanitarian organization dedicated to helping families in crisis rebuild their lives with dignity. We deliver urgent medical aid, food, water, and long-term recovery support to those affected by conflict and disaster. Guided by compassion and transparency, we work to restore hope where it’s needed most.
         """
 
-
         loadHeroImage(urlString: model.imageURL)
     }
 
@@ -580,14 +588,30 @@ final class DonorCampaignDetailViewController: UIViewController {
         return f.string(from: NSNumber(value: value)) ?? "\(Int(value))"
     }
 
+    // ✅ زر Donate Now -> يفتح DonateFundsViewController
     @objc private func didTapDonateNow() {
-        if let onDonate = onDonate {
-            onDonate()
+        openPayment()
+    }
+
+    private func openPayment() {
+        let sb = UIStoryboard(name: paymentStoryboardName, bundle: .main)
+
+        guard let vc = sb.instantiateViewController(withIdentifier: paymentStoryboardID) as? DonateFundsViewController else {
+            assertionFailure("❌ \(paymentStoryboardName).storyboard ما فيه VC بالـ ID '\(paymentStoryboardID)' أو الكلاس مو DonateFundsViewController")
             return
         }
-        let a = UIAlertController(title: "Donate", message: "Hook your donate flow here ✅", preferredStyle: .alert)
-        a.addAction(UIAlertAction(title: "OK", style: .default))
-        present(a, animated: true)
+
+        vc.hidesBottomBarWhenPushed = true
+
+        if let nav = self.navigationController {
+            nav.pushViewController(vc, animated: true)
+        } else if let nav = self.tabBarController?.selectedViewController as? UINavigationController {
+            nav.pushViewController(vc, animated: true)
+        } else {
+            let nav = UINavigationController(rootViewController: vc)
+            nav.modalPresentationStyle = .fullScreen
+            present(nav, animated: true)
+        }
     }
 }
 

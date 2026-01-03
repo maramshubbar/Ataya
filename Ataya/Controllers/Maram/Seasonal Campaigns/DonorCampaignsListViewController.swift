@@ -4,6 +4,12 @@
 //
 //  Created by Maram on 25/12/2025.
 //
+//
+//  DonorCampaignsListViewController.swift
+//  Ataya
+//
+//  Created by Maram on 25/12/2025.
+//
 import UIKit
 import FirebaseFirestore
 
@@ -18,6 +24,10 @@ final class DonorCampaignsListViewController: UIViewController {
     private var items: [DonorCampaignItem] = [] {
         didSet { updateEmptyState() }
     }
+
+    // ✅ PAYMENT
+    private let fundsStoryboardName = "BasketFunds"   // اسم الستوريبورد (الملف)
+    private let fundsStoryboardID   = "FundsDonation"   // Storyboard ID لصفحة DonateFundsViewController
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -102,6 +112,28 @@ final class DonorCampaignsListViewController: UIViewController {
         }
     }
 
+    // ✅ OPEN PAYMENT
+    private func openFundsDonation(for item: DonorCampaignItem) {
+        let sb = UIStoryboard(name: fundsStoryboardName, bundle: .main)
+
+        guard let vc = sb.instantiateViewController(withIdentifier: fundsStoryboardID) as? DonateFundsViewController else {
+            assertionFailure("❌ \(fundsStoryboardName).storyboard ما فيه ID '\(fundsStoryboardID)'")
+            return
+        }
+
+        vc.hidesBottomBarWhenPushed = true
+
+        if let nav = self.navigationController {
+            nav.pushViewController(vc, animated: true)
+        } else if let nav = self.tabBarController?.selectedViewController as? UINavigationController {
+            nav.pushViewController(vc, animated: true)
+        } else {
+            let nav = UINavigationController(rootViewController: vc)
+            nav.modalPresentationStyle = .fullScreen
+            present(nav, animated: true)
+        }
+    }
+
     // MARK: - Firestore
     private func startListening() {
         listener?.remove()
@@ -136,25 +168,17 @@ final class DonorCampaignsListViewController: UIViewController {
 
                     let imageUrl = self.readString(d["imageUrl"]) ?? self.readString(d["imageURL"])
 
-                    // detail
-//                    let overview = self.readString(d["overview"]) ?? (self.readString(d["story"]) ?? "")
-//                    let quoteText = self.readString(d["quoteText"]) ?? ""
-//                    let quoteAuthor = self.readString(d["quoteAuthor"]) ?? ""
-//                    let org = self.readString(d["organization"]) ?? ""
-//                    let orgAbout = self.readString(d["orgAbout"]) ?? ""
-
-                    
-                    // ✅ detail (FIX حسب حقول Firestore عندج)
+                    // ✅ detail (حسب حقول Firestore عندج)
                     let overview = self.readString(d["overview"]) ?? ""
 
                     let story = self.readString(d["story"]) ?? ""
                     let from  = self.readString(d["from"]) ?? ""
 
-                    let quoteText = self.readString(d["quoteText"]) ?? story      // ✅ الصندوق الأصفر ياخذ story
-                    let quoteAuthor = self.readString(d["quoteAuthor"]) ?? from   // ✅ "from" يطلع تحت
+                    let quoteText = self.readString(d["quoteText"]) ?? story
+                    let quoteAuthor = self.readString(d["quoteAuthor"]) ?? from
 
                     let org = self.readString(d["organization"]) ?? "LifeReach"
-                    let orgAbout = self.readString(d["orgAbout"]) ?? ""           // اذا مو موجود بيظل فاضي
+                    let orgAbout = self.readString(d["orgAbout"]) ?? ""
 
                     return DonorCampaignItem(
                         id: doc.documentID,
@@ -214,17 +238,16 @@ extension DonorCampaignsListViewController: UITableViewDataSource, UITableViewDe
 
         cell.configure(with: item)
 
-        // ✅ Read More -> يفتح DonorCampaignDetailViewController (الجديد)
+        // ✅ Read More -> يفتح DonorCampaignDetailViewController
         cell.onReadMore = { [weak self] in
             guard let self else { return }
             self.openDetails(item)
         }
 
-        // ✅ Donate (على الكارد)
+        // ✅ Donate (يروح للبيمنت)
         cell.onDonate = { [weak self] in
-            let a = UIAlertController(title: "Donate", message: "Later ✨", preferredStyle: .alert)
-            a.addAction(UIAlertAction(title: "OK", style: .default))
-            self?.present(a, animated: true)
+            guard let self else { return }
+            self.openFundsDonation(for: item)
         }
 
         return cell
@@ -236,10 +259,9 @@ extension DonorCampaignsListViewController: UITableViewDataSource, UITableViewDe
 
     private func openDetails(_ item: DonorCampaignItem) {
 
-        // ✅ ViewModel للصفحة الجديدة (category نص)
         let vm = DonorCampaignDetailViewController.ViewModel(
             title: item.title,
-            category: item.badgeText,           // ✅ هذا اللي يطلع فوق يسار
+            category: item.badgeText,
             imageURL: item.imageUrl,
             goalAmount: item.goalAmount,
             raisedAmount: item.raisedAmount,
@@ -252,7 +274,7 @@ extension DonorCampaignsListViewController: UITableViewDataSource, UITableViewDe
         )
 
         let vc = DonorCampaignDetailViewController(model: vm, onDonate: { [weak self] in
-            // 🔥 هنا حطي فتح صفحة التبرع عندج
+            // (خليته نفس ما كان عندج)
             let a = UIAlertController(title: "Donate Now", message: "Open your donate flow here ✅", preferredStyle: .alert)
             a.addAction(UIAlertAction(title: "OK", style: .default))
             self?.present(a, animated: true)

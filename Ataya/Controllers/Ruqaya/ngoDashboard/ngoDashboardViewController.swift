@@ -18,7 +18,7 @@ final class ngoDashboardViewController: UIViewController, UITableViewDataSource,
     
     @IBAction func campaignManagementTapped(_ sender: Any) {
 
-            let sb = UIStoryboard(name: "Campaigns", bundle: nil) // اسم الستوريبورد اللي فيه الصفحة الهدف
+            let sb = UIStoryboard(name: "Campaigns", bundle: nil) 
             let vc = sb.instantiateViewController(withIdentifier: "CampaignManagementVC")
 
             self.navigationController?.pushViewController(vc, animated: true)
@@ -29,7 +29,6 @@ final class ngoDashboardViewController: UIViewController, UITableViewDataSource,
     @IBOutlet weak var campaignManagementView: UIView!
     @IBOutlet weak var giftOfMercyView: UIView!
     
-    // Dummy data (نفس اللي تكتبينه)
        private let assignedPickups: [AssignedPickupItem] = [
            AssignedPickupItem(
                title: "Canned Beans",
@@ -98,7 +97,6 @@ final class ngoDashboardViewController: UIViewController, UITableViewDataSource,
         assignedTableView.separatorStyle = .none
         assignedTableView.backgroundColor = .clear
         
-        // ✅ خليها ثابتة عشان تتأكدين إنها تطلع
         assignedTableView.rowHeight = 110
         assignedTableView.estimatedRowHeight = 110
 
@@ -169,7 +167,6 @@ final class ngoDashboardViewController: UIViewController, UITableViewDataSource,
                for: indexPath
            ) as! AssignedPickupCell
            
-           // ✅ هذي السطور اللي سألتِ عنها
            cell.backgroundColor = .clear
            cell.selectionStyle = .none
 
@@ -177,7 +174,6 @@ final class ngoDashboardViewController: UIViewController, UITableViewDataSource,
            return cell
        }
 
-       // ✅ لما تضغط على assigned pickup يفتح التفاصيل
        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
            tableView.deselectRow(at: indexPath, animated: true)
 

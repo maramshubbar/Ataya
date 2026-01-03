@@ -21,7 +21,6 @@ final class DonorDashboardViewController: UIViewController,
     UICollectionViewDataSource, UICollectionViewDelegateFlowLayout,
     UITableViewDataSource, UITableViewDelegate {
 
-    // ✅ عدلي بس هذي إذا ستوريبورد اسمها غير
     private let donateStoryboardName = "DonorDashboard"
     private let donateStoryboardID   = "DonateViewController"
 
@@ -33,7 +32,6 @@ final class DonorDashboardViewController: UIViewController,
     
     private let recurringStoryboardName = "Recurring"              // عدّليه إذا اسم الستوريبورد غير
     private let recurringStoryboardID   = "RecurringViewController" // عدّليه لِـStoryboard ID الحقيقي
-
 
     // Firestore
     private let db = Firestore.firestore()
@@ -63,7 +61,6 @@ final class DonorDashboardViewController: UIViewController,
     override func viewDidLoad() {
         super.viewDidLoad()
         setupQuickToolsTaps()
-        hidesBottomBarWhenPushed = true
 
 
         // Collection

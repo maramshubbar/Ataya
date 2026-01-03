@@ -121,7 +121,7 @@ final class ImpactDashboardViewController: UIViewController {
 
     // MARK: - Navigation
     @IBAction func viewDetailsTapped(_ sender: UIButton) {
-        let sb = UIStoryboard(name: "Main", bundle: nil)
+        let sb = UIStoryboard(name: "Impact", bundle: nil)
         let vc = sb.instantiateViewController(withIdentifier: "ImpactDetailsViewController")
         navigationController?.pushViewController(vc, animated: true)
     }

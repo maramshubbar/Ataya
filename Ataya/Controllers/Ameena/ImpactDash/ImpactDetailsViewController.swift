@@ -248,7 +248,7 @@ final class ImpactDetailsViewController: UIViewController {
     }
 
     @objc private func readMoreTapped(_ sender: UIButton) {
-        let sb = UIStoryboard(name: "Main", bundle: nil)
+        let sb = UIStoryboard(name: "Impact", bundle: nil)
         let rawVC = sb.instantiateViewController(withIdentifier: "SharePreviewViewController")
 
         guard let vc = rawVC as? SharePreviewViewController else {

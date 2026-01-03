@@ -20,8 +20,6 @@ final class ngoDashboardViewController: UIViewController, UITableViewDataSource,
 
             let sb = UIStoryboard(name: "Campaigns", bundle: nil) 
             let vc = sb.instantiateViewController(withIdentifier: "CampaignManagementVC")
-
-            self.navigationController?.pushViewController(vc, animated: true)
         }
 
     

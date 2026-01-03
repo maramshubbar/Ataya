@@ -32,6 +32,7 @@ final class HelpSupportViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.hidesBackButton = true
 
         // ✅ REMOVE NAVIGATION CONTROLLER TITLE/BAR (fix double title)
         navigationItem.title = ""

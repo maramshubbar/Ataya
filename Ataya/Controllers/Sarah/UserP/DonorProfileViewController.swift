@@ -47,7 +47,7 @@ class DonorProfileViewController: UIViewController {
         // Dummy profile data
         donorName.text = "Ameena"
         ratingValue.text = "4"
-        imageProfile.image = UIImage(named: "donorProfile") // Add this image to Assets
+        imageProfile.image = UIImage(named: "dononrProfile") // Add this image to Assets
         
         //styling
         imageProfile.layer.cornerRadius = imageProfile.frame.width / 2

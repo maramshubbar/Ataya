@@ -1,11 +1,3 @@
-//
-//  RecurringLocationChoiceViewController.swift
-//  Ataya
-//
-//  Created by Zahraa Ahmed on 02/01/2026.
-//
-
-// MyAddressListViewController.swift
 import UIKit
 
 final class RecurringAddressListViewController: UIViewController {
@@ -16,7 +8,6 @@ final class RecurringAddressListViewController: UIViewController {
     @IBOutlet weak var ngoButton: UIButton!
     @IBOutlet weak var nextButton: UIButton!
 
-    // Shared donation draft (must be injected from previous screen)
     var draft: DraftDonation?
 
     // MARK: - Selection State
@@ -32,7 +23,6 @@ final class RecurringAddressListViewController: UIViewController {
     private let selectedBorder = UIColor(hex: "#FEC400")
     private let selectedBG = UIColor(hex: "#FFFBE7")
 
-    // Storyboard reference for pickup flow
     private let pickupSB = UIStoryboard(name: "Pickup", bundle: nil)
 
     // MARK: - Lifecycle
@@ -41,7 +31,6 @@ final class RecurringAddressListViewController: UIViewController {
 
         title = "Pickup Location"
 
-        // Safety fallback (should normally be injected)
         if draft == nil {
             draft = DraftDonation()
         }
@@ -52,7 +41,6 @@ final class RecurringAddressListViewController: UIViewController {
         myAddressButton.addTarget(self, action: #selector(myAddressTapped), for: .touchUpInside)
         ngoButton.addTarget(self, action: #selector(ngoTapped), for: .touchUpInside)
 
-        // Ensure button has only one action
         nextButton.removeTarget(nil, action: nil, for: .allEvents)
         nextButton.addTarget(self, action: #selector(nextTappedProgrammatic), for: .touchUpInside)
 
@@ -144,7 +132,6 @@ final class RecurringAddressListViewController: UIViewController {
             draftObj.pickupAddress = nil
             setNextEnabled(false)
 
-            // Authentication check with demo fallback
             AuthGate.ensureLoggedIn { [weak self] ok in
                 guard let self else { return }
 
@@ -169,18 +156,7 @@ final class RecurringAddressListViewController: UIViewController {
 
         case .myAddress:
             draftObj.pickupMethod = "myAddress"
-
-            guard let vc = pickupSB.instantiateViewController(
-                withIdentifier: "MyAddressListTableViewController"
-            ) as? MyAddressListTableViewController else {
-
-                showAlert(title: "Storyboard Error",
-                          message: "Set Storyboard ID = MyAddressListTableViewController in Pickup.storyboard")
-                return
-            }
-
-            vc.draft = draftObj
-            navigationController?.pushViewController(vc, animated: true)
+            presentThankYouPopup()
         }
     }
 
@@ -188,7 +164,6 @@ final class RecurringAddressListViewController: UIViewController {
     private func uploadThenSave(_ draft: DraftDonation,
                                completion: @escaping (Error?) -> Void) {
 
-        // Upload images first if needed
         if !draft.images.isEmpty && draft.photoURLs.isEmpty {
             CloudinaryUploader.shared.uploadImages(draft.images, folder: "donations") { res in
                 switch res {
@@ -210,7 +185,6 @@ final class RecurringAddressListViewController: UIViewController {
             return
         }
 
-        // Save directly if no upload needed
         DonationDraftSaver.shared.saveAfterPickup(draft: draft) { err in
             completion(err)
         }
@@ -267,5 +241,3 @@ final class RecurringAddressListViewController: UIViewController {
         tabBarController?.tabBar.isHidden = false
     }
 }
-
-

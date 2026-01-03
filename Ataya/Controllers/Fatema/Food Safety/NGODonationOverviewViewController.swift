@@ -7,6 +7,8 @@
 
 import UIKit
 import FirebaseFirestore
+import FirebaseAuth
+
 
 final class NGODonationOverviewViewController: UIViewController {
 
@@ -18,7 +20,7 @@ final class NGODonationOverviewViewController: UIViewController {
 
     private var allItems: [DonationItem] = []
     private var shownItems: [DonationItem] = []
-
+ 
     private static let dateFormatter: DateFormatter = {
         let f = DateFormatter()
         f.dateStyle = .medium
@@ -124,14 +126,21 @@ final class NGODonationOverviewViewController: UIViewController {
                 DispatchQueue.main.async { self.applySearchAndReload() }
             }
     }
-
     private func mapStatus(_ s: String) -> DonationItem.Status {
-        switch s.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() {
-        case "approved": return .approved
-        case "rejected": return .rejected
-        default: return .pending
+        let v = s.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+
+        switch v {
+        case "approved", "successful", "completed", "collected", "accept":
+            return .approved
+
+        case "rejected", "reject":
+            return .rejected
+
+        default:
+            return .pending
         }
     }
+
 
     private func applySearchAndReload() {
         let q = (searchBar.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines).lowercased()

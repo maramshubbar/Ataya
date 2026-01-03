@@ -184,24 +184,70 @@ final class DonorDashboardViewController: UIViewController,
         ongoingListener = nil
     }
 
+//    private func listenCampaignsNoIndex() {
+//        campaignsListener?.remove()
+//
+//        campaignsListener = db.collection("campaigns")
+//            .limit(to: 20)
+//            .addSnapshotListener { [weak self] snap, err in
+//                guard let self else { return }
+//                if let err { print("❌ campaigns error:", err); return }
+//
+//                let docs = snap?.documents ?? []
+//                var items: [DashboardCampaign] = docs.map { d in
+//                    let data = d.data()
+//                    let title = (data["title"] as? String) ?? (data["name"] as? String) ?? "Untitled"
+//                    let tag = (data["category"] as? String) ?? (data["tag"] as? String) ?? "General"
+//                    let imageUrl = (data["imageUrl"] as? String) ?? (data["image"] as? String)
+//                    let imageName = (data["imageName"] as? String) ?? "campaign1"
+//                    let createdAt = (data["createdAt"] as? Timestamp)?.dateValue()
+//                    return DashboardCampaign(imageName: imageName, imageUrl: imageUrl, tag: tag, title: title, createdAt: createdAt)
+//                }
+//
+//                items.sort { ($0.createdAt ?? .distantPast) > ($1.createdAt ?? .distantPast) }
+//                self.campaigns = items
+//
+//                DispatchQueue.main.async {
+//                    self.campaignsCollectionView.reloadData()
+//                }
+//            }
+//    }
+    
+    
     private func listenCampaignsNoIndex() {
         campaignsListener?.remove()
 
         campaignsListener = db.collection("campaigns")
-            .limit(to: 20)
+            .limit(to: 50)
             .addSnapshotListener { [weak self] snap, err in
                 guard let self else { return }
                 if let err { print("❌ campaigns error:", err); return }
 
                 let docs = snap?.documents ?? []
-                var items: [DashboardCampaign] = docs.map { d in
+                var items: [DashboardCampaign] = []
+
+                for d in docs {
                     let data = d.data()
+
+                    // ✅ أهم سطر: الهوم يعرض بس اللي showOnHome = true
+                    let showOnHome = (data["showOnHome"] as? Bool) ?? false
+                    guard showOnHome else { continue }
+
                     let title = (data["title"] as? String) ?? (data["name"] as? String) ?? "Untitled"
                     let tag = (data["category"] as? String) ?? (data["tag"] as? String) ?? "General"
                     let imageUrl = (data["imageUrl"] as? String) ?? (data["image"] as? String)
                     let imageName = (data["imageName"] as? String) ?? "campaign1"
                     let createdAt = (data["createdAt"] as? Timestamp)?.dateValue()
-                    return DashboardCampaign(imageName: imageName, imageUrl: imageUrl, tag: tag, title: title, createdAt: createdAt)
+
+                    items.append(
+                        DashboardCampaign(
+                            imageName: imageName,
+                            imageUrl: imageUrl,
+                            tag: tag,
+                            title: title,
+                            createdAt: createdAt
+                        )
+                    )
                 }
 
                 items.sort { ($0.createdAt ?? .distantPast) > ($1.createdAt ?? .distantPast) }
@@ -212,6 +258,7 @@ final class DonorDashboardViewController: UIViewController,
                 }
             }
     }
+
 
     private func listenOngoingNoIndex() {
         ongoingListener?.remove()

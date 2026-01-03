@@ -101,10 +101,23 @@
                         <rect key="frame" x="0.0" y="124" width="440" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
+                    <connections>
+                        <segue destination="ECt-hO-9mq" kind="relationship" relationship="rootViewController" id="qtG-6I-dIp"/>
+                    </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lGN-Zr-Eyk" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="776" y="-1095"/>
+        </scene>
+        <!--RewardsNgoViewController-->
+        <scene sceneID="VXq-Fj-lMX">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Gamification" referencedIdentifier="RewardsNgoViewController" id="ECt-hO-9mq" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="vgc-af-B7x"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="q2o-Tq-Of4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="995" y="-635"/>
         </scene>
         <!--Routes-->
         <scene sceneID="gDX-XM-3wT">
@@ -410,15 +423,27 @@
                                                                             <constraint firstAttribute="height" constant="40" id="L8F-1B-Nop"/>
                                                                         </constraints>
                                                                     </imageView>
+                                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="C1M-Ge-X31">
+                                                                        <rect key="frame" x="0.0" y="0.0" width="400" height="65"/>
+                                                                        <state key="normal" title="Button"/>
+                                                                        <buttonConfiguration key="configuration" style="plain"/>
+                                                                        <connections>
+                                                                            <segue destination="yXX-KO-4kP" kind="show" id="8S2-qd-IFo"/>
+                                                                        </connections>
+                                                                    </button>
                                                                 </subviews>
                                                                 <gestureRecognizers/>
                                                                 <constraints>
+                                                                    <constraint firstItem="C1M-Ge-X31" firstAttribute="top" secondItem="Pr8-Ze-EAD" secondAttribute="top" id="13I-Bv-IDE"/>
                                                                     <constraint firstAttribute="height" constant="65" id="3gR-sP-pYJ"/>
                                                                     <constraint firstAttribute="trailing" secondItem="Ynn-2j-5Jf" secondAttribute="trailing" constant="16" id="4q4-Th-yxc"/>
+                                                                    <constraint firstAttribute="bottom" secondItem="C1M-Ge-X31" secondAttribute="bottom" id="NxH-0l-4pF"/>
                                                                     <constraint firstItem="CAd-bn-SEf" firstAttribute="centerY" secondItem="Pr8-Ze-EAD" secondAttribute="centerY" id="S3p-9e-kTT"/>
                                                                     <constraint firstItem="BLx-1J-fth" firstAttribute="centerY" secondItem="Pr8-Ze-EAD" secondAttribute="centerY" id="V1f-7J-egB"/>
+                                                                    <constraint firstItem="C1M-Ge-X31" firstAttribute="leading" secondItem="Pr8-Ze-EAD" secondAttribute="leading" id="Zfq-sH-1L4"/>
                                                                     <constraint firstItem="Ynn-2j-5Jf" firstAttribute="centerY" secondItem="Pr8-Ze-EAD" secondAttribute="centerY" id="aJD-PZ-Lhi"/>
                                                                     <constraint firstItem="Ynn-2j-5Jf" firstAttribute="leading" relation="lessThanOrEqual" secondItem="CAd-bn-SEf" secondAttribute="trailing" constant="-12" id="bRd-EP-3cL"/>
+                                                                    <constraint firstAttribute="trailing" secondItem="C1M-Ge-X31" secondAttribute="trailing" id="kEt-iR-ALd"/>
                                                                     <constraint firstItem="CAd-bn-SEf" firstAttribute="leading" secondItem="BLx-1J-fth" secondAttribute="trailing" constant="21" id="kK8-KY-zZ1"/>
                                                                     <constraint firstItem="BLx-1J-fth" firstAttribute="leading" secondItem="Pr8-Ze-EAD" secondAttribute="leading" constant="22" id="s69-tv-0hn"/>
                                                                 </constraints>
@@ -573,6 +598,16 @@
             </objects>
             <point key="canvasLocation" x="-2164.0909090909095" y="-377.19665271966528"/>
         </scene>
+        <!--NGODonationOverviewViewController-->
+        <scene sceneID="wOl-oM-KEy">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Safety" referencedIdentifier="NGODonationOverviewViewController" id="yXX-KO-4kP" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="249-F3-0YC"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="V9h-YX-JF1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1662" y="35"/>
+        </scene>
         <!--Assigned Pickup View Controller-->
         <scene sceneID="eD1-sW-LZW">
             <objects>
@@ -606,7 +641,7 @@
     </scenes>
     <resources>
         <image name="C" width="260" height="240"/>
-        <image name="Deliverytime" width="90" height="90"/>
+        <image name="Deliverytime" width="23" height="23"/>
         <image name="Logo" width="45" height="45"/>
         <image name="agreement copy" width="512" height="512"/>
         <image name="bell.fill" catalog="system" width="123" height="128"/>

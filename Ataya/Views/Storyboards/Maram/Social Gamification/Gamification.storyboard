@@ -505,10 +505,10 @@
                                 </segments>
                             </segmentedControl>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FqS-NI-JtB" userLabel="vwCountryCard">
-                                <rect key="frame" x="12" y="213" width="369" height="900"/>
+                                <rect key="frame" x="12" y="213" width="369" height="624"/>
                                 <subviews>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="JjZ-N9-BFo" userLabel="tblList">
-                                        <rect key="frame" x="12" y="12" width="345" height="813.33333333333337"/>
+                                        <rect key="frame" x="12" y="12" width="345" height="564"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <prototypes>
                                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ListCell" rowHeight="44" id="p1l-Jc-qxJ" customClass="SpacedListCell" customModule="Ataya" customModuleProvider="target">
@@ -575,7 +575,6 @@
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="900" id="CfI-Gg-Ge3"/>
                                     <constraint firstAttribute="trailing" secondItem="JjZ-N9-BFo" secondAttribute="trailing" constant="12" id="EEn-Dr-Tww"/>
                                     <constraint firstAttribute="height" secondItem="JjZ-N9-BFo" secondAttribute="height" multiplier="1.10657" id="PdL-t0-J3c"/>
                                     <constraint firstItem="JjZ-N9-BFo" firstAttribute="leading" secondItem="FqS-NI-JtB" secondAttribute="leading" constant="12" id="nEe-gH-TLd"/>
@@ -588,6 +587,7 @@
                         <constraints>
                             <constraint firstItem="pFa-Al-XJH" firstAttribute="trailing" secondItem="FqS-NI-JtB" secondAttribute="trailing" constant="12" id="AQ3-Mw-uWd"/>
                             <constraint firstItem="vsB-fQ-95s" firstAttribute="top" secondItem="pFa-Al-XJH" secondAttribute="top" constant="8" id="AaU-tg-ntA"/>
+                            <constraint firstAttribute="bottom" secondItem="FqS-NI-JtB" secondAttribute="bottom" constant="15" id="Srq-B8-Ety"/>
                             <constraint firstItem="FqS-NI-JtB" firstAttribute="leading" secondItem="pFa-Al-XJH" secondAttribute="leading" constant="12" id="YnC-FU-x6I"/>
                             <constraint firstItem="vsB-fQ-95s" firstAttribute="centerX" secondItem="pFa-Al-XJH" secondAttribute="centerX" id="enT-N0-ggP"/>
                             <constraint firstItem="FqS-NI-JtB" firstAttribute="top" secondItem="vsB-fQ-95s" secondAttribute="bottom" constant="12" id="gH4-hk-KOA"/>
@@ -907,7 +907,7 @@
         <!--Rewards n-->
         <scene sceneID="fbn-Qh-LA7">
             <objects>
-                <viewController id="Ij1-Cv-sSe" userLabel="Rewards n" customClass="RewardsNgoViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="RewardsNgoViewController" id="Ij1-Cv-sSe" userLabel="Rewards n" customClass="RewardsNgoViewController" customModule="Ataya" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="87o-N7-tPN">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -933,8 +933,8 @@
                                                             <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WWu-4Q-tNQ" userLabel="haloView">
                                                                 <rect key="frame" x="96" y="0.0" width="170" height="170"/>
                                                                 <subviews>
-                                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Gold Donor Badge" translatesAutoresizingMaskIntoConstraints="NO" id="kfC-FA-iBP" userLabel="medalImageView">
-                                                                        <rect key="frame" x="7.3333333333333286" y="-50" width="155" height="310"/>
+                                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="tier_diamond" translatesAutoresizingMaskIntoConstraints="NO" id="kfC-FA-iBP" userLabel="medalImageView">
+                                                                        <rect key="frame" x="15" y="-20" width="155" height="280"/>
                                                                         <constraints>
                                                                             <constraint firstAttribute="width" constant="155" id="3Xb-yO-W09"/>
                                                                         </constraints>
@@ -944,9 +944,9 @@
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="170" id="MUG-Ud-Fri"/>
                                                                     <constraint firstAttribute="bottom" secondItem="kfC-FA-iBP" secondAttribute="bottom" constant="-90" id="NUv-HW-Wrw"/>
-                                                                    <constraint firstItem="kfC-FA-iBP" firstAttribute="centerX" secondItem="WWu-4Q-tNQ" secondAttribute="centerX" id="aDf-aO-v05"/>
                                                                     <constraint firstAttribute="width" constant="170" id="cNp-5G-8Z9"/>
-                                                                    <constraint firstItem="kfC-FA-iBP" firstAttribute="top" secondItem="WWu-4Q-tNQ" secondAttribute="top" constant="-50" id="o7F-AB-hRD"/>
+                                                                    <constraint firstAttribute="trailing" secondItem="kfC-FA-iBP" secondAttribute="trailing" id="f0X-Zj-XKM"/>
+                                                                    <constraint firstItem="kfC-FA-iBP" firstAttribute="top" secondItem="WWu-4Q-tNQ" secondAttribute="top" constant="-20" id="o7F-AB-hRD"/>
                                                                 </constraints>
                                                                 <userDefinedRuntimeAttributes>
                                                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -1174,7 +1174,7 @@
                                     <constraint firstItem="EPB-09-XDk" firstAttribute="leading" secondItem="Pif-AX-T51" secondAttribute="leading" id="58H-21-S4k"/>
                                     <constraint firstItem="EPB-09-XDk" firstAttribute="top" secondItem="mgf-m4-6T9" secondAttribute="top" id="Awh-jB-FXi"/>
                                     <constraint firstItem="EPB-09-XDk" firstAttribute="centerX" secondItem="Pif-AX-T51" secondAttribute="centerX" id="Ota-eP-tTP"/>
-                                    <constraint firstItem="EPB-09-XDk" firstAttribute="height" secondItem="mgf-m4-6T9" secondAttribute="height" id="tQL-p1-48t"/>
+                                    <constraint firstAttribute="bottom" secondItem="EPB-09-XDk" secondAttribute="bottom" constant="40" id="Voz-fp-rBa"/>
                                     <constraint firstAttribute="trailing" secondItem="EPB-09-XDk" secondAttribute="trailing" id="yVG-Ux-fPU"/>
                                 </constraints>
                                 <viewLayoutGuide key="contentLayoutGuide" id="mgf-m4-6T9"/>
@@ -1206,18 +1206,18 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="Gkf-LM-7om"/>
+        <segue reference="DrY-2u-K40"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
     <resources>
         <image name="Certificate 1" width="102" height="90"/>
         <image name="Check Mark" width="18" height="22"/>
         <image name="Confetti 1" width="96" height="99"/>
-        <image name="Gold Donor Badge" width="468" height="603"/>
         <image name="HopPalImg" width="108" height="111"/>
         <image name="PNR Code" width="111" height="99"/>
         <image name="QR" width="429" height="429"/>
         <image name="Star" width="23" height="23"/>
+        <image name="tier_diamond" width="318" height="785"/>
         <image name="tier_silver" width="318" height="785"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

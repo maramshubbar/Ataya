@@ -121,16 +121,17 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     // placeholder list (لو ما رجع شيء)
     // ✅✅✅ (أضفنا points + صور placeholder)
     private let placeholderAllRows: [ListRow] = [
-        .init(imageName: "HopPalImg",    name: "HopPal",        countryText: "🇧🇭 Bahrain",        type: .ngo,   points: 2200),
-        .init(imageName: "KindWave",     name: "KindWave",      countryText: "🇱🇧 Lebanon",        type: .ngo,   points: 1700),
-        .init(imageName: "LifeReachImg", name: "LifeReach",     countryText: "🇸🇦 Saudi Arabia",   type: .ngo,   points: 1600),
-        .init(imageName: "AidBridge",    name: "AidBridge",     countryText: "🇩🇪 Germany",        type: .ngo,   points: 1200),
-        .init(imageName: "PureRelief",   name: "PureRelief",    countryText: "🇨🇦 Canada",         type: .ngo,   points: 800),
+        .init(imageName: "HopPalImg",    name: "HopPal",        countryText: " Bahrain",        type: .ngo,   points: 2200),
+        .init(imageName: "KindWave",     name: "KindWave",      countryText: " Lebanon",        type: .ngo,   points: 1700),
+        .init(imageName: "LifeReachImg", name: "LifeReach",     countryText: " KSA",   type: .ngo,   points: 1600),
+        .init(imageName: "AidBridge",    name: "AidBridge",     countryText: " Germany",        type: .ngo,   points: 1200),
+        .init(imageName: "PureRelief",   name: "PureRelief",    countryText: " Canada",         type: .ngo,   points: 800),
 
-        .init(imageName: "ic_avatar_placeholder", name: "Jassim Ali",    countryText: "🇧🇭 Bahrain",        type: .donor, points: 1500),
-        .init(imageName: "ic_avatar_placeholder", name: "Henry Beeston", countryText: "🇬🇧 United Kingdom", type: .donor, points: 1400),
-        .init(imageName: "ic_avatar_placeholder", name: "Noor Mohd",     countryText: "🇮🇳 India",          type: .donor, points: 900),
-        .init(imageName: "ic_avatar_placeholder", name: "Willam Smith",  countryText: "🇺🇸 United States",  type: .donor, points: 500)
+        // ✅ donors placeholder images
+        .init(imageName: "Jassim Ali", name: "Jassim Ali",    countryText: " Bahrain",        type: .donor, points: 1500),
+        .init(imageName: "Henry Beeston", name: "Henry Beeston", countryText: " UK", type: .donor, points: 1400),
+        .init(imageName: "Noor Mohd", name: "Noor Mohd",     countryText: " India",          type: .donor, points: 900),
+        .init(imageName: "Willam Smith", name: "Willam Smith",  countryText: " US",  type: .donor, points: 500)
     ]
 
     // MARK: - Firestore
@@ -146,11 +147,17 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     private let campaignsCol = "campaigns"
     private let basketsCol = "baskets"
 
+    // ✅✅✅ NEW: pickups (country comes from pickups.location)
+    private let pickupsCol = "pickups"
+
     // Latest docs
     private var latestDonationDocs: [QueryDocumentSnapshot] = []
     private var latestCampaignDocs: [QueryDocumentSnapshot] = []
     private var latestBasketDocs: [QueryDocumentSnapshot] = []
     private var latestNgoDocs: [QueryDocumentSnapshot] = []
+
+    // ✅✅✅ NEW: latest pickups docs
+    private var latestPickupDocs: [QueryDocumentSnapshot] = []
 
     // Leaderboard cache
     private var allRows: [ListRow] = []
@@ -187,7 +194,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         updateDonationCategoriesUI(food: 0, baskets: 0, campaign: 0, animated: false)
 
         // Tables + segments
-        setupSegmentUI()
+//        setupSegmentUI()
         setupListTableUI()
         setupCountriesTableUI()
 
@@ -197,13 +204,13 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         segTimeRange?.selectedSegmentIndex = 1 // default 6 months
         segTimeRange?.addTarget(self, action: #selector(timeRangeChanged), for: .valueChanged)
 
-        // ✅✅✅ PLACEHOLDER leaderboard الآن
+        //  PLACEHOLDER leaderboard الآن
         loadLeaderboard_PLACEHOLDER()
 
         setupChart()
         startListening()
 
-        // ✅✅✅ لما تجهزين الباكند:
+        //  لما تجهزين الباكند:
         // 1) خلي useLeaderboardPlaceholderOnly = false
         // 2) فكّي تعليق هذا
         /*
@@ -240,12 +247,18 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         listeners.forEach { $0.remove() }
         listeners.removeAll()
 
+        // ✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅
+        // ✅ التعديل الوحيد هنا:
+        // Registered Users = users where role IN ["donor", "ngo"] (exclude admin)
+        // ✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅
         listeners.append(
-            db.collection(usersCol).addSnapshotListener { [weak self] snap, _ in
-                guard let self else { return }
-                self.usersCountFromUsers = snap?.documents.count ?? 0
-                DispatchQueue.main.async { self.updateRegisteredUsersLabel() }
-            }
+            db.collection(usersCol)
+                .whereField("role", in: ["donor", "ngo"])
+                .addSnapshotListener { [weak self] snap, _ in
+                    guard let self else { return }
+                    self.usersCountFromUsers = snap?.documents.count ?? 0
+                    DispatchQueue.main.async { self.updateRegisteredUsersLabel() }
+                }
         )
 
         listeners.append(
@@ -276,6 +289,15 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
             db.collection(campaignsCol).addSnapshotListener { [weak self] snap, _ in
                 guard let self else { return }
                 self.latestCampaignDocs = snap?.documents ?? []
+                self.recomputeAllFromLatest()
+            }
+        )
+
+        // ✅✅✅ NEW: pickups listener (country from pickups.location)
+        listeners.append(
+            db.collection(pickupsCol).addSnapshotListener { [weak self] snap, _ in
+                guard let self else { return }
+                self.latestPickupDocs = snap?.documents ?? []
                 self.recomputeAllFromLatest()
             }
         )
@@ -330,13 +352,15 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
             )
         }
 
-        // ✅ Countries list = (donations + baskets + campaigns) by country
-        let allDocsForCountries = donationDocsInRange + basketDocsInRange + campaignDocsInRange
-        recomputeCountries(from: allDocsForCountries)
+        // ✅ Countries list:
+        // ✅✅✅ NOW: Take country from pickups.location (if pickups exist)
+        let allDocsForCountriesFallback = donationDocsInRange + basketDocsInRange + campaignDocsInRange
+        recomputeCountriesFromPickupsLocationOrFallback(fallbackDocs: allDocsForCountriesFallback)
 
         // ✅ Chart = (donations + baskets + campaigns) counts over time
+        let allDocsForChart = donationDocsInRange + basketDocsInRange + campaignDocsInRange
         DispatchQueue.main.async {
-            self.updateOverviewChartCounts(from: allDocsForCountries)
+            self.updateOverviewChartCounts(from: allDocsForChart)
         }
 
         // ✅ Donors (for leaderboard) from DONATIONS only
@@ -377,6 +401,105 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         recomputeNgoAndLeaderboard()
     }
 
+    // ==========================================================
+    // ✅✅✅ NEW: Countries from PICKUPS.location + fallback
+    // ==========================================================
+    private func recomputeCountriesFromPickupsLocationOrFallback(fallbackDocs: [QueryDocumentSnapshot]) {
+
+        let startDate = selectedStartDate()
+
+        // ✅ pickups within time range (uses pickup date if exists, else createdAt)
+        let pickupsInRange = latestPickupDocs.filter { doc in
+            let d = extractPickupDate(doc.data()) ?? extractDocDate(doc.data()) ?? Date.distantPast
+            return d >= startDate
+        }
+
+        // ✅ If we have pickups -> use them
+        if !pickupsInRange.isEmpty {
+            recomputeCountriesFromPickupLocationDocs(pickupsInRange)
+            return
+        }
+
+        // ✅ fallback to old logic if pickups empty
+        recomputeCountries(from: fallbackDocs)
+    }
+
+    private func recomputeCountriesFromPickupLocationDocs(_ docs: [QueryDocumentSnapshot]) {
+
+        var byCountryCount: [String: Int] = [:]
+
+        for d in docs {
+            let data = d.data()
+
+            // ✅ location is inside pickups
+            let loc = stringValue(data, keys: ["location"]).ifEmpty("Unknown")
+            let country = detectCountryFromLocation(loc).ifEmpty("Unknown")
+
+            byCountryCount[country, default: 0] += 1
+        }
+
+        let total = max(docs.count, 1)
+
+        let rows = byCountryCount
+            .map { (name: $0.key, count: $0.value) }
+            .sorted { $0.count > $1.count }
+            .map { item -> CountryRow in
+                let pct = Int(round((Double(item.count) / Double(total)) * 100))
+                return CountryRow(name: item.name, count: item.count, percent: pct)
+            }
+
+        DispatchQueue.main.async {
+            self.countriesRows = Array(rows.prefix(5))
+            self.tblCountries?.reloadData()
+        }
+    }
+
+    // ✅ Optional: pickup date fields (if you have)
+    private func extractPickupDate(_ data: [String: Any]) -> Date? {
+        if let ts = data["pickupAt"] as? Timestamp { return ts.dateValue() }
+        if let ts = data["pickedUpAt"] as? Timestamp { return ts.dateValue() }
+        if let ts = data["pickupDate"] as? Timestamp { return ts.dateValue() }
+        if let ts = data["scheduledAt"] as? Timestamp { return ts.dateValue() }
+        return nil
+    }
+
+    // ✅ Detect country from pickups.location string
+    // Works with: "Manama, Bahrain" OR "Bahrain" OR "UK" OR "KSA"
+    private func detectCountryFromLocation(_ location: String) -> String {
+        let cleaned = location.trimmingCharacters(in: .whitespacesAndNewlines)
+        if cleaned.isEmpty { return "" }
+
+        // split by common separators
+        let tokens = cleaned
+            .replacingOccurrences(of: "\n", with: " ")
+            .components(separatedBy: CharacterSet(charactersIn: ",-|–—•/"))
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+
+        // usually last part is country
+        for t in tokens.reversed() {
+            let key = t.lowercased()
+
+            // known short codes
+            if key == "ksa" { return "KSA" }
+            if key == "uk" { return "UK" }
+            if key == "us" { return "US" }
+            if key == "usa" { return "USA" }
+
+            // if it maps to a flag, accept it as a country name
+            if flagEmoji(forCountryName: t) != "" { return t }
+        }
+
+        // fallback: comma-last extraction
+        let commaBased = extractCountry(from: cleaned)
+        if !commaBased.isEmpty { return commaBased }
+
+        return cleaned
+    }
+
+    // ==========================================================
+    // ✅ OLD fallback logic (still here)
+    // ==========================================================
     private func recomputeCountries(from docs: [QueryDocumentSnapshot]) {
         var byCountryCount: [String: Int] = [:]
 
@@ -767,23 +890,23 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     }
 
     // MARK: - Leaderboard UI
-
-    private func setupSegmentUI() {
-        guard let seg = segListFilter else { return }
-
-        seg.backgroundColor = UIColor(white: 0.93, alpha: 1)
-        seg.selectedSegmentTintColor = .white
-
-        seg.setTitleTextAttributes([
-            .foregroundColor: UIColor.darkGray,
-            .font: UIFont.systemFont(ofSize: 13, weight: .semibold)
-        ], for: .normal)
-
-        seg.setTitleTextAttributes([
-            .foregroundColor: UIColor.black,
-            .font: UIFont.systemFont(ofSize: 13, weight: .semibold)
-        ], for: .selected)
-    }
+//
+//    private func setupSegmentUI() {
+//        guard let seg = segListFilter else { return }
+//
+//        seg.backgroundColor = UIColor(white: 0.93, alpha: 1)
+//        seg.selectedSegmentTintColor = .white
+//
+//        seg.setTitleTextAttributes([
+//            .foregroundColor: UIColor.darkGray,
+//            .font: UIFont.systemFont(ofSize: 13, weight: .semibold)
+//        ], for: .normal)
+//
+//        seg.setTitleTextAttributes([
+//            .foregroundColor: UIColor.black,
+//            .font: UIFont.systemFont(ofSize: 13, weight: .semibold)
+//        ], for: .selected)
+//    }
 
     private func setupListTableUI() {
         guard let table = tblList else { return }
@@ -858,21 +981,23 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
             let item = countriesRows[indexPath.row]
             cell.layoutIfNeeded()
 
-            // dot (tag 1)
+            // ✅ dot (tag 1) - إذا موجود
             if let dot = cell.contentView.viewWithTag(1) {
                 dot.backgroundColor = dotColors[indexPath.row % dotColors.count]
                 dot.layer.cornerRadius = (dot.bounds.height > 0 ? dot.bounds.height : 20) / 2
                 dot.clipsToBounds = true
             }
 
-            // ✅ نخليها Robust: نجيب 3 labels (tags 2/3/4) ونوزعهم حسب الـ X (يسار/وسط/يمين)
+            // ✅ Robust:
+            // 1) نحاول tags 2/3/4
+            // 2) إذا الtags تعفست بالغلط، نلقط أي 3 labels من contentView ونرتبهم حسب X
             let l2 = cell.contentView.viewWithTag(2) as? UILabel
             let l3 = cell.contentView.viewWithTag(3) as? UILabel
             let l4 = cell.contentView.viewWithTag(4) as? UILabel
-            let labels = [l2, l3, l4].compactMap { $0 }
+            let taggedLabels = [l2, l3, l4].compactMap { $0 }
 
-            if labels.count == 3 {
-                let sorted = labels.sorted { $0.frame.minX < $1.frame.minX }
+            if taggedLabels.count == 3 {
+                let sorted = taggedLabels.sorted { $0.frame.minX < $1.frame.minX }
                 let nameLbl = sorted[0]
                 let countLbl = sorted[1]
                 let pctLbl = sorted[2]
@@ -880,10 +1005,30 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
                 nameLbl.text = item.name
                 countLbl.text = formatNumber(item.count)
                 pctLbl.text = "\(item.percent)%"
+
+                // ✅ منع تداخل default labels
+                cell.textLabel?.text = nil
+                cell.detailTextLabel?.text = nil
             } else {
-                // fallback
-                cell.textLabel?.text = item.name
-                cell.detailTextLabel?.text = "\(item.count) • \(item.percent)%"
+                // ✅ لو التاغز تعفست: نجيب كل UILabel داخل contentView (حتى لو بدون tags)
+                let allLabels = allLabelsInside(cell.contentView)
+                if allLabels.count >= 3 {
+                    let sorted = allLabels.sorted { $0.frame.minX < $1.frame.minX }
+                    let nameLbl = sorted[0]
+                    let countLbl = sorted[1]
+                    let pctLbl = sorted[2]
+
+                    nameLbl.text = item.name
+                    countLbl.text = formatNumber(item.count)
+                    pctLbl.text = "\(item.percent)%"
+
+                    cell.textLabel?.text = nil
+                    cell.detailTextLabel?.text = nil
+                } else {
+                    // fallback حقيقي (إذا ما عندج labels بالستوريبورد)
+                    cell.textLabel?.text = item.name
+                    cell.detailTextLabel?.text = "\(item.count) • \(item.percent)%"
+                }
             }
 
             cell.selectionStyle = .none
@@ -906,6 +1051,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         // عشان إذا tags ناقصه ما يطلع “Label”
         if lblName != nil && lblCountry != nil && lblType != nil {
 
+            // ✅ placeholder image if not found
             let avatar = UIImage(named: item.imageName ?? "") ?? UIImage(named: "ic_avatar_placeholder")
             img?.image = avatar
             img?.layer.cornerRadius = 18
@@ -928,6 +1074,16 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     }
 
     // MARK: - Helpers
+
+    private func allLabelsInside(_ view: UIView) -> [UILabel] {
+        var result: [UILabel] = []
+        for sub in view.subviews {
+            if let l = sub as? UILabel { result.append(l) }
+            result.append(contentsOf: allLabelsInside(sub))
+        }
+        // نحاول نستبعد أي UILabel حجمها 0 (غالبًا مالها معنى)
+        return result.filter { $0.bounds.width > 0 && $0.bounds.height > 0 }
+    }
 
     private func extractDocDate(_ data: [String: Any]) -> Date? {
         // يدعم أكثر من اسم حق التاريخ
@@ -972,6 +1128,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
             "bahrain": "🇧🇭",
             "lebanon": "🇱🇧",
             "saudi arabia": "🇸🇦",
+            "ksa": "🇸🇦",
             "germany": "🇩🇪",
             "canada": "🇨🇦",
             "united kingdom": "🇬🇧",

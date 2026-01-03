@@ -99,7 +99,7 @@ final class DonorTabBarController: UITabBarController, UITabBarControllerDelegat
         guard !isShowingDonateSheet else { return }
         isShowingDonateSheet = true
 
-        let sb = UIStoryboard(name: "Main", bundle: nil)
+        let sb = UIStoryboard(name: "DonorDashboard", bundle: nil)
         guard let donateVC = sb.instantiateViewController(withIdentifier: "DonateViewController") as? DonateViewController else {
             assertionFailure("DonateViewController Storyboard ID not found")
             isShowingDonateSheet = false

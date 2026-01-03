@@ -96,7 +96,6 @@ final class CreateCampaignViewController: UIViewController {
     // ✅ ADDED: Category selected value
     private var selectedCategory: String = "Critical"
 
-    // ✅ مهم: عشان Edit ما يعيد يرفع الصورة القديمة (اللي نحمّلها للعرض فقط)
     private var didPickNewImage: Bool = false
 
     // ✅ NEW: block create until NGO org loaded

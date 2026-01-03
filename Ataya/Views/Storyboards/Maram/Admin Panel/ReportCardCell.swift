@@ -27,7 +27,6 @@ final class ReportCardCell: UITableViewCell {
 
     var onViewDetailsTapped: (() -> Void)?
 
-    // ✅ نخفي "صف" اللوكيشن كامل (الأيقونة + النص)
     private weak var locationRowStack: UIStackView?
     private weak var ngoRowStack: UIStackView?
 
@@ -42,7 +41,6 @@ final class ReportCardCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
 
-        // رجّعيهم ظاهرين افتراضياً
         locationRowStack?.isHidden = false
         ngoRowStack?.isHidden = false
 
@@ -74,7 +72,6 @@ final class ReportCardCell: UITableViewCell {
         onViewDetailsTapped?()
     }
 
-    // ✅ يلقط أقرب stack أفقي يمثل "row" ويحتوي الليبل (حتى لو الليبل داخل View داخل الـstack)
     private func findNearestHorizontalRowStack(containing view: UIView) -> UIStackView? {
         var current: UIView? = view
         while let c = current {
@@ -109,13 +106,10 @@ final class ReportCardCell: UITableViewCell {
         let hideLocation = loc.isEmpty
         let hideNgo = ngoText.isEmpty
 
-        // ✅ أهم سطرين: نخفي الصف كامل (يختفي pin + النص)
         if let row = locationRowStack {
             row.isHidden = hideLocation
         } else {
-            // fallback: لو ما لقينا stack (نخفي الليبل نفسه على الأقل)
             locationLabel.isHidden = hideLocation
-            // ونخفي أي UIImageView قريبة بنفس السوبرفيو (عشان pin ما يطلع بروحه)
             hideNearestImageView(around: locationLabel, hide: hideLocation)
         }
 
@@ -133,23 +127,19 @@ final class ReportCardCell: UITableViewCell {
         }
     }
 
-    // ✅ fallback قوي: يخفي أقرب UIImageView حوالين الليبل (pin)
     private func hideNearestImageView(around label: UILabel, hide: Bool) {
-        // جرّبي نفس السوبرفيو
         if let siblings = label.superview?.subviews {
             for v in siblings {
                 if let img = v as? UIImageView {
                     img.isHidden = hide
                     return
                 }
-                // لو الأيقونة داخل View
                 if let img = v.subviews.first(where: { $0 is UIImageView }) as? UIImageView {
                     img.isHidden = hide
                     return
                 }
             }
         }
-        // جرّبي سوبرفيو أعلى
         if let parent = label.superview?.superview {
             for v in parent.subviews {
                 if let img = v as? UIImageView {

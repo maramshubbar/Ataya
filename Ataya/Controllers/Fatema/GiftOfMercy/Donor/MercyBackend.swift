@@ -39,7 +39,6 @@ enum MercyBackend {
 
         let db = Firestore.firestore()
 
-        // ✅ غيّري اسم الكولكشن إذا عندك اسم مختلف
         let query = db.collection("giftCardDesigns")
             .whereField("isActive", isEqualTo: true)
 

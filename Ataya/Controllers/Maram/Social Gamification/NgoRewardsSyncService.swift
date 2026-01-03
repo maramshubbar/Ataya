@@ -20,8 +20,6 @@ final class NgoRewardsSyncService {
     private let ptsAfter10PickupsMilestone = 200
     private let ptsForPhoto = 30
 
-    // شنو نعتبره Pickup ينحسب؟
-    // عندج status = "Accepted" فـ لازم تكون موجودة
     private let countedStatuses: Set<String> = [
         "accepted", "completed", "collected", "delivered", "successful", "success"
     ]
@@ -34,7 +32,6 @@ final class NgoRewardsSyncService {
 //            return
 //        }
 //
-//        // نجيب user doc عشان لو عندها ngoId مثل "ngo_demo_1"
 //        let userRef = db.collection("users").document(uid)
 //        userRef.getDocument { [weak self] snap, err in
 //            guard let self else { return }
@@ -42,7 +39,6 @@ final class NgoRewardsSyncService {
 //
 //            let data = snap?.data() ?? [:]
 //
-//            // جرّبي أكثر من مفتاح محتمل
 //            var keys: [String] = [uid]
 //            let possibleNgoKey =
 //                (data["ngoId"] as? String) ??
@@ -66,7 +62,7 @@ final class NgoRewardsSyncService {
 //        }
 //    }
 
-    // MARK: - Fetch pickups (يجمع من أكثر key إذا احتجنا)
+    // MARK: - Fetch pickups
 
     private func fetchPickups(forNgoKeys keys: [String],
                               completion: @escaping (Result<[QueryDocumentSnapshot], Error>) -> Void) {
@@ -117,15 +113,13 @@ final class NgoRewardsSyncService {
 
             countedPickups += 1
 
-            // lives from quantity مثل "6 Boxes"
+            // lives from quantity
             lives += estimateLives(from: d)
 
-            // photo: عندج imageName (string)
             let imageName = (d["imageName"] as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
             if !imageName.isEmpty { photoCount += 1 }
         }
 
-        // fallback لو ما قدرنا نحسب
         if lives == 0, countedPickups > 0 {
             lives = countedPickups * 10
         }
@@ -152,36 +146,28 @@ final class NgoRewardsSyncService {
 
     // MARK: - lives estimation from quantity string
 
-    /// quantity عندج String مثل: "6 Boxes"
     private func estimateLives(from d: [String: Any]) -> Int {
 
-        // إذا عندج رقم جاهز (اختياري)
         let ready = intValue(d["livesImpacted"])
         if ready > 0 { return ready }
 
         let qStr = (d["quantity"] as? String ?? "").lowercased()
         let number = extractFirstNumber(from: qStr)
 
-        // قواعد بسيطة:
-        // Boxes: كل box = 10 lives
         if qStr.contains("box") || qStr.contains("boxes") {
             return max(1, number * 10)
         }
 
-        // pcs / pieces: كل قطعة = 1
         if qStr.contains("pc") || qStr.contains("pcs") || qStr.contains("piece") {
             return max(1, number)
         }
 
-        // إذا بس رقم وما نعرف الوحدة
-        if number > 0 { return max(1, number * 5) } // تقدير: كل رقم = 5
-
+        if number > 0 { return max(1, number * 5) }
         // fallback
         return 10
     }
 
     private func extractFirstNumber(from s: String) -> Int {
-        // يلقط أول رقم في string مثل "6 boxes"
         let digits = s.split { !$0.isNumber }
         if let first = digits.first, let n = Int(first) { return n }
         return 0

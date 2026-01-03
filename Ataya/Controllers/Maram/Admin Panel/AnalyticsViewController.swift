@@ -9,34 +9,29 @@
 
 import UIKit
 import FirebaseFirestore
-import DGCharts   // لو ما اشتغل: import Charts
+import DGCharts
 
 final class AnalyticsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
-    // ✅ ScrollView (اختياري)
     @IBOutlet weak var analyticsScrollView: UIScrollView?
 
-    // ✅ Tables
     @IBOutlet weak var tblCountries: UITableView?
     @IBOutlet weak var tblList: UITableView?
 
-    // ✅ Segments
     @IBOutlet weak var segListFilter: UISegmentedControl?
     @IBOutlet weak var segTimeRange: UISegmentedControl?   // 7 Days / 6 Months / 1 Year
 
-    // ✅ Top cards labels
     @IBOutlet weak var lblRegisteredUsers: UILabel?
     @IBOutlet weak var lblTotalDonations: UILabel?
     @IBOutlet weak var lblVerifiedNGOs: UILabel?
 
-    // ✅ Card views + chart container
     @IBOutlet weak var cardVerified: UIView?
     @IBOutlet weak var chartContainer: UIView?
     @IBOutlet weak var cardTotal: UIView?
     @IBOutlet weak var cardRegistered: UIView?
 
     // ==========================================================
-    // ✅ Donation Categories UI
+    // Donation Categories UI
     // ==========================================================
     @IBOutlet weak var donationCategoriesSectionView: UIView?
 
@@ -52,7 +47,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     @IBOutlet weak var barBasketsWidth: NSLayoutConstraint?
     @IBOutlet weak var barCampaignWidth: NSLayoutConstraint?
 
-    // Export PDF (مثل ما هو)
+    // Export PDF
     @IBAction func exportCategoriesPDFTapped(_ sender: UIButton) {
         sender.isHidden = true
         exportAnalyticsScreenPDF(anchor: sender)
@@ -74,8 +69,6 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
 
     enum RowType: String { case donor = "Donor", ngo = "NGO" }
 
-    // ✅✅✅ IMPORTANT: أضفنا points + init(points: default = 0)
-    // عشان ما نكسر أي .init قديم
     struct ListRow {
         let imageName: String?
         let name: String
@@ -92,7 +85,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         }
     }
 
-    // ✅ Countries = COUNT + percent
+    // Countries = COUNT + percent
     struct CountryRow {
         let name: String
         let count: Int
@@ -109,17 +102,8 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         UIColor(red: 250/255, green: 220/255, blue: 120/255, alpha: 1)
     ]
 
-    // ==========================================================
-    // ✅✅✅ LEADERBOARD PLACEHOLDER MODE
-    // ==========================================================
-    // ✅ الحين نخلي الليدربورد “Placeholder فقط”
-    // ✅ لما تجهزين الباكند:
-    // 1) غيّريه إلى false
-    // 2) وفكي تعليق startListeningLeaderboard_FIREBASE_USERS()
     private let useLeaderboardPlaceholderOnly = true
 
-    // placeholder list (لو ما رجع شيء)
-    // ✅✅✅ (أضفنا points + صور placeholder)
     private let placeholderAllRows: [ListRow] = [
         .init(imageName: "HopPalImg",    name: "HopPal",        countryText: " Bahrain",        type: .ngo,   points: 2200),
         .init(imageName: "KindWave",     name: "KindWave",      countryText: " Lebanon",        type: .ngo,   points: 1700),
@@ -143,11 +127,9 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     private let donationsCol = "donations"
     private let ngoApplicationsCol = "ngo_applications"
 
-    // ✅ غيريهم إذا أسماء كولكشناتج مختلفة
     private let campaignsCol = "campaigns"
     private let basketsCol = "baskets"
 
-    // ✅✅✅ NEW: pickups (country comes from pickups.location)
     private let pickupsCol = "pickups"
 
     // Latest docs
@@ -156,7 +138,6 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     private var latestBasketDocs: [QueryDocumentSnapshot] = []
     private var latestNgoDocs: [QueryDocumentSnapshot] = []
 
-    // ✅✅✅ NEW: latest pickups docs
     private var latestPickupDocs: [QueryDocumentSnapshot] = []
 
     // Leaderboard cache
@@ -209,13 +190,6 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
 
         setupChart()
         startListening()
-
-        //  لما تجهزين الباكند:
-        // 1) خلي useLeaderboardPlaceholderOnly = false
-        // 2) فكّي تعليق هذا
-        /*
-        startListeningLeaderboard_FIREBASE_USERS()
-        */
     }
 
     deinit {
@@ -234,7 +208,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     }
 
     // ==========================================================
-    // ✅✅✅ LEADERBOARD PLACEHOLDER LOADER (نفس فكرة الليدربورد)
+    // LEADERBOARD PLACEHOLDER LOADER
     // ==========================================================
     private func loadLeaderboard_PLACEHOLDER() {
         allRows = placeholderAllRows.sorted { $0.points > $1.points }
@@ -247,10 +221,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         listeners.forEach { $0.remove() }
         listeners.removeAll()
 
-        // ✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅
-        // ✅ التعديل الوحيد هنا:
         // Registered Users = users where role IN ["donor", "ngo"] (exclude admin)
-        // ✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅
         listeners.append(
             db.collection(usersCol)
                 .whereField("role", in: ["donor", "ngo"])
@@ -352,19 +323,18 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
             )
         }
 
-        // ✅ Countries list:
-        // ✅✅✅ NOW: Take country from pickups.location (if pickups exist)
+        // Countries list:
+        // NOW: Take country from pickups.location (if pickups exist)
         let allDocsForCountriesFallback = donationDocsInRange + basketDocsInRange + campaignDocsInRange
         recomputeCountriesFromPickupsLocationOrFallback(fallbackDocs: allDocsForCountriesFallback)
 
-        // ✅ Chart = (donations + baskets + campaigns) counts over time
+        // Chart = (donations + baskets + campaigns) counts over time
         let allDocsForChart = donationDocsInRange + basketDocsInRange + campaignDocsInRange
         DispatchQueue.main.async {
             self.updateOverviewChartCounts(from: allDocsForChart)
         }
 
-        // ✅ Donors (for leaderboard) from DONATIONS only
-        // ✅ ملاحظة: الحين ما نستخدمهم للـ leaderboard لأننا في placeholder mode
+        // Donors (for leaderboard) from DONATIONS only
         var uniqueDonors = Set<String>()
         var donorRowsDict: [String: ListRow] = [:]
 
@@ -401,26 +371,23 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         recomputeNgoAndLeaderboard()
     }
 
-    // ==========================================================
-    // ✅✅✅ NEW: Countries from PICKUPS.location + fallback
-    // ==========================================================
     private func recomputeCountriesFromPickupsLocationOrFallback(fallbackDocs: [QueryDocumentSnapshot]) {
 
         let startDate = selectedStartDate()
 
-        // ✅ pickups within time range (uses pickup date if exists, else createdAt)
+        // pickups within time range (uses pickup date if exists, else createdAt)
         let pickupsInRange = latestPickupDocs.filter { doc in
             let d = extractPickupDate(doc.data()) ?? extractDocDate(doc.data()) ?? Date.distantPast
             return d >= startDate
         }
 
-        // ✅ If we have pickups -> use them
+        // If we have pickups -> use them
         if !pickupsInRange.isEmpty {
             recomputeCountriesFromPickupLocationDocs(pickupsInRange)
             return
         }
 
-        // ✅ fallback to old logic if pickups empty
+        // fallback to old logic if pickups empty
         recomputeCountries(from: fallbackDocs)
     }
 
@@ -431,7 +398,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         for d in docs {
             let data = d.data()
 
-            // ✅ location is inside pickups
+            // location is inside pickups
             let loc = stringValue(data, keys: ["location"]).ifEmpty("Unknown")
             let country = detectCountryFromLocation(loc).ifEmpty("Unknown")
 
@@ -454,7 +421,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         }
     }
 
-    // ✅ Optional: pickup date fields (if you have)
+    // Optional: pickup date fields (if you have)
     private func extractPickupDate(_ data: [String: Any]) -> Date? {
         if let ts = data["pickupAt"] as? Timestamp { return ts.dateValue() }
         if let ts = data["pickedUpAt"] as? Timestamp { return ts.dateValue() }
@@ -463,7 +430,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         return nil
     }
 
-    // ✅ Detect country from pickups.location string
+    // Detect country from pickups.location string
     // Works with: "Manama, Bahrain" OR "Bahrain" OR "UK" OR "KSA"
     private func detectCountryFromLocation(_ location: String) -> String {
         let cleaned = location.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -496,10 +463,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
 
         return cleaned
     }
-
-    // ==========================================================
-    // ✅ OLD fallback logic (still here)
-    // ==========================================================
+    
     private func recomputeCountries(from docs: [QueryDocumentSnapshot]) {
         var byCountryCount: [String: Int] = [:]
 
@@ -539,7 +503,6 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
             self.lblVerifiedNGOs?.text = "\(verifiedCount)"
         }
 
-        // ✅✅✅ مهم: لا تغيّرين بيانات الليدربورد إذا احنا في placeholder mode
         if useLeaderboardPlaceholderOnly { return }
 
         let ngoRows: [ListRow] = latestNgoDocs.map { doc in
@@ -569,7 +532,6 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     }
 
     private func mergeRowsAndReload() {
-        // ✅✅✅ لا نبدّل placeholder list
         if useLeaderboardPlaceholderOnly { return }
 
         let merged = cachedNGOs + cachedDonors
@@ -685,7 +647,6 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         set.drawValuesEnabled = false
         set.colors = [UIColor(red: 255/255, green: 216/255, blue: 63/255, alpha: 1)]
 
-        // ✅ لو عندج نقطة وحدة بس، فعّلي الدائرة عشان تبين
         if entries.count <= 1 {
             set.drawCirclesEnabled = true
             set.drawCircleHoleEnabled = false
@@ -948,7 +909,6 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         default: rows = allRows
         }
 
-        // ✅✅✅ نخلي الترتيب دايمًا أعلى نقاط أول (حتى placeholder)
         rows.sort {
             if $0.points != $1.points { return $0.points > $1.points }
             return $0.name.lowercased() < $1.name.lowercased()
@@ -981,16 +941,13 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
             let item = countriesRows[indexPath.row]
             cell.layoutIfNeeded()
 
-            // ✅ dot (tag 1) - إذا موجود
+            // ✅ dot (tag 1)
             if let dot = cell.contentView.viewWithTag(1) {
                 dot.backgroundColor = dotColors[indexPath.row % dotColors.count]
                 dot.layer.cornerRadius = (dot.bounds.height > 0 ? dot.bounds.height : 20) / 2
                 dot.clipsToBounds = true
             }
 
-            // ✅ Robust:
-            // 1) نحاول tags 2/3/4
-            // 2) إذا الtags تعفست بالغلط، نلقط أي 3 labels من contentView ونرتبهم حسب X
             let l2 = cell.contentView.viewWithTag(2) as? UILabel
             let l3 = cell.contentView.viewWithTag(3) as? UILabel
             let l4 = cell.contentView.viewWithTag(4) as? UILabel
@@ -1006,11 +963,9 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
                 countLbl.text = formatNumber(item.count)
                 pctLbl.text = "\(item.percent)%"
 
-                // ✅ منع تداخل default labels
                 cell.textLabel?.text = nil
                 cell.detailTextLabel?.text = nil
             } else {
-                // ✅ لو التاغز تعفست: نجيب كل UILabel داخل contentView (حتى لو بدون tags)
                 let allLabels = allLabelsInside(cell.contentView)
                 if allLabels.count >= 3 {
                     let sorted = allLabels.sorted { $0.frame.minX < $1.frame.minX }
@@ -1025,7 +980,6 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
                     cell.textLabel?.text = nil
                     cell.detailTextLabel?.text = nil
                 } else {
-                    // fallback حقيقي (إذا ما عندج labels بالستوريبورد)
                     cell.textLabel?.text = item.name
                     cell.detailTextLabel?.text = "\(item.count) • \(item.percent)%"
                 }
@@ -1036,7 +990,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
             return cell
         }
 
-        // ✅ Leaderboard cell
+        // Leaderboard cell
         let cell = tableView.dequeueReusableCell(withIdentifier: "ListCell")
             ?? UITableViewCell(style: .subtitle, reuseIdentifier: nil)
 
@@ -1047,11 +1001,10 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
         let lblCountry = cell.contentView.viewWithTag(2) as? UILabel
         let lblType = cell.contentView.viewWithTag(3) as? UILabel
 
-        // ✅✅✅ مهم: نخليها AND مو OR
-        // عشان إذا tags ناقصه ما يطلع “Label”
+        
         if lblName != nil && lblCountry != nil && lblType != nil {
 
-            // ✅ placeholder image if not found
+            // placeholder image if not found
             let avatar = UIImage(named: item.imageName ?? "") ?? UIImage(named: "ic_avatar_placeholder")
             img?.image = avatar
             img?.layer.cornerRadius = 18
@@ -1081,12 +1034,10 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
             if let l = sub as? UILabel { result.append(l) }
             result.append(contentsOf: allLabelsInside(sub))
         }
-        // نحاول نستبعد أي UILabel حجمها 0 (غالبًا مالها معنى)
         return result.filter { $0.bounds.width > 0 && $0.bounds.height > 0 }
     }
 
     private func extractDocDate(_ data: [String: Any]) -> Date? {
-        // يدعم أكثر من اسم حق التاريخ
         if let ts = data["createdAt"] as? Timestamp { return ts.dateValue() }
         if let ts = data["created_at"] as? Timestamp { return ts.dateValue() }
         if let ts = data["timestamp"] as? Timestamp { return ts.dateValue() }
@@ -1146,12 +1097,11 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     }
 
     // ==========================================================
-    // ✅✅✅ FIREBASE LEADERBOARD (جاهز لكن معلّق)
+    // ✅✅✅ FIREBASE LEADERBOARD
     // ==========================================================
     /*
     private func startListeningLeaderboard_FIREBASE_USERS() {
 
-        // ✅ إذا تبين: أوقفي placeholder mode فوق (useLeaderboardPlaceholderOnly = false)
 
         listeners.append(
             db.collection("users").addSnapshotListener { [weak self] snap, err in
@@ -1226,7 +1176,7 @@ final class AnalyticsViewController: UIViewController, UITableViewDataSource, UI
     */
 
     // ==========================================================
-    // ✅ PDF Export (مثل ما هو)
+    // ✅ PDF Export
     // ==========================================================
 
     private func exportAnalyticsScreenPDF(anchor: UIView?) {

@@ -15,7 +15,7 @@ final class AdminTabBarController: UITabBarController {
         super.viewDidLoad()
         setupTabLook()
         setupCenterButton()
-        setupTabIconSizes()   // ✅ ضيفي هذي
+        setupTabIconSizes()
 
         
     }
@@ -23,7 +23,6 @@ final class AdminTabBarController: UITabBarController {
     private func setupTabIconSizes() {
         guard let items = tabBar.items, items.count >= 5 else { return }
 
-        // عدلي الحجم من كيفج (عادة 26~30 أفضل للتاب بار)
         let size = CGSize(width: 30, height: 30)
 
         items[0].image = UIImage(named: "tab_home")?.resized(to: size).withRenderingMode(.alwaysTemplate)
@@ -32,7 +31,6 @@ final class AdminTabBarController: UITabBarController {
         items[1].image = UIImage(named: "tab_verify")?.resized(to: size).withRenderingMode(.alwaysTemplate)
         items[1].selectedImage = UIImage(named: "tab_verify")?.resized(to: size).withRenderingMode(.alwaysTemplate)
 
-        // الوسط خليّه empty لأنه زر الهيكس
         items[2].image = UIImage(named: "tab_empty")?.withRenderingMode(.alwaysOriginal)
         items[2].selectedImage = UIImage(named: "tab_empty")?.withRenderingMode(.alwaysOriginal)
 
@@ -55,7 +53,7 @@ final class AdminTabBarController: UITabBarController {
         tabBar.standardAppearance = appearance
         if #available(iOS 15.0, *) { tabBar.scrollEdgeAppearance = appearance }
 
-        tabBar.tintColor = UIColor(red: 0.96, green: 0.84, blue: 0.36, alpha: 1.0) // أصفر قريب
+        tabBar.tintColor = UIColor(red: 0.96, green: 0.84, blue: 0.36, alpha: 1.0)
         tabBar.unselectedItemTintColor = UIColor.systemGray2
     }
 
@@ -80,7 +78,7 @@ final class AdminTabBarController: UITabBarController {
     
 
     @objc private func centerTapped() {
-        selectedIndex = 2 // تبويب Report (الوسط)
+        selectedIndex = 2
     }
 }
 
@@ -105,7 +103,6 @@ final class AdminTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // ✅ هذا يخلي الآيباد يرجّع التاب بار لتحت (iPadOS 18+)
         if #available(iOS 18.0, *), UIDevice.current.userInterfaceIdiom == .pad {
             traitOverrides.horizontalSizeClass = .compact
         }
@@ -155,7 +152,6 @@ final class AdminTabBarController: UITabBarController {
        // centerButton.adjustsImageWhenHighlighted = false
         centerButton.addTarget(self, action: #selector(centerTapped), for: .touchUpInside)
 
-        // ✅ مهم: خلّيه داخل tabBar (يحل no common ancestor خصوصًا بالآيباد)
         if centerButton.superview == nil {
             tabBar.addSubview(centerButton)
         }

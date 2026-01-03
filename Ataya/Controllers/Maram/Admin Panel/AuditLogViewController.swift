@@ -24,7 +24,6 @@ final class AuditLogViewController: UIViewController, UITableViewDataSource, UIT
     private var campaignsListener: ListenerRegistration?
     private var donationsListener: ListenerRegistration?
 
-    // ✅ مخازن منفصلة
     private var auditItems: [AuditLogItem] = []
     private var campaignItems: [AuditLogItem] = []
     private var donationItems: [AuditLogItem] = []
@@ -32,7 +31,6 @@ final class AuditLogViewController: UIViewController, UITableViewDataSource, UIT
     private var allItems: [AuditLogItem] = []
     private var shownItems: [AuditLogItem] = []
 
-    // ✅ DateFormatter ثابت
     private static let dateFormatter: DateFormatter = {
         let f = DateFormatter()
         f.dateStyle = .medium
@@ -40,15 +38,14 @@ final class AuditLogViewController: UIViewController, UITableViewDataSource, UIT
         return f
     }()
 
-    // ✅ أسماء الكوليكشنات
     private let auditLogsCol = "audit_logs"
-    private let campaignsCol = "campaigns"   // غيّريه لو اسم كوليكشنج غير
-    private let donationsCol = "donations"   // ✅ موجود عندج
+    private let campaignsCol = "campaigns"
+    private let donationsCol = "donations"
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // ✅ SearchBar UI (نفس DonationOverview) + بدون Cancel
+        // ✅ SearchBar UI
         searchBar.backgroundImage = UIImage()
         searchBar.searchBarStyle = .minimal
         searchBar.placeholder = "Search"
@@ -147,7 +144,7 @@ final class AuditLogViewController: UIViewController, UITableViewDataSource, UIT
 
         // 2) ✅ campaigns -> Campaign Created
         campaignsListener = db.collection(campaignsCol)
-            .order(by: "createdAt", descending: true) // إذا ما عندج createdAt بدليه في extractDocDate أو قوليلي شنو اسم الحقل
+            .order(by: "createdAt", descending: true)
             .limit(to: 200)
             .addSnapshotListener { [weak self] snap, err in
                 guard let self else { return }
@@ -193,9 +190,9 @@ final class AuditLogViewController: UIViewController, UITableViewDataSource, UIT
                 self.rebuildMergedAndReload()
             }
 
-        // 3) ✅ donations -> Donation Submitted / Donation Status Changed
+        // 3) donations -> Donation Submitted / Donation Status Changed
         donationsListener = db.collection(donationsCol)
-            .order(by: "createdAt", descending: true) // نفس DonationOverview عندج
+            .order(by: "createdAt", descending: true)
             .limit(to: 200)
             .addSnapshotListener { [weak self] snap, err in
                 guard let self else { return }
@@ -211,7 +208,7 @@ final class AuditLogViewController: UIViewController, UITableViewDataSource, UIT
                 self.donationItems = docs.map { d in
                     let data = d.data()
 
-                    // أهم حقولك من DonationOverview
+                    // DonationOverview
                     let donationId = self.stringValue(data, keys: ["id"]).ifEmpty(d.documentID)
                     let itemName = self.stringValue(data, keys: ["itemName", "title", "foodItem"])
                     let donorName = self.stringValue(data, keys: ["donorName", "name", "fullName"])
@@ -219,11 +216,11 @@ final class AuditLogViewController: UIViewController, UITableViewDataSource, UIT
                     let statusRaw = self.stringValue(data, keys: ["status"])
                     let niceStatus = self.prettyDonationStatus(statusRaw)
 
-                    // Location (اختاري اللي عندج)
+                    // Location
                     let location =
                         self.stringValue(data, keys: ["location", "address", "city", "country"])
 
-                    // NGO name فقط (بدون ID) إذا موجود
+                    // NGO name
                     let ngoName =
                         self.stringValue(data, keys: ["ngoName", "assignedNgoName", "selectedNgoName", "ngo"])
 
@@ -232,7 +229,7 @@ final class AuditLogViewController: UIViewController, UITableViewDataSource, UIT
                     let who = self.nonEmpty(donorName, fallback: donorId.isEmpty ? "Donor" : "Donor \(donorId)")
                     let itemFinal = self.nonEmpty(itemName, fallback: donationId)
 
-                    // Action text مثل اللي تبينه (بدون NGO ID)
+                    // Action text
                     var actionText = "\(who) submitted donation “\(itemFinal)” (\(donationId))."
                     if !ngoName.isEmpty {
                         actionText += " Assigned to NGO \(ngoName)."
@@ -327,14 +324,13 @@ final class AuditLogViewController: UIViewController, UITableViewDataSource, UIT
         cell.locationValueLabel.text = item.location
         cell.dateValueLabel.text = formatDate(item.createdAt)
 
-        // ✅ إذا status فاضي، نخليه category بدل ما يطلع شي غريب
         cell.statusValueLabel.text = item.status.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? item.category : item.status
 
         cell.selectionStyle = .none
         return cell
     }
 
-    // MARK: - Helpers (بدون String extension عشان ما يتعارض)
+    // MARK: - Helpers 
 
     private func clean(_ s: String?) -> String {
         (s ?? "").trimmingCharacters(in: .whitespacesAndNewlines)

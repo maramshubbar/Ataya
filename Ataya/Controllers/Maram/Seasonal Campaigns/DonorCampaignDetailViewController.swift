@@ -64,8 +64,8 @@ final class DonorCampaignDetailViewController: UIViewController {
     }
 
     // ✅ PAYMENT (Storyboard file name + VC Storyboard ID)
-    private let paymentStoryboardName = "BasketFunds"   // اسم ملف الستوريبورد
-    private let paymentStoryboardID   = "FundsDonation" // Storyboard ID داخل Identity Inspector
+    private let paymentStoryboardName = "BasketFunds"
+    private let paymentStoryboardID   = "FundsDonation"
 
     // MARK: - Local Hex Color Helper
     private func color(hex: String, alpha: CGFloat = 1) -> UIColor {
@@ -588,7 +588,6 @@ final class DonorCampaignDetailViewController: UIViewController {
         return f.string(from: NSNumber(value: value)) ?? "\(Int(value))"
     }
 
-    // ✅ زر Donate Now -> يفتح DonateFundsViewController
     @objc private func didTapDonateNow() {
         openPayment()
     }

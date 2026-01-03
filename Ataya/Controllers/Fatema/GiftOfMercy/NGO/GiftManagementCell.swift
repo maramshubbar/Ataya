@@ -15,7 +15,7 @@ final class GiftManagementCell: UITableViewCell {
     // MARK: - UI
     private let cardView = UIView()
 
-    // ✅ FIX: use a container so the image does NOT get cut
+    // use a container so the image does NOT get cut
     private let thumbContainer = UIView()
     private let thumbImageView = UIImageView()
 

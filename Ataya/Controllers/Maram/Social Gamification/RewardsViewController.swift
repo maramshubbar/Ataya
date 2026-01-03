@@ -46,13 +46,10 @@ final class RewardsViewController: UIViewController {
         setupBadges()
         styleRewardsUI()
 
-        // ✅ هنا نزرع doc داخل rewards/{uid} لو مو موجود
         ensureRewardsDocSeededIfNeeded()
 
-        // ✅ نسمع من rewards collection
         startListeningToRewardsCollection()
 
-        // لو عندج service يحسب ويكتب (تأكدي يكتب داخل rewards/{uid})
         recomputeRewardsNowIfAllowed()
     }
 
@@ -119,16 +116,13 @@ final class RewardsViewController: UIViewController {
 
     // MARK: - ✅ Firestore: rewards/{uid}
 
-    /// يضمن وجود rewards/{uid} doc (isNew=true) عشان placeholder يطلع من الفايربيس
     private func ensureRewardsDocSeededIfNeeded() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let ref = db.collection("rewards").document(uid)
 
         ref.getDocument { doc, _ in
-            // إذا موجود خلاص
             if let doc, doc.exists { return }
 
-            // إذا مو موجود: نسوي seed
             ref.setData(RewardsMetrics.defaultFirestoreDict(), merge: true)
         }
     }
@@ -151,7 +145,6 @@ final class RewardsViewController: UIViewController {
                 return
             }
 
-            // إذا doc مو موجود -> placeholders
             guard let data = snap?.data(), snap?.exists == true else {
                 DispatchQueue.main.async { self.applyPlaceholders() }
                 return
@@ -159,7 +152,6 @@ final class RewardsViewController: UIViewController {
 
             self.metrics = RewardsMetrics(dict: data)
 
-            // ✅ إذا صار في تقدم، طفي isNew في firebase تلقائيًا
             self.autoDisableIsNewIfNeeded(uid: uid)
 
             DispatchQueue.main.async {
@@ -195,11 +187,6 @@ final class RewardsViewController: UIViewController {
 
     private func applyRewardsToUI() {
 
-        // ✅ placeholder من firebase
-//        if metrics.isNew {
-//            applyPlaceholders()
-//            return
-//        }
 
         donationsLabel?.text = "\(metrics.successfulDonations) Successful Donations"
         livesLabel?.text = "\(metrics.livesTouched) Lives Touched"
@@ -231,8 +218,8 @@ final class RewardsViewController: UIViewController {
         return f.string(from: NSNumber(value: n)) ?? "\(n)"
     }
 
-    // MARK: - Recompute (اختياري)
-
+    // MARK: - Recompute
+    
     private func recomputeRewardsNowIfAllowed() {
         guard Auth.auth().currentUser != nil else { return }
 
@@ -352,7 +339,6 @@ private extension Array {
     subscript(safe index: Int) -> Element? { indices.contains(index) ? self[index] : nil }
 }
 
-// ⚠️ إذا عندج نفس extension موجود بملف ثاني، احذفي واحد منهم
 extension UIColor {
     convenience init(hex: String) {
         var h = hex.trimmingCharacters(in: .whitespacesAndNewlines)

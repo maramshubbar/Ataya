@@ -27,7 +27,6 @@ enum RewardTier {
         }
     }
 
-    // ✅ لازم تكون نفس أسماء الصور في Assets
     var medalAssetName: String {
         switch self {
         case .starter: return "tier_starter"

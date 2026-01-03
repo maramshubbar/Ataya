@@ -17,7 +17,6 @@ struct ReportItem {
     let id: String
     let title: String
 
-    // donation => "" (فاضي) عشان نخفي الصف بالكامل في السيل
     let location: String
     let reporterText: String
     let ngoText: String
@@ -52,7 +51,7 @@ final class ReportManagementViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // SearchBar UI (نفس DonationOverview)
+        // SearchBar UI
         searchBar.backgroundImage = UIImage()
         searchBar.searchBarStyle = .minimal
         searchBar.placeholder = "Search"
@@ -133,19 +132,17 @@ final class ReportManagementViewController: UIViewController {
                 let title = (data["title"] as? String ?? "")
                     .trimmingCharacters(in: .whitespacesAndNewlines)
 
-                // ✅ type لو موجود بالفايرستور
+                // ✅ type
                 let typeFromFS = (data["type"] as? String ?? "")
                     .trimmingCharacters(in: .whitespacesAndNewlines)
                     .lowercased()
 
-                // الأسماء
                 let reporterName = (data["reporter"] as? String ?? "")
                     .trimmingCharacters(in: .whitespacesAndNewlines)
 
                 let ngoName = (data["ngo"] as? String ?? "")
                     .trimmingCharacters(in: .whitespacesAndNewlines)
 
-                // الأكواد
                 let donorId = (data["donorId"] as? String ?? "")
                     .trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -159,20 +156,17 @@ final class ReportManagementViewController: UIViewController {
                     .trimmingCharacters(in: .whitespacesAndNewlines)
                     .lowercased()
 
-                // التاريخ
                 let ts = data["createdAt"] as? Timestamp
                 let createdAt = ts?.dateValue() ?? Date.distantPast
                 let dateText = Self.dateFormatter.string(from: createdAt)
 
-                // ✅✅✅ نوع التقرير (هذا أهم إصلاح)
-                // لو type ما موجود: نحدد من العنوان أولاً
+  
                 let inferredType: String = {
                     if !typeFromFS.isEmpty { return typeFromFS }   // donation / accounts
 
                     let t = title.lowercased()
                     if t.contains("donation") { return "donation" }
 
-                    // إذا عنده NGO غالباً هذا accounts (ngo misconduct / fake ngo account…)
                     if !ngoName.isEmpty { return "accounts" }
 
                     // fallback
@@ -183,7 +177,6 @@ final class ReportManagementViewController: UIViewController {
                 let locationFromFS = (data["location"] as? String ?? "")
                     .trimmingCharacters(in: .whitespacesAndNewlines)
 
-                // ✅ RULE: الدونيشن ما فيه Location ولا NGO
                 let finalLocation: String
                 let finalNgoText: String
 
@@ -303,11 +296,10 @@ extension ReportManagementViewController: UITableViewDataSource, UITableViewDele
     }
 }
 
-// MARK: - UISearchBarDelegate (بدون Cancel)
+// MARK: - UISearchBarDelegate
 extension ReportManagementViewController: UISearchBarDelegate {
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        // ✅ لا يطلع Cancel أبداً
         searchBar.showsCancelButton = false
         searchBar.setShowsCancelButton(false, animated: false)
     }

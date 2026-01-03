@@ -22,7 +22,6 @@ final class AdminDonationDetailsViewController: UIViewController {
     @IBOutlet weak var adminReviewCardView: UIView!
     @IBOutlet weak var statusBadgeView: UIView?
 
-    // الموجودين عندك
     @IBOutlet weak var lblDonationTitle: UILabel?
     @IBOutlet weak var lblDonationId: UILabel?
     @IBOutlet weak var lblStatus: UILabel?
@@ -30,7 +29,6 @@ final class AdminDonationDetailsViewController: UIViewController {
     @IBOutlet weak var lblDonorId: UILabel?
     @IBOutlet weak var imgDonation: UIImageView?
 
-    // ✅ جدد (اربطيهم إذا موجودين في الStoryboard)
     @IBOutlet weak var lblCategory: UILabel?
     @IBOutlet weak var lblQuantity: UILabel?
     @IBOutlet weak var lblPackagingType: UILabel?
@@ -104,14 +102,13 @@ final class AdminDonationDetailsViewController: UIViewController {
                     return
                 }
 
-                // ✅ نفس الحقول اللي في Firebase عندك
                 let donationId = data["id"] as? String ?? docId
                 let itemName   = data["itemName"] as? String ?? "—"
                 let donorId    = data["donorId"] as? String ?? "—"
                 let statusStr  = (data["status"] as? String ?? "pending").lowercased()
 
                 let createdAtText = self.formatTimestamp(data["createdAt"])
-                let expiryText    = self.formatTimestamp(data["expiryDate"])   // ✅ expiryDate موجود عندك
+                let expiryText    = self.formatTimestamp(data["expiryDate"])
 
                 let category      = data["category"] as? String ?? "—"
                 let packagingType = data["packagingType"] as? String ?? "—"
@@ -144,7 +141,7 @@ final class AdminDonationDetailsViewController: UIViewController {
                     self.applyStatusBadge(statusStr)
 
 
-                    // donation details (من Firebase)
+                    // donation details
                     self.lblCategory?.text = category
                     self.lblQuantity?.text = quantityText
                     self.lblPackagingType?.text = packagingType
@@ -206,7 +203,6 @@ final class AdminDonationDetailsViewController: UIViewController {
         if let v = any as? Int { return "\(v)" }
         if let v = any as? Int64 { return "\(v)" }
         if let v = any as? Double {
-            // لو 1.0 نخليها 1
             if v.rounded() == v { return "\(Int(v))" }
             return "\(v)"
         }

@@ -19,7 +19,7 @@ final class LeaderboardViewController: UIViewController, UITableViewDataSource, 
         let name: String
         let countryText: String
         let type: RowType
-        let points: Int        // ✅ مهم للترتيب
+        let points: Int
     }
 
     // MARK: - Firebase
@@ -29,7 +29,6 @@ final class LeaderboardViewController: UIViewController, UITableViewDataSource, 
     // MARK: - Data
     private var rows: [ListRow] = []
 
-    // ✅ PLACEHOLDER (لين ما تكمّلين الفايربيس)
     private let placeholderRows: [ListRow] = [
         .init(imageName: "HopPalImg",  name: "HopPal",        countryText: " Bahrain",        type: .ngo,   points: 2200),
         .init(imageName: "KindWave",   name: "KindWave",      countryText: " Lebanon",        type: .ngo,   points: 1700),
@@ -48,16 +47,10 @@ final class LeaderboardViewController: UIViewController, UITableViewDataSource, 
 
         setupTableUI()
 
-        // ✅ ADDED: خلي السيجمنت يشتغل (إذا ما كان مربوط من الستوريبورد)
         segListFilter.addTarget(self, action: #selector(filterChanged), for: .valueChanged)
 
-        // ✅ شغّلي placeholder الآن
         loadLeaderboard_PLACEHOLDER()
 
-        // ✅ لما تجهزين الفايربيس:
-        // 1) علّقي السطر اللي فوق
-        // 2) وافكي التعليق عن اللي تحت
-        //
         // startListeningLeaderboard_FIREBASE()
     }
 
@@ -73,24 +66,16 @@ final class LeaderboardViewController: UIViewController, UITableViewDataSource, 
         tblList.contentInset = UIEdgeInsets(top: 6, left: 0, bottom: 12, right: 0)
     }
 
-    // MARK: - Filter (placeholder حاليا)
+    // MARK: - Filter (placeholder)
 
     @objc private func filterChanged() {
-        // ✅ ADDED: حاليا نخلي الفلتر يشتغل على الـ placeholder
         loadLeaderboard_PLACEHOLDER()
-
-        // ✅ لاحقًا لما تفكين الفايربيس (من داخل الكومنت تحت) تقدرين تنادين:
-        // applyFilter_FIREBASE_ByDonationDate()
     }
 
     // MARK: - ✅ PLACEHOLDER LOADER
 
     private func loadLeaderboard_PLACEHOLDER() {
 
-        // ✅ ADDED: فلتر “عشوائي” لكن ثابت (مو كل مرة يتغير بشكل مزعج)
-        // 7 Days -> يظهر جزء
-        // 6 Month -> يظهر جزء أكبر
-        // 1 Year  -> يظهر الكل
         var filtered = placeholderRows
 
         switch segListFilter.selectedSegmentIndex {
@@ -109,27 +94,20 @@ final class LeaderboardViewController: UIViewController, UITableViewDataSource, 
             filtered = placeholderRows
         }
 
-        // ترتيب أعلى نقاط أول
         rows = filtered.sorted { $0.points > $1.points }
         tblList.reloadData()
     }
 
-    // ✅ ADDED: helper للـ placeholder filter (عشوائي ثابت)
     private func placeholderBucket(for key: String) -> Int {
-        // يرجع 0 أو 1 أو 2
-        // 0 = يظهر في 7 Days
-        // 1 = يظهر في 6 Month
-        // 2 = يظهر بس في 1 Year
         let h = abs(key.unicodeScalars.reduce(0) { $0 + Int($1.value) })
         return h % 3
     }
 
-    // MARK: - ✅ FIREBASE (جاهز لكن معلّق)
+    // MARK: - ✅ FIREBASE
     /*
     private func startListeningLeaderboard_FIREBASE() {
         listener?.remove()
 
-        // نجيب كل users وبعدها نفلتر ونرتّب محليًا (أسهل + بدون index)
         listener = db.collection("users").addSnapshotListener { [weak self] snap, err in
             guard let self else { return }
 
@@ -154,18 +132,16 @@ final class LeaderboardViewController: UIViewController, UITableViewDataSource, 
 
                 guard let type else { continue }
 
-                // الاسم
                 let name = (data["name"] as? String)
                     ?? (data["fullName"] as? String)
                     ?? (data["organizationName"] as? String)
                     ?? "—"
 
-                // الدولة (اختياري)
                 let country = (data["country"] as? String) ?? "—"
-                let flag = (data["countryFlag"] as? String) ?? "" // إذا ما عندج فلاج خليه فاضي
+                let flag = (data["countryFlag"] as? String) ?? "" // can be empty
                 let countryText = flag.isEmpty ? country : "\(flag) \(country)"
 
-                // points حسب النوع
+                // points
                 let points: Int
                 if type == .donor {
                     let rewards = data["rewards"] as? [String: Any] ?? [:]
@@ -175,11 +151,10 @@ final class LeaderboardViewController: UIViewController, UITableViewDataSource, 
                     points = Self.intValue(rewardsNgo["points"])
                 }
 
-                let imageName = data["avatarAssetName"] as? String // optional لو تبين
+                let imageName = data["avatarAssetName"] as? String // optional
                 list.append(.init(imageName: imageName, name: name, countryText: countryText, type: type, points: points))
             }
 
-            // ترتيب أعلى نقاط أول
             list.sort {
                 if $0.points != $1.points { return $0.points > $1.points }
                 return $0.name.lowercased() < $1.name.lowercased()
@@ -200,16 +175,9 @@ final class LeaderboardViewController: UIViewController, UITableViewDataSource, 
         return 0
     }
 
-    // ✅✅✅ ADDED (داخل كومنت الفايربيس): فلتر حسب تاريخ donations
-    // هذا ما يغير شي بالكود فوق، بس خيار إضافي إذا تبين leaderboard “حسب الفترة”
-    //
-    // ✅ كيف تستخدمينه؟
-    // 1) في filterChanged() بدل loadLeaderboard_PLACEHOLDER() تنادين applyFilter_FIREBASE_ByDonationDate()
-    // 2) وتكونين متأكدة اسم حقل التاريخ في donations صحيح (هنا افتراضي createdAt)
-    //
+
     private func applyFilter_FIREBASE_ByDonationDate() {
 
-        // ✅ عدّلي اسم حقل التاريخ إذا عندج غير:
         let dateField = "createdAt" // Timestamp in donations
 
         let now = Date()
@@ -222,7 +190,6 @@ final class LeaderboardViewController: UIViewController, UITableViewDataSource, 
         default: startDate = cal.date(byAdding: .year, value: -1, to: now) ?? now
         }
 
-        // ✅ نجيب donations ضمن الفترة + completed
         db.collection("donations")
             .whereField("status", isEqualTo: "completed")
             .whereField(dateField, isGreaterThanOrEqualTo: startDate)
@@ -235,7 +202,6 @@ final class LeaderboardViewController: UIViewController, UITableViewDataSource, 
 
                 let docs = snap?.documents ?? []
 
-                // نجمع points لكل uid (donor + ngo) حسب الفترة
                 var pointsByUid: [String: Int] = [:]
                 var typeByUid: [String: RowType] = [:]
 
@@ -245,8 +211,6 @@ final class LeaderboardViewController: UIViewController, UITableViewDataSource, 
                     let donorId = d["donorId"] as? String ?? ""
                     let ngoId   = d["ngoId"] as? String ?? ""
 
-                    // مثال نقاط بسيط (نفس منطق rewards عندج تقدرين توسعينه)
-                    // هنا: كل donation = 100 نقطة
                     if !donorId.isEmpty {
                         pointsByUid[donorId, default: 0] += 100
                         typeByUid[donorId] = .donor
@@ -257,7 +221,6 @@ final class LeaderboardViewController: UIViewController, UITableViewDataSource, 
                     }
                 }
 
-                // نجيب users عشان الاسم + الدولة
                 self.db.collection("users").getDocuments { [weak self] snap2, err2 in
                     guard let self else { return }
                     if let err2 {
@@ -309,11 +272,10 @@ final class LeaderboardViewController: UIViewController, UITableViewDataSource, 
         let cell = tableView.dequeueReusableCell(withIdentifier: "ListCell", for: indexPath)
         let item = rows[indexPath.row]
 
-        // tags (مثل ما اتفقنا)
         let img = cell.contentView.viewWithTag(10) as? UIImageView
-        let lblName = cell.contentView.viewWithTag(1) as? UILabel     // اسم
-        let lblCountry = cell.contentView.viewWithTag(2) as? UILabel  // دولة
-        let lblType = cell.contentView.viewWithTag(3) as? UILabel     // Donor/NGO
+        let lblName = cell.contentView.viewWithTag(1) as? UILabel
+        let lblCountry = cell.contentView.viewWithTag(2) as? UILabel
+        let lblType = cell.contentView.viewWithTag(3) as? UILabel  
 
         // ✅ Image in ContentView (tag = 10)
         // ✅ ADDED: placeholder if imageName not found

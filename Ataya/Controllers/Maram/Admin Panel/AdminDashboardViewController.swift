@@ -18,7 +18,6 @@ final class AdminDashboardViewController: UIViewController {
     @IBOutlet private weak var cardFlaggedReports: UIView!
     @IBOutlet private weak var cardVerifiedCollectors: UIView!
 
-    // ✅ Outlets للأرقام الأربع
     @IBOutlet private weak var lblRegisteredUsersValue: UILabel!
     @IBOutlet private weak var lblTotalDonationsValue: UILabel!
     @IBOutlet private weak var lblFlaggedReportsValue: UILabel!
@@ -42,7 +41,7 @@ final class AdminDashboardViewController: UIViewController {
     // MARK: - Firestore
     private let db = Firestore.firestore()
 
-    // ✅ Listeners
+    // Listeners
     private var registeredUsersListener: ListenerRegistration?
     private var totalDonationsListener: ListenerRegistration?
     private var reportsListener: ListenerRegistration?
@@ -86,7 +85,7 @@ final class AdminDashboardViewController: UIViewController {
         ]
         cards.forEach { $0.applyCardShadow(cornerRadius: cardCornerRadius) }
 
-        // ✅ Start listeners
+        // Start listeners
         startListening()
     }
 
@@ -157,7 +156,7 @@ final class AdminDashboardViewController: UIViewController {
                 }
             }
 
-        // ✅ 3) Reports = COUNT documents in reports (كلهم)
+        // 3) Reports = COUNT documents in reports (كلهم)
         reportsListener = db.collection("reports")
             .addSnapshotListener { [weak self] snap, err in
                 guard let self else { return }
@@ -271,7 +270,6 @@ extension AdminDashboardViewController: UITableViewDataSource, UITableViewDelega
 
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellActivity", for: indexPath)
 
-        // IMPORTANT: تأكدي lblActivityText Tag = 2 في Storyboard
         let lbl = cell.viewWithTag(2) as? UILabel
         lbl?.text = activities[indexPath.row]
         lbl?.numberOfLines = 0

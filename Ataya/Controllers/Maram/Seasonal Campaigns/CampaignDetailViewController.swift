@@ -251,7 +251,6 @@ final class CampaignDetailViewController: UIViewController {
         contentView.addSubview(heroImageView)
         heroImageView.translatesAutoresizingMaskIntoConstraints = false
 
-        // ✅ Status pill (لاصق فوق يسار + مربع)
         statusPill.font = .systemFont(ofSize: 13, weight: .semibold)
         statusPill.textColor = .white
         statusPill.textAlignment = .left
@@ -332,7 +331,6 @@ final class CampaignDetailViewController: UIViewController {
             progressTrack.trailingAnchor.constraint(equalTo: heroImageView.trailingAnchor, constant: -24),
             progressTrack.heightAnchor.constraint(equalToConstant: 28),
 
-            // ✅ title فوق progress
             heroTitleLabel.bottomAnchor.constraint(equalTo: progressTrack.topAnchor, constant: -14),
             heroTitleLabel.leadingAnchor.constraint(equalTo: heroOverlay.leadingAnchor, constant: 24),
             heroTitleLabel.trailingAnchor.constraint(equalTo: heroOverlay.trailingAnchor, constant: -24),

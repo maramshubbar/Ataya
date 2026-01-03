@@ -144,13 +144,10 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
             $0.backgroundColor = UIColor.systemGray6
         }
 
-        // ✅ نبي صورة وحده مثل المثال (حسب اختيار اليوزر)
         previewTop.isHidden = true
 
-        // placeholder (لو عندج صورة محلية/تم تمريرها)
         previewBottom.image = bottomPreviewImage ?? topPreviewImage
 
-        // ✅ NEW: تحميل من URL (Cloudinary) فوق الـ placeholder
         ImageLoader.shared.setImage(
             on: previewBottom,
             from: selectedCardDesignImageURL,
@@ -197,7 +194,6 @@ final class GiftCertificateDetailsViewController: UIViewController, UITextViewDe
         previewStack.translatesAutoresizingMaskIntoConstraints = false
         summaryTextStack.translatesAutoresizingMaskIntoConstraints = false
 
-        // ✅ نخلي بس صورة وحده
         previewStack.addArrangedSubview(previewBottom)
 
         // From

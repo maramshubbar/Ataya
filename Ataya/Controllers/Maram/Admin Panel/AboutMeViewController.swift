@@ -26,17 +26,14 @@ final class AboutMeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // ✅ نفس شكل الصورة (Read-only)
         fullNameTextField.isUserInteractionEnabled = false
         emailTextField.isUserInteractionEnabled = false
         phoneTextField.isUserInteractionEnabled = false
 
-        // ✅ لو تبين لون أخف للقراءة
         fullNameTextField.textColor = .darkGray
         emailTextField.textColor = .darkGray
         phoneTextField.textColor = .darkGray
 
-        // ✅ ابدأ تحميل البيانات من Firestore
         startListeningProfile()
     }
 

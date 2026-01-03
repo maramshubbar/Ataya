@@ -29,17 +29,16 @@ final class RewardsNgoViewController: UIViewController {
     @IBOutlet weak var livesLabel: UILabel!
     @IBOutlet weak var pointsLabel: UILabel!
 
-    // اختياري
     @IBOutlet weak var tierLabel: UILabel?
     @IBOutlet weak var tierMedalImageView: UIImageView?
 
-    // MARK: - Firestore (موجود بس ما راح نستخدمه في الديمو)
+    // MARK: - Firestore
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
     private var didRecalculateOnce = false
 
     // ✅ DEMO PLACEHOLDER MODE
-    private let useDemoPlaceholder = true   // خليها true الحين
+    private let useDemoPlaceholder = true
 
     // MARK: - Badge VM
     private struct BadgeVM {
@@ -65,13 +64,12 @@ final class RewardsNgoViewController: UIViewController {
 
         setupBadges()
 
-        // ✅ Placeholder ثابت (2000 pts) - بدون Firebase
         if useDemoPlaceholder {
             applyDemoNgoPlaceholder2000()
             return
         }
 
-        // ---- Firebase mode (لما تبين بعدين) ----
+        // ---- Firebase mode
         applyInitialPlaceholders()
         ensureNgoRewardsSeededIfNeeded()
         recalculateNgoRewardsFromDonationsIfNeeded()

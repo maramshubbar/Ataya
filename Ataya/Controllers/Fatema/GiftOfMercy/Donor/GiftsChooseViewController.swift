@@ -21,7 +21,7 @@ final class GiftsChooseViewController: UIViewController {
     private let accent = UIColor(atayaHex: "#F7D44C")
     private var items: [MercyGift] = []
 
-    // amounts keyed by giftId (مو index)
+    // amounts keyed by giftId
     private var enteredAmounts: [String: Decimal] = [:]
 
     private var giftsListener: ListenerRegistration?
@@ -240,7 +240,6 @@ final class GiftsChooseViewController: UIViewController {
             amount = enteredAmounts[gift.id] ?? 0
         }
 
-        // ✅ HARD BLOCK (no negative / no zero مهما صار)
         guard amount > 0 else {
             showErrorBanner("Amount must be greater than 0.")
             return

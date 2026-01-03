@@ -18,7 +18,6 @@ struct CardDesign {
     var id: String
     var name: String
 
-    // UI fallback (Assets) – نخليها عشان UI عندك يعتمد عليها
     var imageName: String
 
     var isActive: Bool
@@ -57,7 +56,6 @@ struct CardDesign {
         self.updatedAt = updatedAt
     }
 
-    /// لو ما عندنا URL نرجع اسم asset
     var displayImageName: String { imageName.isEmpty ? "c1" : imageName }
 }
 
@@ -77,7 +75,6 @@ extension CardDesign {
         if let imagePublicId, !imagePublicId.isEmpty { data[Keys.imagePublicId] = imagePublicId }
         if let ngoId, !ngoId.isEmpty { data[Keys.ngoId] = ngoId }
 
-        // createdAt يتم ضبطه مرة واحدة من الـ Service (إذا جديد)
         return data
     }
 

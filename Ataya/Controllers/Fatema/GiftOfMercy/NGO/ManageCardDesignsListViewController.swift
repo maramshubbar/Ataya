@@ -63,7 +63,6 @@ final class ManageCardDesignsListViewController: UIViewController {
     private func startListening() {
         listener?.remove()
 
-        // إذا تبين تربطينها بـ NGO معيّن لاحقًا: مرري ngoId
         listener = CardDesignService.shared.listenDesigns(ngoId: nil) { [weak self] result in
             guard let self else { return }
             switch result {
@@ -136,10 +135,8 @@ extension ManageCardDesignsListViewController: UITableViewDataSource, UITableVie
             for: indexPath
         ) as! CardDesignManagementCell
 
-        // خلي configure مثل ما هو عندك
         cell.configure(with: design)
 
-        // ✅ خليه يفتح Edit/Preview على نفس design (بدون indexPath عشان ما يغلط لو صار reload)
         cell.onEdit = { [weak self] in
             self?.handleEdit(design)
         }

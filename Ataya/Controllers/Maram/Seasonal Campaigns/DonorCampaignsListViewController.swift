@@ -26,8 +26,8 @@ final class DonorCampaignsListViewController: UIViewController {
     }
 
     // ✅ PAYMENT
-    private let fundsStoryboardName = "BasketFunds"   // اسم الستوريبورد (الملف)
-    private let fundsStoryboardID   = "FundsDonation"   // Storyboard ID لصفحة DonateFundsViewController
+    private let fundsStoryboardName = "BasketFunds"
+    private let fundsStoryboardID   = "FundsDonation"
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -156,7 +156,6 @@ final class DonorCampaignsListViewController: UIViewController {
 
                     let title = self.readString(d["title"]) ?? "—"
 
-                    // ✅ category هو اللي عندج (مو status)
                     let category = self.readString(d["category"]) ?? (self.readString(d["badge"]) ?? "Campaign")
 
                     let goal = self.readDouble(d["goalAmount"])
@@ -168,7 +167,6 @@ final class DonorCampaignsListViewController: UIViewController {
 
                     let imageUrl = self.readString(d["imageUrl"]) ?? self.readString(d["imageURL"])
 
-                    // ✅ detail (حسب حقول Firestore عندج)
                     let overview = self.readString(d["overview"]) ?? ""
 
                     let story = self.readString(d["story"]) ?? ""
@@ -238,13 +236,11 @@ extension DonorCampaignsListViewController: UITableViewDataSource, UITableViewDe
 
         cell.configure(with: item)
 
-        // ✅ Read More -> يفتح DonorCampaignDetailViewController
         cell.onReadMore = { [weak self] in
             guard let self else { return }
             self.openDetails(item)
         }
 
-        // ✅ Donate (يروح للبيمنت)
         cell.onDonate = { [weak self] in
             guard let self else { return }
             self.openFundsDonation(for: item)
@@ -274,7 +270,6 @@ extension DonorCampaignsListViewController: UITableViewDataSource, UITableViewDe
         )
 
         let vc = DonorCampaignDetailViewController(model: vm, onDonate: { [weak self] in
-            // (خليته نفس ما كان عندج)
             let a = UIAlertController(title: "Donate Now", message: "Open your donate flow here ✅", preferredStyle: .alert)
             a.addAction(UIAlertAction(title: "OK", style: .default))
             self?.present(a, animated: true)

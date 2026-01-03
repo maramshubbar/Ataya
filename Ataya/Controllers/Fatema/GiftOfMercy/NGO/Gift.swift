@@ -63,8 +63,6 @@ struct Gift {
         self.updatedAt = updatedAt
     }
 
-    /// ✅ Kept name to avoid breaking your existing GiftManagementCell.ViewModel(imageName: ...)
-    /// Now it returns the Cloudinary URL (not a placeholder).
     var displayImageName: String { imageURL ?? "" }
 }
 

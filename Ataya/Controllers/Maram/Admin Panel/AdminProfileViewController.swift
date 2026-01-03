@@ -30,7 +30,6 @@ final class AdminProfileViewController: UIViewController {
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
 
-    // ✅ قفل يمنع تكرار فتح AboutMe
     private var isNavigating = false
 
     override func viewDidLoad() {
@@ -39,7 +38,7 @@ final class AdminProfileViewController: UIViewController {
         title = "Admin Profile"
 
         nameLabel.text = "—"
-        roleLabel.text = "Admin"   // ✅ ثابت
+        roleLabel.text = "Admin"
 
         loadAdminProfile()
     }
@@ -58,7 +57,6 @@ final class AdminProfileViewController: UIViewController {
         makeProfileImageCircular()
     }
 
-    // ✅ يمنع أي Segue بالغلط من زر About me
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
         if let btn = sender as? UIButton, btn === aboutMeButton {
             return false
@@ -87,18 +85,15 @@ final class AdminProfileViewController: UIViewController {
             return
         }
 
-        // شيل أي listener قديم
         listener?.remove()
         listener = nil
 
-        // ✅ جرّبي أولًا admins/{uid}
         db.collection("admins").document(uid).getDocument { [weak self] doc, _ in
             guard let self else { return }
 
             if let doc, doc.exists {
                 self.listenProfile(from: "admins", uid: uid)
             } else {
-                // ✅ إذا ما موجود، روحي users/{uid}
                 self.listenProfile(from: "users", uid: uid)
             }
         }
@@ -149,7 +144,6 @@ final class AdminProfileViewController: UIViewController {
                 self.nameLabel.text = finalName
                 self.roleLabel.text = "Admin"
 
-                // لو عندج ImageLoader (اختياري)
                 // ImageLoader.shared.setImage(
                 //     on: self.profileImageView,
                 //     from: photoUrl,
@@ -217,7 +211,6 @@ final class AdminProfileViewController: UIViewController {
             return
         }
 
-        // ✅✅✅ هنا التعديل: بعد logout يروح UserSelection
         goToUserSelectionRoot()
     }
 
@@ -227,7 +220,7 @@ final class AdminProfileViewController: UIViewController {
         let vc = sb.instantiateViewController(withIdentifier: "UserSelectionViewController")
 
         let nav = UINavigationController(rootViewController: vc)
-        nav.setNavigationBarHidden(true, animated: false) // تقدرين تخليها false إذا تبين nav
+        nav.setNavigationBarHidden(true, animated: false)
 
         if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let window = scene.windows.first {

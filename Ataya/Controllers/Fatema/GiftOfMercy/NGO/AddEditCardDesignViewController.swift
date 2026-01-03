@@ -8,14 +8,11 @@ final class AddEditCardDesignViewController: UIViewController {
 
     private var existingDesign: CardDesign?
 
-    // الصورة المختارة (قبل الرفع)
     private var pickedImage: UIImage?
 
-    // نخزن الحالي (لو Edit وما غيرنا الصورة)
     private var currentImageURL: String?
     private var currentPublicId: String?
 
-    // fallback asset name (لـ UI بس)
     private var currentAssetName: String = "c1"
     private let defaultAssetName = "c1"
 
@@ -280,7 +277,6 @@ final class AddEditCardDesignViewController: UIViewController {
         currentPublicId = design.imagePublicId
         currentAssetName = design.imageName.isEmpty ? defaultAssetName : design.imageName
 
-        // لو عندنا URL نعرضه، وإلا نعرض asset
         if let url = design.imageURL, !url.isEmpty {
             previewImageView.isHidden = false
             uploadPlaceholderStack.isHidden = true
@@ -344,14 +340,12 @@ final class AddEditCardDesignViewController: UIViewController {
             hasError = true
         }
 
-        // ✅ Add: لازم يختار صورة جديدة
         if existingDesign == nil && pickedImage == nil {
             artworkErrorLabel.text = "Please upload the card artwork."
             artworkErrorLabel.isHidden = false
             hasError = true
         }
 
-        // ✅ Edit: لازم يكون عندنا أي صورة (picked OR existing URL OR asset)
         if existingDesign != nil {
             let hasAnyImage = (pickedImage != nil)
                 || ((currentImageURL ?? "").isEmpty == false)
@@ -368,7 +362,6 @@ final class AddEditCardDesignViewController: UIViewController {
 
         setSaving(true)
 
-        // لو المستخدم اختار صورة جديدة -> نرفع Cloudinary
         if let img = pickedImage {
             CloudinaryUploader.shared.uploadImage(img, folder: "card_designs") { [weak self] result in
                 guard let self else { return }
@@ -393,7 +386,6 @@ final class AddEditCardDesignViewController: UIViewController {
                 }
             }
         } else {
-            // ما في صورة جديدة -> نحفظ الموجود
             finishSave(name: trimmedName)
         }
     }

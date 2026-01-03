@@ -68,7 +68,7 @@ final class AtayaGiftsIntroViewController: UIViewController {
     }
 
     private func setupConstraints() {
-        // Aspect (يحاول يخلي البوستر طويل مثل الصورة)
+        // Aspect
         let aspect = posterContainer.heightAnchor.constraint(equalTo: posterContainer.widthAnchor, multiplier: 1.55)
         aspect.priority = .defaultHigh
 

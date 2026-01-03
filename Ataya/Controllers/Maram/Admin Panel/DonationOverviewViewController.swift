@@ -144,7 +144,6 @@ final class DonationOverviewViewController: UIViewController {
         }
 
         shownItems = allItems.filter { item in
-            // ✅ ابحثي في أهم حقولك (بدون ما نعتمد على نصوص "NGO" الوهمية)
             let haystack = [
                 item.title,
                 item.donorText,
@@ -171,7 +170,6 @@ final class DonationOverviewViewController: UIViewController {
 
         let dest = segue.destination
 
-        // لو الصفحة داخل NavigationController
         let detailsVC =
             (dest as? UINavigationController)?.topViewController as? AdminDonationDetailsViewController
             ?? dest as? AdminDonationDetailsViewController

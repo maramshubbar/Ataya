@@ -1,7 +1,7 @@
 import UIKit
 import FirebaseFirestore
 
-// ✅ Model مربوط بـ users collection
+// Model
 struct NGO {
     let id: String
     let name: String
@@ -10,7 +10,7 @@ struct NGO {
     let email: String
     let phone: String
     let note: String?
-    let status: String         // pending / verified / rejected (بعد التطبيع)
+    let status: String         // pending / verified / rejected
     let createdAt: Date
 }
 
@@ -28,7 +28,7 @@ final class NGOVerificationViewController: UIViewController {
     private var allNGOs: [NGO] = []
     private var shownNGOs: [NGO] = []
 
-    // ✅ status values (الموحدة)
+    // status values
     private enum Status {
         static let pending  = "pending"
         static let verified = "verified"
@@ -54,7 +54,7 @@ final class NGOVerificationViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
 
-        // ✅ default segment = All
+        // default segment = All
         filterSegment.selectedSegmentIndex = 0
         filterSegment.addTarget(self, action: #selector(filterChanged), for: .valueChanged)
 
@@ -83,8 +83,7 @@ final class NGOVerificationViewController: UIViewController {
         listener = nil
     }
 
-    // MARK: - Normalize Status (الأهم)
-    // يحوّل أي قيمة إلى: pending / verified / rejected
+    // MARK: - Normalize Status
     private func normalizeStatus(_ raw: Any?) -> String {
         let s = (raw as? String ?? "")
             .trimmingCharacters(in: .whitespacesAndNewlines)
@@ -92,22 +91,21 @@ final class NGOVerificationViewController: UIViewController {
 
         if s.isEmpty { return Status.pending }
 
-        // ✅ verified variations
+        // verified variations
         if s == "verified" || s == "approve" || s == "approved" || s == "accept" || s == "accepted" {
             return Status.verified
         }
 
-        // ✅ rejected variations
+        // rejected variations
         if s == "rejected" || s == "reject" || s == "rejected " || s == "declined" || s == "denied" || s == "refused" {
             return Status.rejected
         }
 
-        // ✅ pending variations
+        // pending variations
         if s == "pending" || s == "in review" || s == "review" || s == "submitted" || s == "waiting" {
             return Status.pending
         }
 
-        // أي شي غريب نخليه pending عشان ما يختفي من القائمة
         return Status.pending
     }
 
@@ -115,8 +113,6 @@ final class NGOVerificationViewController: UIViewController {
     private func startListening() {
         stopListening()
 
-        // ✅ نخلي الفلترة كلها محلي (segments) عشان تكون مرنة
-        // (بدون whereField على status عشان ما نحتاج index إضافي)
         let query = db.collection(usersCollection)
             .whereField("role", isEqualTo: "ngo")
             .order(by: "createdAt", descending: true)
@@ -151,8 +147,6 @@ final class NGOVerificationViewController: UIViewController {
                     (data["rejectionReason"] as? String) ??
                     (data["note"] as? String)
 
-                // ✅ اقرأ status من approvalStatus أولاً (مثل ما انتي تسوين update)
-                // وبعدين status كـ fallback
                 let statusRaw =
                     data["approvalStatus"] ??
                     data["status"] ??
@@ -205,7 +199,6 @@ final class NGOVerificationViewController: UIViewController {
 
         var items = allNGOs
 
-        // ✅ فلتر حسب الستيتس (مضمون لأن status صار موحّد)
         if selectedStatus != Status.all {
             items = items.filter { $0.status == selectedStatus }
         }
@@ -289,7 +282,6 @@ final class NGOVerificationViewController: UIViewController {
 
     private func updateNGOStatus(ngoId: String, status: String, rejectionReason: String?) {
 
-        // ✅ نحدث approvalStatus + (اختياري) status عشان لو فيه شاشات قديمة تقرأ status
         var data: [String: Any] = [
             "approvalStatus": status,
             "status": status,

@@ -6,25 +6,32 @@ Ataya promotes transparency, food safety, and community engagement by providing 
 
 ## Main Features
 
-| Feature | Explanation |
-|------|------------|
-| User Authentication | Provides secure, role-based access for Donors, NGOs, and Admins to ensure controlled system usage |
-| Food Donation Submission | Allows donors to submit food items with detailed information such as quantity, category, expiry date, and notes |
-| Pickup Scheduling | Enables NGOs to review donation requests, accept them, schedule pickup dates and times, and mark pickups as completed |
-| Donation Tracking | Displays real-time donation status including pending, accepted, collected, and completed stages |
-| Notifications | Sends automatic alerts for donation updates, pickup confirmations, and important system events |
-| Help & Support | Allows users to submit support tickets and communicate with admins for issue resolution |
+| Feature                                           | Explanation                                                                                                             | Developer      |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | -------------- |
+| User Authentication                               | Provides secure, role-based access for Donors, NGOs, and Admins to ensure controlled system usage                       | Ruqaya Khan    |
+| Food Donation Submission                          | Allows donors to submit food items with detailed information such as quantity, category, expiry date, photos, and notes | Fatema Maitham |
+| Food Safety Checks & Reporting                    | Validates donation safety (e.g., expiry rules) and enables reporting/flagging unsafe or suspicious donations            | Fatema Maitham |
+| Organization Discovery (Verified NGOs & Missions) | Enables users to browse verified NGOs, their missions, and available donation options                                   | Sarah Abdulla  |
+| Pickup Scheduling                                 | Enables NGOs to accept/reject requests, schedule pickup date/time and location, and prevent conflicts                   | Rana Alqameesh |
+| Real-Time Donation Status Tracking                | Displays live donation status updates (pending, accepted, scheduled, collected, completed) for transparency             | Ruqaya Khan    |
+| Donation History & Activity Logs                  | Stores donation history and logs user actions for tracking and auditing                                                 | Ruqaya Khan    |
+| Recurring Donation Schedules                      | Allows setting recurring donation plans for repeated contributions over time                                            | Ameena Khamis  |
+| Impact Tracking Dashboard                         | Shows impact statistics and insights (totals, trends, contributions) through dashboard analytics                        | Ameena Khamis  |
+| Notifications                                     | Sends automatic alerts for donation updates, pickup confirmations, approvals, and important system events               | Rana Alqameesh |
+| Admin Panel                                       | Provides admin tools to manage users, monitor activity, and oversee the donation workflow                               | Maram Shubbar  |
+| Admin Flow (Verification & Oversight)             | Supports admin processes such as verification of collectors/NGOs and handling flagged content or suspicious activity    | Sarah Abdulla  |
+| Gamification: Achievements & Rewards              | Encourages engagement using points, badges, achievements, and reward milestones                                         | Maram Shubbar  |
 
 ## Additional Features
 
-| Feature | Explanation |
-|------|------------|
-| Address Management | Enables donors to save multiple pickup addresses and select the preferred location during donation |
-| Collector Verification | Allows admins to review, approve, or reject NGO and volunteer collector registrations |
-| Report Management | Provides tools to flag unsafe donations or suspicious user activity for administrative review |
-| Analytics Dashboard | Displays charts and statistics related to donations, users, and verified collectors |
-| Campaign Management | Allows admins to create, manage, and monitor donation campaigns and their progress |
-| Achievements & Rewards | Encourages donor engagement through points, badges, and reward milestones |
+| Feature                                 | Explanation                                                                                      | Developer      |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------ | -------------- |
+| Seasonal & Event-Based Campaigns        | Runs seasonal campaigns (e.g., Ramadan/occasions) with progress tracking and participation goals | Maram Shubbar  |
+| Gift of Mercy                           | Enables users to donate on behalf of their beloved ones            | Fatema Maitham |
+| Basket Donations & Monetary Support     | Allows supporting NGOs through basket donations and optional monetary contributions              | Ameena Khamis  |
+| Community Reviews (Donors & Collectors) | Allows donors and collectors to leave reviews/feedback to improve trust and experience quality   | Ruqaya Khan    |
+| Help & Support                          | Provides in-app help and support requests for issue reporting and assistance                     | Rana Alqameesh |
+| Rating / Reputation                     | Builds trust using rating/reputation indicators for users, collectors, and NGOs                  | Sarah Abdulla  |
 
 ## Technologies & Libraries
 

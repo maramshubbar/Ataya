@@ -12,6 +12,17 @@ final class ngoDashboardViewController: UIViewController, UITableViewDataSource,
     @IBOutlet weak var assignedTableView: UITableView!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var assignedTableHeightConstraint: NSLayoutConstraint!
+   
+
+    
+    
+    @IBAction func campaignManagementTapped(_ sender: Any) {
+
+            let sb = UIStoryboard(name: "Campaigns", bundle: nil) // اسم الستوريبورد اللي فيه الصفحة الهدف
+            let vc = sb.instantiateViewController(withIdentifier: "CampaignManagementVC")
+
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
 
     
     @IBOutlet weak var donationOverviewView: UIView!
@@ -179,6 +190,8 @@ final class ngoDashboardViewController: UIViewController, UITableViewDataSource,
            vc.item = assignedPickups[indexPath.row]
            navigationController?.pushViewController(vc, animated: true)
        }
+    
+    
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)

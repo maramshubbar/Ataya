@@ -9,7 +9,6 @@ import UIKit
 import FirebaseFirestore
 import FirebaseAuth
 
-
 final class NGODonationOverviewViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
@@ -20,7 +19,14 @@ final class NGODonationOverviewViewController: UIViewController {
 
     private var allItems: [DonationItem] = []
     private var shownItems: [DonationItem] = []
- 
+
+    // ✅ Storyboard IDs (لازم نفسهم بالـ storyboard)
+    private enum DetailsVCId {
+        static let pending  = "PendingDonationDetailsVC"
+        static let approved = "ApprovedDonationDetailsVC"
+        static let rejected = "RejectedDonationDetailsVC"
+    }
+
     private static let dateFormatter: DateFormatter = {
         let f = DateFormatter()
         f.dateStyle = .medium
@@ -30,8 +36,10 @@ final class NGODonationOverviewViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         title = "Donation Overview"
 
+        // SearchBar style
         searchBar.backgroundImage = UIImage()
         searchBar.searchBarStyle = .minimal
         if let searchField = searchBar.value(forKey: "searchField") as? UITextField {
@@ -45,9 +53,10 @@ final class NGODonationOverviewViewController: UIViewController {
         tableView.delegate = self
         tableView.allowsSelection = false
 
-        // ✅ نفس admin cell
-        tableView.register(UINib(nibName: "DonationOverviewCell", bundle: nil),
-                           forCellReuseIdentifier: DonationOverviewCell.reuseId)
+        tableView.register(
+            UINib(nibName: "DonationOverviewCell", bundle: nil),
+            forCellReuseIdentifier: DonationOverviewCell.reuseId
+        )
 
         tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
@@ -112,7 +121,7 @@ final class NGODonationOverviewViewController: UIViewController {
                     let title = clean.isEmpty ? donationId : "\(clean) (\(donationId))"
 
                     return DonationItem(
-                        docId: doc.documentID,
+                        docId: doc.documentID,          // ✅ هذا docId اللي نمرره للـ details
                         title: title,
                         donorText: donorText,
                         ngoText: "NGO (ID: —)",
@@ -126,24 +135,23 @@ final class NGODonationOverviewViewController: UIViewController {
                 DispatchQueue.main.async { self.applySearchAndReload() }
             }
     }
+
     private func mapStatus(_ s: String) -> DonationItem.Status {
         let v = s.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
 
         switch v {
         case "approved", "successful", "completed", "collected", "accept":
             return .approved
-
         case "rejected", "reject":
             return .rejected
-
         default:
             return .pending
         }
     }
 
-
     private func applySearchAndReload() {
         let q = (searchBar.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+
         if q.isEmpty {
             shownItems = allItems
         } else {
@@ -154,37 +162,56 @@ final class NGODonationOverviewViewController: UIViewController {
                     .contains(q)
             }
         }
+
         tableView.reloadData()
     }
-    
-    private func openDetails(docId: String) {
-        let vc = storyboard!.instantiateViewController(withIdentifier: "NGODonationDetailsViewController") as! NGODonationDetailsViewController
-        vc.donationId = docId
-        print("➡️ opening Details with docId:", docId)
+
+    // ✅ مود خيار ٢: افتح تفاصيل حسب الحالة (3 scenes)
+    private func openDetails(item: DonationItem) {
+
+        let vcId: String
+        switch item.status {
+        case .pending:
+            vcId = DetailsVCId.pending
+        case .approved:
+            vcId = DetailsVCId.approved
+        case .rejected:
+            vcId = DetailsVCId.rejected
+        }
+
+        print("➡️ openDetails vcId:", vcId, "docId:", item.docId, "status:", item.status.rawValue)
+
+        let vc = storyboard!.instantiateViewController(withIdentifier: vcId) as! NGODonationDetailsViewController
+        vc.donationId = item.docId
         navigationController?.pushViewController(vc, animated: true)
     }
 }
 
 extension NGODonationOverviewViewController: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { shownItems.count }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        shownItems.count
+    }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+
         let cell = tableView.dequeueReusableCell(
             withIdentifier: DonationOverviewCell.reuseId,
             for: indexPath
         ) as! DonationOverviewCell
-        
+
         let item = shownItems[indexPath.row]
         cell.configure(item: item)
+
+        // ✅ زر View Details داخل السيل
         cell.onViewDetailsTapped = { [weak self] in
-            self?.openDetails(docId: item.docId)
+            self?.openDetails(item: item)
         }
 
         return cell
     }
 
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { }
 }
 
 extension NGODonationOverviewViewController: UISearchBarDelegate {

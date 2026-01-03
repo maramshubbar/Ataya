@@ -198,5 +198,32 @@ final class DonorTabBarController: UITabBarController, UITabBarControllerDelegat
             nav?.pushViewController(sb.instantiateViewController(withIdentifier: "GiftViewController"), animated: true)
         }
     }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        // تأكدي إننا على تبويب Impact (index حسب ترتيب التبويبات)
+        let impactIndex = 1 // عدّليه إذا Impact مو ثاني تبويب
+
+        if selectedIndex == impactIndex {
+            openImpactDashboardIfNeeded()
+        }
+    }
+
+    private func openImpactDashboardIfNeeded() {
+        // إذا فيه NavigationController
+        if let nav = viewControllers?[selectedIndex] as? UINavigationController {
+
+            // إذا ما فيه ViewControllers (صفحة فاضية)
+            if nav.viewControllers.isEmpty {
+
+                let sb = UIStoryboard(name: "Impact", bundle: nil)
+
+                // نفتح الـInitial View Controller من Impact.storyboard
+                if let vc = sb.instantiateInitialViewController() {
+                    nav.setViewControllers([vc], animated: false)
+                }
+            }
+        }
+    }
 }
 

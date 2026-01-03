@@ -62,8 +62,9 @@ final class DonorDashboardViewController: UIViewController,
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupQuickToolTaps()
+        setupQuickToolsTaps()
         hidesBottomBarWhenPushed = true
+
 
         // Collection
         campaignsCollectionView.dataSource = self

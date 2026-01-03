@@ -170,14 +170,12 @@ class NGODetailsViewController: UIViewController, UIDocumentPickerDelegate {
         let fileName = "\(kind).\(ext)"
         let ref = storage.reference().child("ngo_docs/\(uid)/\(fileName)")
         
-        // رفع الملف
         ref.putFile(from: fileURL, metadata: nil) { _, error in
             if let error = error {
                 completion(.failure(error))
                 return
             }
             
-            // ناخذ رابط التحميل
             ref.downloadURL { url, error in
                 if let error = error {
                     completion(.failure(error))
@@ -214,7 +212,6 @@ class NGODetailsViewController: UIViewController, UIDocumentPickerDelegate {
         }
         
         
-        // 3) لازم يختار 3 ملفات (إذا تبين تخليها optional قولي)
         guard let personal = personalIDURL,
               let training = trainingURL,
               let mission = missionURL else {

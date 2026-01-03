@@ -31,7 +31,7 @@ final class AdminLoginViewController: UIViewController, UIImagePickerControllerD
 
     private let db = Firestore.firestore()
 
-    // ✅ مهم: يمنع أي segue يشتغل تلقائياً إلا إذا سمحنا له بعد نجاح الأدمن
+
     private var allowAdminDashSegue = false
 
     override func viewDidLoad() {
@@ -58,7 +58,7 @@ final class AdminLoginViewController: UIViewController, UIImagePickerControllerD
         forgotPasswordLabel.addGestureRecognizer(tap)
     }
 
-    // ✅ يمنع التحويل التلقائي (لو عندك segue متصل بالزر)
+
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
         if identifier == "toAdminDash" {
             return allowAdminDashSegue
@@ -355,7 +355,7 @@ final class AdminLoginViewController: UIViewController, UIImagePickerControllerD
                     return
                 }
 
-                // ✅ فقط هنا نسمح بالانتقال
+
                 self.allowAdminDashSegue = true
                 self.setLoading(false)
                 DispatchQueue.main.async {

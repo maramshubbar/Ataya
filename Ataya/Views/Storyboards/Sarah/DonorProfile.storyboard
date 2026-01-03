@@ -211,6 +211,9 @@
                                             </backgroundConfiguration>
                                             <color key="baseBackgroundColor" systemColor="secondarySystemGroupedBackgroundColor"/>
                                         </buttonConfiguration>
+                                        <connections>
+                                            <segue destination="PJV-EG-exQ" kind="show" id="78O-Yh-V8O"/>
+                                        </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Notification" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s4s-jr-uxq">
                                         <rect key="frame" x="55" y="13" width="93" height="22"/>
@@ -321,6 +324,16 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="E4e-hM-0TR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1037.7272727272727" y="-2.510460251046025"/>
+        </scene>
+        <!--notification-->
+        <scene sceneID="1pC-1Q-roP">
+            <objects>
+                <viewControllerPlaceholder storyboardName="notification" id="PJV-EG-exQ" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="K5z-Tg-aBG"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="OBa-n1-6hN" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1522" y="-98"/>
         </scene>
         <!--HistoryRecurring-->
         <scene sceneID="ehL-q3-paF">

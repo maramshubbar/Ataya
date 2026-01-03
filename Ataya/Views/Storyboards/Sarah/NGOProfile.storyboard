@@ -18,6 +18,16 @@
             </objects>
             <point key="canvasLocation" x="1512" y="1124"/>
         </scene>
+        <!--notification-->
+        <scene sceneID="Ppe-PZ-t20">
+            <objects>
+                <viewControllerPlaceholder storyboardName="notification" id="HJc-KF-WZb" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="Rje-ll-jEX"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="cW3-OP-JzL" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1498" y="852"/>
+        </scene>
         <!--Profile View Controller-->
         <scene sceneID="olO-hg-FLr">
             <objects>
@@ -92,6 +102,9 @@
                                             </backgroundConfiguration>
                                             <color key="baseBackgroundColor" systemColor="secondarySystemGroupedBackgroundColor"/>
                                         </buttonConfiguration>
+                                        <connections>
+                                            <segue destination="HJc-KF-WZb" kind="show" id="pNK-TU-ZbT"/>
+                                        </connections>
                                     </button>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="bell.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="Ek9-M6-rvP">
                                         <rect key="frame" x="16" y="17.666666666666657" width="21" height="22"/>

@@ -422,9 +422,6 @@
                                                                     <constraint firstItem="CAd-bn-SEf" firstAttribute="leading" secondItem="BLx-1J-fth" secondAttribute="trailing" constant="21" id="kK8-KY-zZ1"/>
                                                                     <constraint firstItem="BLx-1J-fth" firstAttribute="leading" secondItem="Pr8-Ze-EAD" secondAttribute="leading" constant="22" id="s69-tv-0hn"/>
                                                                 </constraints>
-                                                                <connections>
-                                                                    <outletCollection property="gestureRecognizers" destination="5PU-Tj-rHx" appends="YES" id="Y8H-gU-BN3"/>
-                                                                </connections>
                                                             </view>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dAe-za-vH2" userLabel="vwAuditLog">
                                                                 <rect key="frame" x="0.0" y="77" width="400" height="65"/>
@@ -452,6 +449,7 @@
                                                                     </imageView>
                                                                 </subviews>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                                <gestureRecognizers/>
                                                                 <constraints>
                                                                     <constraint firstItem="Hh1-lQ-rre" firstAttribute="centerY" secondItem="dAe-za-vH2" secondAttribute="centerY" id="8im-u1-d6y"/>
                                                                     <constraint firstItem="Hh1-lQ-rre" firstAttribute="leading" secondItem="oGK-yA-JJM" secondAttribute="trailing" constant="19" id="LQq-kT-a3u"/>
@@ -462,6 +460,9 @@
                                                                     <constraint firstAttribute="trailing" secondItem="eGW-v3-kc7" secondAttribute="trailing" constant="16" id="xJs-9U-Fdp"/>
                                                                     <constraint firstItem="eGW-v3-kc7" firstAttribute="centerY" secondItem="dAe-za-vH2" secondAttribute="centerY" id="zPL-OP-gd7"/>
                                                                 </constraints>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="5PU-Tj-rHx" appends="YES" id="TQt-eM-sAs"/>
+                                                                </connections>
                                                             </view>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="D7s-uo-SNy" userLabel="vwAuditLog">
                                                                 <rect key="frame" x="0.0" y="154" width="400" height="65"/>
@@ -564,46 +565,11 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZaW-Pz-XIa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer id="5PU-Tj-rHx"/>
-                <view contentMode="scaleToFill" id="8KA-qB-2j3" userLabel="vwAuditLog">
-                    <rect key="frame" x="0.0" y="0.0" width="400" height="65"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Campaign Management" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hry-Ao-Mbq">
-                            <rect key="frame" x="83" y="22.333333333333336" width="293" height="20.333333333333336"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                            <nil key="textColor"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chevron.right" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="aJJ-ty-Uad">
-                            <rect key="frame" x="364" y="22" width="20" height="21.333333333333329"/>
-                            <color key="tintColor" systemColor="labelColor"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="25" id="J47-eI-GvF"/>
-                                <constraint firstAttribute="width" constant="20" id="OWS-Z4-m3N"/>
-                            </constraints>
-                        </imageView>
-                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="C" translatesAutoresizingMaskIntoConstraints="NO" id="euO-5i-v0q">
-                            <rect key="frame" x="24" y="12.666666666666664" width="40" height="40"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="40" id="5in-LN-406"/>
-                                <constraint firstAttribute="width" constant="40" id="fb8-86-kx2"/>
-                            </constraints>
-                        </imageView>
-                    </subviews>
-                    <viewLayoutGuide key="safeArea" id="qQY-Iw-g3R"/>
-                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    <constraints>
-                        <constraint firstItem="euO-5i-v0q" firstAttribute="centerY" secondItem="8KA-qB-2j3" secondAttribute="centerY" id="5Au-mc-4lT"/>
-                        <constraint firstAttribute="trailing" secondItem="aJJ-ty-Uad" secondAttribute="trailing" constant="16" id="8iC-Sg-Eyk"/>
-                        <constraint firstItem="aJJ-ty-Uad" firstAttribute="centerY" secondItem="8KA-qB-2j3" secondAttribute="centerY" id="ISn-vI-dmr"/>
-                        <constraint firstAttribute="height" constant="65" id="NUa-Ez-Xe9"/>
-                        <constraint firstItem="Hry-Ao-Mbq" firstAttribute="centerY" secondItem="8KA-qB-2j3" secondAttribute="centerY" id="RPy-cw-xRK"/>
-                        <constraint firstItem="aJJ-ty-Uad" firstAttribute="leading" secondItem="Hry-Ao-Mbq" secondAttribute="trailing" constant="-12" id="aAD-PP-PgD"/>
-                        <constraint firstItem="euO-5i-v0q" firstAttribute="leading" secondItem="8KA-qB-2j3" secondAttribute="leading" constant="24" id="m2P-Nh-dZj"/>
-                        <constraint firstItem="Hry-Ao-Mbq" firstAttribute="leading" secondItem="euO-5i-v0q" secondAttribute="trailing" constant="19" id="yaP-h7-jU9"/>
-                    </constraints>
-                </view>
+                <tapGestureRecognizer id="5PU-Tj-rHx">
+                    <connections>
+                        <action selector="campaignManagementTapped:" destination="gPY-HB-evU" id="jce-gC-D8z"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-2164.0909090909095" y="-377.19665271966528"/>
         </scene>
@@ -616,7 +582,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="FEv-Of-G81">
-                                <rect key="frame" x="20" y="148" width="400" height="716"/>
+                                <rect key="frame" x="0.0" y="124" width="440" height="764"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                         </subviews>
@@ -652,7 +618,7 @@
         <image name="location (1)" width="512" height="512"/>
         <image name="package" width="512" height="512"/>
         <image name="prizegrey" width="20" height="20"/>
-        <image name="tab_empty" width="0.3333333432674408" height="0.3333333432674408"/>
+        <image name="tab_empty" width="1" height="1"/>
         <image name="usergrey" width="20" height="20"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

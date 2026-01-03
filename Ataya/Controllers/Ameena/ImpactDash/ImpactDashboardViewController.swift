@@ -36,15 +36,6 @@ final class ImpactDashboardViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-            print("✅ ImpactDashboard OPENED")
-            view.backgroundColor = .systemGreen
-
-            let test = UILabel()
-            test.text = "IMPACT LOADED ✅"
-            test.frame = CGRect(x: 30, y: 150, width: 250, height: 40)
-            view.addSubview(test)
-
             setupUI()
             attachDonationsListener()
     }

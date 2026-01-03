@@ -48,6 +48,7 @@ class DonationDetailsRViewControllerViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        hidesBottomBarWhenPushed = true
 
         // Do any additional setup after loading the view.
         

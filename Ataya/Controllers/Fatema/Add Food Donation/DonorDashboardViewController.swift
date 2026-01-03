@@ -56,10 +56,15 @@ final class DonorDashboardViewController: UIViewController,
     @IBOutlet weak var ongoingDonationTitleLabel: UILabel!
 
     @IBOutlet weak var campaignsCollectionView: UICollectionView!
+    
+    private let historyStoryboardName = "DonationHist" // عدليها لو اسم الستوريبورد غير
+    private let historyStoryboardID   = "DonationHistoryViewController" // لازم نفس Storyboard ID بالضبط
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupQuickToolsTaps()
+        hidesBottomBarWhenPushed = true
+
 
         // Collection
         campaignsCollectionView.dataSource = self
@@ -207,6 +212,40 @@ final class DonorDashboardViewController: UIViewController,
             present(vc, animated: true)
         }
     }
+    
+    private func setupQuickToolTaps() {
+        // مهم: StackView أحيانًا ما تستقبل لمس إذا عناصرها بس labels/images
+        recurringStackView.isUserInteractionEnabled = true
+        discoverStackView.isUserInteractionEnabled = true
+        historyStackView.isUserInteractionEnabled = true
+
+        recurringStackView.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(openRecurring))
+        )
+
+        discoverStackView.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(openDiscoverNGOs))
+        )
+
+        historyStackView.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(openDonationHistory))
+        )
+    }
+
+    @objc private func openDonationHistory() {
+        pushVC(storyboardName: historyStoryboardName, storyboardID: historyStoryboardID)
+    }
+
+    @objc private func openRecurring() {
+        // عدليهم حسب صفحتكم (إذا عندكم ستوريبورد/ID حق recurring)
+        showNotReady("Recurring Donation page not linked yet")
+    }
+
+    @objc private func openDiscoverNGOs() {
+        // عدليهم حسب صفحتكم (إذا عندكم ستوريبورد/ID حق discover)
+        showNotReady("Discover NGOs page not linked yet")
+    }
+
 
     // MARK: - Firestore (بدون Index requirements)
     private func startFirestore() {

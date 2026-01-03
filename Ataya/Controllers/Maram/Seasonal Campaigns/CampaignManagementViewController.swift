@@ -296,7 +296,7 @@ extension CampaignManagementViewController: UITableViewDataSource, UITableViewDe
                 quoteText: item.story,
                 quoteAuthor: item.from.isEmpty ? "—" : item.from,
                 orgName: item.organization,
-                orgAbout: "LifeReach is a humanitarian organization dedicated to helping families in crisis rebuild their lives with dignity. We deliver urgent medical aid, food, water, and long-term recovery support to those affected by conflict and disaster. Guided by compassion and transparency, we work to restore hope where it’s needed most."
+                orgAbout: "HopPal is a humanitarian organization dedicated to helping families in crisis rebuild their lives with dignity. We deliver urgent medical aid, food, water, and long-term recovery support to those affected by conflict and disaster. Guided by compassion and transparency, we work to restore hope where it’s needed most."
             )
 
             let detailVC = CampaignDetailViewController(model: vm)

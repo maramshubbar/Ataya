@@ -165,6 +165,7 @@ class DonationDetailsRViewControllerViewController: UIViewController {
 
   }
 
+
   // MARK: - UIColor HEX
 //  private extension UIColor {
 //      convenience init(hex: String, alpha: CGFloat = 1) {
@@ -190,5 +191,3 @@ class DonationDetailsRViewControllerViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
-
-//}

@@ -30,6 +30,7 @@ final class RecurringDonationViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        hidesBottomBarWhenPushed = true
 
         // Hide tab bar for the whole recurring donation flow
         self.hidesBottomBarWhenPushed = true
@@ -94,7 +95,7 @@ final class RecurringDonationViewController: UIViewController {
         draft.nextPickupDate = nextPickupDate
 
         // Navigate to the next page (Storyboard-based)
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let storyboard = UIStoryboard(name: "Recurring", bundle: nil)
         guard let vc = storyboard.instantiateViewController(withIdentifier: "RecurringDonationDetailsViewController") as? RecurringDonationDetailsViewController else {
             assertionFailure("RecurringDonationDetailsViewController storyboard ID is missing or incorrect.")
             return
@@ -118,6 +119,11 @@ final class RecurringDonationViewController: UIViewController {
         }
 
         return Calendar.current.date(byAdding: components, to: start) ?? start
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        hidesBottomBarWhenPushed = true
     }
 
     // MARK: - Period Buttons

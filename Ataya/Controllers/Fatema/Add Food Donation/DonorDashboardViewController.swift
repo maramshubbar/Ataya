@@ -30,6 +30,10 @@ final class DonorDashboardViewController: UIViewController,
 
     private let advocacyStoryboardName = "DonorDashboard"
     private let advocacyStoryboardID   = "AdvocacyViewController"
+    
+    private let recurringStoryboardName = "Recurring"              // عدّليه إذا اسم الستوريبورد غير
+    private let recurringStoryboardID   = "RecurringViewController" // عدّليه لِـStoryboard ID الحقيقي
+
 
     // Firestore
     private let db = Firestore.firestore()
@@ -55,6 +59,7 @@ final class DonorDashboardViewController: UIViewController,
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupQuickToolsTaps()
 
         // Collection
         campaignsCollectionView.dataSource = self
@@ -150,6 +155,37 @@ final class DonorDashboardViewController: UIViewController,
 
         present(nav, animated: true)
     }
+    
+    private func setupQuickToolsTaps() {
+        // لازم عشان الستاك يستقبل لمس
+        recurringStackView.isUserInteractionEnabled = true
+        discoverStackView.isUserInteractionEnabled = true
+        historyStackView.isUserInteractionEnabled = true
+
+        let recurringTap = UITapGestureRecognizer(target: self, action: #selector(recurringTapped))
+        recurringStackView.addGestureRecognizer(recurringTap)
+
+        let discoverTap = UITapGestureRecognizer(target: self, action: #selector(discoverTapped))
+        discoverStackView.addGestureRecognizer(discoverTap)
+
+        let historyTap = UITapGestureRecognizer(target: self, action: #selector(historyTapped))
+        historyStackView.addGestureRecognizer(historyTap)
+    }
+
+    @objc private func recurringTapped() {
+        pushVC(storyboardName: recurringStoryboardName, storyboardID: recurringStoryboardID)
+    }
+
+    @objc private func discoverTapped() {
+        // إذا عندج صفحة Discover NGOs
+        // pushVC(storyboardName: "DiscoverNGO", storyboardID: "DiscoverNGOViewController")
+    }
+
+    @objc private func historyTapped() {
+        // إذا عندج Donation History
+        // pushVC(storyboardName: "DonHist", storyboardID: "DonationHistoryViewController")
+    }
+
 
     private func showNotReady(_ msg: String) {
         let alert = UIAlertController(title: "Not ready", message: msg, preferredStyle: .alert)
@@ -160,6 +196,7 @@ final class DonorDashboardViewController: UIViewController,
     private func pushVC(storyboardName: String, storyboardID: String) {
         let sb = UIStoryboard(name: storyboardName, bundle: nil)
         let vc = sb.instantiateViewController(withIdentifier: storyboardID)
+        vc.hidesBottomBarWhenPushed = true
 
         if let nav = self.navigationController {
             nav.pushViewController(vc, animated: true)
@@ -184,24 +221,70 @@ final class DonorDashboardViewController: UIViewController,
         ongoingListener = nil
     }
 
+//    private func listenCampaignsNoIndex() {
+//        campaignsListener?.remove()
+//
+//        campaignsListener = db.collection("campaigns")
+//            .limit(to: 20)
+//            .addSnapshotListener { [weak self] snap, err in
+//                guard let self else { return }
+//                if let err { print("❌ campaigns error:", err); return }
+//
+//                let docs = snap?.documents ?? []
+//                var items: [DashboardCampaign] = docs.map { d in
+//                    let data = d.data()
+//                    let title = (data["title"] as? String) ?? (data["name"] as? String) ?? "Untitled"
+//                    let tag = (data["category"] as? String) ?? (data["tag"] as? String) ?? "General"
+//                    let imageUrl = (data["imageUrl"] as? String) ?? (data["image"] as? String)
+//                    let imageName = (data["imageName"] as? String) ?? "campaign1"
+//                    let createdAt = (data["createdAt"] as? Timestamp)?.dateValue()
+//                    return DashboardCampaign(imageName: imageName, imageUrl: imageUrl, tag: tag, title: title, createdAt: createdAt)
+//                }
+//
+//                items.sort { ($0.createdAt ?? .distantPast) > ($1.createdAt ?? .distantPast) }
+//                self.campaigns = items
+//
+//                DispatchQueue.main.async {
+//                    self.campaignsCollectionView.reloadData()
+//                }
+//            }
+//    }
+    
+    
     private func listenCampaignsNoIndex() {
         campaignsListener?.remove()
 
         campaignsListener = db.collection("campaigns")
-            .limit(to: 20)
+            .limit(to: 50)
             .addSnapshotListener { [weak self] snap, err in
                 guard let self else { return }
                 if let err { print("❌ campaigns error:", err); return }
 
                 let docs = snap?.documents ?? []
-                var items: [DashboardCampaign] = docs.map { d in
+                var items: [DashboardCampaign] = []
+
+                for d in docs {
                     let data = d.data()
+
+                    // ✅ أهم سطر: الهوم يعرض بس اللي showOnHome = true
+                    let showOnHome = (data["showOnHome"] as? Bool) ?? false
+                    guard showOnHome else { continue }
+
                     let title = (data["title"] as? String) ?? (data["name"] as? String) ?? "Untitled"
                     let tag = (data["category"] as? String) ?? (data["tag"] as? String) ?? "General"
                     let imageUrl = (data["imageUrl"] as? String) ?? (data["image"] as? String)
                     let imageName = (data["imageName"] as? String) ?? "campaign1"
                     let createdAt = (data["createdAt"] as? Timestamp)?.dateValue()
-                    return DashboardCampaign(imageName: imageName, imageUrl: imageUrl, tag: tag, title: title, createdAt: createdAt)
+
+                    items.append(
+                        DashboardCampaign(
+                            imageName: imageName,
+                            imageUrl: imageUrl,
+                            tag: tag,
+                            title: title,
+                            createdAt: createdAt
+                        )
+                    )
                 }
 
                 items.sort { ($0.createdAt ?? .distantPast) > ($1.createdAt ?? .distantPast) }
@@ -212,6 +295,7 @@ final class DonorDashboardViewController: UIViewController,
                 }
             }
     }
+
 
     private func listenOngoingNoIndex() {
         ongoingListener?.remove()

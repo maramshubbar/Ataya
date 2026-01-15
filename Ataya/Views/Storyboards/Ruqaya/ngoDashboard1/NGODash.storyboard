@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="IHW-ZG-TpY">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="IHW-ZG-TpY">
     <device id="retina6_9" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -35,7 +35,7 @@
                 <navigationController title="Home" id="j4Y-Yq-HRV" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Home" image="housefillgrey" id="UEC-nI-WWT"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="a48-gd-Ld5">
-                        <rect key="frame" x="0.0" y="124" width="440" height="44"/>
+                        <rect key="frame" x="0.0" y="124" width="440" height="54"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -52,7 +52,7 @@
                 <navigationController title="Pickups" id="Ouh-XS-ScB" userLabel="Pickups" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Pickups" selectedImage="Deliverytime" id="lzm-uT-1Cw"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="DEs-6O-fgB">
-                        <rect key="frame" x="0.0" y="124" width="440" height="44"/>
+                        <rect key="frame" x="0.0" y="124" width="440" height="54"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                 </navigationController>
@@ -66,7 +66,7 @@
                 <navigationController title="Routes" id="rdc-YG-sBO" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Routes" image="tab_empty" id="rLg-L7-wHG"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="eCu-nD-0jb">
-                        <rect key="frame" x="0.0" y="124" width="440" height="44"/>
+                        <rect key="frame" x="0.0" y="124" width="440" height="54"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -83,7 +83,7 @@
                 <navigationController title="Profile" hidesBarsWhenVerticallyCompact="YES" id="Ecc-pn-ioB" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Profile" image="usergrey" id="5J7-Ts-jOk"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Fo4-hj-TO3">
-                        <rect key="frame" x="0.0" y="124" width="440" height="44"/>
+                        <rect key="frame" x="0.0" y="124" width="440" height="54"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="barTintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                     </navigationBar>
@@ -98,7 +98,7 @@
                 <navigationController title="Rewards" hidesBarsWhenVerticallyCompact="YES" id="f2G-0K-wdg" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Rewards" image="prizegrey" id="qEE-Ma-gP5"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="gYk-SR-kkG">
-                        <rect key="frame" x="0.0" y="124" width="440" height="44"/>
+                        <rect key="frame" x="0.0" y="124" width="440" height="54"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -128,7 +128,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="1fz-sg-D01">
-                                <rect key="frame" x="30" y="202" width="380" height="32"/>
+                                <rect key="frame" x="30" y="212" width="380" height="32"/>
                                 <segments>
                                     <segment title="All"/>
                                     <segment title="Pending"/>
@@ -137,7 +137,7 @@
                                 </segments>
                             </segmentedControl>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="u0L-vj-D10">
-                                <rect key="frame" x="16" y="249" width="408" height="574"/>
+                                <rect key="frame" x="16" y="259" width="408" height="564"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                         </subviews>
@@ -182,7 +182,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="O2g-rC-b9x" userLabel="vwTopBar">
-                                <rect key="frame" x="0.0" y="168" width="440" height="56"/>
+                                <rect key="frame" x="0.0" y="178" width="440" height="56"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo" translatesAutoresizingMaskIntoConstraints="NO" id="7x7-mV-sXR" userLabel="imgLogo">
                                         <rect key="frame" x="20" y="0.66666666666665719" width="55" height="55"/>
@@ -219,7 +219,7 @@
                                 </constraints>
                             </view>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="f6x-Nb-ku5">
-                                <rect key="frame" x="0.0" y="224" width="440" height="615"/>
+                                <rect key="frame" x="0.0" y="234" width="440" height="605"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HT2-1g-PdV" userLabel="contentView">
                                         <rect key="frame" x="0.0" y="0.0" width="440" height="941.66666666666663"/>
